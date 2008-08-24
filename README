@@ -1,0 +1,9 @@
+This is a new selector engine that I'm working on.
+
+---- It's a work in progress! Not ready for use yet! ----
+
+It's definitely not ready yet (got some minor outlier bugs in the standards-compliant browsers - and a bunch of major bugs in IE still left to tackle) but the results are already promising.
+
+4x faster in Firefox 3, 3x faster in Opera 9, 1.5x faster in Safari 3 than the other major JavaScript libraries. It's completely standalone (no library dependencies) and clocks in at under 4kb.
+
+I'm just committing my code before moving on to work on IE - so beware. And yes, I expect this engine to become the new default selector engine in jQuery.
