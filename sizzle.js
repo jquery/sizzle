@@ -362,7 +362,7 @@ var Expr = {
 		selected: function(elem){
 			elem.parentNode.selectedIndex;
 			return elem.selected;
-		},
+		}
 	},
 	setFilters: {
 		first: function(elem, i){
