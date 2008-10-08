@@ -21,7 +21,7 @@ function Sizzle(selector, context, results) {
 
 	if ( cache && context === document && cache[ selector ] ) {
 		results.push.apply( results, cache[ selector ] );
-		return results;
+		return results.slice(0);
 	}
 	
 	var parts = [], m, set, checkSet, check, mode, extra;
@@ -94,7 +94,7 @@ function Sizzle(selector, context, results) {
 	}
 	
 	return cache && doCache ?
-		(cache[ selector ] = results.slice(0)) :
+		(cache[ selector ] = results) :
 		results;
 }
 
