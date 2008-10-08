@@ -41,7 +41,7 @@ function Sizzle(selector, context, results) {
 	var ret = Sizzle.find( parts.pop(), context );
 	set = Sizzle.filter( ret.expr, ret.set );
 
-	if ( parts.length > 0 && !checkSet ) {
+	if ( parts.length > 0 ) {
 		checkSet = makeArray(set);
 	}
 
@@ -94,7 +94,7 @@ function Sizzle(selector, context, results) {
 	}
 	
 	return cache && doCache ?
-		(cache[ selector ] = results) :
+		(cache[ selector ] = results.slice(0)) :
 		results;
 }
 
@@ -369,7 +369,7 @@ var Expr = {
 			return i === 0;
 		},
 		last: function(elem, i, match, array){
-			return i === r.length - 1;
+			return i === array.length - 1;
 		},
 		even: function(elem, i){
 			return i % 2 === 0;
