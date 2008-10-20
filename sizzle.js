@@ -1,6 +1,9 @@
+(function(){
+
 var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]+\]|[^[\]]+)+\]|\\.|[^ >+~,(\[]+)+|[>+~])(\s*,\s*)?/g;
 
 var cache = null;
+var done = 0;
 
 if ( document.addEventListener && !document.querySelectorAll ) {
 	cache = {};
@@ -10,7 +13,7 @@ if ( document.addEventListener && !document.querySelectorAll ) {
 	document.addEventListener("DOMNodeRemoved", invalidate, false);
 }
 
-function Sizzle(selector, context, results) {
+var Sizzle = window.Sizzle = function(selector, context, results) {
 	var doCache = !results;
 	results = results || [];
 	context = context || document;
@@ -96,7 +99,7 @@ function Sizzle(selector, context, results) {
 	return cache && doCache ?
 		(cache[ selector ] = results) :
 		results;
-}
+};
 
 Sizzle.find = function(expr, context){
 	var set, match;
@@ -351,17 +354,61 @@ var Expr = {
 	},
 	filters: {
 		enabled: function(elem){
-			return !elem.disabled && elem.type !== "hidden";
+			return elem.disabled === false && elem.type !== "hidden";
 		},
 		disabled: function(elem){
-			return elem.disabled;
+			return elem.disabled === true;
 		},
 		checked: function(elem){
-			return elem.checked;
+			return elem.checked === true;
 		},
 		selected: function(elem){
+			// Accessing this property makes selected-by-default
+			// options in Safari work properly
 			elem.parentNode.selectedIndex;
-			return elem.selected;
+			return elem.selected === true;
+		},
+		parent: function(elem){
+			return elem.firstChild;
+		},
+		empty: function(elem){
+			return !elem.firstChild;
+		},
+		has: function(elem, i, match){
+			return Sizzle( match[3], elem ).length;
+		},
+		header: function(elem){
+			return /h\d/i.test( elem.nodeName );
+		},
+		text: function(elem){
+			return "text" == elem.type;
+		},
+		radio: function(elem){
+			return "radio" == elem.type;
+		},
+		checkbox: function(elem){
+			return "checkbox" == elem.type;
+		},
+		file: function(elem){
+			return "file" == elem.type;
+		},
+		password: function(elem){
+			return "password" == elem.type;
+		},
+		submit: function(elem){
+			return "submit" == elem.type;
+		},
+		image: function(elem){
+			return "image" == elem.type;
+		},
+		reset: function(elem){
+			return "reset" == elem.type;
+		},
+		button: function(elem){
+			return "button" == elem.type || elem.nodeName.toUpperCase == "BUTTON";
+		},
+		input: function(elem){
+			return /input|select|textarea|button/i.test(elem.nodeName);
 		}
 	},
 	setFilters: {
@@ -376,6 +423,18 @@ var Expr = {
 		},
 		odd: function(elem, i){
 			return i % 2 === 1;
+		},
+		lt: function(elem, i, match){
+			return i < match[3] - 0;
+		},
+		gt: function(elem, i, match){
+			return i > match[3] - 0;
+		},
+		nth: function(elem, i, match){
+			return match[3] - 0 == i;
+		},
+		eq: function(elem, i, match){
+			return match[3] - 0 == i;
 		}
 	},
 	filter: {
@@ -423,7 +482,9 @@ var Expr = {
 		PSEUDO: function(elem, match, i, array){
 			var name = match[1], filter = Expr.filters[ name ];
 
-			if ( name === "contains" ) {
+			if ( filter ) {
+				return filter( elem, i, match, array )
+			} else if ( name === "contains" ) {
 				return (elem.textContent || elem.innerText || "").indexOf(match[3]) >= 0;
 			} else if ( name === "not" ) {
 				var not = match[3];
@@ -435,8 +496,6 @@ var Expr = {
 				}
 
 				return true;
-			} else if ( filter ) {
-				return filter( elem, i, match, array )
 			}
 		},
 		ID: function(elem, match){
@@ -452,7 +511,7 @@ var Expr = {
 			var value = elem[ match[1] ] + "", type = match[2], check = match[4];
 			return value == null ?
 				false :
-				type === "=" || type === "|=" ?
+				type === "=" ?
 				value === check :
 				type === "*=" || type === "~=" ?
 				value.indexOf(check) >= 0 :
@@ -464,6 +523,8 @@ var Expr = {
 				value.indexOf(check) === 0 :
 				type === "$=" ?
 				value.substr(value.length - check.length) === check :
+				type === "|=" ?
+				value === check || value.substr(0, check.length + 1) === check + "-" :
 				false;
 		},
 		POS: function(elem, match, i, array){
@@ -475,34 +536,6 @@ var Expr = {
 		}
 	}
 };
-
-if ( document.querySelectorAll ) (function(){
-	var oldSizzle = Sizzle;
-	
-	Sizzle = function(query, context, extra){
-		context = context || document;
-
-		if ( context === document ) {
-			try {
-				return context.querySelectorAll(query);
-			} catch(e){}
-		}
-		
-		return oldSizzle(query, context, extra);
-	};
-
-	Sizzle.find = oldSizzle.find;
-	Sizzle.filter = oldSizzle.filter;
-})();
-
-if ( document.getElementsByClassName ) {
-	Expr.order.splice(1, 0, "CLASS");
-	Expr.find.CLASS = function(match, context) {
-		return context.getElementsByClassName(match[1]);
-	};
-}
-
-var done = 0;
 
 function makeArray(a) {
 	return Array.prototype.slice.call( a );
@@ -522,6 +555,32 @@ if ( document.all && !window.opera ) {
 
 		return ret;
 	}
+}
+
+if ( document.querySelectorAll ) (function(){
+	var oldSizzle = Sizzle;
+	
+	window.Sizzle = Sizzle = function(query, context, extra){
+		context = context || document;
+
+		if ( context === document ) {
+			try {
+				return makeArray( context.querySelectorAll(query) );
+			} catch(e){}
+		}
+		
+		return oldSizzle(query, context, extra);
+	};
+
+	Sizzle.find = oldSizzle.find;
+	Sizzle.filter = oldSizzle.filter;
+})();
+
+if ( document.getElementsByClassName ) {
+	Expr.order.splice(1, 0, "CLASS");
+	Expr.find.CLASS = function(match, context) {
+		return context.getElementsByClassName(match[1]);
+	};
 }
 
 function dir( elem, dir ) {
@@ -578,19 +637,10 @@ function dirCheck( elem, dir, cur, doneName, i, checkSet, nodeCheck ) {
 	return match;
 }
 
-if ( typeof jQuery === "function") (function(){
+if ( typeof jQuery === "function") {
 	jQuery.find = Sizzle;
+	Expr.filters.hidden = jQuery.expr[":"].hidden;
+	Expr.filters.visible = jQuery.expr[":"].visible;
+}
 
-	var filters = jQuery.expr[":"];
-	for ( var name in filters ) {
-		if ( !Expr.filters[name] ) {
-			Expr.filters[name] = filters[name];
-		}
-	}
-
-	var set = ['lt','gt','nth','eq','first','last','even','odd'];
-	for ( var i = 0; i < set.length; i++ ) {
-		Expr.setFilters[ set[i] ] = Expr.filters[ set[i] ];
-		delete Expr.filters[ set[i] ];
-	}
 })();
