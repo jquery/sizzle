@@ -480,6 +480,8 @@ if ( document.querySelectorAll ) (function(){
 	var oldSizzle = Sizzle;
 	
 	Sizzle = function(query, context, extra){
+		context = context || document;
+
 		if ( context === document ) {
 			try {
 				return context.querySelectorAll(query);
