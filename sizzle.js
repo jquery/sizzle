@@ -369,43 +369,43 @@ var Expr = {
 			return elem.selected === true;
 		},
 		parent: function(elem){
-			return elem.firstChild;
+			return !!elem.firstChild;
 		},
 		empty: function(elem){
 			return !elem.firstChild;
 		},
 		has: function(elem, i, match){
-			return Sizzle( match[3], elem ).length;
+			return !!Sizzle( match[3], elem ).length;
 		},
 		header: function(elem){
 			return /h\d/i.test( elem.nodeName );
 		},
 		text: function(elem){
-			return "text" == elem.type;
+			return "text" === elem.type;
 		},
 		radio: function(elem){
-			return "radio" == elem.type;
+			return "radio" === elem.type;
 		},
 		checkbox: function(elem){
-			return "checkbox" == elem.type;
+			return "checkbox" === elem.type;
 		},
 		file: function(elem){
-			return "file" == elem.type;
+			return "file" === elem.type;
 		},
 		password: function(elem){
-			return "password" == elem.type;
+			return "password" === elem.type;
 		},
 		submit: function(elem){
-			return "submit" == elem.type;
+			return "submit" === elem.type;
 		},
 		image: function(elem){
-			return "image" == elem.type;
+			return "image" === elem.type;
 		},
 		reset: function(elem){
-			return "reset" == elem.type;
+			return "reset" === elem.type;
 		},
 		button: function(elem){
-			return "button" == elem.type || elem.nodeName.toUpperCase == "BUTTON";
+			return "button" === elem.type || elem.nodeName.toUpperCase() === "BUTTON";
 		},
 		input: function(elem){
 			return /input|select|textarea|button/i.test(elem.nodeName);
