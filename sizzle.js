@@ -160,7 +160,7 @@ Sizzle.filter = function(expr, set, inplace){
 					if ( match[0] === true ) {
 						goodArray = [];
 						var last = null, elem;
-						for ( var i = 0, (elem = curLoop[i]) !== undefined; i++ ) {
+						for ( var i = 0; (elem = curLoop[i]) !== undefined; i++ ) {
 							if ( elem && last !== elem ) {
 								goodArray.push( elem );
 								last = elem;
