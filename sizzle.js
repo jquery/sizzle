@@ -171,7 +171,7 @@ Sizzle.filter = function(expr, set, inplace){
 
 				}
 
-				var goodPos = 0;
+				var goodPos = 0, found;
 
 				for ( var i = 0, l = curLoop.length; i < l; i++ ) {
 					var item = curLoop[i];
@@ -180,7 +180,7 @@ Sizzle.filter = function(expr, set, inplace){
 							goodPos++;
 						}
 
-						var found = filter( item, match, goodPos, goodArray );
+						found = filter( item, match, goodPos, goodArray );
 						if ( inplace && found != null ) {
 							curLoop[i] = found ? curLoop[i] : false;
 						} else if ( found ) {
@@ -508,8 +508,8 @@ var Expr = {
 			return (" " + elem.className + " ").indexOf( match ) > -1;
 		},
 		ATTR: function(elem, match){
-			var value = elem[ match[1] ] + "", type = match[2], check = match[4];
-			return value == null ?
+			var result = elem[ match[1] ], value = result + "", type = match[2], check = match[4];
+			return result == null ?
 				false :
 				type === "=" ?
 				value === check :
