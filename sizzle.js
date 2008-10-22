@@ -159,9 +159,8 @@ Sizzle.filter = function(expr, set, inplace){
 
 					if ( match[0] === true ) {
 						goodArray = [];
-						var last = null;
-						for ( var i = 0, l = curLoop.length; i < l; i++ ) {
-							var elem = curLoop[i];
+						var last = null, elem;
+						for ( var i = 0, (elem = curLoop[i]) !== undefined; i++ ) {
 							if ( elem && last !== elem ) {
 								goodArray.push( elem );
 								last = elem;
@@ -171,10 +170,9 @@ Sizzle.filter = function(expr, set, inplace){
 
 				}
 
-				var goodPos = 0, found;
+				var goodPos = 0, found, item;
 
-				for ( var i = 0, l = curLoop.length; i < l; i++ ) {
-					var item = curLoop[i];
+				for ( var i = 0; (item = curLoop[i]) !== undefined; i++ ) {
 					if ( item ) {
 						if ( goodArray && item != goodArray[goodPos] ) {
 							goodPos++;
