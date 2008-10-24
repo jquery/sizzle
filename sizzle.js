@@ -1,3 +1,8 @@
+/*
+ * Sizzle CSS Selector Engine
+ *  Copyright 2008, John Resig (http://ejohn.org/)
+ *  released under the MIT License
+ */
 (function(){
 
 var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]+\]|[^[\]]+)+\]|\\.|[^ >+~,(\[]+)+|[>+~])(\s*,\s*)?/g;
