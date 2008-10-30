@@ -254,7 +254,11 @@ var Expr = {
 			for ( var i = 0, l = checkSet.length; i < l; i++ ) {
 				var elem = checkSet[i];
 				if ( elem ) {
-					checkSet[i] = dir( elem, "previousSibling" );
+					var cur = elem.previousSibling;
+					while ( cur && cur.nodeType !== 1 ) {
+						cur = cur.previousSibling;
+					}
+					checkSet[i] = cur || false;
 				}
 			}
 
@@ -283,11 +287,7 @@ var Expr = {
 				checkFn = dirNodeCheck;
 			}
 
-			for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-				if ( checkSet[i] ) {
-					checkSet[i] = checkFn(checkSet[i], "parentNode", part, doneName, i, checkSet, nodeCheck);
-				}
-			}
+			checkFn("parentNode", part, doneName, checkSet, nodeCheck);
 		},
 		"~": function(checkSet, part){
 			var doneName = "done" + (done++), checkFn = dirCheck;
@@ -297,11 +297,7 @@ var Expr = {
 				checkFn = dirNodeCheck;
 			}
 
-			for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-				if ( checkSet[i] ) {
-					checkSet[i] = checkFn(checkSet[i], "previousSibling", part, doneName, i, checkSet, nodeCheck);
-				}
-			}
+			checkFn("previousSibling", part, doneName, checkSet, nodeCheck);
 		}
 	},
 	find: {
@@ -610,61 +606,63 @@ if ( document.getElementsByClassName ) {
 	};
 }
 
-function dir( elem, dir ) {
-	var cur = elem[ dir ];
-	while ( cur && cur.nodeType !== 1 ) {
-		cur = cur[ dir ];
-	}
-	return cur || false;
-}
+function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck ) {
+	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+		var elem = checkSet[i];
+		if ( elem ) {
+			elem = elem[dir]
+			var match = false;
 
-function dirNodeCheck( elem, dir, cur, doneName, i, checkSet, nodeCheck ) {
-	elem = elem[dir]
-	var match = false;
+			while ( elem && elem.nodeType ) {
+				if ( elem[doneName] ) {
+					match = checkSet[ elem[doneName] ];
+					break;
+				}
 
-	while ( elem && elem.nodeType ) {
-		if ( elem[doneName] ) {
-			match = checkSet[ elem[doneName] ];
-			break;
-		}
+				if ( elem.nodeType === 1 )
+					elem[doneName] = i;
 
-		if ( elem.nodeType === 1 )
-			elem[doneName] = i;
+				if ( elem.nodeName === cur ) {
+					match = elem;
+					break;
+				}
 
-		if ( elem.nodeName === cur ) {
-			match = elem;
-			break;
-		}
-
-		elem = elem[dir];
-	}
-
-	return match;
-}
-
-function dirCheck( elem, dir, cur, doneName, i, checkSet, nodeCheck ) {
-	elem = elem[dir]
-	var match = false;
-
-	while ( elem && elem.nodeType ) {
-		if ( elem[doneName] ) {
-			match = checkSet[ elem[doneName] ];
-			break;
-		}
-
-		if ( elem.nodeType === 1 ) {
-			elem[doneName] = i;
-
-			if ( Sizzle.filter( cur, [elem] ).length > 0 ) {
-				match = elem;
-				break;
+				elem = elem[dir];
 			}
-		}
 
-		elem = elem[dir];
+			checkSet[i] = match;
+		}
 	}
-	
-	return match;
+}
+
+function dirCheck( dir, cur, doneName, checkSet, nodeCheck ) {
+	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+		var elem = checkSet[i];
+		if ( elem ) {
+			elem = elem[dir]
+			var match = false;
+
+			while ( elem && elem.nodeType ) {
+				if ( elem[doneName] ) {
+					match = checkSet[ elem[doneName] ];
+					break;
+				}
+
+				if ( elem.nodeType === 1 ) {
+					elem[doneName] = i;
+
+					if ( Sizzle.filter( cur, [elem] ).length > 0 ) {
+						match = elem;
+						break;
+					}
+				}
+
+				elem = elem[dir];
+			}
+
+			checkSet[i] = match;
+		}
+	}
 }
 
 if ( typeof jQuery === "function") {
