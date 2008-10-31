@@ -688,12 +688,8 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck ) {
 	}
 }
 
-if ( typeof jQuery === "function") {
-	jQuery.find = Sizzle;
-	Expr.filters.hidden = jQuery.expr[":"].hidden;
-	Expr.filters.visible = jQuery.expr[":"].visible;
-} else {
-	window.Sizzle = Sizzle;
-}
+// EXPOSE
+
+window.Sizzle = Sizzle;
 
 })();
