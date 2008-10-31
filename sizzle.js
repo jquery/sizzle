@@ -90,11 +90,14 @@ var Sizzle = window.Sizzle = function(selector, context, results) {
 	if ( !checkSet ) {
 		throw "Syntax error, unrecognized expression: " + (cur || selector);
 	}
-	
-	for ( var i = 0; checkSet[i] != null; i++ ) {
-		if ( checkSet[i] && checkSet[i].nodeType === 1 ) {
-			results.push( set[i] );
+	if ( checkSet instanceof Array ) {
+		for ( var i = 0; checkSet[i] != null; i++ ) {
+			if ( checkSet[i] && checkSet[i].nodeType === 1 ) {
+				results.push( set[i] );
+			}
 		}
+	} else {
+		makeArray( checkSet, results );
 	}
 
 	if ( extra ) {
@@ -265,18 +268,30 @@ var Expr = {
 			Sizzle.filter( part, checkSet, true );
 		},
 		">": function(checkSet, part){
-			for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-				var elem = checkSet[i];
-				if ( elem ) {
-					checkSet[i] = elem.parentNode;
-					if ( typeof part !== "string" ) {
-						checkSet[i] = checkSet[i] == part;
+			if ( typeof part === "string" && !/\W/.test(part) ) {
+				part = part.toUpperCase();
+
+				for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+					var elem = checkSet[i];
+					if ( elem ) {
+						var parent = elem.parentNode;
+						checkSet[i] = parent.nodeName === part ? parent : false;
 					}
 				}
-			}
+			} else {
+				for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+					var elem = checkSet[i];
+					if ( elem ) {
+						checkSet[i] = elem.parentNode;
+						if ( typeof part !== "string" ) {
+							checkSet[i] = checkSet[i] == part;
+						}
+					}
+				}
 
-			if ( typeof part === "string" ) {
-				Sizzle.filter( part, checkSet, true );
+				if ( typeof part === "string" ) {
+					Sizzle.filter( part, checkSet, true );
+				}
 			}
 		},
 		"": function(checkSet, part){
@@ -547,21 +562,28 @@ var Expr = {
 	}
 };
 
-function makeArray(a) {
-	return Array.prototype.slice.call( a );
+function makeArray(array, results) {
+	array = Array.prototype.slice.call( array );
+
+	if ( results ) {
+		results.push.apply( results, array );
+		return results;
+	}
+	
+	return array;
 }
 
 // TODO: Need a proper check here
 if ( document.all && !window.opera ) {
-	function makeArray(a) {
-		if ( a instanceof Array ) {
-			return Array.prototype.slice.call( a );
+	function makeArray(array, results) {
+		if ( array instanceof Array ) {
+			return Array.prototype.slice.call( array );
 		}
 
-		var ret = [];
+		var ret = results || [];
 
-		for ( var i = 0; a[i]; i++ ) {
-			ret.push( a[i] );
+		for ( var i = 0; array[i]; i++ ) {
+			ret.push( array[i] );
 		}
 
 		return ret;
@@ -614,8 +636,9 @@ function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck ) {
 			var match = false;
 
 			while ( elem && elem.nodeType ) {
-				if ( elem[doneName] ) {
-					match = checkSet[ elem[doneName] ];
+				var done = elem[doneName];
+				if ( done ) {
+					match = checkSet[ done ];
 					break;
 				}
 
