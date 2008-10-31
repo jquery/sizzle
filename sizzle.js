@@ -331,7 +331,7 @@ var Expr = {
 	},
 	preFilter: {
 		CLASS: function(match){
-			return " " + match[1] + " ";
+			return new RegExp( "(?:^|\\s)" + match[1] + "(?:\\s|$)" );
 		},
 		ID: function(match){
 			return match[1];
@@ -530,7 +530,7 @@ var Expr = {
 			return (match === "*" && elem.nodeType === 1) || elem.nodeName === match;
 		},
 		CLASS: function(elem, match){
-			return (" " + elem.className + " ").indexOf( match ) > -1;
+			return match.test( elem.className );
 		},
 		ATTR: function(elem, match){
 			var result = elem[ match[1] ], value = result + "", type = match[2], check = match[4];
