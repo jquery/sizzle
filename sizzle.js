@@ -18,7 +18,7 @@ if ( document.addEventListener && !document.querySelectorAll ) {
 	document.addEventListener("DOMNodeRemoved", invalidate, false);
 }
 
-var Sizzle = window.Sizzle = function(selector, context, results) {
+var Sizzle = function(selector, context, results) {
 	var doCache = !results;
 	results = results || [];
 	context = context || document;
@@ -237,7 +237,7 @@ Sizzle.filter = function(expr, set, inplace){
 	return curLoop;
 };
 
-var Expr = {
+var Expr = Sizzle.selectors = {
 	order: [ "ID", "NAME", "TAG" ],
 	match: {
 		ID: /#((?:[\w\u0128-\uFFFF_-]|\\.)+)/,
@@ -692,6 +692,8 @@ if ( typeof jQuery === "function") {
 	jQuery.find = Sizzle;
 	Expr.filters.hidden = jQuery.expr[":"].hidden;
 	Expr.filters.visible = jQuery.expr[":"].visible;
+} else {
+	window.Sizzle = Sizzle;
 }
 
 })();
