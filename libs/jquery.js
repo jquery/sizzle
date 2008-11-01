@@ -1,5 +1,7 @@
 jQuery.find = Sizzle;
 jQuery.filter = Sizzle.filter;
+jQuery.expr = Sizzle.selectors;
+jQuery.expr[":"] = jQuery.expr.filters;
 
 Sizzle.selectors.filters.hidden = function(elem){
 	return "hidden" === elem.type ||
