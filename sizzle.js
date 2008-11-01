@@ -630,6 +630,7 @@ if ( document.querySelectorAll ) (function(){
 
 	Sizzle.find = oldSizzle.find;
 	Sizzle.filter = oldSizzle.filter;
+	Sizzle.selectors = oldSizzle.selectors;
 })();
 
 if ( document.getElementsByClassName ) {
