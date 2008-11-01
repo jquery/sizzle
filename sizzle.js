@@ -94,9 +94,17 @@ var Sizzle = function(selector, context, results) {
 		throw "Syntax error, unrecognized expression: " + (cur || selector);
 	}
 	if ( checkSet instanceof Array ) {
-		for ( var i = 0; checkSet[i] != null; i++ ) {
-			if ( checkSet[i] && checkSet[i].nodeType === 1 ) {
-				results.push( set[i] );
+		if ( context.nodeType === 1 ) {
+			for ( var i = 0; checkSet[i] != null; i++ ) {
+				if ( checkSet[i] && checkSet[i].nodeType === 1 && contains(context, checkSet[i]) ) {
+					results.push( set[i] );
+				}
+			}
+		} else {
+			for ( var i = 0; checkSet[i] != null; i++ ) {
+				if ( checkSet[i] && checkSet[i].nodeType === 1 ) {
+					results.push( set[i] );
+				}
 			}
 		}
 	} else {
@@ -688,6 +696,16 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck ) {
 
 			checkSet[i] = match;
 		}
+	}
+}
+
+if ( document.compareDocumentPosition ) {
+	function contains(a, b){
+		return a.compareDocumentPosition(b) & 16;
+	}
+} else {
+	function contains(a, b){
+		return a !== b && a.contains(b);
 	}
 }
 
