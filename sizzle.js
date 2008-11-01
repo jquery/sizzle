@@ -22,6 +22,9 @@ var Sizzle = function(selector, context, results) {
 	var doCache = !results;
 	results = results || [];
 	context = context || document;
+
+	if ( context.nodeType !== 1 && context.nodeType !== 9 )
+		return [];
 	
 	if ( !selector || typeof selector !== "string" ) {
 		return results;
