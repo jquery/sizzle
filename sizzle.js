@@ -18,7 +18,7 @@ if ( document.addEventListener && !document.querySelectorAll ) {
 	document.addEventListener("DOMNodeRemoved", invalidate, false);
 }
 
-var Sizzle = function(selector, context, results) {
+var Sizzle = function(selector, context, results, seed) {
 	var doCache = !results;
 	results = results || [];
 	context = context || document;
@@ -49,7 +49,9 @@ var Sizzle = function(selector, context, results) {
 		}
 	}
 
-	var ret = Sizzle.find( parts.pop(), context );
+	var ret = seed ?
+		{ expr: parts.pop(), set: makeArray(seed) } :
+		Sizzle.find( parts.pop(), context );
 	set = Sizzle.filter( ret.expr, ret.set );
 
 	if ( parts.length > 0 ) {
@@ -120,6 +122,10 @@ var Sizzle = function(selector, context, results) {
 	}
 
 	return results;
+};
+
+Sizzle.matches = function(expr, set){
+	return Sizzle(expr, null, null, set);
 };
 
 Sizzle.find = function(expr, context){
