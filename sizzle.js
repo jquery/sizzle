@@ -263,7 +263,7 @@ var Expr = Sizzle.selectors = {
 		ATTR: /\[((?:[\w\u0128-\uFFFF_-]|\\.)+)\s*(?:(\S{0,1}=)\s*(['"]*)(.*?)\3|)\]/,
 		TAG: /^((?:[\w\u0128-\uFFFF\*_-]|\\.)+)/,
 		CHILD: /:(only|nth|last|first)-child\(?(even|odd|[\dn+-]*)\)?/,
-		POS: /:(nth|eq|gt|lt|first|last|even|odd)\(?(\d*)\)?/,
+		POS: /:(nth|eq|gt|lt|first|last|even|odd)\(?(\d*)\)?(?:[^-]|$)/,
 		PSEUDO: /:((?:[\w\u0128-\uFFFF_-]|\\.)+)(?:\((['"]*)((?:\([^\)]+\)|[^\2\(\)]*)+)\2\))?/
 	},
 	attrMap: {
