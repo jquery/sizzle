@@ -217,6 +217,9 @@ Sizzle.filter = function(expr, set, inplace){
 						found = filter( item, match, goodPos, goodArray );
 						if ( inplace && found != null ) {
 							curLoop[i] = found ? curLoop[i] : false;
+							if ( found ) {
+								anyFound = true;
+							}
 						} else if ( found ) {
 							result.push( item );
 							anyFound = true;
