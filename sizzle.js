@@ -586,7 +586,7 @@ var Expr = Sizzle.selectors = {
 	}
 };
 
-function makeArray(array, results) {
+var makeArray = function(array, results) {
 	array = Array.prototype.slice.call( array );
 
 	if ( results ) {
@@ -595,11 +595,16 @@ function makeArray(array, results) {
 	}
 	
 	return array;
-}
+};
 
-// TODO: Need a proper check here
-if ( document.all && !window.opera ) {
-	function makeArray(array, results) {
+// Perform a simple check to determine if the browser is capable of
+// converting a NodeList to an array using builtin methods.
+try {
+	Array.prototype.slice.call( document.documentElement.childNodes );
+
+// Provide a fallback method if it does not work
+} catch(e){
+	makeArray = function(array, results) {
 		if ( array instanceof Array ) {
 			return Array.prototype.slice.call( array );
 		}
@@ -611,20 +616,39 @@ if ( document.all && !window.opera ) {
 		}
 
 		return ret;
-	}
-
-	Expr.find.ID = function(match, context){
-		if ( context.getElementById ) {
-			var m = context.getElementById(match[1]);
-			return m ? m.id === match[1] || m.getAttributeNode && m.getAttributeNode("id").nodeValue === match[1] ? [m] : undefined : [];
-		}
-	};
-
-	Expr.filter.ID = function(elem, match){
-		var node = elem.getAttributeNode && elem.getAttributeNode("id");
-		return elem.nodeType === 1 && node && node.nodeValue === match;
 	};
 }
+
+// Check to see if the browser returns elements by name when
+// querying by getElementById (and provide a workaround)
+(function(){
+	// We're going to inject a fake input element with a specified name
+	var form = document.createElement("form"),
+		id = "script" + (new Date).getTime();
+	form.innerHTML = "<input name='" + id + "'/>";
+
+	// Inject it into the head, check its status, and remove it quickly
+	var head = document.getElementsByTagName("head")[0];
+	head.insertBefore( form, head.firstChild );
+
+	// The workaround has to do additional checks after a getElementById
+	// Which slows things down for other browsers (hence the branching)
+	if ( !!document.getElementById( id ) ) {
+		Expr.find.ID = function(match, context){
+			if ( context.getElementById ) {
+				var m = context.getElementById(match[1]);
+				return m ? m.id === match[1] || m.getAttributeNode && m.getAttributeNode("id").nodeValue === match[1] ? [m] : undefined : [];
+			}
+		};
+
+		Expr.filter.ID = function(elem, match){
+			var node = elem.getAttributeNode && elem.getAttributeNode("id");
+			return elem.nodeType === 1 && node && node.nodeValue === match;
+		};
+	}
+
+	head.removeChild( form );
+})();
 
 if ( document.querySelectorAll ) (function(){
 	var oldSizzle = Sizzle;
