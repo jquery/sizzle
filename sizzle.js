@@ -376,7 +376,7 @@ var Expr = Sizzle.selectors = {
 			}
 
 			// TODO: Move to normal caching system
-			match[0] = typeof get_length == "undefined" ? "done" + (done++) : "nodeCache";
+			match[0] = "done" + (done++);
 
 			return match;
 		},
