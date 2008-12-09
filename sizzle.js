@@ -51,7 +51,7 @@ var Sizzle = function(selector, context, results, seed) {
 
 	var ret = seed ?
 		{ expr: parts.pop(), set: makeArray(seed) } :
-		Sizzle.find( parts.pop(), context );
+		Sizzle.find( parts.pop(), parts.length === 1 ? context.ownerDocument : context );
 	set = Sizzle.filter( ret.expr, ret.set );
 
 	if ( parts.length > 0 ) {
@@ -87,7 +87,7 @@ var Sizzle = function(selector, context, results, seed) {
 			Sizzle.filter( later, checkSet, true );
 		}
 	}
-	
+
 	if ( !checkSet ) {
 		checkSet = set;
 	}
@@ -95,10 +95,11 @@ var Sizzle = function(selector, context, results, seed) {
 	if ( !checkSet ) {
 		throw "Syntax error, unrecognized expression: " + (cur || selector);
 	}
+
 	if ( checkSet instanceof Array ) {
 		if ( context.nodeType === 1 ) {
 			for ( var i = 0; checkSet[i] != null; i++ ) {
-				if ( checkSet[i] && checkSet[i].nodeType === 1 && contains(context, checkSet[i]) ) {
+				if ( checkSet[i] && (checkSet[i] === true || checkSet[i].nodeType === 1 && contains(context, checkSet[i])) ) {
 					results.push( set[i] );
 				}
 			}
@@ -281,11 +282,15 @@ var Expr = Sizzle.selectors = {
 					while ( cur && cur.nodeType !== 1 ) {
 						cur = cur.previousSibling;
 					}
-					checkSet[i] = cur || false;
+					checkSet[i] = typeof part === "string" ?
+						cur || false :
+						cur === part;
 				}
 			}
 
-			Sizzle.filter( part, checkSet, true );
+			if ( typeof part === "string" ) {
+				Sizzle.filter( part, checkSet, true );
+			}
 		},
 		">": function(checkSet, part){
 			if ( typeof part === "string" && !/\W/.test(part) ) {
@@ -302,10 +307,9 @@ var Expr = Sizzle.selectors = {
 				for ( var i = 0, l = checkSet.length; i < l; i++ ) {
 					var elem = checkSet[i];
 					if ( elem ) {
-						checkSet[i] = elem.parentNode;
-						if ( typeof part !== "string" ) {
-							checkSet[i] = checkSet[i] == part;
-						}
+						checkSet[i] = typeof part === "string" ?
+							elem.parentNode :
+							elem.parentNode === part;
 					}
 				}
 
@@ -327,7 +331,7 @@ var Expr = Sizzle.selectors = {
 		"~": function(checkSet, part){
 			var doneName = "done" + (done++), checkFn = dirCheck;
 
-			if ( !part.match(/\W/) ) {
+			if ( typeof part === "string" && !part.match(/\W/) ) {
 				var nodeCheck = part = part.toUpperCase();
 				checkFn = dirNodeCheck;
 			}
@@ -695,7 +699,13 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck ) {
 				if ( elem.nodeType === 1 ) {
 					elem[doneName] = i;
 
-					if ( Sizzle.filter( cur, [elem] ).length > 0 ) {
+					if ( typeof cur !== "string" ) {
+						if ( elem === cur ) {
+							match = true;
+							break;
+						}
+
+					} else if ( Sizzle.filter( cur, [elem] ).length > 0 ) {
 						match = elem;
 						break;
 					}
