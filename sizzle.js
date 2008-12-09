@@ -642,7 +642,7 @@ if ( document.querySelectorAll ) (function(){
 	Sizzle.selectors = oldSizzle.selectors;
 })();
 
-if ( document.getElementsByClassName ) {
+if ( document.documentElement.getElementsByClassName ) {
 	Expr.order.splice(1, 0, "CLASS");
 	Expr.find.CLASS = function(match, context) {
 		return context.getElementsByClassName(match[1]);
