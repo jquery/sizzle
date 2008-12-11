@@ -51,7 +51,7 @@ var Sizzle = function(selector, context, results, seed) {
 
 	var ret = seed ?
 		{ expr: parts.pop(), set: makeArray(seed) } :
-		Sizzle.find( parts.pop(), parts.length === 1 ? context.ownerDocument : context );
+		Sizzle.find( parts.pop(), parts.length === 1 && context.ownerDocument ?  context.ownerDocument : context );
 	set = Sizzle.filter( ret.expr, ret.set );
 
 	if ( parts.length > 0 ) {
