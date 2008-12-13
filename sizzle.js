@@ -387,6 +387,10 @@ var Expr = Sizzle.selectors = {
 				match[1] = Expr.attrMap[name];
 			}
 
+			if ( match[2] === "~=" ) {
+				match[4] = " " + match[4] + " ";
+			}
+
 			return match;
 		},
 		PSEUDO: function(match){
@@ -562,8 +566,10 @@ var Expr = Sizzle.selectors = {
 				false :
 				type === "=" ?
 				value === check :
-				type === "*=" || type === "~=" ?
+				type === "*=" ?
 				value.indexOf(check) >= 0 :
+				type === "~=" ?
+				(" " + value + " ").indexOf(check) >= 0 :
 				!match[4] ?
 				result :
 				type === "!=" ?
