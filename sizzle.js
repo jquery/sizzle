@@ -49,9 +49,43 @@ var Sizzle = function(selector, context, results, seed) {
 		}
 	}
 
+	if ( parts.length > 1 && Expr.match.POS.exec( selector ) ) {
+		if ( parts.length === 2 && Expr.relative[ parts[0] ] ) {
+			var later = "", match;
+
+			// Position selectors must be done after the filter
+			while ( (match = Expr.match.POS.exec( selector )) ) {
+				later += match[0];
+				selector = selector.replace( Expr.match.POS, "" );
+			}
+
+			return Sizzle.filter( later, Sizzle( selector, context, results ) );
+		}
+
+		checkSet = Expr.relative[ parts[0] ] ?
+			[ context ] :
+			Sizzle( parts.shift(), context, results );
+
+		while ( parts.length ) {
+			set = [];
+
+			selector = parts.shift();
+			if ( Expr.relative[ selector ] )
+				selector += parts.shift();
+
+			for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+				Sizzle( selector, checkSet[i], set );
+			}
+
+			checkSet = set;
+		}
+
+		return checkSet;
+	}
+
 	var ret = seed ?
 		{ expr: parts.pop(), set: makeArray(seed) } :
-		Sizzle.find( parts.pop(), parts.length === 1 && context.ownerDocument ?  context.ownerDocument : context );
+		Sizzle.find( parts.pop(), parts.length === 1 && context.parentNode ? context.parentNode : context );
 	set = Sizzle.filter( ret.expr, ret.set );
 
 	if ( parts.length > 0 ) {
@@ -71,21 +105,7 @@ var Sizzle = function(selector, context, results, seed) {
 			pop = context;
 		}
 
-		var later = "", match;
-
-		// Position selectors must be done after the filter
-		if ( typeof pop === "string" ) {
-			while ( (match = Expr.match.POS.exec( pop )) ) {
-				later += match[0];
-				pop = pop.replace( Expr.match.POS, "" );
-			}
-		}
-
 		Expr.relative[ cur ]( checkSet, pop );
-
-		if ( later ) {
-			Sizzle.filter( later, checkSet, true );
-		}
 	}
 
 	if ( !checkSet ) {
