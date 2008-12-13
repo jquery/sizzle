@@ -651,9 +651,9 @@ try {
 		id = "script" + (new Date).getTime();
 	form.innerHTML = "<input name='" + id + "'/>";
 
-	// Inject it into the head, check its status, and remove it quickly
-	var head = document.documentElement;
-	head.insertBefore( form, head.firstChild );
+	// Inject it into the root element, check its status, and remove it quickly
+	var root = document.documentElement;
+	root.insertBefore( form, root.firstChild );
 
 	// The workaround has to do additional checks after a getElementById
 	// Which slows things down for other browsers (hence the branching)
@@ -671,7 +671,7 @@ try {
 		};
 	}
 
-	head.removeChild( form );
+	root.removeChild( form );
 })();
 
 if ( document.querySelectorAll ) (function(){
