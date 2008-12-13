@@ -59,57 +59,55 @@ var Sizzle = function(selector, context, results, seed) {
 				selector = selector.replace( Expr.match.POS, "" );
 			}
 
-			return Sizzle.filter( later, Sizzle( selector, context, results ) );
-		}
+			checkSet = Sizzle.filter( later, Sizzle( selector, context, results ) );
+		} else {
+			checkSet = Expr.relative[ parts[0] ] ?
+				[ context ] :
+				Sizzle( parts.shift(), context );
 
-		checkSet = Expr.relative[ parts[0] ] ?
-			[ context ] :
-			Sizzle( parts.shift(), context, results );
+			while ( parts.length ) {
+				set = [];
+
+				selector = parts.shift();
+				if ( Expr.relative[ selector ] )
+					selector += parts.shift();
+
+				for ( var i = 0, l = checkSet.length; i < l; i++ ) {
+					Sizzle( selector, checkSet[i], set );
+				}
+
+				checkSet = set;
+			}
+		}
+	} else {
+		var ret = seed ?
+			{ expr: parts.pop(), set: makeArray(seed) } :
+			Sizzle.find( parts.pop(), parts.length === 1 && context.parentNode ? context.parentNode : context );
+		set = Sizzle.filter( ret.expr, ret.set );
+
+		if ( parts.length > 0 ) {
+			checkSet = makeArray(set);
+		}
 
 		while ( parts.length ) {
-			set = [];
+			var cur = parts.pop(), pop = cur;
 
-			selector = parts.shift();
-			if ( Expr.relative[ selector ] )
-				selector += parts.shift();
-
-			for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-				Sizzle( selector, checkSet[i], set );
+			if ( !Expr.relative[ cur ] ) {
+				cur = "";
+			} else {
+				pop = parts.pop();
 			}
 
+			if ( pop == null ) {
+				pop = context;
+			}
+
+			Expr.relative[ cur ]( checkSet, pop );
+		}
+
+		if ( !checkSet ) {
 			checkSet = set;
 		}
-
-		return checkSet;
-	}
-
-	var ret = seed ?
-		{ expr: parts.pop(), set: makeArray(seed) } :
-		Sizzle.find( parts.pop(), parts.length === 1 && context.parentNode ? context.parentNode : context );
-	set = Sizzle.filter( ret.expr, ret.set );
-
-	if ( parts.length > 0 ) {
-		checkSet = makeArray(set);
-	}
-
-	while ( parts.length ) {
-		var cur = parts.pop(), pop = cur;
-
-		if ( !Expr.relative[ cur ] ) {
-			cur = "";
-		} else {
-			pop = parts.pop();
-		}
-
-		if ( pop == null ) {
-			pop = context;
-		}
-
-		Expr.relative[ cur ]( checkSet, pop );
-	}
-
-	if ( !checkSet ) {
-		checkSet = set;
 	}
 
 	if ( !checkSet ) {
@@ -135,7 +133,7 @@ var Sizzle = function(selector, context, results, seed) {
 	}
 
 	if ( extra ) {
-		arguments.callee( extra, context, results );
+		Sizzle( extra, context, results );
 	}
 
 	if ( cache && doCache ) {
