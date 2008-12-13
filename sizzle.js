@@ -579,7 +579,7 @@ var Expr = Sizzle.selectors = {
 			return match.test( elem.className );
 		},
 		ATTR: function(elem, match){
-			var result = elem[ match[1] ], value = result + "", type = match[2], check = match[4];
+			var result = elem[ match[1] ] || elem.getAttribute( match[1] ), value = result + "", type = match[2], check = match[4];
 			return result == null ?
 				false :
 				type === "=" ?
