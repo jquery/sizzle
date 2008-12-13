@@ -628,7 +628,7 @@ try {
 	form.innerHTML = "<input name='" + id + "'/>";
 
 	// Inject it into the head, check its status, and remove it quickly
-	var head = document.getElementsByTagName("head")[0];
+	var head = document.documentElement;
 	head.insertBefore( form, head.firstChild );
 
 	// The workaround has to do additional checks after a getElementById
