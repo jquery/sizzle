@@ -611,14 +611,14 @@ try {
 // Provide a fallback method if it does not work
 } catch(e){
 	makeArray = function(array, results) {
-		if ( array instanceof Array ) {
-			return Array.prototype.slice.call( array );
-		}
-
 		var ret = results || [];
 
-		for ( var i = 0; array[i]; i++ ) {
-			ret.push( array[i] );
+		if ( array instanceof Array ) {
+			Array.prototype.push.apply( ret, array );
+		} else {
+			for ( var i = 0; array[i]; i++ ) {
+				ret.push( array[i] );
+			}
 		}
 
 		return ret;
