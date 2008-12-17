@@ -633,8 +633,14 @@ try {
 		if ( array instanceof Array ) {
 			Array.prototype.push.apply( ret, array );
 		} else {
-			for ( var i = 0; array[i]; i++ ) {
-				ret.push( array[i] );
+			if ( typeof array.length === "number" ) {
+				for ( var i = 0, l = array.length; i < l; i++ ) {
+					ret.push( array[i] );
+				}
+			} else {
+				for ( var i = 0; array[i]; i++ ) {
+					ret.push( array[i] );
+				}
 			}
 		}
 
