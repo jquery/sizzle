@@ -203,7 +203,6 @@ Sizzle.filter = function(expr, set, inplace){
 		for ( var type in Expr.filter ) {
 			if ( (match = Expr.match[ type ].exec( expr )) != null ) {
 				var anyFound = false, filter = Expr.filter[ type ], goodArray = null;
-				match[1] = (match[1] || "").replace(/\\/g, "");
 
 				if ( curLoop == result ) {
 					result = [];
