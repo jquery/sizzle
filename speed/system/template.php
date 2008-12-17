@@ -18,15 +18,18 @@
 				var start = new Date().getTime();
 				var i = 1;
 				var elements = <?php echo $_GET['function']; ?>(selector);
-				var step = (new Date().getTime() - start);
-				if (step > 750) return {'time': step, 'found': get_length(elements)};
-				i ++;
-				<?php echo $_GET['function']; ?>(selector);
-				i ++;
-				<?php echo $_GET['function']; ?>(selector);
-				i ++;
-				<?php echo $_GET['function']; ?>(selector);
-				var end = (new Date().getTime() - start) / i;
+				//var step = (new Date().getTime() - start);
+				//if (step > 750) return {'time': step, 'found': get_length(elements)};
+				i ++; <?php echo $_GET['function']; ?>(selector);
+				i ++; <?php echo $_GET['function']; ?>(selector);
+				i ++; <?php echo $_GET['function']; ?>(selector);
+				i ++; <?php echo $_GET['function']; ?>(selector);
+				i ++; <?php echo $_GET['function']; ?>(selector);
+				i ++; <?php echo $_GET['function']; ?>(selector);
+				i ++; <?php echo $_GET['function']; ?>(selector);
+				i ++; <?php echo $_GET['function']; ?>(selector);
+				i ++; <?php echo $_GET['function']; ?>(selector);
+				var end = (new Date().getTime() - start);
 				return {'time': Math.round(end), 'found': get_length(elements)};
 			} catch(err){
 				if (elements == undefined) elements = {length: -1};
