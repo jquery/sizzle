@@ -712,7 +712,7 @@ try {
 if ( document.querySelectorAll ) (function(){
 	var oldSizzle = Sizzle;
 	
-	window.Sizzle = Sizzle = function(query, context, extra){
+	Sizzle = function(query, context, extra){
 		context = context || document;
 
 		if ( context.nodeType === 9 ) {
