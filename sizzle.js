@@ -12,7 +12,7 @@ var done = 0;
 
 if ( document.addEventListener && !document.querySelectorAll ) {
 	cache = {};
-	function invalidate(){ cache = {}; }
+	var invalidate = function(){ cache = {}; };
 	document.addEventListener("DOMAttrModified", invalidate, false);
 	document.addEventListener("DOMNodeInserted", invalidate, false);
 	document.addEventListener("DOMNodeRemoved", invalidate, false);
