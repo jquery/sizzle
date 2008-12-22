@@ -1,5 +1,31 @@
-This is a new pure-JavaScript CSS selector engine that I'm working on.
+A pure-JavaScript CSS selector engine designed to be easily dropped in to a host library.
 
-Comes in at roughly 4x faster in Firefox 3, 3x faster in Opera 9, 1.5x faster in Safari 3 than the other major JavaScript libraries. It's completely standalone (no library dependencies) and clocks in at 4KB.
+Features:
+ - Completely standalone (no library dependencies)
+ - Competitive performance for most frequently used selectors
+ - Only 3KB minified and gipped
+ - Highly extensible with easy-to-use API
+ - Designed for optimal performance with event delegation
+ - Clear IP assignent (all code held by the Dojo Foundation, contributors sign CLAs)
 
-Currently this engine is expected to become the new default selector engine of jQuery, MochiKit, Prototype, and Dojo. Please contact me if you're interested in working on integrating Sizzle into your library.
+Code Features:
+ - Provides meaningful error messages for syntax problems
+ - Uses a single code path (no XPath)
+ - Uses no browser-sniffing
+ - Caja-compatible code
+
+Selector Features:
+ - CSS 3 Selector support
+ - Full Unicode support
+ - Escaped selector support (#id\:value)
+ - Contains text - :contains(text)
+ - Complex :not - :not(a#id)
+ - Multiple :not - :not(div,p)
+ - Not attribute value - [name!=value]
+ - Has selector - :has(div)
+ - Position selectors - :first, :last, :even, :odd, :gt, :lt, :eq
+ - Easy Form selectors - :input, :text, :checkbox, :file, :password, :submit, :image, :reset, :button
+ - Header selector - :header
+
+A number of libraries are looking to integrate this into their library (jQuery, TinyMCE, PURE, and modules.js have already landed support). If you have any questions about integration please join the discussion on the mailing list:
+  http://groups.google.com/group/sizzlejs
