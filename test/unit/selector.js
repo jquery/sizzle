@@ -108,13 +108,16 @@ test("class", function() {
 });
 
 test("name", function() {
-	expect(4);
+	expect(6);
 
 	t( "Name selector", "input[name=action]", ["text1"] );
 	t( "Name selector with single quotes", "input[name='action']", ["text1"] );
 	t( "Name selector with double quotes", 'input[name="action"]', ["text1"] );
 
 	t( "Name selector none-input", "*[name=iframe]", ["iframe"] );
+
+	isSet( jQuery("#form").find("input[name=action]"), q("text1"), "Name selector within the context of another element" );
+	isSet( jQuery("#form").find("input[name='foo[bar]']"), q("hidden2"), "Name selector for grouped form element within the context of another element" );
 });
 
 

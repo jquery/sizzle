@@ -344,7 +344,7 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 		NAME: function(match, context){
-			return context.getElementsByName(match[1]);
+			return context.getElementsByName ? context.getElementsByName(match[1]) : null;
 		},
 		TAG: function(match, context){
 			return context.getElementsByTagName(match[1]);
