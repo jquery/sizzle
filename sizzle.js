@@ -153,14 +153,12 @@ Sizzle.find = function(expr, context){
 
 	for ( var i = 0, l = Expr.order.length; i < l; i++ ) {
 		var type = Expr.order[i];
-		
 		if ( (match = Expr.match[ type ].exec( expr )) ) {
 			var left = RegExp.leftContext;
 
 			if ( left.substr( left.length - 1 ) !== "\\" ) {
 				match[1] = (match[1] || "").replace(/\\/g, "");
 				set = Expr.find[ type ]( match, context );
-
 				if ( set != null ) {
 					expr = expr.replace( Expr.match[ type ], "" );
 					break;
@@ -262,7 +260,7 @@ var Expr = Sizzle.selectors = {
 	match: {
 		ID: /#((?:[\w\u0128-\uFFFF_-]|\\.)+)/,
 		CLASS: /\.((?:[\w\u0128-\uFFFF_-]|\\.)+)/,
-		NAME: /\[name=((?:[\w\u0128-\uFFFF_-]|\\.)+)\]/,
+		NAME: /\[name=['"]*((?:[\w\u0128-\uFFFF_-]|\\.)+)['"]*\]/,
 		ATTR: /\[((?:[\w\u0128-\uFFFF_-]|\\.)+)\s*(?:(\S{0,1}=)\s*(['"]*)(.*?)\3|)\]/,
 		TAG: /^((?:[\w\u0128-\uFFFF\*_-]|\\.)+)/,
 		CHILD: /:(only|nth|last|first)-child\(?(even|odd|[\dn+-]*)\)?/,

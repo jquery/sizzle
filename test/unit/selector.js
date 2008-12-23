@@ -107,6 +107,17 @@ test("class", function() {
 	t( "Child escaped Class", "form > .test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
 });
 
+test("name", function() {
+	expect(4);
+
+	t( "Name selector", "input[name=action]", ["text1"] );
+	t( "Name selector with single quotes", "input[name='action']", ["text1"] );
+	t( "Name selector with double quotes", 'input[name="action"]', ["text1"] );
+
+	t( "Name selector none-input", "*[name=iframe]", ["iframe"] );
+});
+
+
 test("multiple", function() {
 	expect(4);
 	
