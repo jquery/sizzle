@@ -184,7 +184,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect(20);
+	expect(21);
 	t( "Attribute Exists", "a[title]", ["google"] );
 	t( "Attribute Exists", "*[title]", ["google"] );
 	t( "Attribute Exists", "[title]", ["google"] );
@@ -192,6 +192,7 @@ test("attributes", function() {
 	t( "Attribute Equals", "a[rel='bookmark']", ["simon1"] );
 	t( "Attribute Equals", 'a[rel="bookmark"]', ["simon1"] );
 	t( "Attribute Equals", "a[rel=bookmark]", ["simon1"] );
+	t( "Attribute Equals", "a[href='http://www.google.com/']", ["google"] );
 	
 	var results = ["hidden1","radio1","radio2"];
 	
