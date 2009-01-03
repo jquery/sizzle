@@ -139,7 +139,7 @@ test("multiple", function() {
 });
 
 test("child and adjacent", function() {
-	expect(37);
+	expect(38);
 	t( "Child", "p > a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p> a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p >a", ["simon1","google","groups","mark","yahoo","simon"] );
@@ -153,6 +153,8 @@ test("child and adjacent", function() {
 	t( "Adjacent", "a+a", ["groups"] );
 	t( "Adjacent", "p + p", ["ap","en","sap"] );
 	t( "Comma, Child, and Adjacent", "a + a, code > a", ["groups","anchor1","anchor2"] );
+
+	t( "Non-existant ancestors", ".fototab > .thumbnails > a", [] );
 	
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
 	t( "Nth Child", "p:nth-child(1)", ["firstp","sndp"] );

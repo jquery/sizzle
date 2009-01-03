@@ -161,12 +161,13 @@ Sizzle.find = function(expr, context){
 };
 
 Sizzle.filter = function(expr, set, inplace){
-	var old = expr, result = [], curLoop = set, match;
+	var old = expr, result = [], curLoop = set, match, anyFound;
 
 	while ( expr && set.length ) {
 		for ( var type in Expr.filter ) {
 			if ( (match = Expr.match[ type ].exec( expr )) != null ) {
-				var anyFound = false, filter = Expr.filter[ type ], goodArray = null;
+				var filter = Expr.filter[ type ], goodArray = null, goodPos = 0, found, item;
+				anyFound = false;
 
 				if ( curLoop == result ) {
 					result = [];
@@ -185,10 +186,7 @@ Sizzle.filter = function(expr, set, inplace){
 							}
 						}
 					}
-
 				}
-
-				var goodPos = 0, found, item;
 
 				for ( var i = 0; (item = curLoop[i]) !== undefined; i++ ) {
 					if ( item ) {
@@ -225,12 +223,15 @@ Sizzle.filter = function(expr, set, inplace){
 			}
 		}
 
-
 		expr = expr.replace(/\s*,\s*/, "");
 
 		// Improper expression
 		if ( expr == old ) {
-			throw "Syntax error, unrecognized expression: " + expr;
+			if ( anyFound == null ) {
+				throw "Syntax error, unrecognized expression: " + expr;
+			} else {
+				break;
+			}
 		}
 
 		old = expr;
