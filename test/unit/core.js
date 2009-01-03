@@ -1240,7 +1240,7 @@ test("filter()", function() {
 });
 
 test("not()", function() {
-	expect(8);
+	expect(11);
 	equals( jQuery("#main > p#ap > a").not("#google").length, 2, "not('selector')" );
 	equals( jQuery("#main > p#ap > a").not(document.getElementById("google")).length, 2, "not(DOMElement)" );
 	isSet( jQuery("p").not(".result").get(), q("firstp", "ap", "sndp", "en", "sap", "first"), "not('.class')" );
@@ -1251,6 +1251,10 @@ test("not()", function() {
 
 	var selects = jQuery("#form select");
 	isSet( selects.not( selects[1] ), q("select1", "select3"), "filter out DOM element");
+
+	isSet( jQuery('#ap *').not('code'), q("google", "groups", "anchor1", "mark"), "not('tag selector')" );
+	isSet( jQuery('#ap *').not('code, #mark'), q("google", "groups", "anchor1"), "not('tag, ID selector')" );
+	isSet( jQuery('#ap *').not('#mark, code'), q("google", "groups", "anchor1"), "not('ID, tag selector')");
 });
 
 test("andSelf()", function() {
@@ -1266,7 +1270,7 @@ test("siblings([String])", function() {
 	isSet( jQuery("#en").siblings().get(), q("sndp", "sap"), "Check for siblings" );
 	isSet( jQuery("#sndp").siblings(":has(code)").get(), q("sap"), "Check for filtered siblings (has code child element)" );
 	isSet( jQuery("#sndp").siblings(":has(a)").get(), q("en", "sap"), "Check for filtered siblings (has anchor child element)" );
-	isSet( jQuery("#foo").siblings("form, b").get(), q("form", "lengthtest", "testForm", "floatTest"), "Check for multiple filters" );
+	isSet( jQuery("#foo").siblings("form, b").get(), q("form", "lengthtest", "name-tests", "testForm", "floatTest"), "Check for multiple filters" );
 	isSet( jQuery("#en, #sndp").siblings().get(), q("sndp", "sap", "en"), "Check for unique results from siblings" );
 });
 

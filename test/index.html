@@ -15,6 +15,7 @@
 	<script type="text/javascript" src="../jquery-sizzle.js"></script>
 	<script type="text/javascript" src="qunit/testrunner.js"></script>
 	<script type="text/javascript" src="data/testrunner.js"></script>
+	<script type="text/javascript" src="unit/core.js"></script>
 	<script type="text/javascript" src="unit/selector.js"></script>
 </head>
 
@@ -107,7 +108,14 @@
 			<input type="text" id="idTest" name="id"/>
 		</form>
 		<table id="table"></table>
-		
+
+		<form id="name-tests">
+			<!-- Inputs with a grouped name attribute. -->
+			<input name="types[]" id="types_all" type="checkbox" value="all" />
+			<input name="types[]" id="types_anime" type="checkbox" value="anime" />
+			<input name="types[]" id="types_movie" type="checkbox" value="movie" />
+		</form>
+
 		<div id="fx-queue">
 			<div id="fadein" class='chain test'>fadeIn<div>fadeIn</div></div>
 			<div id="fadeout" class='chain test out'>fadeOut<div>fadeOut</div></div>

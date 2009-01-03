@@ -5,7 +5,7 @@
  */
 (function(){
 
-var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]+\]|[^[\]]+)+\]|\\.|[^ >+~,(\[]+)+|[>+~])(\s*,\s*)?/g;
+var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|[^[\]]+)+\]|\\.|[^ >+~,(\[]+)+|[>+~])(\s*,\s*)?/g;
 
 var done = 0;
 
@@ -145,7 +145,6 @@ Sizzle.find = function(expr, context){
 			if ( left.substr( left.length - 1 ) !== "\\" ) {
 				match[1] = (match[1] || "").replace(/\\/g, "");
 				set = Expr.find[ type ]( match, context );
-
 				if ( set != null ) {
 					expr = expr.replace( Expr.match[ type ], "" );
 					break;
@@ -245,7 +244,7 @@ var Expr = Sizzle.selectors = {
 	match: {
 		ID: /#((?:[\w\u0128-\uFFFF_-]|\\.)+)/,
 		CLASS: /\.((?:[\w\u0128-\uFFFF_-]|\\.)+)/,
-		NAME: /\[name=((?:[\w\u0128-\uFFFF_-]|\\.)+)\]/,
+		NAME: /\[name=['"]*((?:[\w\u0128-\uFFFF_-]|\\.)+)['"]*\]/,
 		ATTR: /\[((?:[\w\u0128-\uFFFF_-]|\\.)+)\s*(?:(\S{0,1}=)\s*(['"]*)(.*?)\3|)\]/,
 		TAG: /^((?:[\w\u0128-\uFFFF\*_-]|\\.)+)/,
 		CHILD: /:(only|nth|last|first)-child\(?(even|odd|[\dn+-]*)\)?/,
@@ -329,7 +328,7 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 		NAME: function(match, context){
-			return context.getElementsByName(match[1]);
+			return context.getElementsByName ? context.getElementsByName(match[1]) : null;
 		},
 		TAG: function(match, context){
 			return context.getElementsByTagName(match[1]);
@@ -518,7 +517,7 @@ var Expr = Sizzle.selectors = {
 			var name = match[1], filter = Expr.filters[ name ];
 
 			if ( filter ) {
-				return filter( elem, i, match, array )
+				return filter( elem, i, match, array );
 			} else if ( name === "contains" ) {
 				return (elem.textContent || elem.innerText || "").indexOf(match[3]) >= 0;
 			} else if ( name === "not" ) {
@@ -709,7 +708,7 @@ function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck ) {
 	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
 		var elem = checkSet[i];
 		if ( elem ) {
-			elem = elem[dir]
+			elem = elem[dir];
 			var match = false;
 
 			while ( elem && elem.nodeType ) {
@@ -739,7 +738,7 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck ) {
 	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
 		var elem = checkSet[i];
 		if ( elem ) {
-			elem = elem[dir]
+			elem = elem[dir];
 			var match = false;
 
 			while ( elem && elem.nodeType ) {

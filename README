@@ -29,3 +29,8 @@ Selector Features:
 
 A number of libraries are looking to integrate this into their library (jQuery, TinyMCE, PURE, and modules.js have already landed support). If you have any questions about integration please join the discussion on the mailing list:
   http://groups.google.com/group/sizzlejs
+
+Testing Sizzle in jQuery
+ - Run 'make': this will create a jquery-sizzle.js file that contains jQuery with the Sizzle selector engine.
+ - Open test/index.html in your browser to run the tests.
+ - The actual unit tests are in the test/unit directory. Add more to test any patches you might have!
