@@ -136,23 +136,8 @@ Sizzle.find = function(expr, context){
 		return [];
 	}
 
-	var later = "", match;
-
-	// Pseudo-selectors could contain other selectors (like :not)
-	while ( (match = Expr.match.PSEUDO.exec( expr )) ) {
-		var left = RegExp.leftContext;
-
-		if ( left.substr( left.length - 1 ) !== "\\" ) {
-			later += match[0];
-			expr = expr.replace( Expr.match.PSEUDO, "" );
-		} else {
-			// TODO: Need a better solution, fails: .class\:foo:realfoo(#id)
-			break;
-		}
-	}
-
 	for ( var i = 0, l = Expr.order.length; i < l; i++ ) {
-		var type = Expr.order[i];
+		var type = Expr.order[i], match;
 		
 		if ( (match = Expr.match[ type ].exec( expr )) ) {
 			var left = RegExp.leftContext;
@@ -172,8 +157,6 @@ Sizzle.find = function(expr, context){
 	if ( !set ) {
 		set = context.getElementsByTagName("*");
 	}
-
-	expr += later;
 
 	return {set: set, expr: expr};
 };
@@ -590,6 +573,10 @@ var Expr = Sizzle.selectors = {
 		}
 	}
 };
+
+for ( var type in Expr.match ) {
+	Expr.match[ type ] = RegExp( Expr.match[ type ].source + /(?![^\[]*\])(?![^\(]*\))/.source );
+}
 
 var makeArray = function(array, results) {
 	array = Array.prototype.slice.call( array );
