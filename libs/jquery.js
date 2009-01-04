@@ -15,6 +15,12 @@ Sizzle.selectors.filters.visible = function(elem){
 		jQuery.css(elem, "visibility") !== "hidden";
 };
 
+Sizzle.selectors.filters.animated = function(elem){
+	return jQuery.grep(jQuery.timers, function(fn){
+		return elem === fn.elem;
+	}).length;
+};
+
 jQuery.multiFilter = function( expr, elems, not ) {
 	if ( not ) {
 		return jQuery.multiFilter( ":not(" + expr + ")", elems );
