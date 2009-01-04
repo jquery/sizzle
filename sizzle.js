@@ -375,9 +375,12 @@ var Expr = Sizzle.selectors = {
 
 			return match;
 		},
-		PSEUDO: function(match){
+		PSEUDO: function(match, curLoop){
 			if ( match[1] === "not" ) {
-				match[3] = match[3].split(/\s*,\s*/);
+				// If we're dealing with a complex expression, or a simple one
+				match[3] = match[3].match(chunker).length > 1 ?
+					Sizzle(match[3], null, null, curLoop) :
+					Sizzle.filter(match[3], curLoop);
 			}
 			
 			return match;
@@ -525,7 +528,7 @@ var Expr = Sizzle.selectors = {
 				var not = match[3];
 
 				for ( var i = 0, l = not.length; i < l; i++ ) {
-					if ( Sizzle.filter(not[i], [elem]).length > 0 ) {
+					if ( not[i] === elem ) {
 						return false;
 					}
 				}
