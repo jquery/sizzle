@@ -23,16 +23,10 @@ Sizzle.selectors.filters.animated = function(elem){
 
 jQuery.multiFilter = function( expr, elems, not ) {
 	if ( not ) {
-		return jQuery.multiFilter( ":not(" + expr + ")", elems );
+		expr = ":not(" + expr + ")";
 	}
 
-	var exprs = expr.split(/\s*,\s*/), cur = [];
-
-	for ( var i = 0; i < exprs.length; i++ ) {
-		cur = jQuery.merge( cur, jQuery.filter( exprs[i], elems ) );
-	}
-
-	return cur;
+	return Sizzle.matches(expr, elems);
 };
 
 jQuery.dir = function( elem, dir ){
