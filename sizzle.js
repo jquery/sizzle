@@ -119,7 +119,7 @@ var Sizzle = function(selector, context, results, seed) {
 	}
 
 	if ( extra ) {
-		Sizzle( extra, context, results );
+		Sizzle( extra, context, results, seed );
 	}
 
 	return results;
