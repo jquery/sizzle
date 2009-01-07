@@ -264,7 +264,8 @@ var Expr = Sizzle.selectors = {
 		PSEUDO: /:((?:[\w\u0128-\uFFFF_-]|\\.)+)(?:\((['"]*)((?:\([^\)]+\)|[^\2\(\)]*)+)\2\))?/
 	},
 	attrMap: {
-		"class": "className"
+		"class": "className",
+		"for": "htmlFor"
 	},
 	relative: {
 		"+": function(checkSet, part){

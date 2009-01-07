@@ -162,8 +162,8 @@ test("child and adjacent", function() {
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Last Child", "a:last-child", ["simon1","anchor1","mark","yahoo","anchor2","simon"] );
 	
-	t( "Nth-child", "#main form#form > *:nth-child(2)", ["text2"] );
-	t( "Nth-child", "#main form#form > :nth-child(2)", ["text2"] );
+	t( "Nth-child", "#main form#form > *:nth-child(2)", ["text1"] );
+	t( "Nth-child", "#main form#form > :nth-child(2)", ["text1"] );
 
 	t( "Nth-child", "#form select:first option:nth-child(3)", ["option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(0n+3)", ["option1c"] );
@@ -186,7 +186,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect(21);
+	expect(23);
 	t( "Attribute Exists", "a[title]", ["google"] );
 	t( "Attribute Exists", "*[title]", ["google"] );
 	t( "Attribute Exists", "[title]", ["google"] );
@@ -195,6 +195,9 @@ test("attributes", function() {
 	t( "Attribute Equals", 'a[rel="bookmark"]', ["simon1"] );
 	t( "Attribute Equals", "a[rel=bookmark]", ["simon1"] );
 	t( "Attribute Equals", "a[href='http://www.google.com/']", ["google"] );
+
+	t( "for Attribute", "label[for]", ["label-for"] );
+	t( "for Attribute in form", "#form [for=action]", ["label-for"] );
 	
 	var results = ["hidden1","radio1","radio2"];
 	
