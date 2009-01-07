@@ -1,7 +1,8 @@
-/*
+/*!
  * Sizzle CSS Selector Engine - v0.9
- *  Copyright 2009, John Resig (http://ejohn.org/)
+ *  Copyright 2009, John Resig
  *  Released under the MIT, BSD, and GPL Licenses.
+ *  More information: http://sizzlejs.com/
  */
 (function(){
 
