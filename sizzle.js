@@ -5,9 +5,9 @@
  */
 (function(){
 
-var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|[^[\]]+)+\]|\\.|[^ >+~,(\[]+)+|[>+~])(\s*,\s*)?/g;
-
-var done = 0;
+var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|[^[\]]+)+\]|\\.|[^ >+~,(\[]+)+|[>+~])(\s*,\s*)?/g,
+	done = 0,
+	toString = Object.prototype.toString;
 
 var Sizzle = function(selector, context, results, seed) {
 	var doCache = !results;
@@ -102,7 +102,7 @@ var Sizzle = function(selector, context, results, seed) {
 		throw "Syntax error, unrecognized expression: " + (cur || selector);
 	}
 
-	if ( checkSet instanceof Array ) {
+	if ( toString.call(checkSet) === "[object Array]" ) {
 		if ( !prune ) {
 			results.push.apply( results, checkSet );
 		} else if ( context.nodeType === 1 ) {
@@ -630,7 +630,7 @@ try {
 	makeArray = function(array, results) {
 		var ret = results || [];
 
-		if ( array instanceof Array ) {
+		if ( toString.call(array) === "[object Array]" ) {
 			Array.prototype.push.apply( ret, array );
 		} else {
 			if ( typeof array.length === "number" ) {
