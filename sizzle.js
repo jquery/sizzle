@@ -90,7 +90,7 @@ var Sizzle = function(selector, context, results, seed) {
 				pop = context;
 			}
 
-			Expr.relative[ cur ]( checkSet, pop );
+			Expr.relative[ cur ]( checkSet, pop, isXML(context) );
 		}
 	}
 
@@ -286,9 +286,9 @@ var Expr = Sizzle.selectors = {
 				Sizzle.filter( part, checkSet, true );
 			}
 		},
-		">": function(checkSet, part){
+		">": function(checkSet, part, isXML){
 			if ( typeof part === "string" && !/\W/.test(part) ) {
-				part = part.toUpperCase();
+				part = isXML ? part : part.toUpperCase();
 
 				for ( var i = 0, l = checkSet.length; i < l; i++ ) {
 					var elem = checkSet[i];
@@ -312,21 +312,21 @@ var Expr = Sizzle.selectors = {
 				}
 			}
 		},
-		"": function(checkSet, part){
+		"": function(checkSet, part, isXML){
 			var doneName = "done" + (done++), checkFn = dirCheck;
 
 			if ( !part.match(/\W/) ) {
-				var nodeCheck = part = part.toUpperCase();
+				var nodeCheck = part = isXML ? part : part.toUpperCase();
 				checkFn = dirNodeCheck;
 			}
 
 			checkFn("parentNode", part, doneName, checkSet, nodeCheck);
 		},
-		"~": function(checkSet, part){
+		"~": function(checkSet, part, isXML){
 			var doneName = "done" + (done++), checkFn = dirCheck;
 
 			if ( typeof part === "string" && !part.match(/\W/) ) {
-				var nodeCheck = part = part.toUpperCase();
+				var nodeCheck = part = isXML ? part : part.toUpperCase();
 				checkFn = dirNodeCheck;
 			}
 
@@ -365,8 +365,9 @@ var Expr = Sizzle.selectors = {
 		ID: function(match){
 			return match[1].replace(/\\/g, "");
 		},
-		TAG: function(match){
-			return match[1].toUpperCase();
+		TAG: function(match, curLoop){
+			for ( var i = 0; !curLoop[i]; i++ ){}
+			return isXML(curLoop[i]) ? match[1] : match[1].toUpperCase();
 		},
 		CHILD: function(match){
 			if ( match[1] == "nth" ) {
@@ -808,6 +809,11 @@ var contains = document.compareDocumentPosition ?  function(a, b){
 	return a.compareDocumentPosition(b) & 16;
 } : function(a, b){
 	return a !== b && (a.contains ? a.contains(b) : true);
+};
+
+var isXML = function(elem){
+	return elem.documentElement && !elem.body ||
+		elem.tagName && elem.ownerDocument && !elem.ownerDocument.body;
 };
 
 // EXPOSE
