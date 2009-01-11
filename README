@@ -3,7 +3,7 @@ A pure-JavaScript CSS selector engine designed to be easily dropped in to a host
 Features:
  - Completely standalone (no library dependencies)
  - Competitive performance for most frequently used selectors
- - Only 3KB minified and gipped
+ - Only 3KB minified and gzipped
  - Highly extensible with easy-to-use API
  - Designed for optimal performance with event delegation
  - Clear IP assignent (all code held by the Dojo Foundation, contributors sign CLAs)
