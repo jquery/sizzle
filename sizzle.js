@@ -363,7 +363,7 @@ var Expr = Sizzle.selectors = {
 			return false;
 		},
 		ID: function(match){
-			return match[1];
+			return match[1].replace(/\\/g, "");
 		},
 		TAG: function(match){
 			return match[1].toUpperCase();
