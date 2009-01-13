@@ -45,7 +45,7 @@ var Sizzle = function(selector, context, results, seed) {
 				selector = selector.replace( Expr.match.POS, "" );
 			}
 
-			set = Sizzle.filter( later, Sizzle( selector, context ) );
+			set = Sizzle.filter( later, Sizzle( /\s$/.test(selector) ? selector + "*" : selector, context ) );
 		} else {
 			set = Expr.relative[ parts[0] ] ?
 				[ context ] :
