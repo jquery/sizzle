@@ -269,6 +269,11 @@ var Expr = Sizzle.selectors = {
 		"class": "className",
 		"for": "htmlFor"
 	},
+	attrHandle: {
+		href: function(elem){
+			return elem.getAttribute("href");
+		}
+	},
 	relative: {
 		"+": function(checkSet, part){
 			for ( var i = 0, l = checkSet.length; i < l; i++ ) {
@@ -580,7 +585,7 @@ var Expr = Sizzle.selectors = {
 			return match.test( elem.className );
 		},
 		ATTR: function(elem, match){
-			var result = elem[ match[1] ] || elem.getAttribute( match[1] ), value = result + "", type = match[2], check = match[4];
+			var result = Expr.attrHandle[ match[1] ] ? Expr.attrHandle[ match[1] ]( elem ) : elem[ match[1] ] || elem.getAttribute( match[1] ), value = result + "", type = match[2], check = match[4];
 			return result == null ?
 				false :
 				type === "=" ?
@@ -685,9 +690,10 @@ try {
 	root.removeChild( form );
 })();
 
-// Check to see if the browser returns only elements
-// when doing getElementsByTagName("*")
 (function(){
+	// Check to see if the browser returns only elements
+	// when doing getElementsByTagName("*")
+
 	// Create a fake element
 	var div = document.createElement("div");
 	div.appendChild( document.createComment("") );
@@ -711,6 +717,14 @@ try {
 			}
 
 			return results;
+		};
+	}
+
+	// Check to see if an attribute returns normalized href attributes
+	div.innerHTML = "<a href='#'></a>";
+	if ( div.firstChild.getAttribute("href") !== "#" ) {
+		Expr.attrHandle.href = function(elem){
+			return elem.getAttribute("href", 2);
 		};
 	}
 })();
