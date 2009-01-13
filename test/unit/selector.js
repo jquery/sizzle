@@ -202,6 +202,7 @@ test("attributes", function() {
 	t( "Attribute Equals", "a[href='http://www.google.com/']", ["google"] );
 	t( "Attribute Equals", "a[ rel = 'bookmark' ]", ["simon1"] );
 
+	document.getElementById("anchor2").href = "#2";
 	t( "href Attribute", "a[href^=#]", ["anchor2"] );
 	t( "href Attribute", "a[href*=#]", ["simon1", "anchor2"] );
 
