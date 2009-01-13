@@ -327,7 +327,7 @@ var Expr = Sizzle.selectors = {
 				checkFn = dirNodeCheck;
 			}
 
-			checkFn("parentNode", part, doneName, checkSet, nodeCheck);
+			checkFn("parentNode", part, doneName, checkSet, nodeCheck, isXML);
 		},
 		"~": function(checkSet, part, isXML){
 			var doneName = "done" + (done++), checkFn = dirCheck;
@@ -337,7 +337,7 @@ var Expr = Sizzle.selectors = {
 				checkFn = dirNodeCheck;
 			}
 
-			checkFn("previousSibling", part, doneName, checkSet, nodeCheck);
+			checkFn("previousSibling", part, doneName, checkSet, nodeCheck, isXML);
 		}
 	},
 	find: {
@@ -757,7 +757,7 @@ if ( document.documentElement.getElementsByClassName ) {
 	};
 }
 
-function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck ) {
+function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
 		var elem = checkSet[i];
 		if ( elem ) {
@@ -771,7 +771,7 @@ function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck ) {
 					break;
 				}
 
-				if ( elem.nodeType === 1 )
+				if ( elem.nodeType === 1 && !isXML )
 					elem[doneName] = i;
 
 				if ( elem.nodeName === cur ) {
@@ -787,7 +787,7 @@ function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck ) {
 	}
 }
 
-function dirCheck( dir, cur, doneName, checkSet, nodeCheck ) {
+function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
 		var elem = checkSet[i];
 		if ( elem ) {
@@ -801,7 +801,8 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck ) {
 				}
 
 				if ( elem.nodeType === 1 ) {
-					elem[doneName] = i;
+					if ( !isXML )
+						elem[doneName] = i;
 
 					if ( typeof cur !== "string" ) {
 						if ( elem === cur ) {
