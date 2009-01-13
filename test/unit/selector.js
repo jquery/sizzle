@@ -2,6 +2,8 @@ module("selector");
 
 test("element", function() {
 	expect(9);
+	reset();
+
 	ok( jQuery("*").size() >= 30, "Select all" );
 	var all = jQuery("*"), good = true;
 	for ( var i = 0; i < all.length; i++ )
@@ -33,7 +35,7 @@ test("broken", function() {
 	expect(7);
 	function broken(name, selector) {
 		try {
-			t( name, selector, [] );
+			jQuery(selector);
 		} catch(e){
 			ok(  typeof e === "string" && e.indexOf("Syntax error") >= 0,
 				name + ": " + selector );
@@ -203,10 +205,10 @@ test("attributes", function() {
 	t( "Attribute Equals", "a[ rel = 'bookmark' ]", ["simon1"] );
 
 	document.getElementById("anchor2").href = "#2";
-	t( "href Attribute", "a[href^=#]", ["anchor2"] );
-	t( "href Attribute", "a[href*=#]", ["simon1", "anchor2"] );
+	t( "href Attribute", "p a[href^=#]", ["anchor2"] );
+	t( "href Attribute", "p a[href*=#]", ["simon1", "anchor2"] );
 
-	t( "for Attribute", "label[for]", ["label-for"] );
+	t( "for Attribute", "form label[for]", ["label-for"] );
 	t( "for Attribute in form", "#form [for=action]", ["label-for"] );
 	
 	var results = ["hidden1","radio1","radio2"];
@@ -248,7 +250,7 @@ test("pseudo (:) selectors", function() {
 	t( "Selected Option Element", "#form option:selected", ["option1a","option2d","option3b","option3c"] );
 	t( "Text Contains", "a:contains('Google')", ["google","groups"] );
 	t( "Text Contains", "a:contains('Google Groups')", ["groups"] );
-	t( "Element Preceded By", "p ~ div", ["foo","fx-queue","fx-tests", "moretests"] );
+	t( "Element Preceded By", "p ~ div", ["foo","fx-queue","fx-tests", "moretests","tabindex-tests"] );
 	t( "Not", "a.blog:not(.link)", ["mark"] );
 	t( "Not - multiple", "#form option:not(:contains('Nothing'),#option1b,:selected)", ["option1c", "option1d", "option2b", "option2c", "option3d", "option3e"] );
 	//t( "Not - complex", "#form option:not([id^='opt']:nth-child(-n+3))", [ "option1a", "option1d", "option2d", "option3d", "option3e"] );
