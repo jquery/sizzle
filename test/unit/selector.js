@@ -141,7 +141,7 @@ test("multiple", function() {
 });
 
 test("child and adjacent", function() {
-	expect(43);
+	expect(44);
 	t( "Child", "p > a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p> a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p >a", ["simon1","google","groups","mark","yahoo","simon"] );
@@ -155,6 +155,8 @@ test("child and adjacent", function() {
 	t( "Adjacent", "a+a", ["groups"] );
 	t( "Adjacent", "p + p", ["ap","en","sap"] );
 	t( "Comma, Child, and Adjacent", "a + a, code > a", ["groups","anchor1","anchor2"] );
+
+	t( "Verify deep class selector", "div.blah > p > a", [] );
 
 	t( "No element deep selector", "div.foo > span > a", [] );
 	t( "No element not selector", ".container div:not(.excluded) div", [] );
