@@ -373,8 +373,8 @@ var Expr = Sizzle.selectors = {
 			return match[1].replace(/\\/g, "");
 		},
 		TAG: function(match, curLoop){
-			for ( var i = 0; !curLoop[i]; i++ ){}
-			return isXML(curLoop[i]) ? match[1] : match[1].toUpperCase();
+			for ( var i = 0; curLoop[i] === false; i++ ){}
+			return curLoop[i] && isXML(curLoop[i]) ? match[1] : match[1].toUpperCase();
 		},
 		CHILD: function(match){
 			if ( match[1] == "nth" ) {
