@@ -244,7 +244,7 @@ test("attributes", function() {
 });
 
 test("pseudo (:) selectors", function() {
-	expect(34);
+	expect(48);
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "a:only-child", ["simon1","anchor1","yahoo","anchor2"] );
@@ -272,6 +272,22 @@ test("pseudo (:) selectors", function() {
 	t( "Is A Parent", "p:parent", ["firstp","ap","sndp","en","sap","first"] );
 	t( "Is Visible", "#form input:visible", ["text1","text2","radio1","radio2","check1","check2","name"] );
 	t( "Is Hidden", "#form input:hidden", ["hidden1","hidden2"] );
+
+	t( "Check position filtering", "div#nothiddendiv:eq(0)", ["nothiddendiv"] );
+	t( "Check position filtering", "div#nothiddendiv:last", ["nothiddendiv"] );
+	t( "Check position filtering", "div#nothiddendiv:not(:gt(0))", ["nothiddendiv"] );
+	t( "Check position filtering", "div.nothiddendiv:eq(0)", ["nothiddendiv"] );
+	t( "Check position filtering", "div.nothiddendiv:last", ["nothiddendiv"] );
+	t( "Check position filtering", "div.nothiddendiv:not(:gt(0))", ["nothiddendiv"] );
+
+	t( "Check element position", "div div:eq(0)", ["nothiddendivchild"] );
+	t( "Check element position", "div div:eq(5)", ["fadeout"] );
+	t( "Check element position", "div div:eq(27)", ["t2037"] );
+	t( "Check element position", "div div:first", ["nothiddendivchild"] );
+	t( "Check element position", "div > div:first", ["nothiddendivchild"] );
+	t( "Check element position", "div:first div:first", ["nothiddendivchild"] );
+	t( "Check element position", "div:first > div:first", ["nothiddendivchild"] );
+	t( "Check element position", "div#nothiddendiv:first > div:first", ["nothiddendivchild"] );
 	
 	t( "Form element :input", "#form :input", ["text1", "text2", "radio1", "radio2", "check1", "check2", "hidden1", "hidden2", "name", "button", "area1", "select1", "select2", "select3"] );
 	t( "Form element :radio", "#form :radio", ["radio1", "radio2"] );

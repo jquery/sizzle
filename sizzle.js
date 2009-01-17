@@ -37,32 +37,19 @@ var Sizzle = function(selector, context, results, seed) {
 
 	if ( parts.length > 1 && Expr.match.POS.exec( selector ) ) {
 		if ( parts.length === 2 && Expr.relative[ parts[0] ] ) {
-			var later = "", match;
-
-			// Position selectors must be done after the filter
-			while ( (match = Expr.match.POS.exec( selector )) ) {
-				later += match[0];
-				selector = selector.replace( Expr.match.POS, "" );
-			}
-
-			set = Sizzle.filter( later, Sizzle( /\s$/.test(selector) ? selector + "*" : selector, context ) );
+			set = posProcess( selector, context );
 		} else {
 			set = Expr.relative[ parts[0] ] ?
 				[ context ] :
 				Sizzle( parts.shift(), context );
 
 			while ( parts.length ) {
-				var tmpSet = [];
-
 				selector = parts.shift();
+
 				if ( Expr.relative[ selector ] )
 					selector += parts.shift();
 
-				for ( var i = 0, l = set.length; i < l; i++ ) {
-					Sizzle( selector, set[i], tmpSet );
-				}
-
-				set = tmpSet;
+				set = posProcess( selector, set );
 			}
 		}
 	} else {
@@ -170,7 +157,7 @@ Sizzle.filter = function(expr, set, inplace, not){
 	while ( expr && set.length ) {
 		for ( var type in Expr.filter ) {
 			if ( (match = Expr.match[ type ].exec( expr )) != null ) {
-				var filter = Expr.filter[ type ], goodArray = null, goodPos = 0, found, item;
+				var filter = Expr.filter[ type ], found, item;
 				anyFound = false;
 
 				if ( curLoop == result ) {
@@ -184,26 +171,13 @@ Sizzle.filter = function(expr, set, inplace, not){
 						anyFound = found = true;
 					} else if ( match === true ) {
 						continue;
-					} else if ( match[0] === true ) {
-						goodArray = [];
-						var last = null, elem;
-						for ( var i = 0; (elem = curLoop[i]) !== undefined; i++ ) {
-							if ( elem && last !== elem ) {
-								goodArray.push( elem );
-								last = elem;
-							}
-						}
 					}
 				}
 
 				if ( match ) {
 					for ( var i = 0; (item = curLoop[i]) !== undefined; i++ ) {
 						if ( item ) {
-							if ( goodArray && item != goodArray[goodPos] ) {
-								goodPos++;
-							}
-	
-							found = filter( item, match, goodPos, goodArray );
+							found = filter( item, match, i, curLoop );
 							var pass = not ^ !!found;
 
 							if ( inplace && found != null ) {
@@ -836,6 +810,25 @@ var isXML = function(elem){
 	return elem.documentElement && !elem.body ||
 		elem.tagName && elem.ownerDocument && !elem.ownerDocument.body;
 };
+
+var posProcess = function(selector, context){
+	var tmpSet = [], later = "", match,
+		root = context.nodeType ? [context] : context;
+
+	// Position selectors must be done after the filter
+	while ( (match = Expr.match.POS.exec( selector )) ) {
+		later += match[0];
+		selector = selector.replace( Expr.match.POS, "" );
+	}
+
+	selector = /\s$/.test(selector) ? selector + "*" : selector;
+
+	for ( var i = 0, l = root.length; i < l; i++ ) {
+		Sizzle( selector, root[i], tmpSet );
+	}
+
+	return Sizzle.filter( later, tmpSet );
+}
 
 // EXPOSE
 
