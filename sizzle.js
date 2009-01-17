@@ -370,7 +370,7 @@ var Expr = Sizzle.selectors = {
 			return match;
 		},
 		ATTR: function(match){
-			var name = match[1];
+			var name = match[1].replace(/\\/g, "");
 			
 			if ( Expr.attrMap[name] ) {
 				match[1] = Expr.attrMap[name];
