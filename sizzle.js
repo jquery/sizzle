@@ -752,7 +752,7 @@ if ( document.querySelectorAll ) (function(){
 	Sizzle.matches = oldSizzle.matches;
 })();
 
-if ( document.documentElement.getElementsByClassName ) {
+if ( document.getElementsByClassName && document.documentElement.getElementsByClassName ) {
 	Expr.order.splice(1, 0, "CLASS");
 	Expr.find.CLASS = function(match, context) {
 		return context.getElementsByClassName(match[1]);
