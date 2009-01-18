@@ -35,9 +35,9 @@ var Sizzle = function(selector, context, results, seed) {
 		}
 	}
 
-	if ( parts.length > 1 && Expr.match.POS.exec( selector ) ) {
+	if ( parts.length > 1 && origPOS.exec( selector ) ) {
 		if ( parts.length === 2 && Expr.relative[ parts[0] ] ) {
-			set = posProcess( selector, context );
+			set = posProcess( parts[0] + parts[1], context );
 		} else {
 			set = Expr.relative[ parts[0] ] ?
 				[ context ] :
@@ -592,6 +592,8 @@ var Expr = Sizzle.selectors = {
 	}
 };
 
+var origPOS = Expr.match.POS;
+
 for ( var type in Expr.match ) {
 	Expr.match[ type ] = RegExp( Expr.match[ type ].source + /(?![^\[]*\])(?![^\(]*\))/.source );
 }
@@ -816,12 +818,13 @@ var posProcess = function(selector, context){
 		root = context.nodeType ? [context] : context;
 
 	// Position selectors must be done after the filter
-	while ( (match = Expr.match.POS.exec( selector )) ) {
+	// And so must :not(positional) so we move all PSEUDOs to the end
+	while ( (match = Expr.match.PSEUDO.exec( selector )) ) {
 		later += match[0];
-		selector = selector.replace( Expr.match.POS, "" );
+		selector = selector.replace( Expr.match.PSEUDO, "" );
 	}
 
-	selector = /\s$/.test(selector) ? selector + "*" : selector;
+	selector = Expr.relative[selector] ? selector + "*" : selector;
 
 	for ( var i = 0, l = root.length; i < l; i++ ) {
 		Sizzle( selector, root[i], tmpSet );

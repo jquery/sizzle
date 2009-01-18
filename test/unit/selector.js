@@ -244,7 +244,7 @@ test("attributes", function() {
 });
 
 test("pseudo (:) selectors", function() {
-	expect(48);
+	expect(51);
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "a:only-child", ["simon1","anchor1","yahoo","anchor2"] );
@@ -276,6 +276,9 @@ test("pseudo (:) selectors", function() {
 	t( "Check position filtering", "div#nothiddendiv:eq(0)", ["nothiddendiv"] );
 	t( "Check position filtering", "div#nothiddendiv:last", ["nothiddendiv"] );
 	t( "Check position filtering", "div#nothiddendiv:not(:gt(0))", ["nothiddendiv"] );
+	t( "Check position filtering", "#foo > :not(:first)", ["en", "sap"] );
+	t( "Check position filtering", "select > :not(:gt(2))", ["option1a", "option1b", "option1c"] );
+	t( "Check position filtering", "select:lt(2) :not(:first)", ["option1b", "option1c", "option1d", "option2a", "option2b", "option2c", "option2d"] );
 	t( "Check position filtering", "div.nothiddendiv:eq(0)", ["nothiddendiv"] );
 	t( "Check position filtering", "div.nothiddendiv:last", ["nothiddendiv"] );
 	t( "Check position filtering", "div.nothiddendiv:not(:gt(0))", ["nothiddendiv"] );
