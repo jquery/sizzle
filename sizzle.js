@@ -175,7 +175,7 @@ Sizzle.filter = function(expr, set, inplace, not){
 				}
 
 				if ( match ) {
-					for ( var i = 0; (item = curLoop[i]) !== undefined; i++ ) {
+					for ( var i = 0; (item = curLoop[i]) != null; i++ ) {
 						if ( item ) {
 							found = filter( item, match, i, curLoop );
 							var pass = not ^ !!found;
