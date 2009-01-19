@@ -288,8 +288,8 @@ test("pseudo (:) selectors", function() {
 	t( "Check element position", "div div:eq(27)", ["t2037"] );
 	t( "Check element position", "div div:first", ["nothiddendivchild"] );
 	t( "Check element position", "div > div:first", ["nothiddendivchild"] );
-	t( "Check element position", "div:first div:first", ["nothiddendivchild"] );
-	t( "Check element position", "div:first > div:first", ["nothiddendivchild"] );
+	t( "Check element position", "#dl div:first div:first", ["foo"] );
+	t( "Check element position", "#dl div:first > div:first", ["foo"] );
 	t( "Check element position", "div#nothiddendiv:first > div:first", ["nothiddendivchild"] );
 	
 	t( "Form element :input", "#form :input", ["text1", "text2", "radio1", "radio2", "check1", "check2", "hidden1", "hidden2", "name", "button", "area1", "select1", "select2", "select3"] );
