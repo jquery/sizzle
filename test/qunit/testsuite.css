@@ -12,6 +12,8 @@ p.result { margin-left: 1em; }
 h2.pass { background-color: green; }
 h2.fail { background-color: red; }
 
+div.testrunner-toolbar { background: #eee; border-top: 1px solid black; padding: 10px; }
+
 ol#tests > li > strong { cursor:pointer; }
 
 div#fx-tests h4 {
