@@ -95,7 +95,7 @@ test("id", function() {
 });
 
 test("class", function() {
-	expect(16);
+	expect(18);
 	t( "Class Selector", ".blog", ["mark","simon"] );
 	t( "Class Selector", ".GROUPS", ["groups"] );
 	t( "Class Selector", ".blog.link", ["simon"] );
@@ -115,6 +115,14 @@ test("class", function() {
 	t( "Descendant scaped Class", "div .test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
 	t( "Child escaped Class", "form > .foo\\:bar", ["foo:bar"] );
 	t( "Child escaped Class", "form > .test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
+
+	var div = document.createElement("div");
+  div.innerHTML = "<div class='test e'></div><div class='test'></div>";
+	isSet( jQuery(".e", div), [ div.firstChild ], "Finding a second class." );
+
+	div.lastChild.className = "e";
+
+	isSet( jQuery(".e", div), [ div.firstChild, div.lastChild ], "Finding a modified class." );
 });
 
 test("name", function() {
