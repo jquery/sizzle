@@ -56,7 +56,7 @@ test("broken", function() {
 });
 
 test("id", function() {
-	expect(25);
+	expect(27);
 	t( "ID Selector", "#body", ["body"] );
 	t( "ID Selector w/ Element", "body#body", ["body"] );
 	t( "ID Selector w/ Element", "ul#first", [] );
@@ -89,6 +89,9 @@ test("id", function() {
 	t( "ID selector with non-existant ancestor", "#asdfasdf #foobar", [] ); // bug #986
 
 	isSet( jQuery("body").find("div#form"), [], "ID selector within the context of another element" );
+
+	t( "Underscore ID", "#types_all", ["types_all"] );
+	t( "Dash ID", "#fx-queue", ["fx-queue"] );
 });
 
 test("class", function() {
