@@ -494,44 +494,45 @@ var Expr = Sizzle.selectors = {
 	},
 	filter: {
 		CHILD: function(elem, match){
-			var type = match[1], parent = elem.parentNode;
-
-			var doneName = match[0];
-			
-			if ( parent && (!parent[ doneName ] || !elem.nodeIndex) ) {
-				var count = 1;
-
-				for ( var node = parent.firstChild; node; node = node.nextSibling ) {
-					if ( node.nodeType == 1 ) {
-						node.nodeIndex = count++;
+			var type = match[1], node = elem;
+			switch (type) {
+				case 'only':
+				case 'first':
+					while (node = node.previousSibling)  {
+						if ( node.nodeType === 1 ) return false;
 					}
-				}
-
-				parent[ doneName ] = count - 1;
-			}
-
-			if ( type == "first" ) {
-				return elem.nodeIndex == 1;
-			} else if ( type == "last" ) {
-				return elem.nodeIndex == parent[ doneName ];
-			} else if ( type == "only" ) {
-				return parent[ doneName ] == 1;
-			} else if ( type == "nth" ) {
-				var add = false, first = match[2], last = match[3];
-
-				if ( first == 1 && last == 0 ) {
+					if ( type == 'first') return true;
+					node = elem;
+				case 'last':
+					while (node = node.nextSibling)  {
+						if ( node.nodeType === 1 ) return false;
+					}
 					return true;
-				}
+				case 'nth':
+					var first = match[2], last = match[3];
 
-				if ( first == 0 ) {
-					if ( elem.nodeIndex == last ) {
-						add = true;
+					if ( first == 1 && last == 0 ) {
+						return true;
 					}
-				} else if ( (elem.nodeIndex - last) % first == 0 && (elem.nodeIndex - last) / first >= 0 ) {
-					add = true;
-				}
-
-				return add;
+					
+					var doneName = match[0],
+						parent = elem.parentNode;
+					if ( parent && (!parent[ doneName ] || !elem.nodeIndex) ) {
+						var count = 0;
+						for ( node = parent.firstChild; node; node = node.nextSibling ) {
+							if ( node.nodeType === 1 ) {
+								node.nodeIndex = ++count;
+							}
+						} 
+						parent[ doneName ] = count;
+					}
+					
+					var diff = elem.nodeIndex - last;
+					if ( first == 0 ) {
+						return diff == 0;
+					} else {
+						return ( diff % first == 0 && diff / first >= 0 );
+					}
 			}
 		},
 		PSEUDO: function(elem, match, i, array){
