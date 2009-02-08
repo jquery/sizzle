@@ -249,21 +249,19 @@ var Expr = Sizzle.selectors = {
 		}
 	},
 	relative: {
-		"+": function(checkSet, part){
-			for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-				var elem = checkSet[i];
-				if ( elem ) {
-					var cur = elem.previousSibling;
-					while ( cur && cur.nodeType !== 1 ) {
-						cur = cur.previousSibling;
-					}
-					checkSet[i] = typeof part === "string" ?
-						cur || false :
-						cur === part;
+		"+": function(checkSet, part, isXML){
+			var	isPartStr = typeof part === "string",
+				isTag = isPartStr && !/\W/.test(part),
+				isPartStrNotTag = isPartStr && !isTag;
+			if ( isTag && !isXML ) part = part.toUpperCase();
+			for ( var i = 0, l = checkSet.length, elem; i < l; i++ ) {
+				if ( elem = checkSet[i] ) {
+					while ( (elem = elem.previousSibling) && elem.nodeType !== 1 ) {};
+					checkSet[i] = isPartStrNotTag || elem && elem.nodeName === part ?
+						 elem : elem === part;
 				}
 			}
-
-			if ( typeof part === "string" ) {
+			if (isPartStrNotTag) {
 				Sizzle.filter( part, checkSet, true );
 			}
 		},
