@@ -292,7 +292,7 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 		"": function(checkSet, part, isXML){
-			var doneName = "done" + (done++), checkFn = dirCheck;
+			var doneName = done++, checkFn = dirCheck;
 
 			if ( !part.match(/\W/) ) {
 				var nodeCheck = part = isXML ? part : part.toUpperCase();
@@ -302,7 +302,7 @@ var Expr = Sizzle.selectors = {
 			checkFn("parentNode", part, doneName, checkSet, nodeCheck, isXML);
 		},
 		"~": function(checkSet, part, isXML){
-			var doneName = "done" + (done++), checkFn = dirCheck;
+			var doneName = done++, checkFn = dirCheck;
 
 			if ( typeof part === "string" && !part.match(/\W/) ) {
 				var nodeCheck = part = isXML ? part : part.toUpperCase();
@@ -365,7 +365,7 @@ var Expr = Sizzle.selectors = {
 			}
 
 			// TODO: Move to normal caching system
-			match[0] = "done" + (done++);
+			match[0] = done++;
 
 			return match;
 		},
@@ -515,14 +515,15 @@ var Expr = Sizzle.selectors = {
 					
 					var doneName = match[0],
 						parent = elem.parentNode;
-					if ( parent && (!parent[ doneName ] || !elem.nodeIndex) ) {
+	
+					if ( parent && (parent.sizcache !== doneName || !elem.nodeIndex) ) {
 						var count = 0;
 						for ( node = parent.firstChild; node; node = node.nextSibling ) {
 							if ( node.nodeType === 1 ) {
 								node.nodeIndex = ++count;
 							}
 						} 
-						parent[ doneName ] = count;
+						parent.sizcache = doneName;
 					}
 					
 					var diff = elem.nodeIndex - last;
@@ -773,20 +774,23 @@ function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
 		var elem = checkSet[i];
 		if ( elem ) {
-			if ( sibDir && elem.nodeType === 1 )
-				elem[doneName] = i;
+			if ( sibDir && elem.nodeType === 1 ){
+				elem.sizcache = doneName;
+				elem.sizset = i;
+			}
 			elem = elem[dir];
 			var match = false;
 
 			while ( elem ) {
-				var done = elem[doneName];
-				if ( done ) {
-					match = checkSet[ done ];
+				if ( elem.sizcache === doneName ) {
+					match = checkSet[elem.sizset];
 					break;
 				}
 
-				if ( elem.nodeType === 1 && !isXML )
-					elem[doneName] = i;
+				if ( elem.nodeType === 1 && !isXML ){
+					elem.sizcache = doneName;
+					elem.sizset = i;
+				}
 
 				if ( elem.nodeName === cur ) {
 					match = elem;
@@ -806,21 +810,24 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
 		var elem = checkSet[i];
 		if ( elem ) {
-			if ( sibDir && elem.nodeType === 1 )
-				elem[doneName] = i;
+			if ( sibDir && elem.nodeType === 1 ) {
+				elem.sizcache = doneName;
+				elem.sizset = i;
+			}
 			elem = elem[dir];
 			var match = false;
 
 			while ( elem ) {
-				if ( elem[doneName] ) {
-					match = checkSet[ elem[doneName] ];
+				if ( elem.sizcache === doneName ) {
+					match = checkSet[elem.sizset];
 					break;
 				}
 
 				if ( elem.nodeType === 1 ) {
-					if ( !isXML )
-						elem[doneName] = i;
-
+					if ( !isXML ) {
+						elem.sizcache = doneName;
+						elem.sizset = i;
+					}
 					if ( typeof cur !== "string" ) {
 						if ( elem === cur ) {
 							match = true;
