@@ -777,7 +777,7 @@ function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 			elem = elem[dir];
 			var match = false;
 
-			while ( elem ) {
+			while ( elem && elem.nodeType ) {
 				var done = elem[doneName];
 				if ( done ) {
 					match = checkSet[ done ];
@@ -807,7 +807,7 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 			elem = elem[dir];
 			var match = false;
 
-			while ( elem ) {
+			while ( elem && elem.nodeType ) {
 				if ( elem[doneName] ) {
 					match = checkSet[ elem[doneName] ];
 					break;
