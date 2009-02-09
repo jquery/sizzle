@@ -7,7 +7,7 @@
  * Dual licensed under the MIT (MIT-LICENSE.txt)
  * and GPL (GPL-LICENSE.txt) licenses.
  *
- * $Id: testrunner.js 6133 2009-01-19 22:38:58Z jeresig $
+ * $Id: testrunner.js 6173 2009-02-02 20:09:32Z jeresig $
  */
 
 (function($) {
@@ -232,7 +232,10 @@ $.extend(window, {
 		push(equiv(a, b), a, b, message);
 	},
 	QUnit: {
-		equiv: equiv
+		equiv: equiv,
+		ok: ok,
+		done: function(failures, total){},
+		log: function(result, message){}
 	},
 	// legacy methods below
 	isSet: isSet,
@@ -254,10 +257,14 @@ $.extend(window, {
 
 $(window).load(function() {
 	$('#userAgent').html(navigator.userAgent);
-	var head = $('<div class="testrunner-toolbar"><label for="filter">Hide passed tests</label></div>').insertAfter("#userAgent");
-	$('<input type="checkbox" id="filter" />').attr("disabled", true).prependTo(head).click(function() {
+	var head = $('<div class="testrunner-toolbar"><label for="filter-pass">Hide passed tests</label></div>').insertAfter("#userAgent");
+	$('<input type="checkbox" id="filter-pass" />').attr("disabled", true).prependTo(head).click(function() {
 		$('li.pass')[this.checked ? 'hide' : 'show']();
 	});
+	$('<input type="checkbox" id="filter-missing">').attr("disabled", true).appendTo(head).click(function() {
+		$("li.fail:contains('missing test - untested code is broken code')").parent('ol').parent('li.fail')[this.checked ? 'hide' : 'show']();
+	});
+	$("#filter-missing").after('<label for="filter-missing">Hide missing tests (untested code is broken code)</label>');
 	runTest();	
 });
 
@@ -278,7 +285,7 @@ function stop(timeout) {
 	config.blocking = true;
 	if (timeout)
 		config.timeout = setTimeout(function() {
-			ok( false, "Test timed out" );
+			QUnit.ok( false, "Test timed out" );
 			start();
 		}, timeout);
 }
@@ -324,6 +331,7 @@ function runTest() {
 			.join(''))
 			.appendTo("body");
 		$("#banner").addClass(config.stats.bad ? "fail" : "pass");
+		QUnit.done( config.stats.bad, config.stats.all );
 	});
 }
 
@@ -371,10 +379,7 @@ function test(name, callback) {
 				saveGlobal();
 			lifecycle.setup();
 		} catch(e) {
-			config.assertions.push( {
-				result: false,
-				message: "Setup failed on " + name + ": " + e.message
-			});
+			QUnit.ok( false, "Setup failed on " + name + ": " + e.message );
 		}
 	})
 	synchronize(function() {
@@ -386,10 +391,7 @@ function test(name, callback) {
 				console.error(e);
 				console.warn(callback.toString());
 			}
-			config.assertions.push( {
-				result: false,
-				message: "Died on test #" + (config.assertions.length + 1) + ": " + e.message
-			});
+			QUnit.ok( false, "Died on test #" + (config.assertions.length + 1) + ": " + e.message );
 			// else next test will carry the responsibility
 			saveGlobal();
 		}
@@ -399,10 +401,7 @@ function test(name, callback) {
 			checkPollution();
 			lifecycle.teardown();
 		} catch(e) {
-			config.assertions.push( {
-				result: false,
-				message: "Teardown failed on " + name + ": " + e.message
-			});
+			QUnit.ok( false, "Teardown failed on " + name + ": " + e.message );
 		}
 	})
 	synchronize(function() {
@@ -417,10 +416,7 @@ function test(name, callback) {
 		}
 		
 		if(config.expected && config.expected != config.assertions.length) {
-			config.assertions.push({
-				result: false,
-				message: "Expected " + config.expected + " assertions, but " + config.assertions.length + " were run"
-			});
+			QUnit.ok( false, "Expected " + config.expected + " assertions, but " + config.assertions.length + " were run" );
 		}
 		
 		var good = 0, bad = 0;
@@ -448,7 +444,8 @@ function test(name, callback) {
 		$("<li/>").addClass(bad ? "fail" : "pass").append(b).append(ol).appendTo("#tests");
 	
 		if(bad) {
-			$("#filter").attr("disabled", null);
+			$("#filter-pass").attr("disabled", null);
+			$("#filter-missing").attr("disabled", null);
 		}
 	});
 }
@@ -480,6 +477,8 @@ function reset() {
  * @example ok( $("a").size() > 5, "There must be at least 5 anchors" );
  */
 function ok(a, msg) {
+	QUnit.log(a, msg);
+
 	config.assertions.push({
 		result: !!a,
 		message: msg
@@ -514,10 +513,7 @@ function isSet(a, b, msg) {
 				ret = false;
 	} else
 		ret = false;
-	config.assertions.push({
-		result: ret,
-		message: !ret ? (msg + " expected: " + serialArray(b) + " result: " + serialArray(a)) : msg
-	});
+	QUnit.ok( ret, !ret ? (msg + " expected: " + serialArray(b) + " result: " + serialArray(a)) : msg );
 }
 
 /**
@@ -537,10 +533,7 @@ function isObj(a, b, msg) {
 	} else
 		ret = false;
 
-    config.assertions.push({
-		result: ret,
-		message: msg
-	});
+    QUnit.ok( ret, msg );
 }
 
 /**
@@ -599,10 +592,7 @@ function equals(actual, expected, message) {
 
 function push(result, actual, expected, message) {
 	message = message || (result ? "okay" : "failed");
-	config.assertions.push({
-		result: result,
-		message: result ? message + ": " + expected : message + ", expected: " + jsDump.parse(expected) + " result: " + jsDump.parse(actual)
-	});
+	QUnit.ok( result, result ? message + ": " + expected : message + ", expected: " + jsDump.parse(expected) + " result: " + jsDump.parse(actual) );
 }
 
 /**
