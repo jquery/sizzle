@@ -1,5 +1,4 @@
 jQuery.find = Sizzle;
-jQuery.filter = Sizzle.filter;
 jQuery.expr = Sizzle.selectors;
 jQuery.expr[":"] = jQuery.expr.filters;
 
@@ -17,7 +16,7 @@ Sizzle.selectors.filters.animated = function(elem){
 	}).length;
 };
 
-jQuery.multiFilter = function( expr, elems, not ) {
+jQuery.filter = jQuery.multiFilter = function( expr, elems, not ) {
 	if ( not ) {
 		expr = ":not(" + expr + ")";
 	}
