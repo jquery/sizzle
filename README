@@ -1,36 +1,15 @@
 A pure-JavaScript CSS selector engine designed to be easily dropped in to a host library.
 
-Features:
- - Completely standalone (no library dependencies)
- - Competitive performance for most frequently used selectors
- - Only 3KB minified and gzipped
- - Highly extensible with easy-to-use API
- - Designed for optimal performance with event delegation
- - Clear IP assignent (all code held by the Dojo Foundation, contributors sign CLAs)
+More information:
+ http://sizzlejs.com/
 
-Code Features:
- - Provides meaningful error messages for syntax problems
- - Uses a single code path (no XPath)
- - Uses no browser-sniffing
- - Caja-compatible code
-
-Selector Features:
- - CSS 3 Selector support
- - Full Unicode support
- - Escaped selector support (#id\:value)
- - Contains text - :contains(text)
- - Complex :not - :not(a#id)
- - Multiple :not - :not(div,p)
- - Not attribute value - [name!=value]
- - Has selector - :has(div)
- - Position selectors - :first, :last, :even, :odd, :gt, :lt, :eq
- - Easy Form selectors - :input, :text, :checkbox, :file, :password, :submit, :image, :reset, :button
- - Header selector - :header
-
-A number of libraries are looking to integrate this into their library (jQuery, TinyMCE, PURE, and modules.js have already landed support). If you have any questions about integration please join the discussion on the mailing list:
+Discussion:
   http://groups.google.com/group/sizzlejs
 
-Testing Sizzle in jQuery
+Documentation:
+	http://wiki.github.com/jeresig/sizzle
+
+Testing Sizzle:
  - Run 'make': this will create a jquery-sizzle.js file that contains jQuery with the Sizzle selector engine.
  - Open test/index.html in your browser to run the tests.
- - The actual unit tests are in the test/unit directory. Add more to test any patches you might have!
+ - The actual unit tests are in test/unit/selectors.js.
