@@ -738,9 +738,9 @@ if ( document.documentElement.compareDocumentPosition ) {
 // querying by getElementById (and provide a workaround)
 (function(){
 	// We're going to inject a fake input element with a specified name
-	var form = document.createElement("form"),
+	var form = document.createElement("div"),
 		id = "script" + (new Date).getTime();
-	form.innerHTML = "<input name='" + id + "'/>";
+	form.innerHTML = "<a name='" + id + "'/>";
 
 	// Inject it into the root element, check its status, and remove it quickly
 	var root = document.documentElement;
