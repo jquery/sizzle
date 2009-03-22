@@ -8,7 +8,8 @@
 
 var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|['"][^'"]*['"]|[^[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?/g,
 	done = 0,
-	toString = Object.prototype.toString;
+	toString = Object.prototype.toString,
+	hasDuplicate = false;
 
 var Sizzle = function(selector, context, results, seed) {
 	results = results || [];
