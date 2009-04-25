@@ -1,7 +1,7 @@
 <?php
 
 	$frameworks = parse_ini_file('config.ini', true);
-	$selectors = file_get_contents('selectors.list');
+	$selectors = trim(file_get_contents('selectors.list'));
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
