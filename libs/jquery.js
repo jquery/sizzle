@@ -3,21 +3,17 @@ jQuery.expr = Sizzle.selectors;
 jQuery.expr[":"] = jQuery.expr.filters;
 
 Sizzle.selectors.filters.hidden = function(elem){
-	var width = elem.offsetWidth, height = elem.offsetHeight;
-	return ( width === 0 && height === 0 ) ?
+	var width = elem.offsetWidth, height = elem.offsetHeight,
+		 force = /^tr$/i.test( elem.tagName ); // ticket #4512
+	return ( width === 0 && height === 0 && !force ) ?
 		true :
-		( width !== 0 && height !== 0 ) ?
-			false :
-			!!( jQuery.curCSS(elem, "display") === "none" );
+			( width !== 0 && height !== 0 && !force ) ?
+				false :
+					!!( jQuery.curCSS(elem, "display") === "none" );
 };
 
 Sizzle.selectors.filters.visible = function(elem){
-	var width = elem.offsetWidth, height = elem.offsetHeight;
-	return ( width === 0 && height === 0 ) ?
-		false :
-		( width > 0 && height > 0 ) ?
-			true :
-			!!( jQuery.curCSS(elem, "display") !== "none" );
+	return !Sizzle.selectors.filters.hidden(elem);
 };
 
 Sizzle.selectors.filters.animated = function(elem){
