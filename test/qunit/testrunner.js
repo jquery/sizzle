@@ -7,7 +7,7 @@
  * Dual licensed under the MIT (MIT-LICENSE.txt)
  * and GPL (GPL-LICENSE.txt) licenses.
  *
- * $Id: testrunner.js 6173 2009-02-02 20:09:32Z jeresig $
+ * $Id: testrunner.js 6343 2009-05-06 15:09:22Z joern.zaefferer $
  */
 
 (function($) {
@@ -256,6 +256,16 @@ $.extend(window, {
 });
 
 $(window).load(function() {
+	
+	if (!$("#header, #banner, #userAgent, #tests").length) {
+		$('body').prepend(
+			'<h1 id="header">' + document.title + '</h1>' +
+			'<h2 id="banner"></h2>' +
+			'<h2 id="userAgent"></h2>' +
+			'<ol id="tests"></ol>'
+		);
+	}
+	
 	$('#userAgent').html(navigator.userAgent);
 	var head = $('<div class="testrunner-toolbar"><label for="filter-pass">Hide passed tests</label></div>').insertAfter("#userAgent");
 	$('<input type="checkbox" id="filter-pass" />').attr("disabled", true).prependTo(head).click(function() {
@@ -362,7 +372,7 @@ function diff( clean, dirty ){
 
 function test(name, callback) {
 	if(config.currentModule)
-		name = config.currentModule + " module: " + name;
+		name = config.currentModule + " module: <span>" + name + "</span>";
 	var lifecycle = $.extend({
 		setup: function() {},
 		teardown: function() {}
