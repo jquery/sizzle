@@ -62,4 +62,6 @@ jQuery.sibling = function(n, elem){
 	return r;
 };
 
+jQuery.unique = Sizzle.uniqueSort;
+
 return;

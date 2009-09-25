@@ -144,6 +144,8 @@ Sizzle.uniqueSort = function(results){
 			}
 		}
 	}
+
+	return results;
 };
 
 Sizzle.matches = function(expr, set){
