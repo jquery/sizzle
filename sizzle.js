@@ -703,6 +703,13 @@ var sortOrder;
 
 if ( document.documentElement.compareDocumentPosition ) {
 	sortOrder = function( a, b ) {
+		if ( !a.compareDocumentPosition || !b.compareDocumentPosition ) {
+			if ( a == b ) {
+				hasDuplicate = true;
+			}
+			return 0;
+		}
+
 		var ret = a.compareDocumentPosition(b) & 4 ? -1 : a === b ? 0 : 1;
 		if ( ret === 0 ) {
 			hasDuplicate = true;
@@ -711,6 +718,13 @@ if ( document.documentElement.compareDocumentPosition ) {
 	};
 } else if ( "sourceIndex" in document.documentElement ) {
 	sortOrder = function( a, b ) {
+		if ( !a.sourceIndex || !b.sourceIndex ) {
+			if ( a == b ) {
+				hasDuplicate = true;
+			}
+			return 0;
+		}
+
 		var ret = a.sourceIndex - b.sourceIndex;
 		if ( ret === 0 ) {
 			hasDuplicate = true;
@@ -719,6 +733,13 @@ if ( document.documentElement.compareDocumentPosition ) {
 	};
 } else if ( document.createRange ) {
 	sortOrder = function( a, b ) {
+		if ( !a.ownerDocument || !b.ownerDocument ) {
+			if ( a == b ) {
+				hasDuplicate = true;
+			}
+			return 0;
+		}
+
 		var aRange = a.ownerDocument.createRange(), bRange = b.ownerDocument.createRange();
 		aRange.selectNode(a);
 		aRange.collapse(true);
