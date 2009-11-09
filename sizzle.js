@@ -6,7 +6,7 @@
  */
 (function(){
 
-var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|['"][^'"]*['"]|[^[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?/g,
+var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|['"][^'"]*['"]|[^[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
 	done = 0,
 	toString = Object.prototype.toString,
 	hasDuplicate = false;
@@ -23,16 +23,17 @@ var Sizzle = function(selector, context, results, seed) {
 		return results;
 	}
 
-	var parts = [], m, set, checkSet, check, mode, extra, prune = true, contextXML = isXML(context);
+	var parts = [], m, set, checkSet, check, mode, extra, prune = true, contextXML = isXML(context),
+		soFar = selector;
 	
 	// Reset the position of the chunker regexp (start from head)
-	chunker.lastIndex = 0;
-	
-	while ( (m = chunker.exec(selector)) !== null ) {
+	while ( (chunker.exec(""), m = chunker.exec(soFar)) !== null ) {
+		soFar = m[3];
+		
 		parts.push( m[1] );
 		
 		if ( m[2] ) {
-			extra = RegExp.rightContext;
+			extra = m[3];
 			break;
 		}
 	}
@@ -162,8 +163,9 @@ Sizzle.find = function(expr, context, isXML){
 	for ( var i = 0, l = Expr.order.length; i < l; i++ ) {
 		var type = Expr.order[i], match;
 		
-		if ( (match = Expr.match[ type ].exec( expr )) ) {
-			var left = RegExp.leftContext;
+		if ( (match = Expr.leftMatch[ type ].exec( expr )) ) {
+			var left = match[1];
+			match.splice(1,1);
 
 			if ( left.substr( left.length - 1 ) !== "\\" ) {
 				match[1] = (match[1] || "").replace(/\\/g, "");
@@ -270,6 +272,7 @@ var Expr = Sizzle.selectors = {
 		POS: /:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^-]|$)/,
 		PSEUDO: /:((?:[\w\u00c0-\uFFFF-]|\\.)+)(?:\((['"]*)((?:\([^\)]+\)|[^\2\(\)]*)+)\2\))?/
 	},
+	leftMatch: {},
 	attrMap: {
 		"class": "className",
 		"for": "htmlFor"
@@ -660,6 +663,7 @@ var origPOS = Expr.match.POS;
 
 for ( var type in Expr.match ) {
 	Expr.match[ type ] = new RegExp( Expr.match[ type ].source + /(?![^\[]*\])(?![^\(]*\))/.source );
+	Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + Expr.match[ type ].source );
 }
 
 var makeArray = function(array, results) {
