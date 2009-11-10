@@ -12,7 +12,13 @@
 			original$ = $;
 	</script>
 	<script type="text/javascript" src="jquery.js"></script>
-	<script type="text/javascript" src="../jquery-sizzle.js"></script>
+	<script type="text/javascript" src="../sizzle.js"></script>
+	<script>
+	jQuery.find = Sizzle;
+	jQuery.expr = Sizzle.selectors;
+	jQuery.expr[":"] = jQuery.expr.filters;
+	jQuery.unique = Sizzle.uniqueSort;
+	</script>
 	<script type="text/javascript" src="qunit/testrunner.js"></script>
 	<script type="text/javascript" src="data/testrunner.js"></script>
 	<script type="text/javascript" src="unit/selector.js"></script>
