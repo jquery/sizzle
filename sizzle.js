@@ -18,6 +18,7 @@ var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|['"][^'"]*['"]|[^
 //   Thus far that includes Google Chrome.
 [0, 0].sort(function(){
 	baseHasDuplicate = false;
+	return 0;
 });
 
 var Sizzle = function(selector, context, results, seed) {
