@@ -10,6 +10,5 @@ Documentation:
 	http://wiki.github.com/jeresig/sizzle
 
 Testing Sizzle:
- - Run 'make': this will create a jquery-sizzle.js file that contains jQuery with the Sizzle selector engine.
  - Open test/index.html in your browser to run the tests.
  - The actual unit tests are in test/unit/selectors.js.
