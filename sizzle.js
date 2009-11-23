@@ -33,7 +33,7 @@ var Sizzle = function(selector, context, results, seed) {
 		return results;
 	}
 
-	var parts = [], m, set, checkSet, check, extra, prune = true, contextXML = isXML(context),
+	var parts = [], m, set, checkSet, extra, prune = true, contextXML = isXML(context),
 		soFar = selector;
 	
 	// Reset the position of the chunker regexp (start from head)
