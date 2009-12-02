@@ -723,7 +723,7 @@ if ( document.documentElement.compareDocumentPosition ) {
 			if ( a == b ) {
 				hasDuplicate = true;
 			}
-			return a.compareDocumentPosition ? 1 : -1;
+			return a.compareDocumentPosition ? -1 : 1;
 		}
 
 		var ret = a.compareDocumentPosition(b) & 4 ? -1 : a === b ? 0 : 1;
@@ -738,7 +738,7 @@ if ( document.documentElement.compareDocumentPosition ) {
 			if ( a == b ) {
 				hasDuplicate = true;
 			}
-			return a.sourceIndex ? 1 : -1;
+			return a.sourceIndex ? -1 : 1;
 		}
 
 		var ret = a.sourceIndex - b.sourceIndex;
@@ -753,7 +753,7 @@ if ( document.documentElement.compareDocumentPosition ) {
 			if ( a == b ) {
 				hasDuplicate = true;
 			}
-			return a.ownerDocument ? 1 : -1;
+			return a.ownerDocument ? -1 : 1;
 		}
 
 		var aRange = a.ownerDocument.createRange(), bRange = b.ownerDocument.createRange();
