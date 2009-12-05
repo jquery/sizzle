@@ -59,9 +59,10 @@ var Sizzle = function(selector, context, results, seed) {
 			while ( parts.length ) {
 				selector = parts.shift();
 
-				if ( Expr.relative[ selector ] )
+				if ( Expr.relative[ selector ] ) {
 					selector += parts.shift();
-
+				}
+				
 				set = posProcess( selector, set );
 			}
 		}
@@ -400,8 +401,9 @@ var Expr = Sizzle.selectors = {
 			for ( var i = 0, elem; (elem = curLoop[i]) != null; i++ ) {
 				if ( elem ) {
 					if ( not ^ (elem.className && (" " + elem.className + " ").indexOf(match) >= 0) ) {
-						if ( !inplace )
+						if ( !inplace ) {
 							result.push( elem );
+						}
 					} else if ( inplace ) {
 						curLoop[i] = false;
 					}
@@ -580,14 +582,20 @@ var Expr = Sizzle.selectors = {
 			switch (type) {
 				case 'only':
 				case 'first':
-					while ( (node = node.previousSibling) )  {
-						if ( node.nodeType === 1 ) return false;
+					while ( (node = node.previousSibling) )	 {
+						if ( node.nodeType === 1 ) { 
+							return false; 
+						}
 					}
-					if ( type == 'first') return true;
+					if ( type == 'first') { 
+						return true; 
+					}
 					node = elem;
 				case 'last':
-					while ( (node = node.nextSibling) )  {
-						if ( node.nodeType === 1 ) return false;
+					while ( (node = node.nextSibling) )	 {
+						if ( node.nodeType === 1 ) { 
+							return false; 
+						}
 					}
 					return true;
 				case 'nth':
@@ -843,61 +851,66 @@ if ( document.documentElement.compareDocumentPosition ) {
 	div = null; // release memory in IE
 })();
 
-if ( document.querySelectorAll ) (function(){
-	var oldSizzle = Sizzle, div = document.createElement("div");
-	div.innerHTML = "<p class='TEST'></p>";
+if ( document.querySelectorAll ) {
+	(function(){
+		var oldSizzle = Sizzle, div = document.createElement("div");
+		div.innerHTML = "<p class='TEST'></p>";
 
-	// Safari can't handle uppercase or unicode characters when
-	// in quirks mode.
-	if ( div.querySelectorAll && div.querySelectorAll(".TEST").length === 0 ) {
-		return;
-	}
+		// Safari can't handle uppercase or unicode characters when
+		// in quirks mode.
+		if ( div.querySelectorAll && div.querySelectorAll(".TEST").length === 0 ) {
+			return;
+		}
 	
-	Sizzle = function(query, context, extra, seed){
-		context = context || document;
+		Sizzle = function(query, context, extra, seed){
+			context = context || document;
 
-		// Only use querySelectorAll on non-XML documents
-		// (ID selectors don't work in non-HTML documents)
-		if ( !seed && context.nodeType === 9 && !isXML(context) ) {
-			try {
-				return makeArray( context.querySelectorAll(query), extra );
-			} catch(e){}
-		}
+			// Only use querySelectorAll on non-XML documents
+			// (ID selectors don't work in non-HTML documents)
+			if ( !seed && context.nodeType === 9 && !isXML(context) ) {
+				try {
+					return makeArray( context.querySelectorAll(query), extra );
+				} catch(e){}
+			}
 		
-		return oldSizzle(query, context, extra, seed);
-	};
+			return oldSizzle(query, context, extra, seed);
+		};
 
-	for ( var prop in oldSizzle ) {
-		Sizzle[ prop ] = oldSizzle[ prop ];
-	}
-
-	div = null; // release memory in IE
-})();
-
-if ( document.getElementsByClassName && document.documentElement.getElementsByClassName ) (function(){
-	var div = document.createElement("div");
-	div.innerHTML = "<div class='test e'></div><div class='test'></div>";
-
-	// Opera can't find a second classname (in 9.6)
-	if ( div.getElementsByClassName("e").length === 0 )
-		return;
-
-	// Safari caches class attributes, doesn't catch changes (in 3.2)
-	div.lastChild.className = "e";
-
-	if ( div.getElementsByClassName("e").length === 1 )
-		return;
-
-	Expr.order.splice(1, 0, "CLASS");
-	Expr.find.CLASS = function(match, context, isXML) {
-		if ( typeof context.getElementsByClassName !== "undefined" && !isXML ) {
-			return context.getElementsByClassName(match[1]);
+		for ( var prop in oldSizzle ) {
+			Sizzle[ prop ] = oldSizzle[ prop ];
 		}
-	};
 
-	div = null; // release memory in IE
-})();
+		div = null; // release memory in IE
+	})();
+}
 
+if ( document.getElementsByClassName && document.documentElement.getElementsByClassName ) {
+	(function(){
+		var div = document.createElement("div");
+		div.innerHTML = "<div class='test e'></div><div class='test'></div>";
+
+		// Opera can't find a second classname (in 9.6)
+		if ( div.getElementsByClassName("e").length === 0 ) {
+			return;
+		}
+
+		// Safari caches class attributes, doesn't catch changes (in 3.2)
+		div.lastChild.className = "e";
+
+		if ( div.getElementsByClassName("e").length === 1 ) {
+			return;
+		}
+	
+		Expr.order.splice(1, 0, "CLASS");
+		Expr.find.CLASS = function(match, context, isXML) {
+			if ( typeof context.getElementsByClassName !== "undefined" && !isXML ) {
+				return context.getElementsByClassName(match[1]);
+			}
+		};
+
+		div = null; // release memory in IE
+	})();
+}
 function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	var sibDir = dir == "previousSibling" && !isXML;
 	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
@@ -977,7 +990,7 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	}
 }
 
-var contains = document.compareDocumentPosition ?  function(a, b){
+var contains = document.compareDocumentPosition ? function(a, b){
 	return a.compareDocumentPosition(b) & 16;
 } : function(a, b){
 	return a !== b && (a.contains ? a.contains(b) : true);
