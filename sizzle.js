@@ -904,33 +904,34 @@ if ( document.querySelectorAll ) {
 	})();
 }
 
-if ( document.getElementsByClassName && document.documentElement.getElementsByClassName ) {
-	(function(){
-		var div = document.createElement("div");
-		div.innerHTML = "<div class='test e'></div><div class='test'></div>";
+(function(){
+	var div = document.createElement("div");
 
-		// Opera can't find a second classname (in 9.6)
-		if ( div.getElementsByClassName("e").length === 0 ) {
-			return;
-		}
+	div.innerHTML = "<div class='test e'></div><div class='test'></div>";
 
-		// Safari caches class attributes, doesn't catch changes (in 3.2)
-		div.lastChild.className = "e";
+	// Opera can't find a second classname (in 9.6)
+	// Also, make sure that getElementsByClassName actually exists
+	if ( !div.getElementsByClassName || div.getElementsByClassName("e").length === 0 ) {
+		return;
+	}
 
-		if ( div.getElementsByClassName("e").length === 1 ) {
-			return;
-		}
+	// Safari caches class attributes, doesn't catch changes (in 3.2)
+	div.lastChild.className = "e";
+
+	if ( div.getElementsByClassName("e").length === 1 ) {
+		return;
+	}
 	
-		Expr.order.splice(1, 0, "CLASS");
-		Expr.find.CLASS = function(match, context, isXML) {
-			if ( typeof context.getElementsByClassName !== "undefined" && !isXML ) {
-				return context.getElementsByClassName(match[1]);
-			}
-		};
+	Expr.order.splice(1, 0, "CLASS");
+	Expr.find.CLASS = function(match, context, isXML) {
+		if ( typeof context.getElementsByClassName !== "undefined" && !isXML ) {
+			return context.getElementsByClassName(match[1]);
+		}
+	};
 
-		div = null; // release memory in IE
-	})();
-}
+	div = null; // release memory in IE
+})();
+
 function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	var sibDir = dir == "previousSibling" && !isXML;
 	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
