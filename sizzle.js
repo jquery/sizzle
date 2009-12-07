@@ -294,20 +294,20 @@ var Expr = Sizzle.selectors = {
 		}
 	},
 	relative: {
-		"+": function(checkSet, part, isXML){
+		"+": function(checkSet, part){
 			var isPartStr = typeof part === "string",
 				isTag = isPartStr && !/\W/.test(part),
 				isPartStrNotTag = isPartStr && !isTag;
 
-			if ( isTag && !isXML ) {
-				part = part.toUpperCase();
+			if ( isTag ) {
+				part = part.toLowerCase();
 			}
 
 			for ( var i = 0, l = checkSet.length, elem; i < l; i++ ) {
 				if ( (elem = checkSet[i]) ) {
 					while ( (elem = elem.previousSibling) && elem.nodeType !== 1 ) {}
 
-					checkSet[i] = isPartStrNotTag || elem && elem.nodeName === part ?
+					checkSet[i] = isPartStrNotTag || elem && elem.nodeName.toLowerCase() === part ?
 						elem || false :
 						elem === part;
 				}
@@ -317,17 +317,17 @@ var Expr = Sizzle.selectors = {
 				Sizzle.filter( part, checkSet, true );
 			}
 		},
-		">": function(checkSet, part, isXML){
+		">": function(checkSet, part){
 			var isPartStr = typeof part === "string";
 
 			if ( isPartStr && !/\W/.test(part) ) {
-				part = isXML ? part : part.toUpperCase();
+				part = part.toLowerCase();
 
 				for ( var i = 0, l = checkSet.length; i < l; i++ ) {
 					var elem = checkSet[i];
 					if ( elem ) {
 						var parent = elem.parentNode;
-						checkSet[i] = parent.nodeName === part ? parent : false;
+						checkSet[i] = parent.nodeName.toLowerCase() === part ? parent : false;
 					}
 				}
 			} else {
@@ -345,21 +345,21 @@ var Expr = Sizzle.selectors = {
 				}
 			}
 		},
-		"": function(checkSet, part, isXML){
+		"": function(checkSet, part){
 			var doneName = done++, checkFn = dirCheck;
 
 			if ( !/\W/.test(part) ) {
-				var nodeCheck = part = isXML ? part : part.toUpperCase();
+				var nodeCheck = part = part.toLowerCase();
 				checkFn = dirNodeCheck;
 			}
 
 			checkFn("parentNode", part, doneName, checkSet, nodeCheck, isXML);
 		},
-		"~": function(checkSet, part, isXML){
+		"~": function(checkSet, part){
 			var doneName = done++, checkFn = dirCheck;
 
 			if ( typeof part === "string" && !/\W/.test(part) ) {
-				var nodeCheck = part = isXML ? part : part.toUpperCase();
+				var nodeCheck = part = part.toLowerCase();
 				checkFn = dirNodeCheck;
 			}
 
@@ -373,7 +373,7 @@ var Expr = Sizzle.selectors = {
 				return m ? [m] : [];
 			}
 		},
-		NAME: function(match, context, isXML){
+		NAME: function(match, context){
 			if ( typeof context.getElementsByName !== "undefined" ) {
 				var ret = [], results = context.getElementsByName(match[1]);
 
@@ -416,8 +416,7 @@ var Expr = Sizzle.selectors = {
 			return match[1].replace(/\\/g, "");
 		},
 		TAG: function(match, curLoop){
-			for ( var i = 0; curLoop[i] === false; i++ ){}
-			return curLoop[i] && isXML(curLoop[i]) ? match[1] : match[1].toUpperCase();
+			return match[1].toLowerCase();
 		},
 		CHILD: function(match){
 			if ( match[1] == "nth" ) {
@@ -525,7 +524,7 @@ var Expr = Sizzle.selectors = {
 			return "reset" === elem.type;
 		},
 		button: function(elem){
-			return "button" === elem.type || elem.nodeName.toUpperCase() === "BUTTON";
+			return "button" === elem.type || elem.nodeName.toLowerCase() === "button";
 		},
 		input: function(elem){
 			return /input|select|textarea|button/i.test(elem.nodeName);
@@ -630,7 +629,7 @@ var Expr = Sizzle.selectors = {
 			return elem.nodeType === 1 && elem.getAttribute("id") === match;
 		},
 		TAG: function(elem, match){
-			return (match === "*" && elem.nodeType === 1) || elem.nodeName === match;
+			return (match === "*" && elem.nodeType === 1) || elem.nodeName.toLowerCase() === match;
 		},
 		CLASS: function(elem, match){
 			return (" " + (elem.className || elem.getAttribute("class")) + " ")
@@ -955,7 +954,7 @@ function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 					elem.sizset = i;
 				}
 
-				if ( elem.nodeName === cur ) {
+				if ( elem.nodeName.toLowerCase() === cur ) {
 					match = elem;
 					break;
 				}
