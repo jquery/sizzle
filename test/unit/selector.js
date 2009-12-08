@@ -377,7 +377,7 @@ test("pseudo - position", function() {
 
 	t( "Check element position", "div div:eq(0)", ["nothiddendivchild"] );
 	t( "Check element position", "div div:eq(5)", ["t2037"] );
-	t( "Check element position", "div div:eq(27)", ["hide"] );
+	t( "Check element position", "div div:eq(28)", ["hide"] );
 	t( "Check element position", "div div:first", ["nothiddendivchild"] );
 	t( "Check element position", "div > div:first", ["nothiddendivchild"] );
 	t( "Check element position", "#dl div:first div:first", ["foo"] );
