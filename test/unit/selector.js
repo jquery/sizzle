@@ -1,7 +1,7 @@
 module("selector");
 
 test("element", function() {
-	expect(18);
+	expect(19);
 	reset();
 
 	ok( jQuery("*").size() >= 30, "Select all" );
@@ -20,6 +20,8 @@ test("element", function() {
 	same( jQuery("p", "div").get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
 	same( jQuery("p", jQuery("div")).get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
 	same( jQuery("div").find("p").get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
+
+	same( jQuery("#form").find("select").get(), q("select1","select2","select3"), "Finding selects with a context." );
 	
 	ok( jQuery("#length").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
 	ok( jQuery("#lengthtest input").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
