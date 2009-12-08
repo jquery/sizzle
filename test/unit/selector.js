@@ -181,7 +181,7 @@ test("multiple", function() {
 });
 
 test("child and adjacent", function() {
-	expect(24);
+	expect(28);
 	t( "Child", "p > a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p> a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p >a", ["simon1","google","groups","mark","yahoo","simon"] );
@@ -198,7 +198,11 @@ test("child and adjacent", function() {
 	t( "Adjacent", "p[lang=en] + p", ["sap"] );
 	t( "Adjacent", "a.GROUPS + code + a", ["mark"] );
 	t( "Comma, Child, and Adjacent", "a + a, code > a", ["groups","anchor1","anchor2"] );
-	t( "Element Preceded By", "p ~ div", ["foo", "moretests","tabindex-tests", "liveHandlerOrder"] );
+	t( "Element Preceded By", "p ~ div", ["foo", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
+	t( "Element Preceded By", "#first ~ div", ["moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
+	t( "Element Preceded By", "#groups ~ a", ["mark"] );
+	t( "Element Preceded By", "#length ~ input", ["idTest"] );
+	t( "Element Preceded By", "#siblingfirst ~ em", ["siblingnext"] );
 
 	t( "Verify deep class selector", "div.blah > p > a", [] );
 
