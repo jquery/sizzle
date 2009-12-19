@@ -704,7 +704,7 @@ try {
 	makeArray = function(array, results) {
 		var ret = results || [];
 
-		if ( toString.call(checkSet) === "[object Array]" ) {
+		if ( toString.call(array) === "[object Array]" ) {
 			Array.prototype.push.apply( ret, array );
 		} else {
 			if ( typeof array.length === "number" ) {
