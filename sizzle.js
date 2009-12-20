@@ -345,7 +345,7 @@ var Expr = Sizzle.selectors = {
 				}
 			}
 		},
-		"": function(checkSet, part){
+		"": function(checkSet, part, isXML){
 			var doneName = done++, checkFn = dirCheck;
 
 			if ( !/\W/.test(part) ) {
@@ -355,7 +355,7 @@ var Expr = Sizzle.selectors = {
 
 			checkFn("parentNode", part, doneName, checkSet, nodeCheck, isXML);
 		},
-		"~": function(checkSet, part){
+		"~": function(checkSet, part, isXML){
 			var doneName = done++, checkFn = dirCheck;
 
 			if ( typeof part === "string" && !/\W/.test(part) ) {
