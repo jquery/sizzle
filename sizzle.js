@@ -574,6 +574,8 @@ var Expr = Sizzle.selectors = {
 				}
 
 				return true;
+			} else {
+				throw "Syntax error, unrecognized expression: " + name;
 			}
 		},
 		CHILD: function(elem, match){
