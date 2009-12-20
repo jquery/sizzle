@@ -348,7 +348,7 @@ var Expr = Sizzle.selectors = {
 		"": function(checkSet, part, isXML){
 			var doneName = done++, checkFn = dirCheck;
 
-			if ( !/\W/.test(part) ) {
+			if ( typeof part === "string" && !/\W/.test(part) ) {
 				var nodeCheck = part = part.toLowerCase();
 				checkFn = dirNodeCheck;
 			}
