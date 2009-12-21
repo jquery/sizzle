@@ -206,7 +206,7 @@ Sizzle.filter = function(expr, set, inplace, not){
 				var filter = Expr.filter[ type ], found, item;
 				anyFound = false;
 
-				if ( curLoop == result ) {
+				if ( curLoop === result ) {
 					result = [];
 				}
 
@@ -257,7 +257,7 @@ Sizzle.filter = function(expr, set, inplace, not){
 		}
 
 		// Improper expression
-		if ( expr == old ) {
+		if ( expr === old ) {
 			if ( anyFound == null ) {
 				throw "Syntax error, unrecognized expression: " + expr;
 			} else {
@@ -419,10 +419,10 @@ var Expr = Sizzle.selectors = {
 			return match[1].toLowerCase();
 		},
 		CHILD: function(match){
-			if ( match[1] == "nth" ) {
+			if ( match[1] === "nth" ) {
 				// parse equations like 'even', 'odd', '5', '2n', '3n+2', '4n-1', '-n+6'
 				var test = /(-?)(\d*)n((?:\+|-)?\d*)/.exec(
-					match[2] == "even" && "2n" || match[2] == "odd" && "2n+1" ||
+					match[2] === "even" && "2n" || match[2] === "odd" && "2n+1" ||
 					!/\D/.test( match[2] ) && "0n+" + match[2] || match[2]);
 
 				// calculate the numbers (first)n+(last) including if they are negative
@@ -550,10 +550,10 @@ var Expr = Sizzle.selectors = {
 			return i > match[3] - 0;
 		},
 		nth: function(elem, i, match){
-			return match[3] - 0 == i;
+			return match[3] - 0 === i;
 		},
 		eq: function(elem, i, match){
-			return match[3] - 0 == i;
+			return match[3] - 0 === i;
 		}
 	},
 	filter: {
@@ -588,7 +588,7 @@ var Expr = Sizzle.selectors = {
 							return false; 
 						}
 					}
-					if ( type == 'first') { 
+					if ( type === "first" ) { 
 						return true; 
 					}
 					node = elem;
@@ -602,7 +602,7 @@ var Expr = Sizzle.selectors = {
 				case 'nth':
 					var first = match[2], last = match[3];
 
-					if ( first == 1 && last == 0 ) {
+					if ( first === 1 && last === 0 ) {
 						return true;
 					}
 					
@@ -620,10 +620,10 @@ var Expr = Sizzle.selectors = {
 					}
 					
 					var diff = elem.nodeIndex - last;
-					if ( first == 0 ) {
-						return diff == 0;
+					if ( first === 0 ) {
+						return diff === 0;
 					} else {
-						return ( diff % first == 0 && diff / first >= 0 );
+						return ( diff % first === 0 && diff / first >= 0 );
 					}
 			}
 		},
