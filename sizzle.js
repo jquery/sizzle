@@ -202,9 +202,15 @@ Sizzle.filter = function(expr, set, inplace, not){
 
 	while ( expr && set.length ) {
 		for ( var type in Expr.filter ) {
-			if ( (match = Expr.match[ type ].exec( expr )) != null ) {
-				var filter = Expr.filter[ type ], found, item;
+			if ( (match = Expr.leftMatch[ type ].exec( expr )) != null && match[2] ) {
+				var filter = Expr.filter[ type ], found, item, left = match[1];
 				anyFound = false;
+
+				match.splice(1,1);
+
+				if ( left.substr( left.length - 1 ) === "\\" ) {
+					continue;
+				}
 
 				if ( curLoop === result ) {
 					result = [];
@@ -281,7 +287,7 @@ var Expr = Sizzle.selectors = {
 		TAG: /^((?:[\w\u00c0-\uFFFF\*-]|\\.)+)/,
 		CHILD: /:(only|nth|last|first)-child(?:\((even|odd|[\dn+-]*)\))?/,
 		POS: /:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^-]|$)/,
-		PSEUDO: /:((?:[\w\u00c0-\uFFFF-]|\\.)+)(?:\((['"]*)((?:\([^\)]+\)|[^\2\(\)]*)+)\2\))?/
+		PSEUDO: /:((?:[\w\u00c0-\uFFFF-]|\\.)+)(?:\((['"]?)((?:\([^\)]+\)|[^\(\)]*)+)\2\))?/
 	},
 	leftMatch: {},
 	attrMap: {
@@ -682,7 +688,9 @@ var origPOS = Expr.match.POS;
 
 for ( var type in Expr.match ) {
 	Expr.match[ type ] = new RegExp( Expr.match[ type ].source + /(?![^\[]*\])(?![^\(]*\))/.source );
-	Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + Expr.match[ type ].source );
+	Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + Expr.match[ type ].source.replace(/\\(\d+)/g, function(all, num){
+		return "\\" + (num - 0 + 1);
+	}));
 }
 
 var makeArray = function(array, results) {
