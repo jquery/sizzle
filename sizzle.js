@@ -112,7 +112,7 @@ var Sizzle = function(selector, context, results, seed) {
 	}
 
 	if ( !checkSet ) {
-		throw "Syntax error, unrecognized expression: " + (cur || selector);
+		Sizzle.error( cur || selector );
 	}
 
 	if ( toString.call(checkSet) === "[object Array]" ) {
@@ -265,7 +265,7 @@ Sizzle.filter = function(expr, set, inplace, not){
 		// Improper expression
 		if ( expr === old ) {
 			if ( anyFound == null ) {
-				throw "Syntax error, unrecognized expression: " + expr;
+				Sizzle.error( expr );
 			} else {
 				break;
 			}
@@ -275,6 +275,10 @@ Sizzle.filter = function(expr, set, inplace, not){
 	}
 
 	return curLoop;
+};
+
+Sizzle.error = function( msg ) {
+	throw "Syntax error, unrecognized expression: " + msg;
 };
 
 var Expr = Sizzle.selectors = {
@@ -581,7 +585,7 @@ var Expr = Sizzle.selectors = {
 
 				return true;
 			} else {
-				throw "Syntax error, unrecognized expression: " + name;
+				Sizzle.error( "Syntax error, unrecognized expression: " + name );
 			}
 		},
 		CHILD: function(elem, match){
