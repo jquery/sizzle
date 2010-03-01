@@ -357,20 +357,20 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 		"": function(checkSet, part, isXML){
-			var doneName = done++, checkFn = dirCheck;
+			var doneName = done++, checkFn = dirCheck, nodeCheck;
 
 			if ( typeof part === "string" && !/\W/.test(part) ) {
-				var nodeCheck = part = part.toLowerCase();
+				nodeCheck = part = part.toLowerCase();
 				checkFn = dirNodeCheck;
 			}
 
 			checkFn("parentNode", part, doneName, checkSet, nodeCheck, isXML);
 		},
 		"~": function(checkSet, part, isXML){
-			var doneName = done++, checkFn = dirCheck;
+			var doneName = done++, checkFn = dirCheck, nodeCheck;
 
 			if ( typeof part === "string" && !/\W/.test(part) ) {
-				var nodeCheck = part = part.toLowerCase();
+				nodeCheck = part = part.toLowerCase();
 				checkFn = dirNodeCheck;
 			}
 
