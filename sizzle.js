@@ -34,7 +34,7 @@ var Sizzle = function(selector, context, results, seed) {
 	}
 
 	var parts = [], m, set, checkSet, extra, prune = true, contextXML = isXML(context),
-		soFar = selector;
+		soFar = selector, ret, cur, pop;
 	
 	// Reset the position of the chunker regexp (start from head)
 	while ( (chunker.exec(""), m = chunker.exec(soFar)) !== null ) {
@@ -71,12 +71,12 @@ var Sizzle = function(selector, context, results, seed) {
 		// (but not if it'll be faster if the inner selector is an ID)
 		if ( !seed && parts.length > 1 && context.nodeType === 9 && !contextXML &&
 				Expr.match.ID.test(parts[0]) && !Expr.match.ID.test(parts[parts.length - 1]) ) {
-			var ret = Sizzle.find( parts.shift(), context, contextXML );
+			ret = Sizzle.find( parts.shift(), context, contextXML );
 			context = ret.expr ? Sizzle.filter( ret.expr, ret.set )[0] : ret.set[0];
 		}
 
 		if ( context ) {
-			var ret = seed ?
+			ret = seed ?
 				{ expr: parts.pop(), set: makeArray(seed) } :
 				Sizzle.find( parts.pop(), parts.length === 1 && (parts[0] === "~" || parts[0] === "+") && context.parentNode ? context.parentNode : context, contextXML );
 			set = ret.expr ? Sizzle.filter( ret.expr, ret.set ) : ret.set;
@@ -88,7 +88,8 @@ var Sizzle = function(selector, context, results, seed) {
 			}
 
 			while ( parts.length ) {
-				var cur = parts.pop(), pop = cur;
+				cur = parts.pop();
+				pop = cur;
 
 				if ( !Expr.relative[ cur ] ) {
 					cur = "";
@@ -165,7 +166,7 @@ Sizzle.matches = function(expr, set){
 };
 
 Sizzle.find = function(expr, context, isXML){
-	var set, match;
+	var set;
 
 	if ( !expr ) {
 		return [];
@@ -688,13 +689,14 @@ var Expr = Sizzle.selectors = {
 	}
 };
 
-var origPOS = Expr.match.POS;
+var origPOS = Expr.match.POS,
+	fescape = function(all, num){
+		return "\\" + (num - 0 + 1);
+	};
 
 for ( var type in Expr.match ) {
 	Expr.match[ type ] = new RegExp( Expr.match[ type ].source + /(?![^\[]*\])(?![^\(]*\))/.source );
-	Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + Expr.match[ type ].source.replace(/\\(\d+)/g, function(all, num){
-		return "\\" + (num - 0 + 1);
-	}));
+	Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + Expr.match[ type ].source.replace(/\\(\d+)/g, fescape) );
 }
 
 var makeArray = function(array, results) {
