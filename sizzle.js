@@ -23,7 +23,9 @@ var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|['"][^'"]*['"]|[^
 
 var Sizzle = function(selector, context, results, seed) {
 	results = results || [];
-	var origContext = context = context || document;
+	context = context || document;
+
+	var origContext = context;
 
 	if ( context.nodeType !== 1 && context.nodeType !== 9 ) {
 		return [];
@@ -37,16 +39,21 @@ var Sizzle = function(selector, context, results, seed) {
 		soFar = selector, ret, cur, pop;
 	
 	// Reset the position of the chunker regexp (start from head)
-	while ( (chunker.exec(""), m = chunker.exec(soFar)) !== null ) {
-		soFar = m[3];
+	do {
+		chunker.exec("");
+		m = chunker.exec(soFar);
+
+		if ( m ) {
+			soFar = m[3];
 		
-		parts.push( m[1] );
+			parts.push( m[1] );
 		
-		if ( m[2] ) {
-			extra = m[3];
-			break;
+			if ( m[2] ) {
+				extra = m[3];
+				break;
+			}
 		}
-	}
+	} while ( m );
 
 	if ( parts.length > 1 && origPOS.exec( selector ) ) {
 		if ( parts.length === 2 && Expr.relative[ parts[0] ] ) {
@@ -360,7 +367,8 @@ var Expr = Sizzle.selectors = {
 			var doneName = done++, checkFn = dirCheck, nodeCheck;
 
 			if ( typeof part === "string" && !/\W/.test(part) ) {
-				nodeCheck = part = part.toLowerCase();
+				part = part.toLowerCase();
+				nodeCheck = part;
 				checkFn = dirNodeCheck;
 			}
 
@@ -370,7 +378,8 @@ var Expr = Sizzle.selectors = {
 			var doneName = done++, checkFn = dirCheck, nodeCheck;
 
 			if ( typeof part === "string" && !/\W/.test(part) ) {
-				nodeCheck = part = part.toLowerCase();
+				part = part.toLowerCase();
+				nodeCheck = part;
 				checkFn = dirNodeCheck;
 			}
 
@@ -695,7 +704,7 @@ var origPOS = Expr.match.POS,
 	};
 
 for ( var type in Expr.match ) {
-	Expr.match[ type ] = new RegExp( Expr.match[ type ].source + /(?![^\[]*\])(?![^\(]*\))/.source );
+	Expr.match[ type ] = new RegExp( Expr.match[ type ].source + (/(?![^\[]*\])(?![^\(]*\))/.source) );
 	Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + Expr.match[ type ].source.replace(/\\(\d+)/g, fescape) );
 }
 
