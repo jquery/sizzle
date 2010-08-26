@@ -791,16 +791,25 @@ if ( document.documentElement.compareDocumentPosition ) {
 			return a.ownerDocument ? -1 : 1;
 		}
 
-		var aRange = a.ownerDocument.createRange(), bRange = b.ownerDocument.createRange();
-		aRange.setStart(a, 0);
-		aRange.setEnd(a, 0);
-		bRange.setStart(b, 0);
-		bRange.setEnd(b, 0);
-		var ret = aRange.compareBoundaryPoints(Range.START_TO_END, bRange);
-		if ( ret === 0 ) {
-			hasDuplicate = true;
+		// Blackberry 4.6 has a createRange method but throws an exception #6952
+		// No sorting alternative exists so punt and leave the elements alone
+		try { 
+			var aRange = a.ownerDocument.createRange(), bRange = b.ownerDocument.createRange();
+			aRange.setStart(a, 0);
+			aRange.setEnd(a, 0);
+			bRange.setStart(b, 0);
+			bRange.setEnd(b, 0);
+
+			var ret = aRange.compareBoundaryPoints(Range.START_TO_END, bRange);
+			if ( ret === 0 ) {
+				hasDuplicate = true;
+			}
+
+			return ret;
+
+		} catch(e) {
+			return 0;
 		}
-		return ret;
 	};
 }
 
