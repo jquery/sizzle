@@ -808,6 +808,10 @@ if ( document.documentElement.compareDocumentPosition ) {
 			return ret;
 
 		} catch(e) {
+			if ( a == b ) {
+				hasDuplicate = true;
+			}
+
 			return 0;
 		}
 	};
