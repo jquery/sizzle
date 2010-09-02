@@ -756,65 +756,62 @@ var sortOrder;
 
 if ( document.documentElement.compareDocumentPosition ) {
 	sortOrder = function( a, b ) {
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+		}
+
 		if ( !a.compareDocumentPosition || !b.compareDocumentPosition ) {
-			if ( a == b ) {
-				hasDuplicate = true;
-			}
 			return a.compareDocumentPosition ? -1 : 1;
 		}
 
-		var ret = a.compareDocumentPosition(b) & 4 ? -1 : a === b ? 0 : 1;
-		if ( ret === 0 ) {
-			hasDuplicate = true;
-		}
-		return ret;
+		return a.compareDocumentPosition(b) & 4 ? -1 : 1;
 	};
-} else if ( "sourceIndex" in document.documentElement ) {
+} else {
 	sortOrder = function( a, b ) {
-		if ( !a.sourceIndex || !b.sourceIndex ) {
-			if ( a == b ) {
-				hasDuplicate = true;
-			}
-			return a.sourceIndex ? -1 : 1;
-		}
-
-		var ret = a.sourceIndex - b.sourceIndex;
-		if ( ret === 0 ) {
+		if ( a === b ) {
 			hasDuplicate = true;
-		}
-		return ret;
-	};
-} else if ( document.createRange ) {
-	sortOrder = function( a, b ) {
-		if ( !a.ownerDocument || !b.ownerDocument ) {
-			if ( a == b ) {
-				hasDuplicate = true;
-			}
-			return a.ownerDocument ? -1 : 1;
-		}
-
-		// Blackberry 4.6 has a createRange method but throws an exception #6952
-		// No sorting alternative exists so punt and leave the elements alone
-		try { 
-			var aRange = a.ownerDocument.createRange(), bRange = b.ownerDocument.createRange();
-			aRange.setStart(a, 0);
-			aRange.setEnd(a, 0);
-			bRange.setStart(b, 0);
-			bRange.setEnd(b, 0);
-
-			var ret = aRange.compareBoundaryPoints(Range.START_TO_END, bRange);
-			if ( ret === 0 ) {
-				hasDuplicate = true;
-			}
-
-			return ret;
-
-		} catch(e) {
-			if ( a == b ) {
-				hasDuplicate = true;
-			}
-
 			return 0;
+		}
+
+		var ap = [ a ], bp = [ b ], cur = a.parentNode, bcur, al, bl;
+
+		while ( cur ) {
+			ap.unshift( cur );
+			cur = cur.parentNode;
+		}
+
+		cur = b.parentNode;
+
+		while ( cur ) {
+			bp.unshift( cur );
+			cur = cur.parentNode;
+		}
+
+		al = ap.length;
+		bl = bp.length;
+
+		if ( !al ) {
+			return -1;
+
+		} else if ( !bl ) {
+			return 1;
+		}
+
+		for ( var i = 0; i < al && i < bl; i++ ) {
+			if ( ap[i] !== bp[i] ) {
+				cur = ap[i].nextSibling;
+				bcur = bp[i];
+
+				while ( cur ) {
+					if ( cur === bcur ) {
+						return -1;
+					}
+					cur = cur.nextSibling;
+				}
+
+				return 1;
+			}
 		}
 	};
 }
