@@ -769,19 +769,34 @@ if ( document.documentElement.compareDocumentPosition ) {
 	};
 } else {
 	sortOrder = function( a, b ) {
+		var ap = [], bp = [], aup = a.parentNode, bup = b.parentNode,
+			cur = aup, al, bl;
+
+		// The nodes are identical, we can exit early
 		if ( a === b ) {
 			hasDuplicate = true;
 			return 0;
+
+		// If the nodes are siblings (or identical) we can do a quick check
+		} else if ( aup === bup ) {
+			return siblingCheck( a, b );
+
+		// If no parents were found then the nodes are disconnected
+		} else if ( !aup ) {
+			return -1;
+
+		} else if ( !bup ) {
+			return 1;
 		}
 
-		var ap = [ a ], bp = [ b ], cur = a.parentNode, bcur, al, bl;
-
+		// Otherwise they're somewhere else in the tree so we need
+		// to build up a full list of the parentNodes for comparison
 		while ( cur ) {
 			ap.unshift( cur );
 			cur = cur.parentNode;
 		}
 
-		cur = b.parentNode;
+		cur = bup;
 
 		while ( cur ) {
 			bp.unshift( cur );
@@ -791,27 +806,37 @@ if ( document.documentElement.compareDocumentPosition ) {
 		al = ap.length;
 		bl = bp.length;
 
-		if ( !al ) {
-			return -1;
-
-		} else if ( !bl ) {
-			return 1;
-		}
-
+		// Start walking down the tree looking for a discrepancy
 		for ( var i = 0; i < al && i < bl; i++ ) {
 			if ( ap[i] !== bp[i] ) {
-				cur = ap[i].nextSibling;
-				bcur = bp[i];
+				return siblingCheck( ap[i], bp[i] );
+			}
+		}
 
-				while ( cur ) {
-					if ( cur === bcur ) {
-						return -1;
-					}
-					cur = cur.nextSibling;
+		// We ended someplace up the tree so do a sibling check
+		if ( i === al ) {
+			return siblingCheck( a, bp[i], -1 );
+
+		} else {
+			return siblingCheck( ap[i], b, 1 );
+		}
+
+		function siblingCheck( a, b, ret ) {
+			if ( a === b ) {
+				return ret;
+			}
+
+			var cur = a.nextSibling;
+
+			while ( cur ) {
+				if ( cur === b ) {
+					return -1;
 				}
 
-				return 1;
+				cur = cur.nextSibling;
 			}
+
+			return 1;
 		}
 	};
 }
