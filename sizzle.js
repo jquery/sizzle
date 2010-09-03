@@ -752,7 +752,7 @@ try {
 	};
 }
 
-var sortOrder;
+var sortOrder, siblingCheck;
 
 if ( document.documentElement.compareDocumentPosition ) {
 	sortOrder = function( a, b ) {
@@ -814,30 +814,27 @@ if ( document.documentElement.compareDocumentPosition ) {
 		}
 
 		// We ended someplace up the tree so do a sibling check
-		if ( i === al ) {
-			return siblingCheck( a, bp[i], -1 );
+		return i === al ?
+			siblingCheck( a, bp[i], -1 ) :
+			siblingCheck( ap[i], b, 1 );
+	};
 
-		} else {
-			return siblingCheck( ap[i], b, 1 );
+	siblingCheck = function( a, b, ret ) {
+		if ( a === b ) {
+			return ret;
 		}
 
-		function siblingCheck( a, b, ret ) {
-			if ( a === b ) {
-				return ret;
+		var cur = a.nextSibling;
+
+		while ( cur ) {
+			if ( cur === b ) {
+				return -1;
 			}
 
-			var cur = a.nextSibling;
-
-			while ( cur ) {
-				if ( cur === b ) {
-					return -1;
-				}
-
-				cur = cur.nextSibling;
-			}
-
-			return 1;
+			cur = cur.nextSibling;
 		}
+
+		return 1;
 	};
 }
 
