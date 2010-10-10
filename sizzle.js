@@ -172,6 +172,10 @@ Sizzle.matches = function(expr, set){
 	return Sizzle(expr, null, null, set);
 };
 
+Sizzle.matchesSelector = function(node, expr){
+	return Sizzle.matches( expr, [node] );
+};
+
 Sizzle.find = function(expr, context, isXML){
 	var set;
 
@@ -964,6 +968,21 @@ if ( document.querySelectorAll ) {
 		div = null; // release memory in IE
 	})();
 }
+
+(function(){
+	var html = document.documentElement,
+		matches = html.matchesSelector || html.mozMatchesSelector || html.webkitMatchesSelector || html.msieMatchesSelector;
+
+	if ( matches ) {
+		Sizzle.matchesSelector = function( node, expr ) {
+			try {
+				return matches.call( node, expr );
+			} catch(e) {}
+
+			return Sizzle.matches( expr, [node] );
+		};
+	}
+})();
 
 (function(){
 	var div = document.createElement("div");
