@@ -173,7 +173,7 @@ Sizzle.matches = function(expr, set){
 };
 
 Sizzle.matchesSelector = function(node, expr){
-	return Sizzle.matches( expr, [node] );
+	return Sizzle(expr, null, null, [node]).length > 0;
 };
 
 Sizzle.find = function(expr, context, isXML){
@@ -974,17 +974,13 @@ if ( document.querySelectorAll ) {
 		matches = html.matchesSelector || html.mozMatchesSelector || html.webkitMatchesSelector || html.msieMatchesSelector;
 
 	if ( matches ) {
-		Sizzle.matches = function( expr, nodes ) {
-			if ( nodes.nodeType ) {
+		Sizzle.matchesSelector = function( node, expr ) {
 				try { 
-					return matches.call( nodes, expr );
+					return matches.call( node, expr );
 
 				} catch(e) {
-					return Sizzle(expr, null, null, [nodes]).length > 0;
+					return Sizzle(expr, null, null, [node]).length > 0;
 				}
-			}
-
-			return Sizzle(expr, null, null, nodes);
 		};
 	}
 })();
