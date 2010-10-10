@@ -1109,10 +1109,10 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	}
 }
 
-Sizzle.contains = document.compareDocumentPosition ? function(a, b){
-	return !!(a.compareDocumentPosition(b) & 16);
-} : function(a, b){
+Sizzle.contains = document.documentElement.contains ? function(a, b){
 	return a !== b && (a.contains ? a.contains(b) : true);
+} : function(a, b){
+	return !!(a.compareDocumentPosition(b) & 16);
 };
 
 Sizzle.isXML = function(elem){
