@@ -987,16 +987,27 @@ if ( document.querySelectorAll ) {
 
 (function(){
 	var html = document.documentElement,
-		matches = html.matchesSelector || html.mozMatchesSelector || html.webkitMatchesSelector || html.msieMatchesSelector;
+		matches = html.matchesSelector || html.mozMatchesSelector || html.webkitMatchesSelector || html.msieMatchesSelector,
+		pseudoWorks = false;
+
+	try {
+		// This should fail with an exception
+		// Gecko does not error, returns false instead
+		matches.call( document.documentElement, ":sizzle" );
+	
+	} catch( pseudoError ) {
+		pseudoWorks = true;
+	}
 
 	if ( matches ) {
 		Sizzle.matchesSelector = function( node, expr ) {
 				try { 
-					return matches.call( node, expr );
+					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) ) {
+						return matches.call( node, expr );
+					}
+				} catch(e) {}
 
-				} catch(e) {
-					return Sizzle(expr, null, null, [node]).length > 0;
-				}
+				return Sizzle(expr, null, null, [node]).length > 0;
 		};
 	}
 })();
