@@ -974,12 +974,17 @@ if ( document.querySelectorAll ) {
 		matches = html.matchesSelector || html.mozMatchesSelector || html.webkitMatchesSelector || html.msieMatchesSelector;
 
 	if ( matches ) {
-		Sizzle.matchesSelector = function( node, expr ) {
-			try {
-				return matches.call( node, expr );
-			} catch(e) {}
+		Sizzle.matches = function( expr, nodes ) {
+			if ( nodes.nodeType ) {
+				try { 
+					return matches.call( nodes, expr );
 
-			return Sizzle.matches( expr, [node] );
+				} catch(e) {
+					return Sizzle(expr, null, null, [nodes]).length > 0;
+				}
+			}
+
+			return Sizzle(expr, null, null, nodes);
 		};
 	}
 })();
