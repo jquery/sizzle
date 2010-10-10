@@ -963,14 +963,14 @@ if ( document.querySelectorAll ) {
 						ret = makeArray( context.querySelectorAll( "#" + id + " " + query ), extra );
 						context.id = old;
 						return ret;
-					} catch(e){}
+					} catch(pseudoError) {}
 
 					context.id = old;
 
 				} else {
 					try {
 						return makeArray( context.querySelectorAll(query), extra );
-					} catch(e) {}
+					} catch(qsaError) {}
 				}
 			}
 		
