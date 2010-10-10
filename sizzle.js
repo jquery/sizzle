@@ -952,10 +952,26 @@ if ( document.querySelectorAll ) {
 
 			// Only use querySelectorAll on non-XML documents
 			// (ID selectors don't work in non-HTML documents)
-			if ( !seed && context.nodeType === 9 && !Sizzle.isXML(context) ) {
-				try {
-					return makeArray( context.querySelectorAll(query), extra );
-				} catch(e){}
+			if ( !seed && !Sizzle.isXML(context) ) {
+				// qSA works strangely on Element-rooted queries
+				// We can work around this by specifying an extra ID on the root
+				// and working up from there (Thanks to Andrew Dupont for the technique)
+				if ( context.nodeType === 1 ) {
+					var old = context.id, id = context.id = "__sizzle__", ret;
+
+					try {
+						ret = makeArray( context.querySelectorAll( "#" + id + " " + query ), extra );
+						context.id = old;
+						return ret;
+					} catch(e){}
+
+					context.id = old;
+
+				} else {
+					try {
+						return makeArray( context.querySelectorAll(query), extra );
+					} catch(e) {}
+				}
 			}
 		
 			return oldSizzle(query, context, extra, seed);
