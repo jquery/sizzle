@@ -957,15 +957,20 @@ if ( document.querySelectorAll ) {
 				// We can work around this by specifying an extra ID on the root
 				// and working up from there (Thanks to Andrew Dupont for the technique)
 				if ( context.nodeType === 1 ) {
-					var old = context.id, id = context.id = "__sizzle__", ret;
+					var old = context.id, id = context.id = "__sizzle__";
 
 					try {
-						ret = makeArray( context.querySelectorAll( "#" + id + " " + query ), extra );
-						context.id = old;
-						return ret;
-					} catch(pseudoError) {}
+						return makeArray( context.querySelectorAll( "#" + id + " " + query ), extra );
 
-					context.id = old;
+					} catch(pseudoError) {
+					} finally {
+						if ( old ) {
+							context.id = old;
+
+						} else {
+							context.removeAttribute( "id" );
+						}
+					}
 
 				} else {
 					try {
