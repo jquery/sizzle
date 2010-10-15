@@ -953,10 +953,16 @@ if ( document.querySelectorAll ) {
 			// Only use querySelectorAll on non-XML documents
 			// (ID selectors don't work in non-HTML documents)
 			if ( !seed && !Sizzle.isXML(context) ) {
+				if ( context.nodeType === 9 ) {
+					try {
+						return makeArray( context.querySelectorAll(query), extra );
+					} catch(qsaError) {}
+
 				// qSA works strangely on Element-rooted queries
 				// We can work around this by specifying an extra ID on the root
 				// and working up from there (Thanks to Andrew Dupont for the technique)
-				if ( context.nodeType === 1 ) {
+				// IE 8 doesn't work on object elements
+				} else if ( context.nodeName.toLowerCase() !== "object" ) {
 					var old = context.id, id = context.id = "__sizzle__";
 
 					try {
@@ -971,11 +977,6 @@ if ( document.querySelectorAll ) {
 							context.removeAttribute( "id" );
 						}
 					}
-
-				} else {
-					try {
-						return makeArray( context.querySelectorAll(query), extra );
-					} catch(qsaError) {}
 				}
 			}
 		
