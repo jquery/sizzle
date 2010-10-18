@@ -963,10 +963,15 @@ if ( document.querySelectorAll ) {
 				// and working up from there (Thanks to Andrew Dupont for the technique)
 				// IE 8 doesn't work on object elements
 				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
-					var old = context.id, id = context.id = "__sizzle__";
+					var old = context.id, id = context.id = "__sizzle__", test, ret;
 
 					try {
-						return makeArray( context.querySelectorAll( "#" + id + " " + query ), extra );
+            
+            // Fixes blocking bug #7212 in jQuery					  
+					  test = context.querySelectorAll( "#" + id + " " + query );
+					  ret  = test.length ? test : context.querySelectorAll(query);
+					
+						return makeArray( ret, extra );
 
 					} catch(pseudoError) {
 					} finally {
