@@ -300,6 +300,12 @@ var Expr = Sizzle.selectors = {
 		CLASS: /\.((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,
 		NAME: /\[name=['"]*((?:[\w\u00c0-\uFFFF\-]|\\.)+)['"]*\]/,
 		ATTR: /\[\s*((?:[\w\u00c0-\uFFFF\-]|\\.)+)\s*(?:(\S?=)\s*(['"]*)(.*?)\3|)\s*\]/,
+		// This expression is only necessary to detect != attribute
+		// selectors separately from other attribute selectors, as != is not a
+		// real CSS3 operator, and matchesSelector in Firefox fails to throw
+		// errors for invalid CSS strings, so we need to detect it ourselves.
+		// Fixes jQuery bug #7243.
+		ATTR_NOT_EQUAL: /\[\s*(?:[\w\u00c0-\uFFFF\-]|\\.)+\s*(?:!=\s*(['"]*).*?\1|)\s*\]/,
 		TAG: /^((?:[\w\u00c0-\uFFFF\*\-]|\\.)+)/,
 		CHILD: /:(only|nth|last|first)-child(?:\((even|odd|[\dn+\-]*)\))?/,
 		POS: /:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^\-]|$)/,
@@ -1008,7 +1014,7 @@ if ( document.querySelectorAll ) {
 	if ( matches ) {
 		Sizzle.matchesSelector = function( node, expr ) {
 				try { 
-					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) ) {
+					if ( pseudoWorks || (!Expr.match.PSEUDO.test( expr ) && !Expr.match.ATTR_NOT_EQUAL.test( expr )) ) {
 						return matches.call( node, expr );
 					}
 				} catch(e) {}
