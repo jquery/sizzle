@@ -1117,11 +1117,21 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	}
 }
 
-Sizzle.contains = document.documentElement.contains ? function(a, b){
-	return a !== b && (a.contains ? a.contains(b) : true);
-} : function(a, b){
-	return !!(a.compareDocumentPosition(b) & 16);
-};
+if ( document.documentElement.contains ) {
+	Sizzle.contains = function(a, b){
+		return a !== b && (a.contains ? a.contains(b) : true);
+	};
+
+} else if ( document.documentElement.compareDocumentPosition ) {
+	Sizzle.contains = function(a, b){
+		return !!(a.compareDocumentPosition(b) & 16);
+	};
+
+} else {
+	Sizzle.contains = function(){
+		return false;
+	}
+}
 
 Sizzle.isXML = function(elem){
 	// documentElement is verified for cases where it doesn't yet exist
