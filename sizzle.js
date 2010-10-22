@@ -1130,7 +1130,7 @@ if ( document.documentElement.contains ) {
 } else {
 	Sizzle.contains = function(){
 		return false;
-	}
+	};
 }
 
 Sizzle.isXML = function(elem){
