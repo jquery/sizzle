@@ -1,3 +1,8 @@
+var jQuery = this.jQuery || "jQuery", // For testing .noConflict()
+	$ = this.$ || "$",
+	originaljQuery = jQuery,
+	original$ = $;
+
 /**
  * Returns an array of elements with the given IDs, eg.
  * @example q("main", "foo", "bar")
