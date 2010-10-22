@@ -999,7 +999,7 @@ if ( document.querySelectorAll ) {
 	try {
 		// This should fail with an exception
 		// Gecko does not error, returns false instead
-		matches.call( document.documentElement, ":sizzle" );
+		matches.call( document.documentElement, "[test!='']:sizzle" );
 	
 	} catch( pseudoError ) {
 		pseudoWorks = true;
@@ -1008,7 +1008,7 @@ if ( document.querySelectorAll ) {
 	if ( matches ) {
 		Sizzle.matchesSelector = function( node, expr ) {
 				try { 
-					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) ) {
+					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) && !/!=/.test( expr ) ) {
 						return matches.call( node, expr );
 					}
 				} catch(e) {}
