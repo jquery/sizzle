@@ -963,7 +963,7 @@ if ( document.querySelectorAll ) {
 				// and working up from there (Thanks to Andrew Dupont for the technique)
 				// IE 8 doesn't work on object elements
 				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
-					var old = context.id, id = context.id = "__sizzle__";
+					var old = context.getAttribute( "id" ), id = context.id = "__sizzle__";
 
 					try {
 						return makeArray( context.querySelectorAll( "#" + id + " " + query ), extra );
