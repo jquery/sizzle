@@ -1007,13 +1007,15 @@ if ( document.querySelectorAll ) {
 
 	if ( matches ) {
 		Sizzle.matchesSelector = function( node, expr ) {
+			if ( !Sizzle.isXML( node ) ) {
 				try { 
 					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) && !/!=/.test( expr ) ) {
 						return matches.call( node, expr );
 					}
 				} catch(e) {}
+			}
 
-				return Sizzle(expr, null, null, [node]).length > 0;
+			return Sizzle(expr, null, null, [node]).length > 0;
 		};
 	}
 })();
