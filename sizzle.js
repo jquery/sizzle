@@ -938,7 +938,7 @@ Sizzle.getText = function( elems ) {
 
 if ( document.querySelectorAll ) {
 	(function(){
-		var oldSizzle = Sizzle, div = document.createElement("div");
+		var oldSizzle = Sizzle, div = document.createElement("div"), id = "__sizzle__";
 		div.innerHTML = "<p class='TEST'></p>";
 
 		// Safari can't handle uppercase or unicode characters when
@@ -963,17 +963,18 @@ if ( document.querySelectorAll ) {
 				// and working up from there (Thanks to Andrew Dupont for the technique)
 				// IE 8 doesn't work on object elements
 				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
-					var old = context.getAttribute( "id" ), id = context.id = "__sizzle__";
+					var old = context.getAttribute( "id" ), nid = old || id;
+
+					if ( !old ) {
+						context.setAttribute( "id", nid );
+					}
 
 					try {
-						return makeArray( context.querySelectorAll( "#" + id + " " + query ), extra );
+						return makeArray( context.querySelectorAll( "#" + nid + " " + query ), extra );
 
 					} catch(pseudoError) {
 					} finally {
-						if ( old ) {
-							context.id = old;
-
-						} else {
+						if ( !old ) {
 							context.removeAttribute( "id" );
 						}
 					}
