@@ -527,31 +527,32 @@ var Expr = Sizzle.selectors = {
 			return (/h\d/i).test( elem.nodeName );
 		},
 		text: function(elem){
-			return "text" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "text" === elem.type;
 		},
 		radio: function(elem){
-			return "radio" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "radio" === elem.type;
 		},
 		checkbox: function(elem){
-			return "checkbox" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "checkbox" === elem.type;
 		},
 		file: function(elem){
-			return "file" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "file" === elem.type;
 		},
 		password: function(elem){
-			return "password" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "password" === elem.type;
 		},
 		submit: function(elem){
-			return "submit" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "submit" === elem.type;
 		},
 		image: function(elem){
-			return "image" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "image" === elem.type;
 		},
 		reset: function(elem){
-			return "reset" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "reset" === elem.type;
 		},
 		button: function(elem){
-			return "button" === elem.type || elem.nodeName.toLowerCase() === "button";
+			return elem.nodeName.toLowerCase() === "button" ||
+					(elem.nodeName.toLowerCase() === "input" && "button" === elem.type);
 		},
 		input: function(elem){
 			return (/input|select|textarea|button/i).test(elem.nodeName);
