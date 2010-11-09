@@ -1082,6 +1082,9 @@ if ( document.querySelectorAll ) {
 		Sizzle = function( query, context, extra, seed ) {
 			context = context || document;
 
+			// Make sure that attribute selectors are quoted
+			query = query.replace(/=\s*([^'"\]]*)\s*\]/g, "='$1']");
+
 			// Only use querySelectorAll on non-XML documents
 			// (ID selectors don't work in non-HTML documents)
 			if ( !seed && !Sizzle.isXML(context) ) {
@@ -1142,6 +1145,9 @@ if ( document.querySelectorAll ) {
 
 	if ( matches ) {
 		Sizzle.matchesSelector = function( node, expr ) {
+			// Make sure that attribute selectors are quoted
+			expr = expr.replace(/=\s*([^'"\]]*)\s*\]/g, "='$1']");
+
 			if ( !Sizzle.isXML( node ) ) {
 				try { 
 					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) && !/!=/.test( expr ) ) {
