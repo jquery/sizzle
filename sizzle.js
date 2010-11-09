@@ -891,7 +891,8 @@ Sizzle.getText = function( elems ) {
 	}
 
 	root.removeChild( form );
-	root = form = null; // release memory in IE
+	// release memory in IE
+	root = form = null;
 })();
 
 (function(){
@@ -933,7 +934,8 @@ Sizzle.getText = function( elems ) {
 		};
 	}
 
-	div = null; // release memory in IE
+	// release memory in IE
+	div = null;
 })();
 
 if ( document.querySelectorAll ) {
@@ -988,7 +990,8 @@ if ( document.querySelectorAll ) {
 			Sizzle[ prop ] = oldSizzle[ prop ];
 		}
 
-		div = null; // release memory in IE
+		// release memory in IE
+		div = null;
 	})();
 }
 
@@ -1046,7 +1049,8 @@ if ( document.querySelectorAll ) {
 		}
 	};
 
-	div = null; // release memory in IE
+	// release memory in IE
+	div = null;
 })();
 
 function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
