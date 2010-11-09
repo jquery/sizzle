@@ -35,8 +35,11 @@ var Sizzle = function(selector, context, results, seed) {
 		return results;
 	}
 
-	var parts = [], m, set, checkSet, extra, prune = true, contextXML = Sizzle.isXML(context),
-		soFar = selector, ret, cur, pop, i;
+	var m, set, checkSet, extra, ret, cur, pop, i,
+		prune = true,
+		contextXML = Sizzle.isXML( context ),
+		parts = [],
+		soFar = selector;
 	
 	// Reset the position of the chunker regexp (start from head)
 	do {
@@ -184,7 +187,8 @@ Sizzle.find = function(expr, context, isXML){
 	}
 
 	for ( var i = 0, l = Expr.order.length; i < l; i++ ) {
-		var type = Expr.order[i], match;
+		var match,
+			type = Expr.order[i];
 		
 		if ( (match = Expr.leftMatch[ type ].exec( expr )) ) {
 			var left = match[1];
@@ -208,14 +212,20 @@ Sizzle.find = function(expr, context, isXML){
 	return {set: set, expr: expr};
 };
 
-Sizzle.filter = function(expr, set, inplace, not){
-	var old = expr, result = [], curLoop = set, match, anyFound,
-		isXMLFilter = set && set[0] && Sizzle.isXML(set[0]);
+Sizzle.filter = function( expr, set, inplace, not ) {
+	var match, anyFound,
+		old = expr,
+		result = [],
+		curLoop = set,
+		isXMLFilter = set && set[0] && Sizzle.isXML( set[0] );
 
 	while ( expr && set.length ) {
 		for ( var type in Expr.filter ) {
 			if ( (match = Expr.leftMatch[ type ].exec( expr )) != null && match[2] ) {
-				var filter = Expr.filter[ type ], found, item, left = match[1];
+				var found, item,
+					filter = Expr.filter[ type ],
+					left = match[1];
+
 				anyFound = false;
 
 				match.splice(1,1);
@@ -340,8 +350,10 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 		">": function(checkSet, part){
-			var isPartStr = typeof part === "string",
-				elem, i = 0, l = checkSet.length;
+			var elem,
+				isPartStr = typeof part === "string",
+				i = 0,
+				l = checkSet.length;
 
 			if ( isPartStr && !/\W/.test(part) ) {
 				part = part.toLowerCase();
@@ -369,7 +381,9 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 		"": function(checkSet, part, isXML){
-			var doneName = done++, checkFn = dirCheck, nodeCheck;
+			var nodeCheck,
+				doneName = done++,
+				checkFn = dirCheck;
 
 			if ( typeof part === "string" && !/\W/.test(part) ) {
 				part = part.toLowerCase();
@@ -380,7 +394,9 @@ var Expr = Sizzle.selectors = {
 			checkFn("parentNode", part, doneName, checkSet, nodeCheck, isXML);
 		},
 		"~": function(checkSet, part, isXML){
-			var doneName = done++, checkFn = dirCheck, nodeCheck;
+			var nodeCheck,
+				doneName = done++,
+				checkFn = dirCheck;
 
 			if ( typeof part === "string" && !/\W/.test(part) ) {
 				part = part.toLowerCase();
@@ -402,7 +418,8 @@ var Expr = Sizzle.selectors = {
 		},
 		NAME: function(match, context){
 			if ( typeof context.getElementsByName !== "undefined" ) {
-				var ret = [], results = context.getElementsByName(match[1]);
+				var ret = [],
+					results = context.getElementsByName( match[1] );
 
 				for ( var i = 0, l = results.length; i < l; i++ ) {
 					if ( results[i].getAttribute("name") === match[1] ) {
@@ -585,7 +602,8 @@ var Expr = Sizzle.selectors = {
 	},
 	filter: {
 		PSEUDO: function(elem, match, i, array){
-			var name = match[1], filter = Expr.filters[ name ];
+			var name = match[1],
+				filter = Expr.filters[ name ];
 
 			if ( filter ) {
 				return filter( elem, i, match, array );
@@ -606,7 +624,9 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 		CHILD: function(elem, match){
-			var type = match[1], node = elem;
+			var type = match[1],
+				node = elem;
+
 			switch (type) {
 				case 'only':
 				case 'first':
@@ -627,7 +647,8 @@ var Expr = Sizzle.selectors = {
 					}
 					return true;
 				case 'nth':
-					var first = match[2], last = match[3];
+					var first = match[2],
+						last = match[3];
 
 					if ( first === 1 && last === 0 ) {
 						return true;
@@ -696,7 +717,8 @@ var Expr = Sizzle.selectors = {
 				false;
 		},
 		POS: function(elem, match, i, array){
-			var name = match[2], filter = Expr.setFilters[ name ];
+			var name = match[2],
+				filter = Expr.setFilters[ name ];
 
 			if ( filter ) {
 				return filter( elem, i, match, array );
@@ -736,7 +758,8 @@ try {
 // Provide a fallback method if it does not work
 } catch(e){
 	makeArray = function(array, results) {
-		var ret = results || [], i = 0;
+		var i = 0,
+			ret = results || [];
 
 		if ( toString.call(array) === "[object Array]" ) {
 			Array.prototype.push.apply( ret, array );
@@ -773,8 +796,12 @@ if ( document.documentElement.compareDocumentPosition ) {
 	};
 } else {
 	sortOrder = function( a, b ) {
-		var ap = [], bp = [], aup = a.parentNode, bup = b.parentNode,
-			cur = aup, al, bl;
+		var al, bl,
+			ap = [],
+			bp = [],
+			aup = a.parentNode,
+			bup = b.parentNode,
+			cur = aup;
 
 		// The nodes are identical, we can exit early
 		if ( a === b ) {
@@ -940,7 +967,10 @@ Sizzle.getText = function( elems ) {
 
 if ( document.querySelectorAll ) {
 	(function(){
-		var oldSizzle = Sizzle, div = document.createElement("div"), id = "__sizzle__";
+		var oldSizzle = Sizzle,
+			div = document.createElement("div"),
+			id = "__sizzle__";
+
 		div.innerHTML = "<p class='TEST'></p>";
 
 		// Safari can't handle uppercase or unicode characters when
@@ -965,7 +995,8 @@ if ( document.querySelectorAll ) {
 				// and working up from there (Thanks to Andrew Dupont for the technique)
 				// IE 8 doesn't work on object elements
 				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
-					var old = context.getAttribute( "id" ), nid = old || id;
+					var old = context.getAttribute( "id" ),
+						nid = old || id;
 
 					if ( !old ) {
 						context.setAttribute( "id", nid );
@@ -1146,7 +1177,9 @@ Sizzle.isXML = function(elem){
 };
 
 var posProcess = function(selector, context){
-	var tmpSet = [], later = "", match,
+	var match,
+		tmpSet = [],
+		later = "",
 		root = context.nodeType ? [context] : context;
 
 	// Position selectors must be done after the filter
