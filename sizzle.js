@@ -1104,8 +1104,8 @@ if ( document.querySelectorAll ) {
 					if ( !old ) {
 						context.setAttribute( "id", nid );
 					} else {
-						//a colon or a period in oldid look to qSA like a valid CSS selector (class, pseudo)
-						nid = nid.replace( /[.:]/g, "\\$&" );
+						//escape any CSS3 selector meta character to not confuse qSA with special IDs
+						nid = nid.replace( /[*[\]=~^$|:().#>+-]/g, "\\$&" );
 					}
 
 					try {
