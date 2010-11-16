@@ -1103,6 +1103,9 @@ if ( document.querySelectorAll ) {
 
 					if ( !old ) {
 						context.setAttribute( "id", nid );
+					} else {
+						//a colon or a period in oldid look to qSA like a valid CSS selector (class, pseudo)
+						nid = nid.replace( /(\.|:)/g, "\\$1" );
 					}
 
 					try {
