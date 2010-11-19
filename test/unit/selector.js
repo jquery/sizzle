@@ -85,8 +85,8 @@ test("broken", function() {
 	broken( "Nth-child", ":nth-child(- 1n)", [] );
 	broken( "Nth-child", ":nth-child(-1 n)", [] );
 	broken( "First-child", ":first-child(n)", [] );
-	broken( "Last-child", ":first-child(n)", [] );
-	broken( "Only-child", ":first-child(n)", [] );
+	broken( "Last-child", ":last-child(n)", [] );
+	broken( "Only-child", ":only-child(n)", [] );
 });
 
 test("id", function() {
