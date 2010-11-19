@@ -331,7 +331,7 @@ var Expr = Sizzle.selectors = {
 		NAME: /\[name=['"]*((?:[\w\u00c0-\uFFFF\-]|\\.)+)['"]*\]/,
 		ATTR: /\[\s*((?:[\w\u00c0-\uFFFF\-]|\\.)+)\s*(?:(\S?=)\s*(['"]*)(.*?)\3|)\s*\]/,
 		TAG: /^((?:[\w\u00c0-\uFFFF\*\-]|\\.)+)/,
-		CHILD: /:(only|nth|last|first)-child(?:\(\s*(even|odd|[\dn+\-]*)\s*\))?/,
+		CHILD: /:(only|nth|last|first)-child(?:\(\s*(even|odd|(?:[+-]?\d+|(?:[+-]?\d+)?n\s*(?:[+-]\s*\d+)?))\s*\))?/,
 		POS: /:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^\-]|$)/,
 		PSEUDO: /:((?:[\w\u00c0-\uFFFF\-]|\\.)+)(?:\((['"]?)((?:\([^\)]+\)|[^\(\)]*)+)\2\))?/
 	},
@@ -501,6 +501,12 @@ var Expr = Sizzle.selectors = {
 
 		CHILD: function( match ) {
 			if ( match[1] === "nth" ) {
+				if ( !match[2] ) {
+					Sizzle.error( match[0] );
+				}
+
+				match[2] = match[2].replace(/\s*/g, '');
+
 				// parse equations like 'even', 'odd', '5', '2n', '3n+2', '4n-1', '-n+6'
 				var test = /(-?)(\d*)n((?:\+|-)?\d*)/.exec(
 					match[2] === "even" && "2n" || match[2] === "odd" && "2n+1" ||
@@ -509,6 +515,9 @@ var Expr = Sizzle.selectors = {
 				// calculate the numbers (first)n+(last) including if they are negative
 				match[2] = (test[1] + (test[2] || 1)) - 0;
 				match[3] = test[3] - 0;
+			}
+			else if ( match[2] ) {
+				Sizzle.error( match[0] );
 			}
 
 			// TODO: Move to normal caching system
@@ -692,7 +701,7 @@ var Expr = Sizzle.selectors = {
 				return true;
 
 			} else {
-				Sizzle.error( "Syntax error, unrecognized expression: " + name );
+				Sizzle.error( name );
 			}
 		},
 

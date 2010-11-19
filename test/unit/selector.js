@@ -58,7 +58,7 @@ if ( location.protocol != "file:" ) {
 }
 
 test("broken", function() {
-	expect(8);
+	expect(16);
 	function broken(name, selector) {
 		try {
 			jQuery(selector);
@@ -77,6 +77,14 @@ test("broken", function() {
 	broken( "Broken Selector", "<>", [] );
 	broken( "Broken Selector", "{}", [] );
 	broken( "Doesn't exist", ":visble", [] );
+	broken( "Nth-child", ":nth-child(-)", [] );
+	broken( "Nth-child", ":nth-child(+n)", [] );
+	broken( "Nth-child", ":nth-child(asdf)", [] );
+	broken( "Nth-child", ":nth-child(2n+-0)", [] );
+	broken( "Nth-child", ":nth-child(2+0)", [] );
+	broken( "First-child", ":first-child(n)", [] );
+	broken( "Last-child", ":first-child(n)", [] );
+	broken( "Only-child", ":first-child(n)", [] );
 });
 
 test("id", function() {
@@ -297,7 +305,7 @@ test("attributes", function() {
 });
 
 test("pseudo - child", function() {
-	expect(32);
+	expect(35);
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "#main a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
@@ -332,6 +340,8 @@ test("pseudo - child", function() {
 	t( "Nth-child", "#form select:first option:nth-child(odd)", ["option1a", "option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(2n)", ["option1b", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(2n+1)", ["option1a", "option1c"] );
+	t( "Nth-child", "#form select:first option:nth-child(2n + 1)", ["option1a", "option1c"] );
+	t( "Nth-child", "#form select:first option:nth-child(+2n + 1)", ["option1a", "option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(3n)", ["option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(3n+1)", ["option1a", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(3n+2)", ["option1b"] );
@@ -340,7 +350,8 @@ test("pseudo - child", function() {
 	t( "Nth-child", "#form select:first option:nth-child(3n-2)", ["option1a", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(3n-3)", ["option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(3n+0)", ["option1c"] );
-	t( "Nth-child", "#form select:first option:nth-child(-n+3)", ["option1a", "option1b", "option1c"] );
+	t( "Nth-child", "#form select:first option:nth-child(-1n+3)", ["option1a", "option1b", "option1c"] );
+	t( "Nth-child", "#form select:first option:nth-child(-1n + 3)", ["option1a", "option1b", "option1c"] );
 });
 
 test("pseudo - misc", function() {
