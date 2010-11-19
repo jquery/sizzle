@@ -58,7 +58,7 @@ if ( location.protocol != "file:" ) {
 }
 
 test("broken", function() {
-	expect(18);
+	expect(19);
 	function broken(name, selector) {
 		try {
 			jQuery(selector);
@@ -77,6 +77,7 @@ test("broken", function() {
 	broken( "Broken Selector", "<>", [] );
 	broken( "Broken Selector", "{}", [] );
 	broken( "Doesn't exist", ":visble", [] );
+	broken( "Nth-child", ":nth-child", [] );
 	broken( "Nth-child", ":nth-child(-)", [] );
 	broken( "Nth-child", ":nth-child(+n)", [] );
 	broken( "Nth-child", ":nth-child(asdf)", [] );
