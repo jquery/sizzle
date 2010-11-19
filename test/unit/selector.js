@@ -58,7 +58,7 @@ if ( location.protocol != "file:" ) {
 }
 
 test("broken", function() {
-	expect(16);
+	expect(18);
 	function broken(name, selector) {
 		try {
 			jQuery(selector);
@@ -82,6 +82,8 @@ test("broken", function() {
 	broken( "Nth-child", ":nth-child(asdf)", [] );
 	broken( "Nth-child", ":nth-child(2n+-0)", [] );
 	broken( "Nth-child", ":nth-child(2+0)", [] );
+	broken( "Nth-child", ":nth-child(- 1n)", [] );
+	broken( "Nth-child", ":nth-child(-1 n)", [] );
 	broken( "First-child", ":first-child(n)", [] );
 	broken( "Last-child", ":first-child(n)", [] );
 	broken( "Only-child", ":first-child(n)", [] );
@@ -305,7 +307,7 @@ test("attributes", function() {
 });
 
 test("pseudo - child", function() {
-	expect(35);
+	expect(36);
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "#main a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
@@ -331,6 +333,7 @@ test("pseudo - child", function() {
 	t( "Nth-child", "#main form#form > *:nth-child(2)", ["text1"] );
 	t( "Nth-child", "#main form#form > :nth-child(2)", ["text1"] );
 
+	t( "Nth-child", "#form select:first option:nth-child(-1)", [] );
 	t( "Nth-child", "#form select:first option:nth-child(3)", ["option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(0n+3)", ["option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(1n+0)", ["option1a", "option1b", "option1c", "option1d"] );

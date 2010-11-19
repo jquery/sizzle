@@ -505,10 +505,10 @@ var Expr = Sizzle.selectors = {
 					Sizzle.error( match[0] );
 				}
 
-				match[2] = match[2].replace(/\s*/g, '');
+				match[2] = match[2].replace(/^\+|\s*/g, '');
 
 				// parse equations like 'even', 'odd', '5', '2n', '3n+2', '4n-1', '-n+6'
-				var test = /(-?)(\d*)n((?:\+|-)?\d*)/.exec(
+				var test = /(-?)(\d*)(?:n([+-]?\d*))?/.exec(
 					match[2] === "even" && "2n" || match[2] === "odd" && "2n+1" ||
 					!/\D/.test( match[2] ) && "0n+" + match[2] || match[2]);
 
