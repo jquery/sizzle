@@ -297,7 +297,7 @@ test("attributes", function() {
 });
 
 test("pseudo - child", function() {
-	expect(31);
+	expect(32);
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "#main a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
@@ -306,6 +306,7 @@ test("pseudo - child", function() {
 
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
 	t( "Nth Child", "p:nth-child(1)", ["firstp","sndp"] );
+	t( "Nth Child With Whitespace", "p:nth-child( 1 )", ["firstp","sndp"] );
 	t( "Not Nth Child", "p:not(:nth-child(1))", ["ap","en","sap","first"] );
 
 	// Verify that the child position isn't being cached improperly
