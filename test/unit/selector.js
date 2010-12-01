@@ -58,7 +58,7 @@ if ( location.protocol != "file:" ) {
 }
 
 test("broken", function() {
-	expect(19);
+	expect(18);
 	function broken(name, selector) {
 		try {
 			jQuery(selector);
@@ -79,7 +79,6 @@ test("broken", function() {
 	broken( "Doesn't exist", ":visble", [] );
 	broken( "Nth-child", ":nth-child", [] );
 	broken( "Nth-child", ":nth-child(-)", [] );
-	broken( "Nth-child", ":nth-child(+n)", [] );
 	broken( "Nth-child", ":nth-child(asdf)", [] );
 	broken( "Nth-child", ":nth-child(2n+-0)", [] );
 	broken( "Nth-child", ":nth-child(2+0)", [] );
@@ -308,7 +307,7 @@ test("attributes", function() {
 });
 
 test("pseudo - child", function() {
-	expect(36);
+	expect(38);
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "#main a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
@@ -340,6 +339,7 @@ test("pseudo - child", function() {
 	t( "Nth-child", "#form select:first option:nth-child(1n+0)", ["option1a", "option1b", "option1c", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(1n)", ["option1a", "option1b", "option1c", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(n)", ["option1a", "option1b", "option1c", "option1d"] );
+	t( "Nth-child", "#form select:first option:nth-child(+n)", ["option1a", "option1b", "option1c", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(even)", ["option1b", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(odd)", ["option1a", "option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(2n)", ["option1b", "option1d"] );
@@ -355,6 +355,7 @@ test("pseudo - child", function() {
 	t( "Nth-child", "#form select:first option:nth-child(3n-3)", ["option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(3n+0)", ["option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(-1n+3)", ["option1a", "option1b", "option1c"] );
+	t( "Nth-child", "#form select:first option:nth-child(-n+3)", ["option1a", "option1b", "option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(-1n + 3)", ["option1a", "option1b", "option1c"] );
 });
 
