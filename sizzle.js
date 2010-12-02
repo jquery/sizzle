@@ -1115,7 +1115,9 @@ if ( document.querySelectorAll ) {
 					}
 
 					try {
-						return makeArray( context.querySelectorAll( "#" + nid + " " + query ), extra );
+						if ( !/^\s*[+~]/.test( query ) ) {
+							return makeArray( context.querySelectorAll( "#" + nid + " " + query ), extra );
+						}
 
 					} catch(pseudoError) {
 					} finally {
