@@ -1108,14 +1108,19 @@ if ( document.querySelectorAll ) {
 				// IE 8 doesn't work on object elements
 				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
 					var old = context.getAttribute( "id" ),
-						nid = old || id;
+						nid = old || id,
+						hasParent = context.parentNode,
+						relativeHierarchySelector = /^\s*[+~]/.test( query );
 
 					if ( !old ) {
 						context.setAttribute( "id", nid );
 					}
+					if ( relativeHierarchySelector && hasParent ) {
+						context = context.parentNode;
+					}
 
 					try {
-						if ( !/^\s*[+~]/.test( query ) ) {
+						if ( !relativeHierarchySelector || hasParent ) {
 							return makeArray( context.querySelectorAll( "#" + nid + " " + query ), extra );
 						}
 
