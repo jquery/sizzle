@@ -1112,10 +1112,12 @@ if ( document.querySelectorAll ) {
 
 					if ( !old ) {
 						context.setAttribute( "id", nid );
+					} else {
+						nid = nid.replace( /'/g, "\\$&" );
 					}
 
 					try {
-						return makeArray( context.querySelectorAll( "#" + nid + " " + query ), extra );
+						return makeArray( context.querySelectorAll( "[id='" + nid + "'] " + query ), extra );
 
 					} catch(pseudoError) {
 					} finally {

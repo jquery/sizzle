@@ -91,7 +91,7 @@ test("broken", function() {
 });
 
 test("id", function() {
-	expect(28);
+	expect(29);
 	t( "ID Selector", "#body", ["body"] );
 	t( "ID Selector w/ Element", "body#body", ["body"] );
 	t( "ID Selector w/ Element", "ul#first", [] );
@@ -126,6 +126,9 @@ test("id", function() {
 	t( "ID selector with non-existant ancestor", "#asdfasdf #foobar", [] ); // bug #986
 
 	same( jQuery("body").find("div#form").get(), [], "ID selector within the context of another element" );
+
+	//#7533
+	equal( jQuery("<div id=\"A'B~C.D[E]\"><p>foo</p></div>").find("p").length, 1, "Find where context root is a node and has an ID with CSS3 meta characters" );
 
 	t( "Underscore ID", "#types_all", ["types_all"] );
 	t( "Dash ID", "#fx-queue", ["fx-queue"] );
