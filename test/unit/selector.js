@@ -487,3 +487,12 @@ test("pseudo - form", function() {
 
 	t( "Selected Option Element", "#form option:selected", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
 });
+
+test("disconnected nodes", function() {
+	expect(3);
+	var $opt = jQuery( '<option value="whipit">Whip It</option>' );
+	equal( $opt.val(), "whipit", "option value" );
+	equal( $opt.is(":selected"), false, "unselected option" );
+	$opt.attr("selected", true);
+	equal( $opt.is(":selected"), true, "selected option" );
+});
