@@ -10,5 +10,6 @@ Documentation:
 	http://wiki.github.com/jeresig/sizzle
 
 Testing Sizzle:
+ - Run make
  - Open test/index.html in your browser to run the tests.
  - The actual unit tests are in test/unit/selectors.js.
