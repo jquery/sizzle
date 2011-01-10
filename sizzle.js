@@ -27,7 +27,7 @@ var Sizzle = function( selector, context, results, seed ) {
 
 	var origContext = context;
 
-	if ( context.nodeType !== 1 && context.nodeType !== 9 ) {
+	if ( context.nodeType !== 1 && context.nodeType !== 9  && context.nodeType !== 11 ) {
 		return [];
 	}
 	
@@ -221,7 +221,7 @@ Sizzle.find = function( expr, context, isXML ) {
 	}
 
 	if ( !set ) {
-		set = context.getElementsByTagName( "*" );
+		set = getElementsByTagName( context, "*" );
 	}
 
 	return { set: set, expr: expr };
@@ -451,7 +451,7 @@ var Expr = Sizzle.selectors = {
 		NAME: function( match, context ) {
 			if ( typeof context.getElementsByName !== "undefined" ) {
 				var ret = [],
-					results = context.getElementsByName( match[1] );
+					results = getElementsByName( context, match[1] );
 
 				for ( var i = 0, l = results.length; i < l; i++ ) {
 					if ( results[i].getAttribute("name") === match[1] ) {
@@ -464,7 +464,7 @@ var Expr = Sizzle.selectors = {
 		},
 
 		TAG: function( match, context ) {
-			return context.getElementsByTagName( match[1] );
+			return getElementsByTagName( context, match[1] );
 		}
 	},
 	preFilter: {
@@ -1207,6 +1207,25 @@ if ( document.querySelectorAll ) {
 	// release memory in IE
 	div = null;
 })();
+
+function getElementsByTagName(node, name) {
+	// If we find getElementsByTagName use it
+	if (node.getElementsByTagName)
+		return node.getElementsByTagName(name);
+
+	// Fake getElementsByTagName
+	var name = name.toLowerCase(), nodes = [];
+
+	for (node = node.firstChild; node; node = node.nextSibling) {
+		// Look for elements that match and check their children
+		if (node.nodeType === 1 && (name === '*' || node.nodeName.toLowerCase() === name)) {
+			nodes.push(node);
+			nodes.push.apply(nodes, makeArray(getElementsByTagName(node, name)));
+		}
+	}
+
+	return nodes;
+}
 
 function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
