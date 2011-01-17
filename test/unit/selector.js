@@ -58,7 +58,8 @@ if ( location.protocol != "file:" ) {
 }
 
 test("broken", function() {
-	expect(18);
+	expect(20);
+
 	function broken(name, selector) {
 		try {
 			jQuery(selector);
@@ -87,6 +88,14 @@ test("broken", function() {
 	broken( "First-child", ":first-child(n)", [] );
 	broken( "Last-child", ":last-child(n)", [] );
 	broken( "Only-child", ":only-child(n)", [] );
+
+	// Make sure attribute value quoting works correctly. See: #6093
+	var attrbad = jQuery('<input type="hidden" value="2" name="foo.baz" id="attrbad1"/><input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>').appendTo("body");
+
+	broken( "Attribute not escaped", "input[name=foo.baz]", [] );
+	broken( "Attribute not escaped", "input[name=foo[baz]]", [] );
+
+	attrbad.remove();
 });
 
 test("id", function() {
@@ -255,7 +264,8 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect(39);
+	expect(41);
+
 	t( "Attribute Exists", "a[title]", ["google"] );
 	t( "Attribute Exists", "*[title]", ["google"] );
 	t( "Attribute Exists", "[title]", ["google"] );
@@ -312,6 +322,14 @@ test("attributes", function() {
 	t("Select options via :selected", "#select3 option:selected", ["option3b", "option3c"] );
 
 	t( "Grouped Form Elements", "input[name='foo[bar]']", ["hidden2"] );
+
+	// Make sure attribute value quoting works correctly. See: #6093
+	var attrbad = jQuery('<input type="hidden" value="2" name="foo.baz" id="attrbad1"/><input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>').appendTo("body");
+
+	t("Find escaped attribute value", "input[name=foo\\.baz]", ["attrbad1"]);
+	t("Find escaped attribute value", "input[name=foo\\[baz\\]]", ["attrbad2"]);
+
+	attrbad.remove();
 });
 
 test("pseudo - child", function() {
