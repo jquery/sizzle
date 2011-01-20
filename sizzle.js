@@ -1098,16 +1098,16 @@ if ( document.querySelectorAll ) {
 			// (ID selectors don't work in non-HTML documents)
 			if ( !seed && !Sizzle.isXML(context) ) {
 				// See if we find a selector to speed up
-				var match = /^(\w+$)|(\.[\w\-]+$)|#([\w\-]+$)/;
+				var match = /^(\w+$)|^\.([\w\-]+$)|^#([\w\-]+$)/.exec( query );
 				
 				if ( match ) {
 					// Speed-up: Sizzle("TAG")
 					if ( match[1] ) {
-						return makeArray( context.getElementsByTagName( query ) );
+						return makeArray( context.getElementsByTagName( query ), extra );
 					
 					// Speed-up: Sizzle(".CLASS")
 					} else if ( match[2] && Expr.find.CLASS && context.getElementsByClassName ) {
-						return makeArray( context.getElementsByClassName( match[2] ) );
+						return makeArray( context.getElementsByClassName( match[2] ), extra );
 					}
 				}
 				
@@ -1115,7 +1115,7 @@ if ( document.querySelectorAll ) {
 					// Speed-up: Sizzle("body")
 					// The body element only exists once, optimize finding it
 					if ( query === "body" && context.body ) {
-						return [ context.body ];
+						return makeArray( [ context.body ], extra );
 						
 					// Speed-up: Sizzle("#ID")
 					} else if ( match && match[3] ) {
@@ -1126,12 +1126,13 @@ if ( document.querySelectorAll ) {
 						if ( elem && elem.parentNode ) {
 							// Handle the case where IE and Opera return items
 							// by name instead of ID
-							if ( elem.id !== match[3] ) {
-								return Sizzle( query, context );
+							if ( elem.id === match[3] ) {
+								return makeArray( [ elem ], extra );
 							}
+							
+						} else {
+							return makeArray( [], extra );
 						}
-
-						return elem ? [ elem ] : [];
 					}
 					
 					try {
