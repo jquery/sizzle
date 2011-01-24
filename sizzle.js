@@ -221,21 +221,9 @@ Sizzle.find = function( expr, context, isXML ) {
 	}
 
 	if ( !set ) {
-		if ( typeof context.getElementsByTagName !== "undefined" ) {
-			set = context.getElementsByTagName( "*" );
-
-		// Handle Document Fragments that don't have gEBTN
-		} else {
-			set = [];
-
-			// Should probably recurse through the whole fragment
-			var cur = context.firstChild;
-
-			while ( cur ) {
-				set.push( cur );
-				cur = cur.nextSibling;
-			}
-		}
+		set = typeof context.getElementsByTagName !== "undefined" ?
+			context.getElementsByTagName( "*" ) :
+			[];
 	}
 
 	return { set: set, expr: expr };
