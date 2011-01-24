@@ -550,7 +550,7 @@ var Expr = Sizzle.selectors = {
 			}
 
 			// Handle if an un-quoted value was used
-			match[4] = match[4] || match[5];
+			match[4] = match[4] || match[5] || "";
 
 			if ( match[2] === "~=" ) {
 				match[4] = " " + match[4] + " ";
