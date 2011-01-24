@@ -221,7 +221,21 @@ Sizzle.find = function( expr, context, isXML ) {
 	}
 
 	if ( !set ) {
-		set = context.getElementsByTagName( "*" );
+		if ( typeof context.getElementsByTagName !== "undefined" ) {
+			set = context.getElementsByTagName( "*" );
+
+		// Handle Document Fragments that don't have gEBTN
+		} else {
+			set = [];
+
+			// Should probably recurse through the whole fragment
+			var cur = context.firstChild;
+
+			while ( cur ) {
+				set.push( cur );
+				cur = cur.nextSibling;
+			}
+		}
 	}
 
 	return { set: set, expr: expr };
@@ -464,7 +478,9 @@ var Expr = Sizzle.selectors = {
 		},
 
 		TAG: function( match, context ) {
-			return context.getElementsByTagName( match[1] );
+			if ( typeof context.getElementsByTagName !== "undefined" ) {
+				return context.getElementsByTagName( match[1] );
+			}
 		}
 	},
 	preFilter: {
