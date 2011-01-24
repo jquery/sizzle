@@ -267,7 +267,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect(41);
+	expect(43);
 
 	t( "Attribute Exists", "a[title]", ["google"] );
 	t( "Attribute Exists", "*[title]", ["google"] );
@@ -331,6 +331,9 @@ test("attributes", function() {
 
 	t("Find escaped attribute value", "input[name=foo\\.baz]", ["attrbad1"]);
 	t("Find escaped attribute value", "input[name=foo\\[baz\\]]", ["attrbad2"]);
+	
+	t("input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"]);
+	t("input[type=search]", "#form input[type=search]", ["search"]);
 
 	attrbad.remove();
 });
