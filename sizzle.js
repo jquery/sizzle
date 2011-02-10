@@ -502,7 +502,7 @@ var Expr = Sizzle.selectors = {
 		},
 
 		TAG: function( match, curLoop ) {
-			return match[1].toLowerCase();
+			return match[1].replace( rBackslash, "" ).toLowerCase();
 		},
 
 		CHILD: function( match ) {
