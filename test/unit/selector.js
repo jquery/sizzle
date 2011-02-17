@@ -265,7 +265,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect(43);
+	expect(45);
 
 	t( "Attribute Exists", "a[title]", ["google"] );
 	t( "Attribute Exists", "*[title]", ["google"] );
@@ -329,6 +329,9 @@ test("attributes", function() {
 
 	t("Find escaped attribute value", "input[name=foo\\.baz]", ["attrbad1"]);
 	t("Find escaped attribute value", "input[name=foo\\[baz\\]]", ["attrbad2"]);
+
+	t("input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"]);
+	t("input[type=search]", "#form input[type=search]", ["search"]);
 
 	attrbad.remove();
 
@@ -508,7 +511,7 @@ test("pseudo - form", function() {
 	t( "Form element :input", "#form :input", ["text1", "text2", "radio1", "radio2", "check1", "check2", "hidden1", "hidden2", "name", "search", "button", "area1", "select1", "select2", "select3", "select4", "select5"] );
 	t( "Form element :radio", "#form :radio", ["radio1", "radio2"] );
 	t( "Form element :checkbox", "#form :checkbox", ["check1", "check2"] );
-	t( "Form element :text", "#form :text:not(#search)", ["text1", "text2", "hidden2", "name"] );
+	t( "Form element :text", "#form :text", ["text1", "text2", "hidden2", "name"] );
 	t( "Form element :radio:checked", "#form :radio:checked", ["radio2"] );
 	t( "Form element :checkbox:checked", "#form :checkbox:checked", ["check1"] );
 	t( "Form element :radio:checked, :checkbox:checked", "#form :radio:checked, #form :checkbox:checked", ["radio2", "check1"] );
