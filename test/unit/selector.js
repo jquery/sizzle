@@ -228,7 +228,7 @@ test("multiple", function() {
 });
 
 test("child and adjacent", function() {
-	expect(29);
+	expect(33);
 	t( "Child", "p > a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p> a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p >a", ["simon1","google","groups","mark","yahoo","simon"] );
@@ -252,6 +252,11 @@ test("child and adjacent", function() {
 	t( "Element Preceded By", "#siblingfirst ~ em", ["siblingnext"] );
 	same( jQuery("#siblingfirst").find("~ em").get(), q("siblingnext"), "Element Preceded By with a context." );
 	same( jQuery("#siblingfirst").find("+ em").get(), q("siblingnext"), "Element Directly Preceded By with a context." );
+
+	equal( jQuery("#listWithTabIndex").length, 1, "Parent div for next test is found via ID (#8310)" );
+	equal( jQuery("#listWithTabIndex li:eq(2) ~ li").length, 1, "Find by general sibling combinator (#8310)" );
+	equal( jQuery("#__sizzle__").length, 0, "Make sure the temporary id assigned by sizzle is cleared out (#8310)" );
+	equal( jQuery("#listWithTabIndex").length, 1, "Parent div for previous test is still found via ID (#8310)" );
 
 	t( "Verify deep class selector", "div.blah > p > a", [] );
 
