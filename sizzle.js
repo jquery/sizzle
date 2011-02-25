@@ -622,9 +622,10 @@ var Expr = Sizzle.selectors = {
 		},
 
 		text: function( elem ) {
+			var attr = elem.getAttribute( 'type' );
 			// IE6 and 7 will map elem.type to 'text' for new HTML5 types (search, etc) 
 			// use getAttribute instead to test this case
-			return "text" === elem.getAttribute( 'type' );
+			return "text" === attr || ( "text" === elem.type && attr === null );
 		},
 		radio: function( elem ) {
 			return "radio" === elem.type;
