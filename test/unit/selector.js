@@ -513,10 +513,10 @@ test("pseudo - visibility", function() {
 test("pseudo - form", function() {
 	expect(8);
 
-	t( "Form element :input", "#form :input", ["text1", "text2", "radio1", "radio2", "check1", "check2", "hidden1", "hidden2", "name", "search", "button", "area1", "select1", "select2", "select3", "select4", "select5"] );
+	t( "Form element :input", "#form :input", ["text1", "text2", "radio1", "radio2", "check1", "check2", "hidden1", "hidden2", "impliedText", "name", "search", "button", "area1", "select1", "select2", "select3", "select4", "select5"] );
 	t( "Form element :radio", "#form :radio", ["radio1", "radio2"] );
 	t( "Form element :checkbox", "#form :checkbox", ["check1", "check2"] );
-	t( "Form element :text", "#form :text", ["text1", "text2", "hidden2", "name"] );
+	t( "Form element :text", "#form :text", ["text1", "text2", "hidden2", "impliedText", "name"] );
 	t( "Form element :radio:checked", "#form :radio:checked", ["radio2"] );
 	t( "Form element :checkbox:checked", "#form :checkbox:checked", ["check1"] );
 	t( "Form element :radio:checked, :checkbox:checked", "#form :radio:checked, #form :checkbox:checked", ["radio2", "check1"] );
