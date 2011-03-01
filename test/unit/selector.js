@@ -335,7 +335,8 @@ test("attributes", function() {
 	t("Find escaped attribute value", "input[name=foo\\.baz]", ["attrbad1"]);
 	t("Find escaped attribute value", "input[name=foo\\[baz\\]]", ["attrbad2"]);
 
-	t("input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"]);
+	// The :not(#impliedText) is here because of an unfixable IE6 issue where [type=text] matches <input>
+	t("input[type=text]", "#form input[type=text]:not(#impliedText)", ["text1", "text2", "hidden2", "name"]);
 	t("input[type=search]", "#form input[type=search]", ["search"]);
 
 	attrbad.remove();
