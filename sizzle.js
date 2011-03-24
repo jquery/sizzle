@@ -1203,7 +1203,11 @@ if ( document.querySelectorAll ) {
 (function(){
 	var html = document.documentElement,
 		matches = html.matchesSelector || html.mozMatchesSelector || html.webkitMatchesSelector || html.msMatchesSelector,
-		pseudoWorks = false;
+		pseudoWorks = false,
+
+		// Check to see if it's possible to do matchesSelector
+		// on a disconnected node (IE 9 fails this)
+		disconnectedMatch = !matches.call( document.createElement( "div" ), "div" );
 
 	try {
 		// This should fail with an exception
@@ -1222,7 +1226,15 @@ if ( document.querySelectorAll ) {
 			if ( !Sizzle.isXML( node ) ) {
 				try { 
 					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) && !/!=/.test( expr ) ) {
-						return matches.call( node, expr );
+						var ret = matches.call( node, expr );
+
+						// IE 9's matchesSelector returns false on disconnected nodes
+						if ( ret || !disconnectedMatch ||
+								// As well, disconnected nodes are said to be in a document
+								// fragment in IE 9, so check for that
+								node.document && node.document.nodeType !== 11 ) {
+							return ret;
+						}
 					}
 				} catch(e) {}
 			}
