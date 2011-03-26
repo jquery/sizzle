@@ -341,8 +341,8 @@ test("attributes", function() {
 	t("input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"]);
 	t("input[type=search]", "#form input[type=search]", ["search"]);
 	
-	same( matches("[data-foo]", [document.getElementById("main"), document.getElementById("firstp")]), q("main"), "matchesSelector for attribute with no value" );
-	same( matches("[data-bar]", [document.getElementById("main"), document.getElementById("firstp")]), q("main"), "matchesSelector for attribute with a value" );	
+	same( matches("[data-foo]", [document.getElementById("main"), document.getElementById("firstp")]), q("main"), ".matches() using attribute selector against attribute with no value" );
+	same( matches("[data-bar]", [document.getElementById("main"), document.getElementById("firstp")]), q("main"), ".matches() using attribute selector against attribute with a value" );	
 
 	attrbad.remove();
 
