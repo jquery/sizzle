@@ -818,6 +818,8 @@ var Expr = Sizzle.selectors = {
 				type === "~=" ?
 				(" " + value + " ").indexOf(check) >= 0 :
 				!check ?
+				!type && value === "" ?
+        result === value :
 				value && result !== false :
 				type === "!=" ?
 				value !== check :
