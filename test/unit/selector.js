@@ -272,7 +272,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect(45);
+	expect(47);
 
 	t( "Attribute Exists", "a[title]", ["google"] );
 	t( "Attribute Exists", "*[title]", ["google"] );
@@ -312,7 +312,8 @@ test("attributes", function() {
 	t( "Attribute Is Not Equal", "#ap a[hreflang!='en']", ["google","groups","anchor1"] );
 
 	var opt = document.getElementById("option1a"),
-		match = (window.Sizzle || window.jQuery.find).matchesSelector;
+		match = (window.Sizzle || window.jQuery.find).matchesSelector,
+		matches = (window.Sizzle || window.jQuery.find).matches;
 
 	opt.setAttribute("test", "");
 
@@ -339,6 +340,9 @@ test("attributes", function() {
 
 	t("input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"]);
 	t("input[type=search]", "#form input[type=search]", ["search"]);
+	
+	same( matches("[data-foo]", [document.getElementById("main"), document.getElementById("firstp")]), q("main"), "matchesSelector for attribute with no value" );
+	same( matches("[data-bar]", [document.getElementById("main"), document.getElementById("firstp")]), q("main"), "matchesSelector for attribute with a value" );	
 
 	attrbad.remove();
 
