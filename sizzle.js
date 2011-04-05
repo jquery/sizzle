@@ -12,7 +12,8 @@ var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[
 	hasDuplicate = false,
 	baseHasDuplicate = true,
 	rBackslash = /\\/g,
-	rNonWord = /\W/;
+	rNonWord = /\W/,
+content;
 
 // Here we check if the JavaScript engine is using some sort of
 // optimization where it does not always call our comparision
@@ -705,8 +706,9 @@ var Expr = Sizzle.selectors = {
 				return filter( elem, i, match, array );
 
 			} else if ( name === "contains" ) {
-				if(/^\/(.+)\//.test(match[3])) return new RegExp(match[3].slice(1,match[3].lastIndexOf("/")),match[3].substr(match[3].lastIndexOf("/")+1)).test(elem.textContent || elem.innerText || Sizzle.getText([ elem ]) || "")
-				return (elem.textContent || elem.innerText || Sizzle.getText([ elem ]) || "").indexOf(match[3]) >= 0;
+content = elem.textContent || elem.innerText || Sizzle.getText([ elem ]) || "";
+return /^\/(.+)\//.test(match[3]) ? new RegExp(match[3].slice(1,match[3].lastIndexOf("/")),match[3].substr(match[3].lastIndexOf("/")+1)).test( content ) :
+content.indexOf( match[ 3 ] ) >= 0;
 
 			} else if ( name === "not" ) {
 				var not = match[3];
