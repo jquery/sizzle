@@ -661,6 +661,10 @@ var Expr = Sizzle.selectors = {
 
 		input: function( elem ) {
 			return (/input|select|textarea|button/i).test( elem.nodeName );
+		},
+
+		focus: function( elem ) {
+			return elem === elem.ownerDocument.activeElement;
 		}
 	},
 	setFilters: {

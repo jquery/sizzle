@@ -406,7 +406,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect(7);
+	expect(10);
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
@@ -419,6 +419,24 @@ test("pseudo - misc", function() {
 
 	t( "Text Contains", "a:contains(Google Groups (Link))", ["groups"] );
 	t( "Text Contains", "a:contains((Link))", ["groups"] );
+
+	var input = document.createElement("input");
+	input.type = "text";
+	input.id = "focus-input";
+
+	document.body.appendChild( input );
+
+	input.focus();
+
+	t( "Element focused", "input:focus", [ "focus-input" ] );
+
+	ok( (window.Sizzle || window.jQuery.find).matchesSelector( input, ":focus" ), ":focus Matches" );
+
+	input.blur();
+
+	ok( !(window.Sizzle || window.jQuery.find).matchesSelector( input, ":focus" ), ":focus Doesn't Match" );
+
+	document.body.removeChild( input );
 });
 
 
