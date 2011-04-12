@@ -645,7 +645,8 @@ var Expr = Sizzle.selectors = {
 		},
 
 		submit: function( elem ) {
-			return elem.nodeName.toLowerCase() === "input" && "submit" === elem.type;
+			var name = elem.nodeName.toLowerCase();
+			return (name === "input" || name === "button") && "submit" === elem.type;
 		},
 
 		image: function( elem ) {
@@ -657,8 +658,8 @@ var Expr = Sizzle.selectors = {
 		},
 
 		button: function( elem ) {
-			return elem.nodeName.toLowerCase() === "input" && "button" === elem.type ||
-				elem.nodeName.toLowerCase() === "button";
+			var name = elem.nodeName.toLowerCase();
+			return name === "input" && "button" === elem.type || name === "button";
 		},
 
 		input: function( elem ) {
