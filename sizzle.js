@@ -625,38 +625,40 @@ var Expr = Sizzle.selectors = {
 			var attr = elem.getAttribute( "type" ), type = elem.type;
 			// IE6 and 7 will map elem.type to 'text' for new HTML5 types (search, etc) 
 			// use getAttribute instead to test this case
-			return "text" === type && ( attr === type || attr === null );
+			return elem.nodeName.toLowerCase() === "input" && "text" === type && ( attr === type || attr === null );
 		},
 
 		radio: function( elem ) {
-			return "radio" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "radio" === elem.type;
 		},
 
 		checkbox: function( elem ) {
-			return "checkbox" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "checkbox" === elem.type;
 		},
 
 		file: function( elem ) {
-			return "file" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "file" === elem.type;
 		},
+
 		password: function( elem ) {
-			return "password" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "password" === elem.type;
 		},
 
 		submit: function( elem ) {
-			return "submit" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "submit" === elem.type;
 		},
 
 		image: function( elem ) {
-			return "image" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "image" === elem.type;
 		},
 
 		reset: function( elem ) {
-			return "reset" === elem.type;
+			return elem.nodeName.toLowerCase() === "input" && "reset" === elem.type;
 		},
 
 		button: function( elem ) {
-			return "button" === elem.type || elem.nodeName.toLowerCase() === "button";
+			return elem.nodeName.toLowerCase() === "input" && "button" === elem.type ||
+				elem.nodeName.toLowerCase() === "button";
 		},
 
 		input: function( elem ) {
