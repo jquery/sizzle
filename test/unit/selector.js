@@ -550,7 +550,7 @@ test("pseudo - form", function() {
 
 test("disconnected nodes", function() {
 	expect(4);
-	var $opt = jQuery( '<option value="whipit">Whip It</option>' ).appendTo("#main").detach();
+	var $opt = jQuery('<option></option>').attr("value", "whipit").appendTo("#main").detach();
 	equal( $opt.val(), "whipit", "option value" );
 	equal( $opt.is(":selected"), false, "unselected option" );
 	$opt.attr("selected", true);
