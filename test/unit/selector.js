@@ -10,7 +10,7 @@ test("element", function() {
 		if ( all[i].nodeType == 8 )
 			good = false;
 	ok( good, "Select all elements, no comment nodes" );
-	t( "Element Selector", "#main p", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Element Selector", "#qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
 	t( "Element Selector", "body", ["body"] );
 	t( "Element Selector", "html", ["html"] );
 	t( "Parent Element", "div p", ["firstp","ap","sndp","en","sap","first"] );
@@ -31,7 +31,7 @@ test("element", function() {
 
 	t( "Checking sort order", "h2, h1", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Checking sort order", "h2:first, h1:first", ["qunit-header", "qunit-banner"] );
-	t( "Checking sort order", "#main p, #main p a", ["firstp", "simon1", "ap", "google", "groups", "anchor1", "mark", "sndp", "en", "yahoo", "sap", "anchor2", "simon", "first"] );
+	t( "Checking sort order", "#qunit-fixture p, #qunit-fixture p a", ["firstp", "simon1", "ap", "google", "groups", "anchor1", "mark", "sndp", "en", "yahoo", "sap", "anchor2", "simon", "first"] );
 
 	// Test Conflict ID
 	same( jQuery("#lengthtest").find("#idTest").get(), q("idTest"), "Finding element with id of ID." );
@@ -130,7 +130,7 @@ test("id", function() {
 	t( "All Children of ID", "#foo > *", ["sndp", "en", "sap"] );
 	t( "All Children of ID with no children", "#firstUL > *", [] );
 
-	var a = jQuery('<div><a name="tName1">tName1 A</a><a name="tName2">tName2 A</a><div id="tName1">tName1 Div</div></div>').appendTo('#main');
+	var a = jQuery('<div><a name="tName1">tName1 A</a><a name="tName2">tName2 A</a><div id="tName1">tName1 Div</div></div>').appendTo('#qunit-fixture');
 	equals( jQuery("#tName1")[0].id, 'tName1', "ID selector with same value for a name attribute" );
 	equals( jQuery("#tName2").length, 0, "ID selector non-existing but name attribute on an A tag" );
 	a.remove();
@@ -208,7 +208,7 @@ test("name", function() {
 
 	form.remove();
 
-	var a = jQuery('<div><a id="tName1ID" name="tName1">tName1 A</a><a id="tName2ID" name="tName2">tName2 A</a><div id="tName1">tName1 Div</div></div>').appendTo('#main').children();
+	var a = jQuery('<div><a id="tName1ID" name="tName1">tName1 A</a><a id="tName2ID" name="tName2">tName2 A</a><div id="tName1">tName1 Div</div></div>').appendTo('#qunit-fixture').children();
 
 	equals( a.length, 3, "Make sure the right number of elements were inserted." );
 	equals( a[1].id, "tName2ID", "Make sure the right number of elements were inserted." );
@@ -223,10 +223,10 @@ test("name", function() {
 test("multiple", function() {
 	expect(4);
 
-	t( "Comma Support", "h2, #main p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
-	t( "Comma Support", "h2 , #main p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
-	t( "Comma Support", "h2 , #main p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
-	t( "Comma Support", "h2,#main p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
+	t( "Comma Support", "h2, #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
+	t( "Comma Support", "h2 , #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
+	t( "Comma Support", "h2 , #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
+	t( "Comma Support", "h2,#qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
 });
 
 test("child and adjacent", function() {
@@ -238,16 +238,16 @@ test("child and adjacent", function() {
 	t( "Child w/ Class", "p > a.blog", ["mark","simon"] );
 	t( "All Children", "code > *", ["anchor1","anchor2"] );
 	t( "All Grandchildren", "p > * > *", ["anchor1","anchor2"] );
-	t( "Adjacent", "#main a + a", ["groups"] );
-	t( "Adjacent", "#main a +a", ["groups"] );
-	t( "Adjacent", "#main a+ a", ["groups"] );
-	t( "Adjacent", "#main a+a", ["groups"] );
+	t( "Adjacent", "#qunit-fixture a + a", ["groups"] );
+	t( "Adjacent", "#qunit-fixture a +a", ["groups"] );
+	t( "Adjacent", "#qunit-fixture a+ a", ["groups"] );
+	t( "Adjacent", "#qunit-fixture a+a", ["groups"] );
 	t( "Adjacent", "p + p", ["ap","en","sap"] );
 	t( "Adjacent", "p#firstp + p", ["ap"] );
 	t( "Adjacent", "p[lang=en] + p", ["sap"] );
 	t( "Adjacent", "a.GROUPS + code + a", ["mark"] );
-	t( "Comma, Child, and Adjacent", "#main a + a, code > a", ["groups","anchor1","anchor2"] );
-	t( "Element Preceded By", "#main p ~ div", ["foo", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
+	t( "Comma, Child, and Adjacent", "#qunit-fixture a + a, code > a", ["groups","anchor1","anchor2"] );
+	t( "Element Preceded By", "#qunit-fixture p ~ div", ["foo", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
 	t( "Element Preceded By", "#first ~ div", ["moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
 	t( "Element Preceded By", "#groups ~ a", ["mark"] );
 	t( "Element Preceded By", "#length ~ input", ["idTest"] );
@@ -354,16 +354,16 @@ test("attributes", function() {
 
 test("pseudo - child", function() {
 	expect(38);
-	t( "First Child", "#main p:first-child", ["firstp","sndp"] );
+	t( "First Child", "#qunit-fixture p:first-child", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
-	t( "Only Child", "#main a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
+	t( "Only Child", "#qunit-fixture a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
 	t( "Empty", "ul:empty", ["firstUL"] );
-	t( "Is A Parent", "#main p:parent", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Is A Parent", "#qunit-fixture p:parent", ["firstp","ap","sndp","en","sap","first"] );
 
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
 	t( "Nth Child", "p:nth-child(1)", ["firstp","sndp"] );
 	t( "Nth Child With Whitespace", "p:nth-child( 1 )", ["firstp","sndp"] );
-	t( "Not Nth Child", "#main p:not(:nth-child(1))", ["ap","en","sap","first"] );
+	t( "Not Nth Child", "#qunit-fixture p:not(:nth-child(1))", ["ap","en","sap","first"] );
 
 	// Verify that the child position isn't being cached improperly
 	jQuery("p:first-child").after("<div></div>");
@@ -374,10 +374,10 @@ test("pseudo - child", function() {
 	QUnit.reset();
 
 	t( "Last Child", "p:last-child", ["sap"] );
-	t( "Last Child", "#main a:last-child", ["simon1","anchor1","mark","yahoo","anchor2","simon","liveLink1","liveLink2"] );
+	t( "Last Child", "#qunit-fixture a:last-child", ["simon1","anchor1","mark","yahoo","anchor2","simon","liveLink1","liveLink2"] );
 
-	t( "Nth-child", "#main form#form > *:nth-child(2)", ["text1"] );
-	t( "Nth-child", "#main form#form > :nth-child(2)", ["text1"] );
+	t( "Nth-child", "#qunit-fixture form#form > *:nth-child(2)", ["text1"] );
+	t( "Nth-child", "#qunit-fixture form#form > :nth-child(2)", ["text1"] );
 
 	t( "Nth-child", "#form select:first option:nth-child(-1)", [] );
 	t( "Nth-child", "#form select:first option:nth-child(3)", ["option1c"] );
@@ -429,16 +429,16 @@ test("pseudo - :not", function() {
 	t( "Not - multiple", "#form option:not(:contains(Nothing),#option1b,:selected)", ["option1c", "option1d", "option2b", "option2c", "option3d", "option3e", "option4e", "option5b", "option5c"] );
 	t( "Not - recursive", "#form option:not(:not(:selected))[id^='option3']", [ "option3b", "option3c"] );
 
-	t( ":not() failing interior", "#main p:not(.foo)", ["firstp","ap","sndp","en","sap","first"] );
-	t( ":not() failing interior", "#main p:not(div.foo)", ["firstp","ap","sndp","en","sap","first"] );
-	t( ":not() failing interior", "#main p:not(p.foo)", ["firstp","ap","sndp","en","sap","first"] );
-	t( ":not() failing interior", "#main p:not(#blargh)", ["firstp","ap","sndp","en","sap","first"] );
-	t( ":not() failing interior", "#main p:not(div#blargh)", ["firstp","ap","sndp","en","sap","first"] );
-	t( ":not() failing interior", "#main p:not(p#blargh)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not() failing interior", "#qunit-fixture p:not(.foo)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not() failing interior", "#qunit-fixture p:not(div.foo)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not() failing interior", "#qunit-fixture p:not(p.foo)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not() failing interior", "#qunit-fixture p:not(#blargh)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not() failing interior", "#qunit-fixture p:not(div#blargh)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not() failing interior", "#qunit-fixture p:not(p#blargh)", ["firstp","ap","sndp","en","sap","first"] );
 
-	t( ":not Multiple", "#main p:not(a)", ["firstp","ap","sndp","en","sap","first"] );
-	t( ":not Multiple", "#main p:not(a, b)", ["firstp","ap","sndp","en","sap","first"] );
-	t( ":not Multiple", "#main p:not(a, b, div)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not Multiple", "#qunit-fixture p:not(a)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not Multiple", "#qunit-fixture p:not(a, b)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not Multiple", "#qunit-fixture p:not(a, b, div)", ["firstp","ap","sndp","en","sap","first"] );
 	t( ":not Multiple", "p:not(p)", [] );
 	t( ":not Multiple", "p:not(a,p)", [] );
 	t( ":not Multiple", "p:not(p,a)", [] );
@@ -458,14 +458,14 @@ test("pseudo - :not", function() {
 
 test("pseudo - position", function() {
 	expect(25);
-	t( "nth Element", "#main p:nth(1)", ["ap"] );
-	t( "First Element", "#main p:first", ["firstp"] );
+	t( "nth Element", "#qunit-fixture p:nth(1)", ["ap"] );
+	t( "First Element", "#qunit-fixture p:first", ["firstp"] );
 	t( "Last Element", "p:last", ["first"] );
-	t( "Even Elements", "#main p:even", ["firstp","sndp","sap"] );
-	t( "Odd Elements", "#main p:odd", ["ap","en","first"] );
-	t( "Position Equals", "#main p:eq(1)", ["ap"] );
-	t( "Position Greater Than", "#main p:gt(0)", ["ap","sndp","en","sap","first"] );
-	t( "Position Less Than", "#main p:lt(3)", ["firstp","ap","sndp"] );
+	t( "Even Elements", "#qunit-fixture p:even", ["firstp","sndp","sap"] );
+	t( "Odd Elements", "#qunit-fixture p:odd", ["ap","en","first"] );
+	t( "Position Equals", "#qunit-fixture p:eq(1)", ["ap"] );
+	t( "Position Greater Than", "#qunit-fixture p:gt(0)", ["ap","sndp","en","sap","first"] );
+	t( "Position Less Than", "#qunit-fixture p:lt(3)", ["firstp","ap","sndp"] );
 
 	t( "Check position filtering", "div#nothiddendiv:eq(0)", ["nothiddendiv"] );
 	t( "Check position filtering", "div#nothiddendiv:last", ["nothiddendiv"] );
@@ -494,7 +494,7 @@ test("pseudo - visibility", function() {
 	t( "Is Visible", "#form input:visible", [] );
 	t( "Is Visible", "div:visible:not(#qunit-testrunner-toolbar):lt(2)", ["nothiddendiv", "nothiddendivchild"] );
 	t( "Is Hidden", "#form input:hidden", ["text1","text2","radio1","radio2","check1","check2","hidden1","hidden2","name","search"] );
-	t( "Is Hidden", "#main:hidden", ["main"] );
+	t( "Is Hidden", "#qunit-fixture:hidden", ["main"] );
 	t( "Is Hidden", "#dl:hidden", ["dl"] );
 
 	var $div = jQuery('<div/>').appendTo("body");
@@ -532,7 +532,7 @@ test("pseudo - form", function() {
 
 test("disconnected nodes", function() {
 	expect(4);
-	var $opt = jQuery( '<option value="whipit">Whip It</option>' ).appendTo("#main").detach();
+	var $opt = jQuery('<option></option>').attr("value", "whipit").appendTo("#qunit-fixture").detach();
 	equal( $opt.val(), "whipit", "option value" );
 	equal( $opt.is(":selected"), false, "unselected option" );
 	$opt.attr("selected", true);
