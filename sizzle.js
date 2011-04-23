@@ -626,7 +626,7 @@ var Expr = Sizzle.selectors = {
 			// IE6 and 7 will map elem.type to 'text' for new HTML5 types (search, etc) 
 			// use getAttribute instead to test this case
 			return elem.nodeName.toLowerCase() === "input" && "text" === type &&
-				( (attr && attr.toLowerCase() === type) || attr === null );
+				( attr === null || attr.toLowerCase() === type );
 		},
 
 		radio: function( elem ) {
