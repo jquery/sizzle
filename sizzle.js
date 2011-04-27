@@ -995,22 +995,24 @@ if ( document.documentElement.compareDocumentPosition ) {
 
 // Utility function for retreiving the text value of an array of DOM nodes
 Sizzle.getText = function( elems ) {
-	var ret = "", elem;
+	var elem, nodeType,
+	    ret = [];
 
 	for ( var i = 0; elems[i]; i++ ) {
 		elem = elems[i];
+		nodeType = elem.nodeType;
 
 		// Get the text from text nodes and CDATA nodes
-		if ( elem.nodeType === 3 || elem.nodeType === 4 ) {
-			ret += elem.nodeValue;
+		if ( nodeType === 3 || nodeType === 4 ) {
+			ret[ ret.length ] = elem.nodeValue;
 
 		// Traverse everything else, except comment nodes
-		} else if ( elem.nodeType !== 8 ) {
-			ret += Sizzle.getText( elem.childNodes );
+		} else if ( nodeType !== 8 ) {
+			ret[ ret.length ] = Sizzle.getText( elem.childNodes );
 		}
 	}
 
-	return ret;
+	return ret.join( '' );
 };
 
 // Check to see if the browser returns elements by name when
