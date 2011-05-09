@@ -406,7 +406,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect(10);
+	expect(19);
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
@@ -419,6 +419,30 @@ test("pseudo - misc", function() {
 
 	t( "Text Contains", "a:contains(Google Groups (Link))", ["groups"] );
 	t( "Text Contains", "a:contains((Link))", ["groups"] );
+
+	var tmp = document.createElement("div");
+	tmp.id = "tmp_input";
+	document.body.appendChild( tmp );
+
+	jQuery.each( [ "button", "submit", "reset" ], function( i, type ) {
+		var input = document.createElement( "input" );
+		input.id = "input_" + type;
+		input.setAttribute( "type", type );
+		tmp.appendChild( input );
+
+		var button = document.createElement( "button" );
+		button.id = "button_" + type;
+		button.setAttribute( "type", type );
+		tmp.appendChild( button );
+
+		t( "Input Buttons :" + type, "#tmp_input :" + type, [ "input_" + type, "button_" + type ] );
+
+		ok( (window.Sizzle || window.jQuery.find).matchesSelector( input, ":" + type ), "Input Matches :" + type );
+		ok( (window.Sizzle || window.jQuery.find).matchesSelector( button, ":" + type ), "Button Matches :" + type );
+	});
+
+
+	document.body.removeChild( tmp );
 
 	var input = document.createElement("input");
 	input.type = "text";

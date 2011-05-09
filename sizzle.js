@@ -654,7 +654,8 @@ var Expr = Sizzle.selectors = {
 		},
 
 		reset: function( elem ) {
-			return elem.nodeName.toLowerCase() === "input" && "reset" === elem.type;
+			var name = elem.nodeName.toLowerCase();
+			return (name === "input" || name === "button") && "reset" === elem.type;
 		},
 
 		button: function( elem ) {
