@@ -933,6 +933,10 @@ if ( document.documentElement.compareDocumentPosition ) {
 			hasDuplicate = true;
 			return 0;
 
+		// Fallback to using sourceIndex (in IE) if it's available on both nodes
+		} else if ( a.sourceIndex && b.sourceIndex ) {
+			return a.sourceIndex - b.sourceIndex;
+
 		// If the nodes are siblings (or identical) we can do a quick check
 		} else if ( aup === bup ) {
 			return siblingCheck( a, b );
