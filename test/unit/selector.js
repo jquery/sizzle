@@ -425,20 +425,13 @@ test("pseudo - misc", function() {
 	document.body.appendChild( tmp );
 
 	jQuery.each( [ "button", "submit", "reset" ], function( i, type ) {
-		var input = document.createElement( "input" );
-		input.id = "input_" + type;
-		input.setAttribute( "type", type );
-		tmp.appendChild( input );
-
-		var button = document.createElement( "button" );
-		button.id = "button_" + type;
-		button.setAttribute( "type", type );
-		tmp.appendChild( button );
+		jQuery( tmp ).append( 
+			"<input id='input_T' type='T'/><button id='button_T' type='T'>test</button>".replace(/T/g, type) );
 
 		t( "Input Buttons :" + type, "#tmp_input :" + type, [ "input_" + type, "button_" + type ] );
 
-		ok( (window.Sizzle || window.jQuery.find).matchesSelector( input, ":" + type ), "Input Matches :" + type );
-		ok( (window.Sizzle || window.jQuery.find).matchesSelector( button, ":" + type ), "Button Matches :" + type );
+		ok( (window.Sizzle || window.jQuery.find).matchesSelector( jQuery("#input_" + type)[0], ":" + type ), "Input Matches :" + type );
+		ok( (window.Sizzle || window.jQuery.find).matchesSelector( jQuery("#button_" + type)[0], ":" + type ), "Button Matches :" + type );
 	});
 
 
