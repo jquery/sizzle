@@ -921,13 +921,6 @@ if ( document.documentElement.compareDocumentPosition ) {
 
 } else {
 	sortOrder = function( a, b ) {
-		var al, bl,
-			ap = [],
-			bp = [],
-			aup = a.parentNode,
-			bup = b.parentNode,
-			cur = aup;
-
 		// The nodes are identical, we can exit early
 		if ( a === b ) {
 			hasDuplicate = true;
@@ -936,9 +929,17 @@ if ( document.documentElement.compareDocumentPosition ) {
 		// Fallback to using sourceIndex (in IE) if it's available on both nodes
 		} else if ( a.sourceIndex && b.sourceIndex ) {
 			return a.sourceIndex - b.sourceIndex;
+		}
+
+		var al, bl,
+			ap = [],
+			bp = [],
+			aup = a.parentNode,
+			bup = b.parentNode,
+			cur = aup;
 
 		// If the nodes are siblings (or identical) we can do a quick check
-		} else if ( aup === bup ) {
+		if ( aup === bup ) {
 			return siblingCheck( a, b );
 
 		// If no parents were found then the nodes are disconnected
