@@ -25,7 +25,7 @@
 	</div>
 	<!-- this iframe is outside the #qunit-fixture so it won't reload constantly wasting time, but it means the tests must be "safe" and clean up after themselves -->
 	<iframe id="loadediframe" name="loadediframe" style="display:none;" src="data/iframe.html"></iframe>
-	<dl id="dl" style="position:absolute;top:-32767px;left:-32767px;">
+	<dl id="dl" style="position:absolute;top:-32767px;left:-32767px;width:1px">
 	<div id="qunit-fixture">
 		<p id="firstp">See <a id="simon1" href="http://simon.incutio.com/archive/2003/03/25/#getElementsBySelector" rel="bookmark">this blog entry</a> for more information.</p>
 		<p id="ap">
@@ -168,6 +168,10 @@ Z</textarea>
 			<select name="D4" disabled="disabled">
 				<option selected="selected" value="NO">NO</option>
 			</select>
+			<input id="list-test" type="text" />
+			<datalist id="datalist">
+				<option value="option"></option>
+			</datalist>
 		</form>
 		<div id="moretests">
 			<form>
@@ -182,6 +186,10 @@ Z</textarea>
 			<div id="t2037">
 				<div><div class="hidden">hidden</div></div>
 			</div>
+			<div id="t6652">
+				<div></div>
+			</div>
+			<div id="no-clone-exception"><object><embed></embed></object></div>
 		</div>
 
 		<div id="tabindex-tests">
