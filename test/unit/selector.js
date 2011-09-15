@@ -105,7 +105,7 @@ test("broken", function() {
 });
 
 test("id", function() {
-	expect(29);
+	expect(35);
 	t( "ID Selector", "#body", ["body"] );
 	t( "ID Selector w/ Element", "body#body", ["body"] );
 	t( "ID Selector w/ Element", "ul#first", [] );
@@ -118,10 +118,16 @@ test("id", function() {
 
 	t( "Escaped ID", "#foo\\:bar", ["foo:bar"] );
 	t( "Escaped ID", "#test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
+	t( "Escaped ID", "#foo\\\\bar", ["foo\\bar"] );
+	t( "Escaped ID", "#foo\\\\", ["foo\\"] );
 	t( "Descendant escaped ID", "div #foo\\:bar", ["foo:bar"] );
 	t( "Descendant escaped ID", "div #test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
+	t( "Descendant escaped ID", "div #foo\\\\bar", ["foo\\bar"] );
+	t( "Descendant escaped ID", "div #foo\\\\", ["foo\\"] );
 	t( "Child escaped ID", "form > #foo\\:bar", ["foo:bar"] );
 	t( "Child escaped ID", "form > #test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
+	t( "Child escaped ID", "form > #foo\\\\bar", ["foo\\bar"] );
+	t( "Child escaped ID", "form > #foo\\\\", ["foo\\"] );
 
 	t( "ID Selector, child ID present", "#form > #radio1", ["radio1"] ); // bug #267
 	t( "ID Selector, not an ancestor ID", "#form #first", [] );
@@ -151,7 +157,7 @@ test("id", function() {
 });
 
 test("class", function() {
-	expect(22);
+	expect(28);
 	t( "Class Selector", ".blog", ["mark","simon"] );
 	t( "Class Selector", ".GROUPS", ["groups"] );
 	t( "Class Selector", ".blog.link", ["simon"] );
@@ -172,10 +178,16 @@ test("class", function() {
 
 	t( "Escaped Class", ".foo\\:bar", ["foo:bar"] );
 	t( "Escaped Class", ".test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
+	t( "Escaped Class", ".foo\\\\bar", ["foo\\bar"] );
+	t( "Escaped Class", ".foo\\\\", ["foo\\"] );
 	t( "Descendant scaped Class", "div .foo\\:bar", ["foo:bar"] );
 	t( "Descendant scaped Class", "div .test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
+	t( "Descendant scaped Class", "div .foo\\\\bar", ["foo\\bar"] );
+	t( "Descendant scaped Class", "div .foo\\\\", ["foo\\"] );
 	t( "Child escaped Class", "form > .foo\\:bar", ["foo:bar"] );
 	t( "Child escaped Class", "form > .test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
+	t( "Child escaped Class", "form > .foo\\\\bar", ["foo\\bar"] );
+	t( "Child escaped Class", "form > .foo\\\\", ["foo\\"] );
 
 	var div = document.createElement("div");
 	div.innerHTML = "<div class='test e'></div><div class='test'></div>";
@@ -272,7 +284,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect(45);
+	expect(47);
 
 	t( "Attribute Exists", "a[title]", ["google"] );
 	t( "Attribute Exists", "*[title]", ["google"] );
@@ -332,10 +344,16 @@ test("attributes", function() {
 	t( "Grouped Form Elements", "input[name='foo[bar]']", ["hidden2"] );
 
 	// Make sure attribute value quoting works correctly. See: #6093
-	var attrbad = jQuery('<input type="hidden" value="2" name="foo.baz" id="attrbad1"/><input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>').appendTo("body");
+	var attrbad = jQuery(
+	        '<input type="hidden" value="2" name="foo.baz" id="attrbad1"/>' +
+	        '<input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>' +
+	        '<input type="hidden" value="2" name="foo\\baz" id="attrbad3"/>' +
+	        '<input type="hidden" value="2" name="foo\\" id="attrbad4"/>').appendTo("body");
 
 	t("Find escaped attribute value", "input[name=foo\\.baz]", ["attrbad1"]);
 	t("Find escaped attribute value", "input[name=foo\\[baz\\]]", ["attrbad2"]);
+	t("Find escaped attribute value", "input[name=foo\\\\baz]", ["attrbad3"]);
+	t("Find escaped attribute value", "input[name=foo\\\\]", ["attrbad4"]);
 
 	t("input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"]);
 	t("input[type=search]", "#form input[type=search]", ["search"]);
@@ -425,7 +443,7 @@ test("pseudo - misc", function() {
 	document.body.appendChild( tmp );
 
 	jQuery.each( [ "button", "submit", "reset" ], function( i, type ) {
-		jQuery( tmp ).append( 
+		jQuery( tmp ).append(
 			"<input id='input_T' type='T'/><button id='button_T' type='T'>test</button>".replace(/T/g, type) );
 
 		t( "Input Buttons :" + type, "#tmp_input :" + type, [ "input_" + type, "button_" + type ] );
