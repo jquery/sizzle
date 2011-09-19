@@ -196,18 +196,17 @@ Sizzle.matchesSelector = function( node, expr ) {
 };
 
 Sizzle.find = function( expr, context, isXML ) {
-	var set;
+	var set, i, len, match, type, left;
 
 	if ( !expr ) {
 		return [];
 	}
 
-	for ( var i = 0, l = Expr.order.length; i < l; i++ ) {
-		var match,
-			type = Expr.order[i];
+	for ( i = 0, len = Expr.order.length; i < len; i++ ) {
+		type = Expr.order[i];
 		
 		if ( (match = Expr.leftMatch[ type ].exec( expr )) ) {
-			var left = match[1];
+			left = match[1];
 			match.splice( 1, 1 );
 
 			if ( left.substr( left.length - 1 ) !== "\\" ) {
@@ -233,17 +232,18 @@ Sizzle.find = function( expr, context, isXML ) {
 
 Sizzle.filter = function( expr, set, inplace, not ) {
 	var match, anyFound,
+		type, found, item, filter, left,
+		i, pass,
 		old = expr,
 		result = [],
 		curLoop = set,
 		isXMLFilter = set && set[0] && Sizzle.isXML( set[0] );
 
 	while ( expr && set.length ) {
-		for ( var type in Expr.filter ) {
+		for ( type in Expr.filter ) {
 			if ( (match = Expr.leftMatch[ type ].exec( expr )) != null && match[2] ) {
-				var found, item,
-					filter = Expr.filter[ type ],
-					left = match[1];
+				filter = Expr.filter[ type ];
+				left = match[1];
 
 				anyFound = false;
 
@@ -269,10 +269,10 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 				}
 
 				if ( match ) {
-					for ( var i = 0; (item = curLoop[i]) != null; i++ ) {
+					for ( i = 0; (item = curLoop[i]) != null; i++ ) {
 						if ( item ) {
 							found = filter( item, match, i, curLoop );
-							var pass = not ^ !!found;
+							pass = not ^ found;
 
 							if ( inplace && found != null ) {
 								if ( pass ) {
@@ -798,7 +798,7 @@ var Expr = Sizzle.selectors = {
 		},
 
 		TAG: function( elem, match ) {
-			return (match === "*" && elem.nodeType === 1) || elem.nodeName.toLowerCase() === match;
+			return (match === "*" && elem.nodeType === 1) || !!elem.nodeName && elem.nodeName.toLowerCase() === match;
 		},
 		
 		CLASS: function( elem, match ) {
@@ -808,7 +808,9 @@ var Expr = Sizzle.selectors = {
 
 		ATTR: function( elem, match ) {
 			var name = match[1],
-				result = Expr.attrHandle[ name ] ?
+				result = Sizzle.attr ?
+					Sizzle.attr( elem, name ) :
+					Expr.attrHandle[ name ] ?
 					Expr.attrHandle[ name ]( elem ) :
 					elem[ name ] != null ?
 						elem[ name ] :
@@ -819,6 +821,8 @@ var Expr = Sizzle.selectors = {
 
 			return result == null ?
 				type === "!=" :
+				!type && Sizzle.attr ?
+				result != null :
 				type === "=" ?
 				value === check :
 				type === "*=" ?
