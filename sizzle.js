@@ -1005,18 +1005,21 @@ if ( document.documentElement.compareDocumentPosition ) {
 
 // Utility function for retreiving the text value of an array of DOM nodes
 Sizzle.getText = function( elems ) {
-	var ret = "", elem;
+	var nodeType = elems.nodeType,
+		ret = "";
 
-	for ( var i = 0; elems[i]; i++ ) {
-		elem = elems[i];
-
-		// Get the text from text nodes and CDATA nodes
-		if ( elem.nodeType === 3 || elem.nodeType === 4 ) {
-			ret += elem.nodeValue;
-
-		// Traverse everything else, except comment nodes
-		} else if ( elem.nodeType !== 8 ) {
-			ret += Sizzle.getText( elem.childNodes );
+	// Get text from the array elements if this is not a node
+	if ( nodeType == null ) {
+		for ( var i = 0; elems[i]; i++ ) {
+			ret += Sizzle.getText( elems[i] );
+		}
+	// Get the text from text nodes and CDATA nodes
+	} else if ( nodeType === 3 || nodeType === 4 ) {
+		ret += elems.nodeValue;
+	// Traverse everything else, except comment nodes
+	} else if ( nodeType !== 8 ) {
+		for ( var node = elems.firstChild; node; node = node.nextSibling) {
+			ret += Sizzle.getText( node );
 		}
 	}
 
