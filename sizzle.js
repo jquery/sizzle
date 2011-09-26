@@ -7,7 +7,7 @@
 (function(){
 
 var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
-	done = 0,
+	done = Math.random(),
 	toString = Object.prototype.toString,
 	hasDuplicate = false,
 	baseHasDuplicate = true,
