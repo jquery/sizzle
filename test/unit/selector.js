@@ -197,7 +197,7 @@ test("name", function() {
 	t( "Name selector non-input", "[name=div]", ["fadein"] );
 	t( "Name selector non-input", "*[name=iframe]", ["iframe"] );
 
-	t( "Name selector for grouped input", "input[name='types[]']", ["types_all", "types_anime", "types_movie"] )
+	t( "Name selector for grouped input", "input[name='types[]']", ["types_all", "types_anime", "types_movie"] );
 
 	same( jQuery("#form").find("input[name=action]").get(), q("text1"), "Name selector within the context of another element" );
 	same( jQuery("#form").find("input[name='foo[bar]']").get(), q("hidden2"), "Name selector for grouped form element within the context of another element" );

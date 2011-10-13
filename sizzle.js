@@ -7,6 +7,7 @@
 (function(){
 
 var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
+	expando = "sizcache" + (Math.random() + '').replace('.', ''),
 	done = 0,
 	toString = Object.prototype.toString,
 	hasDuplicate = false,
@@ -772,7 +773,10 @@ var Expr = Sizzle.selectors = {
 		},
 
 		CHILD: function( elem, match ) {
-			var type = match[1],
+			var first, last,
+				doneName, parent, cache,
+				count, diff,
+				type = match[1],
 				node = elem;
 
 			switch ( type ) {
@@ -800,18 +804,18 @@ var Expr = Sizzle.selectors = {
 					return true;
 
 				case "nth":
-					var first = match[2],
-						last = match[3];
+					first = match[2];
+					last = match[3];
 
 					if ( first === 1 && last === 0 ) {
 						return true;
 					}
 					
-					var doneName = match[0],
-						parent = elem.parentNode;
+					doneName = match[0];
+					parent = elem.parentNode;
 	
-					if ( parent && (parent.sizcache !== doneName || !elem.nodeIndex) ) {
-						var count = 0;
+					if ( parent && (parent[ expando ] !== doneName || !elem.nodeIndex) ) {
+						count = 0;
 						
 						for ( node = parent.firstChild; node; node = node.nextSibling ) {
 							if ( node.nodeType === 1 ) {
@@ -819,10 +823,10 @@ var Expr = Sizzle.selectors = {
 							}
 						} 
 
-						parent.sizcache = doneName;
+						parent[ expando ] = doneName;
 					}
 					
-					var diff = elem.nodeIndex - last;
+					diff = elem.nodeIndex - last;
 
 					if ( first === 0 ) {
 						return diff === 0;
@@ -1320,13 +1324,13 @@ function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 			elem = elem[dir];
 
 			while ( elem ) {
-				if ( elem.sizcache === doneName ) {
+				if ( elem[ expando ] === doneName ) {
 					match = checkSet[elem.sizset];
 					break;
 				}
 
 				if ( elem.nodeType === 1 && !isXML ){
-					elem.sizcache = doneName;
+					elem[ expando ] = doneName;
 					elem.sizset = i;
 				}
 
@@ -1353,14 +1357,14 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 			elem = elem[dir];
 
 			while ( elem ) {
-				if ( elem.sizcache === doneName ) {
+				if ( elem[ expando ] === doneName ) {
 					match = checkSet[elem.sizset];
 					break;
 				}
 
 				if ( elem.nodeType === 1 ) {
 					if ( !isXML ) {
-						elem.sizcache = doneName;
+						elem[ expando ] = doneName;
 						elem.sizset = i;
 					}
 
