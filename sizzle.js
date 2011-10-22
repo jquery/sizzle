@@ -782,7 +782,7 @@ var Expr = Sizzle.selectors = {
 			switch ( type ) {
 				case "only":
 				case "first":
-					while ( (node = node.previousSibling) )	 {
+					while ( (node = node.previousSibling) ) {
 						if ( node.nodeType === 1 ) { 
 							return false; 
 						}
@@ -795,7 +795,7 @@ var Expr = Sizzle.selectors = {
 					node = elem;
 
 				case "last":
-					while ( (node = node.nextSibling) )	 {
+					while ( (node = node.nextSibling) ) {
 						if ( node.nodeType === 1 ) { 
 							return false; 
 						}
