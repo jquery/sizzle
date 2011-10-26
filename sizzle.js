@@ -271,9 +271,13 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 				}
 
 				if ( match ) {
+					var i_among_displayed = 0;
 					for ( i = 0; (item = curLoop[i]) != null; i++ ) {
 						if ( item ) {
-							found = filter( item, match, i, curLoop );
+							if ( jQuery.css( item, "display" ) === "none" ) {
+								continue;
+							}
+							found = filter( item, match, i_among_displayed, curLoop );
 							pass = not ^ found;
 
 							if ( inplace && found != null ) {
@@ -288,6 +292,7 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 								result.push( item );
 								anyFound = true;
 							}
+							i_among_displayed++;
 						}
 					}
 				}
