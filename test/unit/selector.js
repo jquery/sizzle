@@ -14,29 +14,29 @@ test("element", function() {
 	t( "Element Selector", "body", ["body"] );
 	t( "Element Selector", "html", ["html"] );
 	t( "Parent Element", "div p", ["firstp","ap","sndp","en","sap","first"] );
-	equals( jQuery("param", "#object1").length, 2, "Object/param as context" );
+	equal( jQuery("param", "#object1").length, 2, "Object/param as context" );
 
-	same( jQuery("p", document.getElementsByTagName("div")).get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
-	same( jQuery("p", "div").get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
-	same( jQuery("p", jQuery("div")).get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
-	same( jQuery("div").find("p").get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
+	deepEqual( jQuery("p", document.getElementsByTagName("div")).get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
+	deepEqual( jQuery("p", "div").get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
+	deepEqual( jQuery("p", jQuery("div")).get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
+	deepEqual( jQuery("div").find("p").get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
 
-	same( jQuery("#form").find("select").get(), q("select1","select2","select3","select4","select5"), "Finding selects with a context." );
+	deepEqual( jQuery("#form").find("select").get(), q("select1","select2","select3","select4","select5"), "Finding selects with a context." );
 
 	ok( jQuery("#length").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
 	ok( jQuery("#lengthtest input").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
 
 	// Check for unique-ness and sort order
-	same( jQuery("p, div p").get(), jQuery("p").get(), "Check for duplicates: p, div p" );
+	deepEqual( jQuery("p, div p").get(), jQuery("p").get(), "Check for duplicates: p, div p" );
 
 	t( "Checking sort order", "h2, h1", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Checking sort order", "h2:first, h1:first", ["qunit-header", "qunit-banner"] );
 	t( "Checking sort order", "#qunit-fixture p, #qunit-fixture p a", ["firstp", "simon1", "ap", "google", "groups", "anchor1", "mark", "sndp", "en", "yahoo", "sap", "anchor2", "simon", "first"] );
 
 	// Test Conflict ID
-	same( jQuery("#lengthtest").find("#idTest").get(), q("idTest"), "Finding element with id of ID." );
-	same( jQuery("#lengthtest").find("[name='id']").get(), q("idTest"), "Finding element with id of ID." );
-	same( jQuery("#lengthtest").find("input[id='idTest']").get(), q("idTest"), "Finding elements with a context." );
+	deepEqual( jQuery("#lengthtest").find("#idTest").get(), q("idTest"), "Finding element with id of ID." );
+	deepEqual( jQuery("#lengthtest").find("[name='id']").get(), q("idTest"), "Finding element with id of ID." );
+	deepEqual( jQuery("#lengthtest").find("input[id='idTest']").get(), q("idTest"), "Finding elements with a context." );
 });
 
 if ( location.protocol != "file:" ) {
@@ -44,14 +44,14 @@ if ( location.protocol != "file:" ) {
 		expect(9);
 		stop();
 		jQuery.get("data/with_fries.xml", function(xml) {
-			equals( jQuery("foo_bar", xml).length, 1, "Element Selector with underscore" );
-			equals( jQuery(".component", xml).length, 1, "Class selector" );
-			equals( jQuery("[class*=component]", xml).length, 1, "Attribute selector for class" );
-			equals( jQuery("property[name=prop2]", xml).length, 1, "Attribute selector with name" );
-			equals( jQuery("[name=prop2]", xml).length, 1, "Attribute selector with name" );
-			equals( jQuery("#seite1", xml).length, 1, "Attribute selector with ID" );
-			equals( jQuery("component#seite1", xml).length, 1, "Attribute selector with ID" );
-			equals( jQuery("component", xml).filter("#seite1").length, 1, "Attribute selector filter with ID" );
+			equal( jQuery("foo_bar", xml).length, 1, "Element Selector with underscore" );
+			equal( jQuery(".component", xml).length, 1, "Class selector" );
+			equal( jQuery("[class*=component]", xml).length, 1, "Attribute selector for class" );
+			equal( jQuery("property[name=prop2]", xml).length, 1, "Attribute selector with name" );
+			equal( jQuery("[name=prop2]", xml).length, 1, "Attribute selector with name" );
+			equal( jQuery("#seite1", xml).length, 1, "Attribute selector with ID" );
+			equal( jQuery("component#seite1", xml).length, 1, "Attribute selector with ID" );
+			equal( jQuery("component", xml).filter("#seite1").length, 1, "Attribute selector filter with ID" );
 			ok( jQuery( xml.lastChild ).is( "soap\\:Envelope" ), "Check for namespaced element" );
 			start();
 		});
@@ -131,15 +131,15 @@ test("id", function() {
 	t( "All Children of ID with no children", "#firstUL > *", [] );
 
 	var a = jQuery('<div><a name="tName1">tName1 A</a><a name="tName2">tName2 A</a><div id="tName1">tName1 Div</div></div>').appendTo('#qunit-fixture');
-	equals( jQuery("#tName1")[0].id, 'tName1', "ID selector with same value for a name attribute" );
-	equals( jQuery("#tName2").length, 0, "ID selector non-existing but name attribute on an A tag" );
+	equal( jQuery("#tName1")[0].id, 'tName1', "ID selector with same value for a name attribute" );
+	equal( jQuery("#tName2").length, 0, "ID selector non-existing but name attribute on an A tag" );
 	a.remove();
 
 	t( "ID Selector on Form with an input that has a name of 'id'", "#lengthtest", ["lengthtest"] );
 
 	t( "ID selector with non-existant ancestor", "#asdfasdf #foobar", [] ); // bug #986
 
-	same( jQuery("body").find("div#form").get(), [], "ID selector within the context of another element" );
+	deepEqual( jQuery("body").find("div#form").get(), [], "ID selector within the context of another element" );
 
 	//#7533
 	equal( jQuery("<div id=\"A'B~C.D[E]\"><p>foo</p></div>").find("p").length, 1, "Find where context root is a node and has an ID with CSS3 meta characters" );
@@ -158,10 +158,10 @@ test("class", function() {
 	t( "Class Selector w/ Element", "a.blog", ["mark","simon"] );
 	t( "Parent Class Selector", "p .blog", ["mark","simon"] );
 
-	same( jQuery(".blog", document.getElementsByTagName("p")).get(), q("mark", "simon"), "Finding elements with a context." );
-	same( jQuery(".blog", "p").get(), q("mark", "simon"), "Finding elements with a context." );
-	same( jQuery(".blog", jQuery("p")).get(), q("mark", "simon"), "Finding elements with a context." );
-	same( jQuery("p").find(".blog").get(), q("mark", "simon"), "Finding elements with a context." );
+	deepEqual( jQuery(".blog", document.getElementsByTagName("p")).get(), q("mark", "simon"), "Finding elements with a context." );
+	deepEqual( jQuery(".blog", "p").get(), q("mark", "simon"), "Finding elements with a context." );
+	deepEqual( jQuery(".blog", jQuery("p")).get(), q("mark", "simon"), "Finding elements with a context." );
+	deepEqual( jQuery("p").find(".blog").get(), q("mark", "simon"), "Finding elements with a context." );
 
 	t( "Class selector using UTF8", ".台北Táiběi", ["utf8class1"] );
 	//t( "Class selector using UTF8", ".台北", ["utf8class1","utf8class2"] );
@@ -179,11 +179,11 @@ test("class", function() {
 
 	var div = document.createElement("div");
 	div.innerHTML = "<div class='test e'></div><div class='test'></div>";
-	same( jQuery(".e", div).get(), [ div.firstChild ], "Finding a second class." );
+	deepEqual( jQuery(".e", div).get(), [ div.firstChild ], "Finding a second class." );
 
 	div.lastChild.className = "e";
 
-	same( jQuery(".e", div).get(), [ div.firstChild, div.lastChild ], "Finding a modified class." );
+	deepEqual( jQuery(".e", div).get(), [ div.firstChild, div.lastChild ], "Finding a modified class." );
 });
 
 test("name", function() {
@@ -199,22 +199,22 @@ test("name", function() {
 
 	t( "Name selector for grouped input", "input[name='types[]']", ["types_all", "types_anime", "types_movie"] );
 
-	same( jQuery("#form").find("input[name=action]").get(), q("text1"), "Name selector within the context of another element" );
-	same( jQuery("#form").find("input[name='foo[bar]']").get(), q("hidden2"), "Name selector for grouped form element within the context of another element" );
+	deepEqual( jQuery("#form").find("input[name=action]").get(), q("text1"), "Name selector within the context of another element" );
+	deepEqual( jQuery("#form").find("input[name='foo[bar]']").get(), q("hidden2"), "Name selector for grouped form element within the context of another element" );
 
 	var form = jQuery("<form><input name='id'/></form>").appendTo("body");
 
-	equals( form.find("input").length, 1, "Make sure that rooted queries on forms (with possible expandos) work." );
+	equal( form.find("input").length, 1, "Make sure that rooted queries on forms (with possible expandos) work." );
 
 	form.remove();
 
 	var a = jQuery('<div><a id="tName1ID" name="tName1">tName1 A</a><a id="tName2ID" name="tName2">tName2 A</a><div id="tName1">tName1 Div</div></div>').appendTo('#qunit-fixture').children();
 
-	equals( a.length, 3, "Make sure the right number of elements were inserted." );
-	equals( a[1].id, "tName2ID", "Make sure the right number of elements were inserted." );
+	equal( a.length, 3, "Make sure the right number of elements were inserted." );
+	equal( a[1].id, "tName2ID", "Make sure the right number of elements were inserted." );
 
-	equals( jQuery("[name=tName1]")[0], a[0], "Find elements that have similar IDs" );
-	equals( jQuery("[name=tName2]")[0], a[1], "Find elements that have similar IDs" );
+	equal( jQuery("[name=tName1]")[0], a[0], "Find elements that have similar IDs" );
+	equal( jQuery("[name=tName2]")[0], a[1], "Find elements that have similar IDs" );
 	t( "Find elements that have similar IDs", "#tName2ID", ["tName2ID"] );
 
 	a.remove();
@@ -252,8 +252,8 @@ test("child and adjacent", function() {
 	t( "Element Preceded By", "#groups ~ a", ["mark"] );
 	t( "Element Preceded By", "#length ~ input", ["idTest"] );
 	t( "Element Preceded By", "#siblingfirst ~ em", ["siblingnext"] );
-	same( jQuery("#siblingfirst").find("~ em").get(), q("siblingnext"), "Element Preceded By with a context." );
-	same( jQuery("#siblingfirst").find("+ em").get(), q("siblingnext"), "Element Directly Preceded By with a context." );
+	deepEqual( jQuery("#siblingfirst").find("~ em").get(), q("siblingnext"), "Element Preceded By with a context." );
+	deepEqual( jQuery("#siblingfirst").find("+ em").get(), q("siblingnext"), "Element Directly Preceded By with a context." );
 
 	equal( jQuery("#listWithTabIndex").length, 1, "Parent div for next test is found via ID (#8310)" );
 	equal( jQuery("#listWithTabIndex li:eq(2) ~ li").length, 1, "Find by general sibling combinator (#8310)" );
@@ -264,9 +264,9 @@ test("child and adjacent", function() {
 
 	t( "No element deep selector", "div.foo > span > a", [] );
 
-	same( jQuery("> :first", document.getElementById("nothiddendiv")).get(), q("nothiddendivchild"), "Verify child context positional selctor" );
-	same( jQuery("> :eq(0)", document.getElementById("nothiddendiv")).get(), q("nothiddendivchild"), "Verify child context positional selctor" );
-	same( jQuery("> *:first", document.getElementById("nothiddendiv")).get(), q("nothiddendivchild"), "Verify child context positional selctor" );
+	deepEqual( jQuery("> :first", document.getElementById("nothiddendiv")).get(), q("nothiddendivchild"), "Verify child context positional selctor" );
+	deepEqual( jQuery("> :eq(0)", document.getElementById("nothiddendiv")).get(), q("nothiddendivchild"), "Verify child context positional selctor" );
+	deepEqual( jQuery("> *:first", document.getElementById("nothiddendiv")).get(), q("nothiddendivchild"), "Verify child context positional selctor" );
 
 	t( "Non-existant ancestors", ".fototab > .thumbnails > a", [] );
 });
