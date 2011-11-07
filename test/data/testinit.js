@@ -30,7 +30,7 @@ function t(a,b,c) {
 		s += (s && ",") + '"' + f[i].id + '"';
 	}
 
-	same(f, q.apply(q,c), a + " (" + b + ")");
+	deepEqual(f, q.apply(q,c), a + " (" + b + ")");
 }
 
 /**
