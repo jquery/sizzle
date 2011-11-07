@@ -325,7 +325,7 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 };
 
 Sizzle.error = function( msg ) {
-	throw "Syntax error, unrecognized expression: " + msg;
+	throw new Error( "Syntax error, unrecognized expression: " + msg );
 };
 
 /**
