@@ -434,7 +434,6 @@ test("pseudo - misc", function() {
 		ok( (window.Sizzle || window.jQuery.find).matchesSelector( jQuery("#button_" + type)[0], ":" + type ), "Button Matches :" + type );
 	});
 
-
 	document.body.removeChild( tmp );
 
 	var input = document.createElement("input");
@@ -442,17 +441,27 @@ test("pseudo - misc", function() {
 	input.id = "focus-input";
 
 	document.body.appendChild( input );
-
 	input.focus();
 
-	t( "Element focused", "input:focus", [ "focus-input" ] );
+	// Inputs can't be focused unless the document has focus
+	if ( document.activeElement !== input || (document.hasFocus && !document.hasFocus()) ||
+		(document.querySelectorAll && !document.querySelectorAll('input:focus').length) ) {
+		ok( true, "The input was not focused. Skip checking the :focus match." );
+		ok( true, "The input was not focused. Skip checking the :focus match." );
 
-	ok( (window.Sizzle || window.jQuery.find).matchesSelector( input, ":focus" ), ":focus Matches" );
+	} else {
+		t( "Element focused", "input:focus", [ "focus-input" ] );
+		ok( (window.Sizzle || window.jQuery.find).matchesSelector( input, ":focus" ), ":focus Matches" );
+	}
 
 	input.blur();
 
-	ok( !(window.Sizzle || window.jQuery.find).matchesSelector( input, ":focus" ), ":focus Doesn't Match" );
+	// When IE is out of focus, blur does not work. Force it here.
+	if ( document.activeElement === input ) {
+		document.body.focus();
+	}
 
+	ok( !(window.Sizzle || window.jQuery.find).matchesSelector( input, ":focus" ), ":focus Doesn't Match" );
 	document.body.removeChild( input );
 });
 
