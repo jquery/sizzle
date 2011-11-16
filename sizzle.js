@@ -1055,18 +1055,20 @@ if ( document.documentElement.compareDocumentPosition ) {
 
 // Check to see if the browser returns elements by name when
 // querying by getElementById (and provide a workaround)
+// Also provide a workaround when the browser limits
+// getElementsByName to form controls
 (function(){
 	// We're going to inject a fake input element with a specified name
 	var form = document.createElement("div"),
 		id = "script" + (new Date()).getTime(),
 		root = document.documentElement;
 
-	form.innerHTML = "<a name='" + id + "'/>";
+	form.innerHTML = "<a name='" + id + "'/><div name='" + id + "'/>";
 
 	// Inject it into the root element, check its status, and remove it quickly
 	root.insertBefore( form, root.firstChild );
 
-	// The workaround has to do additional checks after a getElementById
+	// The getElementById workaround has to do additional checks
 	// Which slows things down for other browsers (hence the branching)
 	if ( document.getElementById( id ) ) {
 		Expr.find.ID = function( match, context, isXML ) {
@@ -1086,6 +1088,12 @@ if ( document.documentElement.compareDocumentPosition ) {
 
 			return elem.nodeType === 1 && node && node.nodeValue === match;
 		};
+	}
+
+	// The getElementsByName workaround removes [name=*] optimization
+	// Which slows things down for other browsers (hence the branching)
+	if ( typeof document.getElementsByName === "undefined" || document.getElementsByName( id ).length !== 2 ) {
+		Expr.order.splice(1, 1);
 	}
 
 	root.removeChild( form );
