@@ -501,6 +501,12 @@ var Expr = Sizzle.selectors = {
 				var ret = [],
 					results = context.getElementsByName( match[1] );
 
+				// sometimes IE places a DOM element at "length"
+				// observed in IE8 during Sizzle QUnit tests
+				if ( isNaN(results.length) ) {
+					results = makeArray( results );
+				}
+
 				for ( var i = 0, l = results.length; i < l; i++ ) {
 					if ( results[i].getAttribute("name") === match[1] ) {
 						ret.push( results[i] );
