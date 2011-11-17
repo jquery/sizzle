@@ -794,6 +794,7 @@ var Expr = Sizzle.selectors = {
 
 					node = elem;
 
+					/* falls through */
 				case "last":
 					while ( (node = node.nextSibling) )	 {
 						if ( node.nodeType === 1 ) { 
