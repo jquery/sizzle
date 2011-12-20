@@ -643,12 +643,12 @@ var Expr = Sizzle.selectors = {
 			return elem.checked === true;
 		},
 
-		"selected": function( elem ) {
+		"selected":
+			/** @suppress {uselessCode} */
+			function( elem ) {
 			// Accessing this property makes selected-by-default
 			// options in Safari work properly
-			/** @suppress {uselessCode} */
 			if ( elem.parentNode ) {
-				/** @suppress {uselessCode} */
 				elem.parentNode.selectedIndex;
 			}
 
