@@ -39,7 +39,7 @@ test("element", function() {
 	deepEqual( jQuery("#lengthtest").find("input[id='idTest']").get(), q("idTest"), "Finding elements with a context." );
 });
 
-if ( window.location.protocol != "file:" ) {
+if ( location.protocol != "file:" ) {
 	test("XML Document Selectors", function() {
 		expect(9);
 		stop();
