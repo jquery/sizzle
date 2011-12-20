@@ -1,3 +1,4 @@
+var Sizzle = window.Sizzle;
 jQuery.find = Sizzle;
 jQuery.expr = Sizzle.selectors;
 jQuery.expr[":"] = jQuery.expr.filters;
