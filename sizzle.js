@@ -1394,12 +1394,20 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 
 if ( document.documentElement.contains ) {
 	Sizzle.contains = function( a, b ) {
-		return a !== b && (a.contains ? a.contains(b) : true);
+		try {
+			return a !== b && (a.contains ? a.contains(b) : true);
+		} catch (e) {
+			return false;
+		}
 	};
 
 } else if ( document.documentElement.compareDocumentPosition ) {
 	Sizzle.contains = function( a, b ) {
-		return !!(a.compareDocumentPosition(b) & 16);
+		try {
+			return !!(a.compareDocumentPosition(b) & 16);
+		} catch (e) {
+			return false;
+		}
 	};
 
 } else {
