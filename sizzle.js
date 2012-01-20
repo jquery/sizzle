@@ -392,8 +392,9 @@ var Expr = Sizzle.selectors = {
 		href: function( elem ) {
 			return elem.getAttribute( "href" );
 		},
+		// Only IE7 calls this on all nodes.  Conditional prevents domain violation on IFRAME.
 		type: function( elem ) {
-			return elem.getAttribute( "type" );
+			if (elem.tagName !== "IFRAME") return elem.getAttribute( "type" );
 		}
 	},
 
