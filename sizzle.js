@@ -344,7 +344,7 @@ var getText = Sizzle.getText = function( elem ) {
 				return elem.textContent;
 			} else if ( typeof elem.innerText === 'string' ) {
 				// Replace IE's carriage returns
-				return getText( elem ).replace( rReturn, '' );
+				return getText( elem.childNodes ).replace( rReturn, '' );
 			} else {
 				// Traverse it's children
 				for ( elem = elem.firstChild; elem; elem = elem.nextSibling) {
