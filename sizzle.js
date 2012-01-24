@@ -339,12 +339,12 @@ var getText = Sizzle.getText = function( elem ) {
 
 	if ( nodeType ) {
 		if ( nodeType === 1 || nodeType === 9 ) {
-			// Use textContent || innerText for elements
+			// Use textContent for elements
 			if ( typeof elem.textContent === 'string' ) {
 				return elem.textContent;
 			} else if ( typeof elem.innerText === 'string' ) {
 				// Replace IE's carriage returns
-				return elem.innerText.replace( rReturn, '' );
+				return getText( elem ).replace( rReturn, '' );
 			} else {
 				// Traverse it's children
 				for ( elem = elem.firstChild; elem; elem = elem.nextSibling) {

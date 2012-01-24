@@ -406,7 +406,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect(19);
+	expect(20);
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
@@ -435,6 +435,9 @@ test("pseudo - misc", function() {
 	});
 
 	document.body.removeChild( tmp );
+
+  var whitespace = document.getElementById("whitespace");
+  equal( Sizzle.getText( whitespace ), 'Test ' + String.fromCharCode(160) + ' This' );
 
 	var input = document.createElement("input");
 	input.type = "text";
