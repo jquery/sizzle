@@ -912,14 +912,8 @@ for ( var type in Expr.match ) {
 Expr.match.globalPOS = origPOS;
 
 var makeArray = function( array, results ) {
-	array = Array.prototype.slice.call( array, 0 );
-
-	if ( results ) {
-		results.push.apply( results, array );
-		return results;
-	}
-
-	return array;
+	array = [].slice.call( array );
+	return results ? results = [].push.apply( results, array ) : array;
 };
 
 // Perform a simple check to determine if the browser is capable of
