@@ -1,6 +1,6 @@
 --compilation_level ADVANCED_OPTIMIZATIONS
 --formatting PRETTY_PRINT
---externs \users\chad\workspace\closure-compiler\contrib\externs\jquery-1.7.js
+--externs jquery-1.7.externs.js
 --externs qunit_externs.js
 --module sizzle_compiled:2
 --js ..\sizzle.js

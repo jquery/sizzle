@@ -944,7 +944,7 @@ function doesNodeListArrayConversion () {
 	}
 	return true;
 }
-if (!doesNodeListArrayConversion) {
+if (!doesNodeListArrayConversion()) {
 	// Provide a fallback method if it does not work
 	makeArray = function( array, results ) {
 		var i = 0,
