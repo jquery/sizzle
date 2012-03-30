@@ -1,0 +1,9 @@
+--compilation_level ADVANCED_OPTIMIZATIONS
+--formatting PRETTY_PRINT
+--externs jquery-1.7.externs.js
+--externs qunit_externs.js
+--module sizzle_compiled:2
+--js ..\sizzle.js
+--js data\sizzle-jquery.js
+--module selector_compiled:1:sizzle_compiled
+--js unit\selector.js
