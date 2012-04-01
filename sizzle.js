@@ -712,7 +712,8 @@ var contains = Sizzle.contains = docElem.compareDocumentPosition ?
 	} :
 	docElem.contains ?
 	function( a, b ) {
-		return a !== b && ( a.contains ? a.contains( b ) : false );
+		var bup = b.parentNode || {};
+		return a === bup || ( bup.nodeType === 1 ? !a.contains || a.contains(bup) : false );
 	} :
 	function( a, b ) {
 		while ( (b = b.parentNode) ) {
