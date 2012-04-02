@@ -345,7 +345,7 @@ var getText = Sizzle.getText = function( elem ) {
 		ret = "";
 
 	if ( nodeType ) {
-		if ( nodeType === 1 || nodeType === 9 ) {
+		if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
 			// Use textContent || innerText for elements
 			if ( typeof elem.textContent === 'string' ) {
 				return elem.textContent;
@@ -918,7 +918,7 @@ for ( var type in Expr.match ) {
 }
 // Expose origPOS
 // "global" as in regardless of relation to brackets/parens
-Expr.match["globalPOS"] = origPOS;
+Expr.match.globalPOS = origPOS;
 
 var makeArray = function( array, results ) {
 	array = Array.prototype.slice.call( array, 0 );
@@ -931,11 +931,13 @@ var makeArray = function( array, results ) {
 	return array;
 };
 
-// Perform a simple check to determine if the browser is capable of
-// converting a NodeList to an array using builtin methods.
-// Also verifies that the returned array holds DOM nodes
-// (which is not the case in the Blackberry browser)
-/** @suppress {uselessCode} */
+/**
+ * Perform a simple check to determine if the browser is capable of
+ * converting a NodeList to an array using builtin methods.
+ * Also verifies that the returned array holds DOM nodes
+ *(which is not the case in the Blackberry browser)
+ * @suppress {uselessCode}
+ */
 function doesNodeListArrayConversion () {
 	try {
 		Array.prototype.slice.call( document.documentElement.childNodes, 0 )[0].nodeType;
