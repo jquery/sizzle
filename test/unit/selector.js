@@ -39,24 +39,19 @@ test("element", function() {
 	deepEqual( jQuery("#lengthtest").find("input[id='idTest']").get(), q("idTest"), "Finding elements with a context." );
 });
 
-if ( location.protocol != "file:" ) {
-	test("XML Document Selectors", function() {
-		expect(9);
-		stop();
-		jQuery.get("data/with_fries.xml", function(xml) {
-			equal( jQuery("foo_bar", xml).length, 1, "Element Selector with underscore" );
-			equal( jQuery(".component", xml).length, 1, "Class selector" );
-			equal( jQuery("[class*=component]", xml).length, 1, "Attribute selector for class" );
-			equal( jQuery("property[name=prop2]", xml).length, 1, "Attribute selector with name" );
-			equal( jQuery("[name=prop2]", xml).length, 1, "Attribute selector with name" );
-			equal( jQuery("#seite1", xml).length, 1, "Attribute selector with ID" );
-			equal( jQuery("component#seite1", xml).length, 1, "Attribute selector with ID" );
-			equal( jQuery("component", xml).filter("#seite1").length, 1, "Attribute selector filter with ID" );
-			ok( jQuery( xml.lastChild ).is( "soap\\:Envelope" ), "Check for namespaced element" );
-			start();
-		});
-	});
-}
+test("XML Document Selectors", function() {
+	var xml = createWithFriesXML();
+	expect(9);
+	equal( jQuery("foo_bar", xml).length, 1, "Element Selector with underscore" );
+	equal( jQuery(".component", xml).length, 1, "Class selector" );
+	equal( jQuery("[class*=component]", xml).length, 1, "Attribute selector for class" );
+	equal( jQuery("property[name=prop2]", xml).length, 1, "Attribute selector with name" );
+	equal( jQuery("[name=prop2]", xml).length, 1, "Attribute selector with name" );
+	equal( jQuery("#seite1", xml).length, 1, "Attribute selector with ID" );
+	equal( jQuery("component#seite1", xml).length, 1, "Attribute selector with ID" );
+	equal( jQuery("component", xml).filter("#seite1").length, 1, "Attribute selector filter with ID" );
+	ok( jQuery( xml.lastChild ).is( "soap\\:Envelope" ), "Check for namespaced element" );
+});
 
 test("broken", function() {
 	expect(18);
