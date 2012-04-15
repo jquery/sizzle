@@ -719,11 +719,11 @@ var Expr = Sizzle.selectors = {
 		},
 
 		even: function( elem, i ) {
-			return i % 2 === 0;
+			return i & 1 === 0;
 		},
 
 		odd: function( elem, i ) {
-			return i % 2 === 1;
+			return i & 1 === 1;
 		},
 
 		lt: function( elem, i, match ) {
