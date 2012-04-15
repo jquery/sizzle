@@ -182,13 +182,14 @@ test("class", function() {
 });
 
 test("name", function() {
-	expect(15);
+	expect(16);
 
 	t( "Name selector", "input[name=action]", ["text1"] );
 	t( "Name selector with single quotes", "input[name='action']", ["text1"] );
 	t( "Name selector with double quotes", 'input[name="action"]', ["text1"] );
 
 	t( "Name selector non-input", "[name=test]", ["length", "fx-queue"] );
+	t( "Name selector non-input non-qSA", ":not(:selected)[name=test]", ["length", "fx-queue"] );
 	t( "Name selector non-input", "[name=div]", ["fadein"] );
 	t( "Name selector non-input", "*[name=iframe]", ["iframe"] );
 

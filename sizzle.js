@@ -332,7 +332,7 @@ Sizzle.error = function( msg ) {
  * @param {Array|Element} elem
  */
 var getText = Sizzle.getText = function( elem ) {
-    var i, node,
+	var i, node,
 		nodeType = elem.nodeType,
 		ret = "";
 
@@ -365,7 +365,7 @@ var getText = Sizzle.getText = function( elem ) {
 };
 
 var Expr = Sizzle.selectors = {
-	order: [ "ID", "NAME", "TAG" ],
+	order: [ "ID", "TAG" ],
 
 	match: {
 		ID: /#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,
@@ -486,7 +486,7 @@ var Expr = Sizzle.selectors = {
 	find: {
 		ID: function( match, context, isXML ) {
 			if ( typeof context.getElementById !== "undefined" && !isXML ) {
-				var m = context.getElementById(match[1]);
+				var m = context.getElementById( match[1] );
 				// Check parentNode to catch when Blackberry 4.6 returns
 				// nodes that are no longer in the document #6963
 				return m && m.parentNode ? [m] : [];
@@ -494,24 +494,15 @@ var Expr = Sizzle.selectors = {
 		},
 
 		NAME: function( match, context ) {
-			if ( typeof context.getElementsByName !== "undefined" ) {
-				var ret = [],
-					results = context.getElementsByName( match[1] );
-
-				for ( var i = 0, l = results.length; i < l; i++ ) {
-					if ( results[i].getAttribute("name") === match[1] ) {
-						ret.push( results[i] );
-					}
-				}
-
-				return ret.length === 0 ? null : ret;
-			}
+			try {
+				return context.getElementsByName( match[1] );
+			} catch( getElementsByNameError ) {}
 		},
 
 		TAG: function( match, context ) {
-			if ( typeof context.getElementsByTagName !== "undefined" ) {
+			try {
 				return context.getElementsByTagName( match[1] );
-			}
+			} catch( getElementsByTagNameError ) {}
 		}
 	},
 	preFilter: {
@@ -1048,25 +1039,33 @@ if ( document.documentElement.compareDocumentPosition ) {
 	};
 }
 
-// Check to see if the browser returns elements by name when
-// querying by getElementById (and provide a workaround)
+// Optimize for browsers with compatible getElementsByName
+// Workaround browsers that return by name from getElementById
 (function(){
-	// We're going to inject a fake input element with a specified name
+	// We're going to inject an input and non-input element with the same name
 	var form = document.createElement("div"),
-		id = "script" + (new Date()).getTime(),
-		root = document.documentElement;
+		id = "script" + ( - new Date() );
 
-	form.innerHTML = "<a name='" + id + "'/>";
+	form.id = id + 0;
+	form.innerHTML = "<a name='" + id + "'/><div name='" + id + "'/>";
 
 	// Inject it into the root element, check its status, and remove it quickly
-	root.insertBefore( form, root.firstChild );
+	document.documentElement.insertBefore( form, document.documentElement.firstChild );
 
-	// The workaround has to do additional checks after a getElementById
+	// Optimize NAME checks if the browser provides a compatible getElementsByName
+	// (returning all elements with matching name and not the one with matching id)
+	if ( document.getElementsByName &&
+			document.getElementsByName( id ).length === 2 + document.getElementsByName( id + 0 ).length ) {
+
+		Expr.order.splice(1, 0, "NAME");
+	}
+
+	// The getElementById workaround has to do additional checks
 	// Which slows things down for other browsers (hence the branching)
 	if ( document.getElementById( id ) ) {
 		Expr.find.ID = function( match, context, isXML ) {
 			if ( typeof context.getElementById !== "undefined" && !isXML ) {
-				var m = context.getElementById(match[1]);
+				var m = context.getElementById( match[1] );
 
 				return m ?
 					m.id === match[1] || typeof m.getAttributeNode !== "undefined" && m.getAttributeNode("id").nodeValue === match[1] ?
@@ -1083,10 +1082,10 @@ if ( document.documentElement.compareDocumentPosition ) {
 		};
 	}
 
-	root.removeChild( form );
+	document.documentElement.removeChild( form );
 
 	// release memory in IE
-	root = form = null;
+	form = null;
 })();
 
 (function(){
