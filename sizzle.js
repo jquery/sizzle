@@ -220,6 +220,17 @@ var select = function( selector, context, results, seed, contextXML ) {
 	return results;
 };
 
+var makeArray = function( array, results ) {
+	results = results || [];
+	var i = 0,
+		len = array.length;
+	for (; i < len; i++) {
+		results.push( array[i] );
+	}
+
+	return results;
+};
+
 Sizzle.uniqueSort = function( results ) {
 	if ( sortOrder ) {
 		hasDuplicate = baseHasDuplicate;
@@ -956,50 +967,6 @@ for ( var type in Expr.match ) {
 // Expose origPOS
 // "global" as in regardless of relation to brackets/parens
 Expr.match.globalPOS = origPOS;
-
-var makeArray = function( array, results ) {
-	array = Array.prototype.slice.call( array, 0 );
-
-	if ( results ) {
-		results.push.apply( results, array );
-		return results;
-	}
-
-	return array;
-};
-
-// Perform a simple check to determine if the browser is capable of
-// converting a NodeList to an array using builtin methods.
-// Also verifies that the returned array holds DOM nodes
-// (which is not the case in the Blackberry browser)
-try {
-	Array.prototype.slice.call( document.documentElement.childNodes, 0 )[0].nodeType;
-
-// Provide a fallback method if it does not work
-} catch( e ) {
-	makeArray = function( array, results ) {
-		var i = 0,
-			ret = results || [];
-
-		if ( toString.call(array) === "[object Array]" ) {
-			Array.prototype.push.apply( ret, array );
-
-		} else {
-			if ( typeof array.length === "number" ) {
-				for ( var l = array.length; i < l; i++ ) {
-					ret.push( array[i] );
-				}
-
-			} else {
-				for ( ; array[i]; i++ ) {
-					ret.push( array[i] );
-				}
-			}
-		}
-
-		return ret;
-	};
-}
 
 var sortOrder, siblingCheck;
 
