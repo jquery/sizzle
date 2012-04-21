@@ -28,7 +28,64 @@ var document = window.document,
 	hasDuplicate = false,
 	baseHasDuplicate = true,
 	rBackslash = /\\/g,
-	rNonWord = /\W/;
+	rNonWord = /\W/,
+
+	// Used for testing something on an element
+	assert = function( fn ) {
+		var div = document.createElement("div"),
+			pass = fn( div );
+		// release memory in IE
+		div = null;
+		return pass;
+	},
+
+	// Check to see if the browser returns elements by name when
+	// querying by getElementById (and provide a workaround)
+	assertGetIdNotName = assert(function( div ) {
+		var pass = true,
+			id = "script" + (new Date).getTime();
+		div.innerHTML = "<a name ='" + id + "'/>";
+
+		// Inject it into the root element, check its status, and remove it quickly
+		docElem.insertBefore( div, docElem.firstChild );
+
+		if ( document.getElementById( id ) ) {
+			pass = false;
+		}
+		docElem.removeChild( div );
+		return pass;
+	}),
+
+	// Check to see if the browser returns only elements
+	// when doing getElementsByTagName("*")
+	assertTagNameNoComments = assert(function( div ) {
+		div.appendChild( document.createComment("") );
+		return div.getElementsByTagName("*").length === 0;
+	}),
+
+	// Check to see if an attribute returns normalized href attributes
+	assertHrefNotNormalized = assert(function( div ) {
+		div.innerHTML = "<a href='#'></a>";
+		if ( div.firstChild && typeof div.firstChild.getAttribute !== strundefined &&
+			div.firstChild.getAttribute("href") !== "#" ) {
+			return false;
+		}
+		return true;
+	}),
+
+	// Opera can't find a second classname (in 9.6)
+	// Also, make sure that getElementsByClassName actually exists
+	assertFindSecondClassName = true,
+	// Safari caches class attributes, doesn't catch changes (in 3.2)
+	assertNoClassCache = assert(function( div ) {
+		div.innerHTML = "<div class='test e'></div><div class='test'></div>";
+		if ( !div.getElementsByClassName || div.getElementsByClassName("e").length === 0 ) {
+			assertFindSecondClassName = false;
+		}
+
+		div.lastChild.className = "e";
+		return div.getElementsByClassName("e").length !== 1;
+	});
 
 // Here we check if the JavaScript engine is using some sort of
 // optimization where it does not always call our comparision
@@ -42,16 +99,18 @@ var document = window.document,
 var Sizzle = function( selector, context, results ) {
 	results = results || [];
 	context = context || document;
+	var match, elem, contextXML,
+		nodeType = context.nodeType;
 
-	if ( context.nodeType !== 1 && context.nodeType !== 9 ) {
+	if ( nodeType !== 1 && nodeType !== 9 ) {
 		return [];
 	}
 
 	if ( !selector || typeof selector !== "string" ) {
 		return results;
 	}
-	var match, elem,
-		contextXML = isXML( context );
+
+	contextXML = isXML( context );
 
 	if ( !contextXML ) {
 		if ((match = rquickExpr.exec(selector))) {
@@ -73,7 +132,7 @@ var Sizzle = function( selector, context, results ) {
 			} else if ( match[2] ) {
 				return makeArray( context.getElementsByTagName( selector ), results );
 			// Speed-up: Sizzle(".CLASS")
-			} else if ( match[3] && Expr.find.CLASS && context.getElementsByClassName ) {
+			} else if ( match[3] && context.getElementsByClassName && assertFindSecondClassName && assertNoClassCache ) {
 				return makeArray( context.getElementsByClassName( match[3] ), results );
 			}
 		// Speed-up: Sizzle("body")
@@ -392,7 +451,7 @@ Sizzle.error = function( msg ) {
  * @param {Array|Element} elem
  */
 var getText = Sizzle.getText = function( elem ) {
-    var i, node,
+	var i, node,
 		nodeType = elem.nodeType,
 		ret = "";
 
@@ -446,9 +505,13 @@ var Expr = Sizzle.selectors = {
 	},
 
 	attrHandle: {
-		href: function( elem ) {
-			return elem.getAttribute( "href" );
-		},
+		href: assertHrefNotNormalized ?
+			function( elem ) {
+				return elem.getAttribute( "href" );
+			} :
+			function( elem ) {
+				return elem.getAttribute( "href", 2 );
+			},
 		type: function( elem ) {
 			return elem.getAttribute( "type" );
 		}
@@ -544,15 +607,26 @@ var Expr = Sizzle.selectors = {
 	},
 
 	find: {
-		ID: function( match, context, isXML ) {
-			if ( typeof context.getElementById !== strundefined && !isXML ) {
-				var m = context.getElementById(match[1]);
-				// Check parentNode to catch when Blackberry 4.6 returns
-				// nodes that are no longer in the document #6963
-				return m && m.parentNode ? [m] : [];
-			}
-		},
+		ID: assertGetIdNotName ?
+			function( match, context, isXML ) {
+				if ( typeof context.getElementById !== strundefined && !isXML ) {
+					var m = context.getElementById(match[1]);
+					// Check parentNode to catch when Blackberry 4.6 returns
+					// nodes that are no longer in the document #6963
+					return m && m.parentNode ? [m] : [];
+				}
+			} :
+			function( match, context, isXML ) {
+				if ( typeof context.getElementById !== strundefined && !isXML ) {
+					var m = context.getElementById(match[1]);
 
+					return m ?
+						m.id === match[1] || typeof m.getAttributeNode !== strundefined && m.getAttributeNode("id").nodeValue === match[1] ?
+							[m] :
+							undefined :
+						[];
+				}
+			},
 		NAME: function( match, context ) {
 			if ( typeof context.getElementsByName !== strundefined ) {
 				var ret = [],
@@ -568,11 +642,29 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 
-		TAG: function( match, context ) {
-			if ( typeof context.getElementsByTagName !== strundefined ) {
-				return context.getElementsByTagName( match[1] );
+		TAG: assertTagNameNoComments ?
+			function( match, context ) {
+				if ( typeof context.getElementsByTagName !== strundefined ) {
+					return context.getElementsByTagName( match[1] );
+				}
+			} :
+			function( match, context ) {
+				var results = context.getElementsByTagName( match[1] );
+
+				// Filter out possible comments
+				if ( match[1] === "*" ) {
+					var tmp = [];
+
+					for ( var i = 0; results[i]; i++ ) {
+						if ( results[i].nodeType === 1 ) {
+							tmp.push( results[i] );
+						}
+					}
+
+					results = tmp;
+				}
+				return results;
 			}
-		}
 	},
 	preFilter: {
 		CLASS: function( match, curLoop, inplace, result, not, isXML ) {
@@ -895,17 +987,21 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 
-		ID: function( elem, match ) {
-			return elem.nodeType === 1 && elem.getAttribute("id") === match;
-		},
+		ID: assertGetIdNotName ?
+			function( elem, match ) {
+				return elem.nodeType === 1 && elem.getAttribute("id") === match;
+			} :
+			function( elem, match ) {
+				var node = typeof elem.getAttributeNode !== strundefined && elem.getAttributeNode("id");
+				return elem.nodeType === 1 && node && node.nodeValue === match;
+			},
 
 		TAG: function( elem, match ) {
 			return (match === "*" && elem.nodeType === 1) || !!elem.nodeName && elem.nodeName.toLowerCase() === match;
 		},
 
 		CLASS: function( elem, match ) {
-			return (" " + (elem.className || elem.getAttribute("class")) + " ")
-				.indexOf( match ) > -1;
+			return (" " + (elem.className || elem.getAttribute("class")) + " ").indexOf( match ) > -1;
 		},
 
 		ATTR: function( elem, match ) {
@@ -968,9 +1064,19 @@ for ( var type in Expr.match ) {
 // "global" as in regardless of relation to brackets/parens
 Expr.match.globalPOS = origPOS;
 
+// Add getElementsByClassName if usable
+if ( assertFindSecondClassName && assertNoClassCache ) {
+	Expr.order.splice(1, 0, "CLASS");
+	Expr.find.CLASS = function( match, context, isXML ) {
+		if ( typeof context.getElementsByClassName !== strundefined && !isXML ) {
+			return context.getElementsByClassName( match[1] );
+		}
+	};
+}
+
 var sortOrder, siblingCheck;
 
-if ( document.documentElement.compareDocumentPosition ) {
+if ( docElem.compareDocumentPosition ) {
 	sortOrder = function( a, b ) {
 		if ( a === b ) {
 			hasDuplicate = true;
@@ -1064,92 +1170,6 @@ if ( document.documentElement.compareDocumentPosition ) {
 	};
 }
 
-// Check to see if the browser returns elements by name when
-// querying by getElementById (and provide a workaround)
-(function(){
-	// We're going to inject a fake input element with a specified name
-	var form = document.createElement("div"),
-		id = "script" + (new Date()).getTime(),
-		root = document.documentElement;
-
-	form.innerHTML = "<a name='" + id + "'/>";
-
-	// Inject it into the root element, check its status, and remove it quickly
-	root.insertBefore( form, root.firstChild );
-
-	// The workaround has to do additional checks after a getElementById
-	// Which slows things down for other browsers (hence the branching)
-	if ( document.getElementById( id ) ) {
-		Expr.find.ID = function( match, context, isXML ) {
-			if ( typeof context.getElementById !== strundefined && !isXML ) {
-				var m = context.getElementById(match[1]);
-
-				return m ?
-					m.id === match[1] || typeof m.getAttributeNode !== strundefined && m.getAttributeNode("id").nodeValue === match[1] ?
-						[m] :
-						undefined :
-					[];
-			}
-		};
-
-		Expr.filter.ID = function( elem, match ) {
-			var node = typeof elem.getAttributeNode !== strundefined && elem.getAttributeNode("id");
-
-			return elem.nodeType === 1 && node && node.nodeValue === match;
-		};
-	}
-
-	root.removeChild( form );
-
-	// release memory in IE
-	root = form = null;
-})();
-
-(function(){
-	// Check to see if the browser returns only elements
-	// when doing getElementsByTagName("*")
-
-	// Create a fake element
-	var div = document.createElement("div");
-	div.appendChild( document.createComment("") );
-
-	// Make sure no comments are found
-	if ( div.getElementsByTagName("*").length > 0 ) {
-		Expr.find.TAG = function( match, context ) {
-			var results = context.getElementsByTagName( match[1] );
-
-			// Filter out possible comments
-			if ( match[1] === "*" ) {
-				var tmp = [];
-
-				for ( var i = 0; results[i]; i++ ) {
-					if ( results[i].nodeType === 1 ) {
-						tmp.push( results[i] );
-					}
-				}
-
-				results = tmp;
-			}
-
-			return results;
-		};
-	}
-
-	// Check to see if an attribute returns normalized href attributes
-	div.innerHTML = "<a href='#'></a>";
-
-	if ( div.firstChild && typeof div.firstChild.getAttribute !== strundefined &&
-			div.firstChild.getAttribute("href") !== "#" ) {
-
-		Expr.attrHandle.href = function( elem ) {
-			return elem.getAttribute( "href", 2 );
-		};
-	}
-
-	// release memory in IE
-	div = null;
-})();
-
 if ( document.querySelectorAll ) {
 	(function(){
 		var oldSelect = select,
@@ -1215,8 +1235,8 @@ if ( document.querySelectorAll ) {
 }
 
 (function(){
-	var html = document.documentElement,
-		matches = html.matchesSelector || html.mozMatchesSelector || html.webkitMatchesSelector || html.msMatchesSelector;
+	var matches = docElem.matchesSelector || docElem.mozMatchesSelector ||
+		docElem.webkitMatchesSelector || docElem.msMatchesSelector;
 
 	if ( matches ) {
 		// Check to see if it's possible to do matchesSelector
@@ -1227,7 +1247,7 @@ if ( document.querySelectorAll ) {
 		try {
 			// This should fail with an exception
 			// Gecko does not error, returns false instead
-			matches.call( document.documentElement, "[test!='']:sizzle" );
+			matches.call( docElem, "[test!='']:sizzle" );
 
 		} catch( pseudoError ) {
 			pseudoWorks = true;
@@ -1258,35 +1278,6 @@ if ( document.querySelectorAll ) {
 			return select(expr, document, [], [node], nodeIsXML).length > 0;
 		};
 	}
-})();
-
-(function(){
-	var div = document.createElement("div");
-
-	div.innerHTML = "<div class='test e'></div><div class='test'></div>";
-
-	// Opera can't find a second classname (in 9.6)
-	// Also, make sure that getElementsByClassName actually exists
-	if ( !div.getElementsByClassName || div.getElementsByClassName("e").length === 0 ) {
-		return;
-	}
-
-	// Safari caches class attributes, doesn't catch changes (in 3.2)
-	div.lastChild.className = "e";
-
-	if ( div.getElementsByClassName("e").length === 1 ) {
-		return;
-	}
-
-	Expr.order.splice(1, 0, "CLASS");
-	Expr.find.CLASS = function( match, context, isXML ) {
-		if ( typeof context.getElementsByClassName !== strundefined && !isXML ) {
-			return context.getElementsByClassName(match[1]);
-		}
-	};
-
-	// release memory in IE
-	div = null;
 })();
 
 function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
@@ -1363,12 +1354,12 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	}
 }
 
-if ( document.documentElement.contains ) {
+if ( docElem.contains ) {
 	Sizzle.contains = function( a, b ) {
 		return a !== b && (a.contains ? a.contains(b) : true);
 	};
 
-} else if ( document.documentElement.compareDocumentPosition ) {
+} else if ( docElem.compareDocumentPosition ) {
 	Sizzle.contains = function( a, b ) {
 		return !!(a.compareDocumentPosition(b) & 16);
 	};
@@ -1407,6 +1398,8 @@ var posProcess = function( selector, context, seed, isXML ) {
 
 	return Sizzle.filter( later, tmpSet );
 };
+
+
 
 // EXPOSE
 
