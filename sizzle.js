@@ -279,6 +279,10 @@ var select = function( selector, context, results, seed, contextXML ) {
 	return results;
 };
 
+// Slice is no longer used
+// It is not actually faster
+// Results is expected to be an array or undefined
+// This function is only used internally
 var makeArray = function( array, results ) {
 	results = results || [];
 	var i = 0,
@@ -286,7 +290,6 @@ var makeArray = function( array, results ) {
 	for (; i < len; i++) {
 		results.push( array[i] );
 	}
-
 	return results;
 };
 
@@ -1233,52 +1236,6 @@ if ( document.querySelectorAll ) {
 		div = null;
 	})();
 }
-
-(function(){
-	var matches = docElem.matchesSelector || docElem.mozMatchesSelector ||
-		docElem.webkitMatchesSelector || docElem.msMatchesSelector;
-
-	if ( matches ) {
-		// Check to see if it's possible to do matchesSelector
-		// on a disconnected node (IE 9 fails this)
-		var disconnectedMatch = !matches.call( document.createElement( "div" ), "div" ),
-			pseudoWorks = false;
-
-		try {
-			// This should fail with an exception
-			// Gecko does not error, returns false instead
-			matches.call( docElem, "[test!='']:sizzle" );
-
-		} catch( pseudoError ) {
-			pseudoWorks = true;
-		}
-
-		Sizzle.matchesSelector = function( node, expr ) {
-			var nodeIsXML = isXML( node );
-
-			// Make sure that attribute selectors are quoted
-			expr = expr.replace(/\=\s*([^'"\]]*)\s*\]/g, "='$1']");
-
-			if ( !nodeIsXML ) {
-				try {
-					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) && !/!=/.test( expr ) ) {
-						var ret = matches.call( node, expr );
-
-						// IE 9's matchesSelector returns false on disconnected nodes
-						if ( ret || !disconnectedMatch ||
-								// As well, disconnected nodes are said to be in a document
-								// fragment in IE 9, so check for that
-								node.document && node.document.nodeType !== 11 ) {
-							return ret;
-						}
-					}
-				} catch(e) {}
-			}
-
-			return select(expr, document, [], [node], nodeIsXML).length > 0;
-		};
-	}
-})();
 
 function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
