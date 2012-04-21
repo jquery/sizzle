@@ -4,21 +4,18 @@
  *  Released under the MIT, BSD, and GPL Licenses.
  *  More information: http://sizzlejs.com/
  */
-(function( window ) {
+(function( window, undefined ) {
 
 var document = window.document,
 	docElem = document.documentElement,
 
 	characterEncoding = "(?:[\\w\\u00c0-\\uFFFF\\-]|\\\\.)",
 	rid = new RegExp("#(" + characterEncoding + "+)"),
-	// Simple ids only for quick route to avoid prefiltering
-	ridOnly = /^#([\w\-]+$)/,
 	rclass = new RegExp("\\.(" + characterEncoding + "+)"),
 	rname = new RegExp("\\[name=['\"]*(" + characterEncoding + "+)['\"]*\\]"),
 	rtag = new RegExp("^(" + characterEncoding.replace("\\-", "\\*\\-") + "+)"),
-	// Simple tags and classes only for quick route to avoid prefiltering
-	rtagOrClassOnly = /^(\w+$)|^\.([\w\-]+$)/,
 	rattr = new RegExp("\\[\\s*(" + characterEncoding + "+)\\s*(?:(\\S?=)\\s*(?:(['\"])(.*?)\\3|(#?" + characterEncoding + "*)|)|)\\s*\\]"),
+	rquickExpr = /^#([\w\-]+$)|^(\w+$)|^\.([\w\-]+$)/,
 
 	chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
 
@@ -26,6 +23,7 @@ var document = window.document,
 	done = 0,
 
 	toString = Object.prototype.toString,
+	strundefined = "undefined",
 
 	hasDuplicate = false,
 	baseHasDuplicate = true,
@@ -41,11 +39,9 @@ var document = window.document,
 	return 0;
 });
 
-var Sizzle = function( selector, context, results, seed ) {
+var Sizzle = function( selector, context, results ) {
 	results = results || [];
 	context = context || document;
-	var match, elem,
-		contextXML = isXML( context );
 
 	if ( context.nodeType !== 1 && context.nodeType !== 9 ) {
 		return [];
@@ -54,30 +50,31 @@ var Sizzle = function( selector, context, results, seed ) {
 	if ( !selector || typeof selector !== "string" ) {
 		return results;
 	}
+	var match, elem,
+		contextXML = isXML( context );
 
-	if ( !contextXML && !seed ) {
-		// Speed-up: Sizzle("#ID")
-		if (match = ridOnly.exec(selector)) {
-			elem = document.getElementById( match[1] );
-			// Check parentNode to catch when Blackberry 4e.6 returns
-			// nodes that are no longer in the document #6963
-			if ( elem && elem.parentNode ) {
-				// Handle the case where IE, Opera, and Webkit return items
-				// by name instead of ID
-				if ( elem.id === match[1] ) {
-					return makeArray( [ elem ], results );
-				}
-			} else {
-				return makeArray( [], results );
-			}
-		}
-		if ( match = rtagOrClassOnly.exec(selector) ) {
-			// Speed-up: Sizzle("TAG")
+	if ( !contextXML ) {
+		if ((match = rquickExpr.exec(selector))) {
+			// Speed-up: Sizzle("#ID")
 			if ( match[1] ) {
+				elem = document.getElementById( match[1] );
+				// Check parentNode to catch when Blackberry 4e.6 returns
+				// nodes that are no longer in the document #6963
+				if ( elem && elem.parentNode ) {
+					// Handle the case where IE, Opera, and Webkit return items
+					// by name instead of ID
+					if ( elem.id === match[1] ) {
+						return results ? makeArray( [ elem ], results ) : [ elem ];
+					}
+				} else {
+					return makeArray( [], results );
+				}
+			// Speed-up: Sizzle("TAG")
+			} else if ( match[2] ) {
 				return makeArray( context.getElementsByTagName( selector ), results );
 			// Speed-up: Sizzle(".CLASS")
-			} else if ( match[2] && context.getElementsByClassName ) {
-				return makeArray( context.getElementsByClassName( match[2] ), results );
+			} else if ( match[3] && Expr.find.CLASS && context.getElementsByClassName ) {
+				return makeArray( context.getElementsByClassName( match[3] ), results );
 			}
 		// Speed-up: Sizzle("body")
 		} else if ( selector === "body" && context.body ) {
@@ -86,7 +83,7 @@ var Sizzle = function( selector, context, results, seed ) {
 	}
 
 	// All others
-	return select( selector, context, results, seed, contextXML );
+	return select( selector, context, results, undefined, contextXML );
 };
 
 var select = function( selector, context, results, seed, contextXML ) {
@@ -116,7 +113,7 @@ var select = function( selector, context, results, seed, contextXML ) {
 	if ( parts.length > 1 && origPOS.exec( selector ) ) {
 
 		if ( parts.length === 2 && Expr.relative[ parts[0] ] ) {
-			set = posProcess( parts[0] + parts[1], context, seed );
+			set = posProcess( parts[0] + parts[1], context, seed, contextXML );
 
 		} else {
 			set = Expr.relative[ parts[0] ] ?
@@ -130,7 +127,7 @@ var select = function( selector, context, results, seed, contextXML ) {
 					selector += parts.shift();
 				}
 
-				set = posProcess( selector, set, seed );
+				set = posProcess( selector, set, seed, contextXML );
 			}
 		}
 
@@ -216,7 +213,7 @@ var select = function( selector, context, results, seed, contextXML ) {
 	}
 
 	if ( extra ) {
-		Sizzle( extra, origContext, results, seed );
+		select( extra, origContext, results, seed, contextXML );
 		Sizzle.uniqueSort( results );
 	}
 
@@ -241,7 +238,7 @@ Sizzle.uniqueSort = function( results ) {
 };
 
 Sizzle.matches = function( expr, set ) {
-	return Sizzle( expr, document, [], set );
+	return select( expr, document, [], set );
 };
 
 Sizzle.matchesSelector = function( node, expr ) {
@@ -275,7 +272,7 @@ Sizzle.find = function( expr, context, isXML ) {
 	}
 
 	if ( !set ) {
-		set = typeof context.getElementsByTagName !== "undefined" ?
+		set = typeof context.getElementsByTagName !== strundefined ?
 			context.getElementsByTagName( "*" ) :
 			[];
 	}
@@ -537,7 +534,7 @@ var Expr = Sizzle.selectors = {
 
 	find: {
 		ID: function( match, context, isXML ) {
-			if ( typeof context.getElementById !== "undefined" && !isXML ) {
+			if ( typeof context.getElementById !== strundefined && !isXML ) {
 				var m = context.getElementById(match[1]);
 				// Check parentNode to catch when Blackberry 4.6 returns
 				// nodes that are no longer in the document #6963
@@ -546,7 +543,7 @@ var Expr = Sizzle.selectors = {
 		},
 
 		NAME: function( match, context ) {
-			if ( typeof context.getElementsByName !== "undefined" ) {
+			if ( typeof context.getElementsByName !== strundefined ) {
 				var ret = [],
 					results = context.getElementsByName( match[1] );
 
@@ -561,7 +558,7 @@ var Expr = Sizzle.selectors = {
 		},
 
 		TAG: function( match, context ) {
-			if ( typeof context.getElementsByTagName !== "undefined" ) {
+			if ( typeof context.getElementsByTagName !== strundefined ) {
 				return context.getElementsByTagName( match[1] );
 			}
 		}
@@ -642,11 +639,11 @@ var Expr = Sizzle.selectors = {
 			return match;
 		},
 
-		PSEUDO: function( match, curLoop, inplace, result, not ) {
+		PSEUDO: function( match, curLoop, inplace, result, not, isXML ) {
 			if ( match[1] === "not" ) {
 				// If we're dealing with a complex expression, or a simple one
 				if ( ( chunker.exec(match[3]) || "" ).length > 1 || /^\w/.test(match[3]) ) {
-					match[3] = Sizzle(match[3], null, null, curLoop);
+					match[3] = select(match[3], document, [], curLoop, isXML);
 
 				} else {
 					var ret = Sizzle.filter(match[3], curLoop, inplace, true ^ not);
@@ -1117,11 +1114,11 @@ if ( document.documentElement.compareDocumentPosition ) {
 	// Which slows things down for other browsers (hence the branching)
 	if ( document.getElementById( id ) ) {
 		Expr.find.ID = function( match, context, isXML ) {
-			if ( typeof context.getElementById !== "undefined" && !isXML ) {
+			if ( typeof context.getElementById !== strundefined && !isXML ) {
 				var m = context.getElementById(match[1]);
 
 				return m ?
-					m.id === match[1] || typeof m.getAttributeNode !== "undefined" && m.getAttributeNode("id").nodeValue === match[1] ?
+					m.id === match[1] || typeof m.getAttributeNode !== strundefined && m.getAttributeNode("id").nodeValue === match[1] ?
 						[m] :
 						undefined :
 					[];
@@ -1129,7 +1126,7 @@ if ( document.documentElement.compareDocumentPosition ) {
 		};
 
 		Expr.filter.ID = function( elem, match ) {
-			var node = typeof elem.getAttributeNode !== "undefined" && elem.getAttributeNode("id");
+			var node = typeof elem.getAttributeNode !== strundefined && elem.getAttributeNode("id");
 
 			return elem.nodeType === 1 && node && node.nodeValue === match;
 		};
@@ -1174,7 +1171,7 @@ if ( document.documentElement.compareDocumentPosition ) {
 	// Check to see if an attribute returns normalized href attributes
 	div.innerHTML = "<a href='#'></a>";
 
-	if ( div.firstChild && typeof div.firstChild.getAttribute !== "undefined" &&
+	if ( div.firstChild && typeof div.firstChild.getAttribute !== strundefined &&
 			div.firstChild.getAttribute("href") !== "#" ) {
 
 		Expr.attrHandle.href = function( elem ) {
@@ -1202,12 +1199,12 @@ if ( document.querySelectorAll ) {
 			return;
 		}
 
-		select = function( query, context, extra, seed, contextXML ) {
+		select = function( selector, context, results, seed, contextXML ) {
 			// Only use querySelectorAll on non-XML documents
 			if ( !seed && !contextXML ) {
 				if ( context.nodeType === 9 ) {
 					try {
-						return makeArray( context.querySelectorAll(query), extra );
+						return makeArray( context.querySelectorAll(selector), results );
 					} catch(qsaError) {}
 				// qSA works strangely on Element-rooted queries
 				// We can work around this by specifying an extra ID on the root
@@ -1218,7 +1215,7 @@ if ( document.querySelectorAll ) {
 						old = context.getAttribute( "id" ),
 						nid = old || id,
 						hasParent = context.parentNode,
-						relativeHierarchySelector = rrelativeHierarchy.test( query );
+						relativeHierarchySelector = rrelativeHierarchy.test( selector );
 
 					if ( !old ) {
 						context.setAttribute( "id", nid );
@@ -1231,7 +1228,7 @@ if ( document.querySelectorAll ) {
 
 					try {
 						if ( !relativeHierarchySelector || hasParent ) {
-							return makeArray( context.querySelectorAll( "[id='" + nid + "'] " + query ), extra );
+							return makeArray( context.querySelectorAll( "[id='" + nid + "'] " + selector ), results );
 						}
 					} catch(pseudoError) {
 					} finally {
@@ -1242,7 +1239,7 @@ if ( document.querySelectorAll ) {
 				}
 			}
 
-			return oldSelect( query, context, extra, seed, contextXML );
+			return oldSelect( selector, context, results, seed, contextXML );
 		};
 
 		// release memory in IE
@@ -1316,7 +1313,7 @@ if ( document.querySelectorAll ) {
 
 	Expr.order.splice(1, 0, "CLASS");
 	Expr.find.CLASS = function( match, context, isXML ) {
-		if ( typeof context.getElementsByClassName !== "undefined" && !isXML ) {
+		if ( typeof context.getElementsByClassName !== strundefined && !isXML ) {
 			return context.getElementsByClassName(match[1]);
 		}
 	};
@@ -1422,7 +1419,7 @@ var isXML = Sizzle.isXML = function( elem ) {
 	return documentElement ? documentElement.nodeName !== "HTML" : false;
 };
 
-var posProcess = function( selector, context, seed ) {
+var posProcess = function( selector, context, seed, isXML ) {
 	var match,
 		tmpSet = [],
 		later = "",
@@ -1438,7 +1435,7 @@ var posProcess = function( selector, context, seed ) {
 	selector = Expr.relative[selector] ? selector + "*" : selector;
 
 	for ( var i = 0, l = root.length; i < l; i++ ) {
-		Sizzle( selector, root[i], tmpSet, seed );
+		select( selector, root[i], tmpSet, seed, isXML );
 	}
 
 	return Sizzle.filter( later, tmpSet );
