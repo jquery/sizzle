@@ -43,7 +43,7 @@ var document = window.document,
 	// querying by getElementById (and provide a workaround)
 	assertGetIdNotName = assert(function( div ) {
 		var pass = true,
-			id = "script" + (new Date).getTime();
+			id = "script" + (new Date()).getTime();
 		div.innerHTML = "<a name ='" + id + "'/>";
 
 		// Inject it into the root element, check its status, and remove it quickly
@@ -86,6 +86,7 @@ var document = window.document,
 		div.lastChild.className = "e";
 		return div.getElementsByClassName("e").length !== 1;
 	});
+
 
 // Here we check if the JavaScript engine is using some sort of
 // optimization where it does not always call our comparision
@@ -254,7 +255,7 @@ var select = function( selector, context, results, seed, contextXML ) {
 
 		} else if ( context && context.nodeType === 1 ) {
 			for ( i = 0; checkSet[i] != null; i++ ) {
-				if ( checkSet[i] && (checkSet[i] === true || checkSet[i].nodeType === 1 && Sizzle.contains(context, checkSet[i])) ) {
+				if ( checkSet[i] && (checkSet[i] === true || checkSet[i].nodeType === 1 && contains(context, checkSet[i])) ) {
 					results.push( set[i] );
 				}
 			}
@@ -273,7 +274,7 @@ var select = function( selector, context, results, seed, contextXML ) {
 
 	if ( extra ) {
 		select( extra, origContext, results, seed, contextXML );
-		Sizzle.uniqueSort( results );
+		uniqueSort( results );
 	}
 
 	return results;
@@ -293,7 +294,7 @@ var makeArray = function( array, results ) {
 	return results;
 };
 
-Sizzle.uniqueSort = function( results ) {
+var uniqueSort = Sizzle.uniqueSort = function( results ) {
 	if ( sortOrder ) {
 		hasDuplicate = baseHasDuplicate;
 		results.sort( sortOrder );
@@ -309,6 +310,24 @@ Sizzle.uniqueSort = function( results ) {
 
 	return results;
 };
+
+// Element contains another
+var contains = jQuery.contains = docElem.compareDocumentPosition ?
+	function( a, b ) {
+		return !!(a.compareDocumentPosition(b) & 16);
+	} :
+	docElem.contains ?
+	function( a, b ) {
+		return a !== b && (a.contains ? a.contains( b ) : false);
+	} :
+	function( a, b ) {
+		while ((b = b.parentNode)) {
+			if ( b === a ) {
+				return true;
+			}
+		}
+		return false;
+	};
 
 Sizzle.matches = function( expr, set ) {
 	return select( expr, document, [], set );
@@ -582,30 +601,26 @@ var Expr = Sizzle.selectors = {
 
 		"": function(checkSet, part, isXML){
 			var nodeCheck,
-				doneName = done++,
-				checkFn = dirCheck;
+				doneName = done++;
 
 			if ( typeof part === "string" && !rNonWord.test( part ) ) {
 				part = part.toLowerCase();
 				nodeCheck = part;
-				checkFn = dirNodeCheck;
 			}
 
-			checkFn( "parentNode", part, doneName, checkSet, nodeCheck, isXML );
+			dirCheck( "parentNode", part, doneName, checkSet, nodeCheck, isXML, nodeCheck !== undefined );
 		},
 
 		"~": function( checkSet, part, isXML ) {
 			var nodeCheck,
-				doneName = done++,
-				checkFn = dirCheck;
+				doneName = done++;
 
 			if ( typeof part === "string" && !rNonWord.test( part ) ) {
 				part = part.toLowerCase();
 				nodeCheck = part;
-				checkFn = dirNodeCheck;
 			}
 
-			checkFn( "previousSibling", part, doneName, checkSet, nodeCheck, isXML );
+			dirCheck( "previousSibling", part, doneName, checkSet, nodeCheck, isXML, nodeCheck !== undefined );
 		}
 	},
 
@@ -1237,7 +1252,7 @@ if ( document.querySelectorAll ) {
 	})();
 }
 
-function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
+function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML, isNodeCheck ) {
 	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
 		var elem = checkSet[i];
 
@@ -1248,7 +1263,7 @@ function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 
 			while ( elem ) {
 				if ( elem[ expando ] === doneName ) {
-					match = checkSet[elem.sizset];
+					match = checkSet[ elem.sizset ];
 					break;
 				}
 
@@ -1257,40 +1272,12 @@ function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 					elem.sizset = i;
 				}
 
-				if ( elem.nodeName.toLowerCase() === cur ) {
-					match = elem;
-					break;
-				}
-
-				elem = elem[dir];
-			}
-
-			checkSet[i] = match;
-		}
-	}
-}
-
-function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
-	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-		var elem = checkSet[i];
-
-		if ( elem ) {
-			var match = false;
-
-			elem = elem[dir];
-
-			while ( elem ) {
-				if ( elem[ expando ] === doneName ) {
-					match = checkSet[elem.sizset];
-					break;
-				}
-
-				if ( elem.nodeType === 1 ) {
-					if ( !isXML ) {
-						elem[ expando ] = doneName;
-						elem.sizset = i;
+				if ( isNodeCheck ) {
+					if ( elem.nodeName.toLowerCase() === cur ) {
+						match = elem;
+						break;
 					}
-
+				} else if ( elem.nodeType === 1 ) {
 					if ( typeof cur !== "string" ) {
 						if ( elem === cur ) {
 							match = true;
@@ -1309,22 +1296,6 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 			checkSet[i] = match;
 		}
 	}
-}
-
-if ( docElem.contains ) {
-	Sizzle.contains = function( a, b ) {
-		return a !== b && (a.contains ? a.contains(b) : true);
-	};
-
-} else if ( docElem.compareDocumentPosition ) {
-	Sizzle.contains = function( a, b ) {
-		return !!(a.compareDocumentPosition(b) & 16);
-	};
-
-} else {
-	Sizzle.contains = function() {
-		return false;
-	};
 }
 
 var isXML = Sizzle.isXML = function( elem ) {
