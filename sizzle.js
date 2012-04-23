@@ -9,11 +9,11 @@
 var document = window.document,
 	docElem = document.documentElement,
 
-	characterEncoding = "(?:[\\w\\u00c0-\\uFFFF\\-]|\\\\.)",
+	characterEncoding = "(?:[-\\w]|[^\\x00-\\xa0]|\\\\.)",
 	rid = new RegExp("#(" + characterEncoding + "+)"),
 	rclass = new RegExp("\\.(" + characterEncoding + "+)"),
 	rname = new RegExp("\\[name=['\"]*(" + characterEncoding + "+)['\"]*\\]"),
-	rtag = new RegExp("^(" + characterEncoding.replace("\\-", "\\*\\-") + "+)"),
+	rtag = new RegExp("^(" + characterEncoding + "+)"),
 	rattr = new RegExp("\\[\\s*(" + characterEncoding + "+)\\s*(?:(\\S?=)\\s*(?:(['\"])(.*?)\\3|(#?" + characterEncoding + "*)|)|)\\s*\\]"),
 	rquickExpr = /^#([\w\-]+$)|^(\w+$)|^\.([\w\-]+$)/,
 
@@ -117,8 +117,8 @@ var Sizzle = function( selector, context, results ) {
 		if ((match = rquickExpr.exec(selector))) {
 			// Speed-up: Sizzle("#ID")
 			if ( match[1] ) {
-				elem = document.getElementById( match[1] );
-				// Check parentNode to catch when Blackberry 4e.6 returns
+				elem = context.getElementById( match[1] );
+				// Check parentNode to catch when Blackberry 4.6 returns
 				// nodes that are no longer in the document #6963
 				if ( elem && elem.parentNode ) {
 					// Handle the case where IE, Opera, and Webkit return items
@@ -131,14 +131,15 @@ var Sizzle = function( selector, context, results ) {
 				}
 			// Speed-up: Sizzle("TAG")
 			} else if ( match[2] ) {
+				// Speed-up: Sizzle("body")
+				if ( selector === "body" && context.body ) {
+					return makeArray( [ context.body ], results );
+				}
 				return makeArray( context.getElementsByTagName( selector ), results );
 			// Speed-up: Sizzle(".CLASS")
 			} else if ( match[3] && context.getElementsByClassName && assertFindSecondClassName && assertNoClassCache ) {
 				return makeArray( context.getElementsByClassName( match[3] ), results );
 			}
-		// Speed-up: Sizzle("body")
-		} else if ( selector === "body" && context.body ) {
-			return makeArray( [ context.body ], results );
 		}
 	}
 
@@ -283,7 +284,6 @@ var select = function( selector, context, results, seed, contextXML ) {
 // Slice is no longer used
 // It is not actually faster
 // Results is expected to be an array or undefined
-// This function is only used internally
 var makeArray = function( array, results ) {
 	results = results || [];
 	var i = 0,
@@ -732,8 +732,7 @@ var Expr = Sizzle.selectors = {
 				// calculate the numbers (first)n+(last) including if they are negative
 				match[2] = (test[1] + (test[2] || 1)) - 0;
 				match[3] = test[3] - 0;
-			}
-			else if ( match[2] ) {
+			} else if ( match[2] ) {
 				Sizzle.error( match[0] );
 			}
 
@@ -1219,7 +1218,7 @@ if ( document.querySelectorAll ) {
 					var oldContext = context,
 						old = context.getAttribute( "id" ),
 						nid = old || id,
-						hasParent = context.parentNode,
+						parent = context.parentNode,
 						relativeHierarchySelector = rrelativeHierarchy.test( selector );
 
 					if ( !old ) {
@@ -1227,12 +1226,12 @@ if ( document.querySelectorAll ) {
 					} else {
 						nid = nid.replace( rapostrophe, "\\$&" );
 					}
-					if ( relativeHierarchySelector && hasParent ) {
-						context = context.parentNode;
+					if ( relativeHierarchySelector && parent ) {
+						context = parent;
 					}
 
 					try {
-						if ( !relativeHierarchySelector || hasParent ) {
+						if ( !relativeHierarchySelector || parent ) {
 							return makeArray( context.querySelectorAll( "[id='" + nid + "'] " + selector ), results );
 						}
 					} catch(pseudoError) {
