@@ -9,14 +9,7 @@
 var document = window.document,
 	docElem = document.documentElement,
 
-	characterEncoding = "(?:[-\\w]|[^\\x00-\\xa0]|\\\\.)",
-	rid = new RegExp("#(" + characterEncoding + "+)"),
-	rclass = new RegExp("\\.(" + characterEncoding + "+)"),
-	rname = new RegExp("\\[name=['\"]*(" + characterEncoding + "+)['\"]*\\]"),
-	rtag = new RegExp("^(" + characterEncoding + "+)"),
-	rattr = new RegExp("\\[\\s*(" + characterEncoding + "+)\\s*(?:(\\S?=)\\s*(?:(['\"])(.*?)\\3|(#?" + characterEncoding + "*)|)|)\\s*\\]"),
 	rquickExpr = /^#([\w\-]+$)|^(\w+$)|^\.([\w\-]+$)/,
-
 	chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
 
 	expando = "sizcache" + (Math.random() + '').replace('.', ''),
@@ -117,7 +110,13 @@ var Sizzle = function( selector, context, results ) {
 		if ((match = rquickExpr.exec(selector))) {
 			// Speed-up: Sizzle("#ID")
 			if ( match[1] ) {
-				elem = context.getElementById( match[1] );
+				// Ensure context is a document
+				if ( nodeType !== 9 ) {
+					elem = context.ownerDocument && context.ownerDocument.getElementById( match[1] );
+				} else {
+					elem = context.getElementById( match[1] );
+				}
+
 				// Check parentNode to catch when Blackberry 4.6 returns
 				// nodes that are no longer in the document #6963
 				if ( elem && elem.parentNode ) {
@@ -196,7 +195,7 @@ var select = function( selector, context, results, seed, contextXML ) {
 		// Take a shortcut and set the context if the root selector is an ID
 		// (but not if it'll be faster if the inner selector is an ID)
 		if ( !seed && parts.length > 1 && context.nodeType === 9 && !contextXML &&
-				Expr.match.ID.test(parts[0]) && !Expr.match.ID.test(parts[parts.length - 1]) ) {
+				matchExpr.ID.test(parts[0]) && !matchExpr.ID.test(parts[parts.length - 1]) ) {
 
 			ret = Sizzle.find( parts.shift(), context, contextXML );
 			context = ret.expr ?
@@ -347,7 +346,7 @@ Sizzle.find = function( expr, context, isXML ) {
 	for ( i = 0, len = Expr.order.length; i < len; i++ ) {
 		type = Expr.order[i];
 
-		if ( (match = Expr.leftMatch[ type ].exec( expr )) ) {
+		if ( (match = leftMatchExpr[ type ].exec( expr )) ) {
 			left = match[1];
 			match.splice( 1, 1 );
 
@@ -356,7 +355,7 @@ Sizzle.find = function( expr, context, isXML ) {
 				set = Expr.find[ type ]( match, context, isXML );
 
 				if ( set != null ) {
-					expr = expr.replace( Expr.match[ type ], "" );
+					expr = expr.replace( matchExpr[ type ], "" );
 					break;
 				}
 			}
@@ -383,7 +382,7 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 
 	while ( expr && set.length ) {
 		for ( type in Expr.filter ) {
-			if ( (match = Expr.leftMatch[ type ].exec( expr )) != null && match[2] ) {
+			if ( (match = leftMatchExpr[ type ].exec( expr )) != null && match[2] ) {
 				filter = Expr.filter[ type ];
 				left = match[1];
 
@@ -437,7 +436,7 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 						curLoop = result;
 					}
 
-					expr = expr.replace( Expr.match[ type ], "" );
+					expr = expr.replace( matchExpr[ type ], "" );
 
 					if ( !anyFound ) {
 						return [];
@@ -507,19 +506,6 @@ var getText = Sizzle.getText = function( elem ) {
 
 var Expr = Sizzle.selectors = {
 	order: [ "ID", "NAME", "TAG" ],
-
-	match: {
-		ID: rid,
-		CLASS: rclass,
-		NAME: rname,
-		ATTR: rattr,
-		TAG: rtag,
-		CHILD: /:(only|nth|last|first)-child(?:\(\s*(even|odd|(?:[+\-]?\d+|(?:[+\-]?\d*)?n\s*(?:[+\-]\s*\d+)?))\s*\))?/,
-		POS: /:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^\-]|$)/,
-		PSEUDO: /:((?:[\w\u00c0-\uFFFF\-]|\\.)+)(?:\((['"]?)((?:\([^\)]+\)|[^\(\)]*)+)\2\))?/
-	},
-
-	leftMatch: {},
 
 	attrMap: {
 		"class": "className",
@@ -775,7 +761,7 @@ var Expr = Sizzle.selectors = {
 					return false;
 				}
 
-			} else if ( Expr.match.POS.test( match[0] ) || Expr.match.CHILD.test( match[0] ) ) {
+			} else if ( matchExpr.POS.test( match[0] ) || matchExpr.CHILD.test( match[0] ) ) {
 				return true;
 			}
 
@@ -1068,19 +1054,6 @@ var Expr = Sizzle.selectors = {
 	}
 };
 
-var origPOS = Expr.match.POS,
-	fescape = function(all, num){
-		return "\\" + (num - 0 + 1);
-	};
-
-for ( var type in Expr.match ) {
-	Expr.match[ type ] = new RegExp( Expr.match[ type ].source + (/(?![^\[]*\])(?![^\(]*\))/.source) );
-	Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + Expr.match[ type ].source.replace(/\\(\d+)/g, fescape) );
-}
-// Expose origPOS
-// "global" as in regardless of relation to brackets/parens
-Expr.match.globalPOS = origPOS;
-
 // Add getElementsByClassName if usable
 if ( assertFindSecondClassName && assertNoClassCache ) {
 	Expr.order.splice(1, 0, "CLASS");
@@ -1090,6 +1063,34 @@ if ( assertFindSecondClassName && assertNoClassCache ) {
 		}
 	};
 }
+
+// Build all of the regexes
+var characterEncoding = "(?:[-\\w]|[^\\x00-\\xa0]|\\\\.)",
+	noBracketsParens = /(?![^\[]*\])(?![^\(]*\))/.source,
+	matchExpr = Expr.match = {
+		ID: new RegExp("#(" + characterEncoding + "+)"),
+		CLASS: new RegExp("\\.(" + characterEncoding + "+)"),
+		NAME: new RegExp("\\[name=['\"]*(" + characterEncoding + "+)['\"]*\\]"),
+		TAG: new RegExp("^(" + characterEncoding + "+)"),
+		ATTR: new RegExp("\\[\\s*(" + characterEncoding + "+)\\s*(?:(\\S?=)\\s*(?:(['\"])(.*?)\\3|(#?" + characterEncoding + "*)|)|)\\s*\\]"),
+		CHILD: /:(only|nth|last|first)-child(?:\(\s*(even|odd|(?:[+\-]?\d+|(?:[+\-]?\d*)?n\s*(?:[+\-]\s*\d+)?))\s*\))?/,
+		PSEUDO: /:((?:[\w\u00c0-\uFFFF\-]|\\.)+)(?:\((['"]?)((?:\([^\)]+\)|[^\(\)]*)+)\2\))?/,
+		POS: /:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^\-]|$)/
+	},
+	leftMatchExpr = Expr.leftMatch = {},
+	origPOS = matchExpr.POS,
+	fescape = function(all, num){
+		return "\\" + (num - 0 + 1);
+	};
+
+// Modify the regexes ensuring the matches are not surrounded in brackets/parens
+for ( var type in matchExpr ) {
+	matchExpr[ type ] = new RegExp( matchExpr[ type ].source + noBracketsParens );
+	leftMatchExpr[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + matchExpr[ type ].source.replace(/\\(\d+)/g, fescape) );
+}
+// Expose origPOS
+// "global" as in regardless of relation to brackets/parens
+matchExpr.globalPOS = origPOS;
 
 var sortOrder, siblingCheck;
 
@@ -1312,9 +1313,9 @@ var posProcess = function( selector, context, seed, isXML ) {
 
 	// Position selectors must be done after the filter
 	// And so must :not(positional) so we move all PSEUDOs to the end
-	while ( (match = Expr.match.PSEUDO.exec( selector )) ) {
+	while ( (match = matchExpr.PSEUDO.exec( selector )) ) {
 		later += match[0];
-		selector = selector.replace( Expr.match.PSEUDO, "" );
+		selector = selector.replace( matchExpr.PSEUDO, "" );
 	}
 
 	selector = Expr.relative[selector] ? selector + "*" : selector;
@@ -1325,8 +1326,6 @@ var posProcess = function( selector, context, seed, isXML ) {
 
 	return Sizzle.filter( later, tmpSet );
 };
-
-
 
 // EXPOSE
 
