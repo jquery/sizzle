@@ -1218,7 +1218,7 @@ if ( document.querySelectorAll ) {
 
 					try {
 						if ( !relativeHierarchySelector || hasParent ) {
-							return makeArray( context.querySelectorAll( "[id='" + nid + "'] " + query ), extra );
+							return makeArray( context.querySelectorAll( "[id='" + nid + "'] " + query.replace(/\,/g,",[id='" + nid + "'] ") ), extra );
 						}
 
 					} catch(pseudoError) {
