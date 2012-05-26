@@ -401,7 +401,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect(19);
+	expect(21);
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
@@ -440,13 +440,20 @@ test("pseudo - misc", function() {
 
 	// Inputs can't be focused unless the document has focus
 	if ( document.activeElement !== input || (document.hasFocus && !document.hasFocus()) ||
-		(document.querySelectorAll && !document.querySelectorAll('input:focus').length) ) {
+		(document.querySelectorAll && !document.querySelectorAll("input:focus").length) ) {
 		ok( true, "The input was not focused. Skip checking the :focus match." );
 		ok( true, "The input was not focused. Skip checking the :focus match." );
 
 	} else {
 		t( "Element focused", "input:focus", [ "focus-input" ] );
 		ok( (window.Sizzle || window.jQuery.find).matchesSelector( input, ":focus" ), ":focus Matches" );
+	}
+
+	// :active selector: this selector does not depend on document focus
+	if ( document.activeElement === input ) {
+		ok( (window.Sizzle || window.jQuery.find).matchesSelector( input, ":active" ), ":active Matches" );
+	} else {
+		ok( true, "The input did not become active. Skip checking the :active match." );
 	}
 
 	input.blur();
@@ -456,7 +463,8 @@ test("pseudo - misc", function() {
 		document.body.focus();
 	}
 
-	ok( !(window.Sizzle || window.jQuery.find).matchesSelector( input, ":focus" ), ":focus Doesn't Match" );
+	ok( !(window.Sizzle || window.jQuery.find).matchesSelector( input, ":focus" ), ":focus doesn't match" );
+	ok( !(window.Sizzle || window.jQuery.find).matchesSelector( input, ":active" ), ":active doesn't match" );
 	document.body.removeChild( input );
 });
 

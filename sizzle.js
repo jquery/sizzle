@@ -752,7 +752,7 @@ var Expr = Sizzle.selectors = {
 					match[3] = select(match[3], document, [], curLoop, isXML);
 
 				} else {
-					var ret = Sizzle.filter(match[3], curLoop, inplace, true ^ not);
+					var ret = Sizzle.filter(match[3], curLoop, inplace, !not);
 
 					if ( !inplace ) {
 						result.push.apply( result, ret );
@@ -861,9 +861,15 @@ var Expr = Sizzle.selectors = {
 		},
 
 		focus: function( elem ) {
+			var doc = elem.ownerDocument;
+			return elem === doc.activeElement && (!doc.hasFocus || doc.hasFocus()) && !!(elem.type || elem.href);
+		},
+
+		active: function( elem ) {
 			return elem === elem.ownerDocument.activeElement;
 		}
 	},
+
 	setFilters: {
 		first: function( elem, i ) {
 			return i === 0;
