@@ -10,16 +10,16 @@ test("element", function() {
 		if ( all[i].nodeType == 8 )
 			good = false;
 	ok( good, "Select all elements, no comment nodes" );
-	t( "Element Selector", "#qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Element Selector", "#qunit-fixture p", ["firstp", "ap", "sndp", "en", "sap", "first"] );
 	t( "Element Selector", "body", ["body"] );
 	t( "Element Selector", "html", ["html"] );
-	t( "Parent Element", "div p", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Parent Element", "#qunit-fixture div p", ["sndp", "en", "sap"] );
 	equal( jQuery("param", "#object1").length, 2, "Object/param as context" );
 
-	deepEqual( jQuery("p", document.getElementsByTagName("div")).get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
-	deepEqual( jQuery("p", "div").get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
-	deepEqual( jQuery("p", jQuery("div")).get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
-	deepEqual( jQuery("div").find("p").get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
+	deepEqual( jQuery("p", document.getElementById("qunit-fixture").getElementsByTagName("div")).get(), q("sndp", "en", "sap"), "Finding elements with a context." );
+	deepEqual( jQuery("p", "#qunit-fixture div").get(), q("sndp", "en", "sap"), "Finding elements with a context." );
+	deepEqual( jQuery("p", jQuery("#qunit-fixture div")).get(), q("sndp", "en", "sap"), "Finding elements with a context." );
+	deepEqual( jQuery("#qunit-fixture div").find("p").get(), q("sndp", "en", "sap"), "Finding elements with a context." );
 
 	deepEqual( jQuery("#form").find("select").get(), q("select1","select2","select3","select4","select5"), "Finding selects with a context." );
 
@@ -242,7 +242,7 @@ test("child and adjacent", function() {
 	t( "Adjacent", "p[lang=en] + p", ["sap"] );
 	t( "Adjacent", "a.GROUPS + code + a", ["mark"] );
 	t( "Comma, Child, and Adjacent", "#qunit-fixture a + a, code > a", ["groups","anchor1","anchor2"] );
-	t( "Element Preceded By", "#qunit-fixture p ~ div", ["foo", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
+	t( "Element Preceded By", "#qunit-fixture p ~ div", ["bar", "foo", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
 	t( "Element Preceded By", "#first ~ div", ["moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
 	t( "Element Preceded By", "#groups ~ a", ["mark"] );
 	t( "Element Preceded By", "#length ~ input", ["idTest"] );
@@ -350,7 +350,7 @@ test("attributes", function() {
 test("pseudo - child", function() {
 	expect(38);
 	t( "First Child", "#qunit-fixture p:first-child", ["firstp","sndp"] );
-	t( "Last Child", "p:last-child", ["sap"] );
+	t( "Last Child", "#qunit-fixture p:last-child", ["sap"] );
 	t( "Only Child", "#qunit-fixture a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
 	t( "Empty", "ul:empty", ["firstUL"] );
 	t( "Is A Parent", "#qunit-fixture p:parent", ["firstp","ap","sndp","en","sap","first"] );
@@ -368,7 +368,7 @@ test("pseudo - child", function() {
 
 	QUnit.reset();
 
-	t( "Last Child", "p:last-child", ["sap"] );
+	t( "Last Child", "#qunit-fixture p:last-child", ["sap"] );
 	t( "Last Child", "#qunit-fixture a:last-child", ["simon1","anchor1","mark","yahoo","anchor2","simon","liveLink1","liveLink2"] );
 
 	t( "Nth-child", "#qunit-fixture form#form > *:nth-child(2)", ["text1"] );
@@ -516,13 +516,13 @@ test("pseudo - position", function() {
 	t( "Check position filtering", "div.nothiddendiv:last", ["nothiddendiv"] );
 	t( "Check position filtering", "div.nothiddendiv:not(:lt(0))", ["nothiddendiv"] );
 
-	t( "Check element position", "div div:eq(0)", ["nothiddendivchild"] );
-	t( "Check element position", "div div:eq(5)", ["t2037"] );
-	t( "Check element position", "div div:eq(28)", ["fx-queue"] );
-	t( "Check element position", "div div:first", ["nothiddendivchild"] );
-	t( "Check element position", "div > div:first", ["nothiddendivchild"] );
-	t( "Check element position", "#dl div:first div:first", ["foo"] );
-	t( "Check element position", "#dl div:first > div:first", ["foo"] );
+	t( "Check element position", "#qunit-fixture div div:eq(0)", ["firstdiv"] );
+	t( "Check element position", "#qunit-fixture div div:eq(2)", ["thirddiv"] );
+	t( "Check element position", "#fx-test-group div div:eq(10)", ["toggleout"] );
+	t( "Check element position", "#qunit-fixture div div:first", ["firstdiv"] );
+	t( "Check element position", "#qunit-fixture div > div:first", ["firstdiv"] );
+	t( "Check element position", "#qunit-fixture div:first div:first", ["firstdiv"] );
+	t( "Check element position", "#qunit-fixture div:first > div:first", ["firstdiv"] );
 	t( "Check element position", "div#nothiddendiv:first > div:first", ["nothiddendivchild"] );
 });
 
