@@ -1,7 +1,14 @@
 module("selector", { teardown: moduleTeardown });
 
+// ### NOTE: ###
+// jQuery should not be used in this module
+// except for DOM manipulation
+// If jQuery is mandatory for the selection, move the test to jquery/test/unit/selector.js
+// Use t() or Sizzle()
+// #############
+
 test("element", function() {
-	expect(21);
+	expect(17);
 	QUnit.reset();
 
 	ok( Sizzle("*").length >= 30, "Select all" );
@@ -16,29 +23,25 @@ test("element", function() {
 	t( "Element Selector", "body", ["body"] );
 	t( "Element Selector", "html", ["html"] );
 	t( "Parent Element", "div p", ["firstp","ap","sndp","en","sap","first"] );
-	equal( jQuery("param", "#object1").length, 2, "Object/param as context" );
+	equal( Sizzle("param", document.getElementById("object1")).length, 2, "Object/param as context" );
 
-	deepEqual( jQuery("p", document.getElementsByTagName("div")).get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
-	deepEqual( jQuery("p", "div").get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
-	deepEqual( jQuery("p", jQuery("div")).get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
-	deepEqual( jQuery("div").find("p").get(), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
+	deepEqual( Sizzle("select", document.getElementById("form") ), q("select1","select2","select3","select4","select5"), "Finding selects with a context." );
 
-	deepEqual( jQuery("#form").find("select").get(), q("select1","select2","select3","select4","select5"), "Finding selects with a context." );
-
-	ok( jQuery("#length").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
-	ok( jQuery("#lengthtest input").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
+	ok( Sizzle("#length").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
+	ok( Sizzle("#lengthtest input").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
 
 	// Check for unique-ness and sort order
-	deepEqual( jQuery("p, div p").get(), jQuery("p").get(), "Check for duplicates: p, div p" );
+	deepEqual( Sizzle("p, div p"), Sizzle("p"), "Check for duplicates: p, div p" );
 
 	t( "Checking sort order", "h2, h1", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Checking sort order", "h2:first, h1:first", ["qunit-header", "qunit-banner"] );
 	t( "Checking sort order", "#qunit-fixture p, #qunit-fixture p a", ["firstp", "simon1", "ap", "google", "groups", "anchor1", "mark", "sndp", "en", "yahoo", "sap", "anchor2", "simon", "first"] );
 
 	// Test Conflict ID
-	deepEqual( jQuery("#lengthtest").find("#idTest").get(), q("idTest"), "Finding element with id of ID." );
-	deepEqual( jQuery("#lengthtest").find("[name='id']").get(), q("idTest"), "Finding element with id of ID." );
-	deepEqual( jQuery("#lengthtest").find("input[id='idTest']").get(), q("idTest"), "Finding elements with a context." );
+	var lengthtest = document.getElementById("lengthtest");
+	deepEqual( Sizzle("#idTest", lengthtest), q("idTest"), "Finding element with id of ID." );
+	deepEqual( Sizzle("[name='id']", lengthtest), q("idTest"), "Finding element with id of ID." );
+	deepEqual( Sizzle("input[id='idTest']", lengthtest), q("idTest"), "Finding elements with id of ID." );
 });
 
 test("XML Document Selectors", function() {
@@ -60,7 +63,7 @@ test("broken", function() {
 
 	function broken(name, selector) {
 		try {
-			jQuery(selector);
+			Sizzle(selector);
 			ok( false, name + ": " + selector );
 		} catch(e){
 			ok( e.message.indexOf("Syntax error") >= 0,
@@ -102,7 +105,7 @@ test("broken", function() {
 });
 
 test("id", function() {
-	expect(29);
+	expect(28);
 	t( "ID Selector", "#body", ["body"] );
 	t( "ID Selector w/ Element", "body#body", ["body"] );
 	t( "ID Selector w/ Element", "ul#first", [] );
@@ -128,18 +131,15 @@ test("id", function() {
 	t( "All Children of ID with no children", "#firstUL > *", [] );
 
 	var a = jQuery('<div><a name="tName1">tName1 A</a><a name="tName2">tName2 A</a><div id="tName1">tName1 Div</div></div>').appendTo('#qunit-fixture');
-	equal( jQuery("#tName1")[0].id, 'tName1', "ID selector with same value for a name attribute" );
-	equal( jQuery("#tName2").length, 0, "ID selector non-existing but name attribute on an A tag" );
+	equal( Sizzle("#tName1")[0].id, 'tName1', "ID selector with same value for a name attribute" );
+	equal( Sizzle("#tName2").length, 0, "ID selector non-existing but name attribute on an A tag" );
 	a.remove();
 
 	t( "ID Selector on Form with an input that has a name of 'id'", "#lengthtest", ["lengthtest"] );
 
 	t( "ID selector with non-existant ancestor", "#asdfasdf #foobar", [] ); // bug #986
 
-	deepEqual( jQuery("body").find("div#form").get(), [], "ID selector within the context of another element" );
-
-	//#7533
-	equal( jQuery("<div id=\"A'B~C.D[E]\"><p>foo</p></div>").find("p").length, 1, "Find where context root is a node and has an ID with CSS3 meta characters" );
+	deepEqual( Sizzle("div#form", document.body), [], "ID selector within the context of another element" );
 
 	t( "Underscore ID", "#types_all", ["types_all"] );
 	t( "Dash ID", "#fx-queue", ["fx-queue"] );
@@ -148,17 +148,13 @@ test("id", function() {
 });
 
 test("class", function() {
-	expect(22);
+	expect(18);
+
 	t( "Class Selector", ".blog", ["mark","simon"] );
 	t( "Class Selector", ".GROUPS", ["groups"] );
 	t( "Class Selector", ".blog.link", ["simon"] );
 	t( "Class Selector w/ Element", "a.blog", ["mark","simon"] );
 	t( "Parent Class Selector", "p .blog", ["mark","simon"] );
-
-	deepEqual( jQuery(".blog", document.getElementsByTagName("p")).get(), q("mark", "simon"), "Finding elements with a context." );
-	deepEqual( jQuery(".blog", "p").get(), q("mark", "simon"), "Finding elements with a context." );
-	deepEqual( jQuery(".blog", jQuery("p")).get(), q("mark", "simon"), "Finding elements with a context." );
-	deepEqual( jQuery("p").find(".blog").get(), q("mark", "simon"), "Finding elements with a context." );
 
 	t( "Class selector using UTF8", ".台北Táiběi", ["utf8class1"] );
 	//t( "Class selector using UTF8", ".台北", ["utf8class1","utf8class2"] );
@@ -176,11 +172,11 @@ test("class", function() {
 
 	var div = document.createElement("div");
 	div.innerHTML = "<div class='test e'></div><div class='test'></div>";
-	deepEqual( jQuery(".e", div).get(), [ div.firstChild ], "Finding a second class." );
+	deepEqual( Sizzle(".e", div), [ div.firstChild ], "Finding a second class." );
 
 	div.lastChild.className = "e";
 
-	deepEqual( jQuery(".e", div).get(), [ div.firstChild, div.lastChild ], "Finding a modified class." );
+	deepEqual( Sizzle(".e", div), [ div.firstChild, div.lastChild ], "Finding a modified class." );
 });
 
 test("name", function() {
@@ -196,12 +192,12 @@ test("name", function() {
 
 	t( "Name selector for grouped input", "input[name='types[]']", ["types_all", "types_anime", "types_movie"] );
 
-	deepEqual( jQuery("#form").find("input[name=action]").get(), q("text1"), "Name selector within the context of another element" );
-	deepEqual( jQuery("#form").find("input[name='foo[bar]']").get(), q("hidden2"), "Name selector for grouped form element within the context of another element" );
+	var form = document.getElementById("form");
+	deepEqual( Sizzle("input[name=action]", form), q("text1"), "Name selector within the context of another element" );
+	deepEqual( Sizzle("input[name='foo[bar]']", form), q("hidden2"), "Name selector for grouped form element within the context of another element" );
 
 	var form = jQuery("<form><input name='id'/></form>").appendTo("body");
-
-	equal( form.find("input").length, 1, "Make sure that rooted queries on forms (with possible expandos) work." );
+	equal( Sizzle("input", form[0]).length, 1, "Make sure that rooted queries on forms (with possible expandos) work." );
 
 	form.remove();
 
@@ -210,8 +206,8 @@ test("name", function() {
 	equal( a.length, 3, "Make sure the right number of elements were inserted." );
 	equal( a[1].id, "tName2ID", "Make sure the right number of elements were inserted." );
 
-	equal( jQuery("[name=tName1]")[0], a[0], "Find elements that have similar IDs" );
-	equal( jQuery("[name=tName2]")[0], a[1], "Find elements that have similar IDs" );
+	equal( Sizzle("[name=tName1]")[0], a[0], "Find elements that have similar IDs" );
+	equal( Sizzle("[name=tName2]")[0], a[1], "Find elements that have similar IDs" );
 	t( "Find elements that have similar IDs", "#tName2ID", ["tName2ID"] );
 
 	a.remove();
@@ -249,21 +245,25 @@ test("child and adjacent", function() {
 	t( "Element Preceded By", "#groups ~ a", ["mark"] );
 	t( "Element Preceded By", "#length ~ input", ["idTest"] );
 	t( "Element Preceded By", "#siblingfirst ~ em", ["siblingnext"] );
-	deepEqual( jQuery("#siblingfirst").find("~ em").get(), q("siblingnext"), "Element Preceded By with a context." );
-	deepEqual( jQuery("#siblingfirst").find("+ em").get(), q("siblingnext"), "Element Directly Preceded By with a context." );
 
-	equal( jQuery("#listWithTabIndex").length, 1, "Parent div for next test is found via ID (#8310)" );
-	equal( jQuery("#listWithTabIndex li:eq(2) ~ li").length, 1, "Find by general sibling combinator (#8310)" );
-	equal( jQuery("#__sizzle__").length, 0, "Make sure the temporary id assigned by sizzle is cleared out (#8310)" );
-	equal( jQuery("#listWithTabIndex").length, 1, "Parent div for previous test is still found via ID (#8310)" );
+	var siblingFirst = document.getElementById("siblingfirst");
+
+	deepEqual( Sizzle("~ em", siblingFirst), q("siblingnext"), "Element Preceded By with a context." );
+	deepEqual( Sizzle("+ em", siblingFirst), q("siblingnext"), "Element Directly Preceded By with a context." );
+
+	equal( Sizzle("#listWithTabIndex").length, 1, "Parent div for next test is found via ID (#8310)" );
+	equal( Sizzle("#listWithTabIndex li:eq(2) ~ li").length, 1, "Find by general sibling combinator (#8310)" );
+	equal( Sizzle("#__sizzle__").length, 0, "Make sure the temporary id assigned by sizzle is cleared out (#8310)" );
+	equal( Sizzle("#listWithTabIndex").length, 1, "Parent div for previous test is still found via ID (#8310)" );
 
 	t( "Verify deep class selector", "div.blah > p > a", [] );
 
 	t( "No element deep selector", "div.foo > span > a", [] );
 
-	deepEqual( jQuery("> :first", document.getElementById("nothiddendiv")).get(), q("nothiddendivchild"), "Verify child context positional selctor" );
-	deepEqual( jQuery("> :eq(0)", document.getElementById("nothiddendiv")).get(), q("nothiddendivchild"), "Verify child context positional selctor" );
-	deepEqual( jQuery("> *:first", document.getElementById("nothiddendiv")).get(), q("nothiddendivchild"), "Verify child context positional selctor" );
+	var nothiddendiv = document.getElementById("nothiddendiv");
+	deepEqual( Sizzle("> :first", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selctor" );
+	deepEqual( Sizzle("> :eq(0)", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selctor" );
+	deepEqual( Sizzle("> *:first", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selctor" );
 
 	t( "Non-existant ancestors", ".fototab > .thumbnails > a", [] );
 });
@@ -347,7 +347,7 @@ test("attributes", function() {
 	var div = document.createElement("div");
 	div.innerHTML = "<div id='foo' xml:test='something'></div>";
 
-	deepEqual( jQuery( "[xml\\:test]", div ).get(), [ div.firstChild ], "Finding by attribute with escaped characters." );
+	deepEqual( Sizzle( "[xml\\:test]", div ), [ div.firstChild ], "Finding by attribute with escaped characters." );
 });
 
 test("pseudo - child", function() {
@@ -409,8 +409,9 @@ test("pseudo - misc", function() {
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
 
-	var select = document.getElementById("select1");
-	ok( (window.Sizzle || window.jQuery.find).matchesSelector( select, ":has(option)" ), "Has Option Matches" );
+	var select = document.getElementById("select1"),
+		match = (window.Sizzle || window.jQuery.find).matchesSelector;
+	ok( match( select, ":has(option)" ), "Has Option Matches" );
 
 	t( "Text Contains", "a:contains(Google)", ["google","groups"] );
 	t( "Text Contains", "a:contains(Google Groups)", ["groups"] );
@@ -428,8 +429,8 @@ test("pseudo - misc", function() {
 
 		t( "Input Buttons :" + type, "#tmp_input :" + type, [ "input_" + type, "button_" + type ] );
 
-		ok( (window.Sizzle || window.jQuery.find).matchesSelector( jQuery("#input_" + type)[0], ":" + type ), "Input Matches :" + type );
-		ok( (window.Sizzle || window.jQuery.find).matchesSelector( jQuery("#button_" + type)[0], ":" + type ), "Button Matches :" + type );
+		ok( match( Sizzle("#input_" + type)[0], ":" + type ), "Input Matches :" + type );
+		ok( match( Sizzle("#button_" + type)[0], ":" + type ), "Button Matches :" + type );
 	});
 
 	document.body.removeChild( tmp );
@@ -449,12 +450,12 @@ test("pseudo - misc", function() {
 
 	} else {
 		t( "Element focused", "input:focus", [ "focus-input" ] );
-		ok( (window.Sizzle || window.jQuery.find).matchesSelector( input, ":focus" ), ":focus Matches" );
+		ok( match( input, ":focus" ), ":focus Matches" );
 	}
 
 	// :active selector: this selector does not depend on document focus
 	if ( document.activeElement === input ) {
-		ok( (window.Sizzle || window.jQuery.find).matchesSelector( input, ":active" ), ":active Matches" );
+		ok( match( input, ":active" ), ":active Matches" );
 	} else {
 		ok( true, "The input did not become active. Skip checking the :active match." );
 	}
@@ -466,8 +467,8 @@ test("pseudo - misc", function() {
 		document.body.focus();
 	}
 
-	ok( !(window.Sizzle || window.jQuery.find).matchesSelector( input, ":focus" ), ":focus doesn't match" );
-	ok( !(window.Sizzle || window.jQuery.find).matchesSelector( input, ":active" ), ":active doesn't match" );
+	ok( !match( input, ":focus" ), ":focus doesn't match" );
+	ok( !match( input, ":active" ), ":active doesn't match" );
 	document.body.removeChild( input );
 });
 
@@ -537,31 +538,6 @@ test("pseudo - position", function() {
 	t( "Check element position", "div#nothiddendiv:first > div:first", ["nothiddendivchild"] );
 });
 
-if ( (window.Sizzle || jQuery.find).selectors.filters.visibility ) {
-test("pseudo - visibility", function() {
-	expect(11);
-
-	t( "Is Visible", "#form input:visible", [] );
-	t( "Is Visible", "div:visible:not(#qunit-testrunner-toolbar):lt(2)", ["nothiddendiv", "nothiddendivchild"] );
-	t( "Is Hidden", "#form input:hidden", ["text1","text2","radio1","radio2","check1","check2","hidden1","hidden2","name","search"] );
-	t( "Is Hidden", "#qunit-fixture:hidden", ["main"] );
-	t( "Is Hidden", "#dl:hidden", ["dl"] );
-
-	var $div = jQuery('<div/>').appendTo("body");
-	$div.css({ fontSize: 0, lineHeight: 0 });// IE also needs to set font-size and line-height to 0
-	$div.width(1).height(0);
-	t( "Is Visible", '#nothiddendivchild:visible', ['nothiddendivchild'] );
-	t( "Is Not Visible", '#nothiddendivchild:hidden', [] );
-	$div.width(0).height(1);
-	t( "Is Visible", '#nothiddendivchild:visible', ['nothiddendivchild'] );
-	t( "Is Not Visible", '#nothiddendivchild:hidden', [] );
-	$div.width(1).height(1);
-	t( "Is Visible", '#nothiddendivchild:visible', ['nothiddendivchild'] );
-	t( "Is Not Visible", '#nothiddendivchild:hidden', [] );
-	$div.remove();
-});
-}
-
 test("pseudo - form", function() {
 	expect(10);
 
@@ -580,16 +556,4 @@ test("pseudo - form", function() {
 	t( "Hidden inputs should be treated as enabled. See QSA test.", "#hidden1:enabled", ["hidden1"] );
 
 	implied.remove();
-});
-
-test("disconnected nodes", function() {
-	expect(4);
-	var $opt = jQuery('<option></option>').attr("value", "whipit").appendTo("#qunit-fixture").detach();
-	equal( $opt.val(), "whipit", "option value" );
-	equal( $opt.is(":selected"), false, "unselected option" );
-	$opt.attr("selected", true);
-	equal( $opt.is(":selected"), true, "selected option" );
-
-	var $div = jQuery( '<div/>' );
-	equal( $div.is("div"), true, "Make sure .is('nodeName') works on disconnect nodes." );
 });
