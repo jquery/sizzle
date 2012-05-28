@@ -47,15 +47,15 @@ test("element", function() {
 test("XML Document Selectors", function() {
 	var xml = createWithFriesXML();
 	expect(9);
-	equal( jQuery("foo_bar", xml).length, 1, "Element Selector with underscore" );
-	equal( jQuery(".component", xml).length, 1, "Class selector" );
-	equal( jQuery("[class*=component]", xml).length, 1, "Attribute selector for class" );
-	equal( jQuery("property[name=prop2]", xml).length, 1, "Attribute selector with name" );
-	equal( jQuery("[name=prop2]", xml).length, 1, "Attribute selector with name" );
-	equal( jQuery("#seite1", xml).length, 1, "Attribute selector with ID" );
-	equal( jQuery("component#seite1", xml).length, 1, "Attribute selector with ID" );
-	equal( jQuery("component", xml).filter("#seite1").length, 1, "Attribute selector filter with ID" );
-	ok( jQuery( xml.lastChild ).is( "soap\\:Envelope" ), "Check for namespaced element" );
+	equal( Sizzle("foo_bar", xml).length, 1, "Element Selector with underscore" );
+	equal( Sizzle(".component", xml).length, 1, "Class selector" );
+	equal( Sizzle("[class*=component]", xml).length, 1, "Attribute selector for class" );
+	equal( Sizzle("property[name=prop2]", xml).length, 1, "Attribute selector with name" );
+	equal( Sizzle("[name=prop2]", xml).length, 1, "Attribute selector with name" );
+	equal( Sizzle("#seite1", xml).length, 1, "Attribute selector with ID" );
+	equal( Sizzle("component#seite1", xml).length, 1, "Attribute selector with ID" );
+	equal( Sizzle.matches( "#seite1", Sizzle("component", xml) ).length, 1, "Attribute selector filter with ID" );
+	ok( Sizzle.matchesSelector( xml.lastChild, "soap\\:Envelope" ), "Check for namespaced element" );
 });
 
 test("broken", function() {
