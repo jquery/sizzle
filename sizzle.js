@@ -296,12 +296,19 @@ var isXML = Sizzle.isXML = function( elem ) {
 // Slice is no longer used
 // It is not actually faster
 // Results is expected to be an array or undefined
+// typeof len is checked for if array is a form nodelist containing an element with name "length" (wow)
 var makeArray = function( array, results ) {
 	results = results || [];
 	var i = 0,
 		len = array.length;
-	for ( ; i < len; i++ ) {
-		results.push( array[i] );
+	if ( typeof len === "number" ) {
+		for ( ; i < len; i++ ) {
+			results.push( array[ i ] );
+		}
+	} else {
+		for ( ; array[ i ]; i++ ) {
+			results.push( array[ i ] );
+		}
 	}
 	return results;
 };
