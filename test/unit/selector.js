@@ -8,7 +8,7 @@ module("selector", { teardown: moduleTeardown });
 // ###############
 
 test("element", function() {
-	expect(15);
+	expect( 15 );
 	QUnit.reset();
 
 	ok( Sizzle("*").length >= 30, "Select all" );
@@ -43,7 +43,8 @@ test("element", function() {
 
 test("XML Document Selectors", function() {
 	var xml = createWithFriesXML();
-	expect(9);
+	expect( 9 );
+
 	equal( Sizzle("foo_bar", xml).length, 1, "Element Selector with underscore" );
 	equal( Sizzle(".component", xml).length, 1, "Class selector" );
 	equal( Sizzle("[class*=component]", xml).length, 1, "Attribute selector for class" );
@@ -56,7 +57,7 @@ test("XML Document Selectors", function() {
 });
 
 test("broken", function() {
-	expect(19);
+	expect( 19 );
 
 	function broken( name, selector ) {
 		raises(function() {
@@ -100,7 +101,8 @@ test("broken", function() {
 });
 
 test("id", function() {
-	expect(28);
+	expect( 28 );
+
 	t( "ID Selector", "#body", ["body"] );
 	t( "ID Selector w/ Element", "body#body", ["body"] );
 	t( "ID Selector w/ Element", "ul#first", [] );
@@ -143,7 +145,7 @@ test("id", function() {
 });
 
 test("class", function() {
-	expect(18);
+	expect( 18 );
 
 	t( "Class Selector", ".blog", ["mark","simon"] );
 	t( "Class Selector", ".GROUPS", ["groups"] );
@@ -175,7 +177,7 @@ test("class", function() {
 });
 
 test("name", function() {
-	expect(15);
+	expect( 15 );
 
 	t( "Name selector", "input[name=action]", ["text1"] );
 	t( "Name selector with single quotes", "input[name='action']", ["text1"] );
@@ -218,7 +220,8 @@ test("multiple", function() {
 });
 
 test("child and adjacent", function() {
-	expect(33);
+	expect( 33 );
+
 	t( "Child", "p > a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p> a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p >a", ["simon1","google","groups","mark","yahoo","simon"] );
@@ -264,7 +267,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect(46);
+	expect( 46 );
 
 	t( "Attribute Exists", "a[title]", ["google"] );
 	t( "Attribute Exists", "*[title]", ["google"] );
@@ -315,38 +318,44 @@ test("attributes", function() {
 	ok( match( opt, "[id=option1a]" ), "Attribute With No Quotes Equals Matches" );
 	ok( match( document.getElementById("simon1"), "a[href*=#]" ), "Attribute With No Quotes Href Contains Matches" );
 
-	t("Empty values", "#select1 option[value='']", ["option1a"]);
-	t("Empty values", "#select1 option[value!='']", ["option1b","option1c","option1d"]);
+	t( "Empty values", "#select1 option[value='']", ["option1a"] );
+	t( "Empty values", "#select1 option[value!='']", ["option1b","option1c","option1d"] );
 
-	t("Select options via :selected", "#select1 option:selected", ["option1a"] );
-	t("Select options via :selected", "#select2 option:selected", ["option2d"] );
-	t("Select options via :selected", "#select3 option:selected", ["option3b", "option3c"] );
+	t( "Select options via :selected", "#select1 option:selected", ["option1a"] );
+	t( "Select options via :selected", "#select2 option:selected", ["option2d"] );
+	t( "Select options via :selected", "#select3 option:selected", ["option3b", "option3c"] );
 
 	t( "Grouped Form Elements", "input[name='foo[bar]']", ["hidden2"] );
 
+	// Uncomment if the boolHook is removed
+	// var check2 = document.getElementById("check2");
+	// check2.checked = true;
+	// ok( !Sizzle.matches("[checked]", [ check2 ] ), "Dynamic boolean attributes match when they should with Sizzle.matches (#11115)" );
+
 	// Make sure attribute value quoting works correctly. See: #6093
-	var attrbad = jQuery('<input type="hidden" value="2" name="foo.baz" id="attrbad1"/><input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>').appendTo("body");
+	var attrbad = jQuery("<input type=\"hidden\" value=\"2\" name=\"foo.baz\" id=\"attrbad1\"/><input type=\"hidden\" value=\"2\" name=\"foo[baz]\" id=\"attrbad2\"/>").appendTo("body");
 
-	t("Find escaped attribute value", "input[name=foo\\.baz]", ["attrbad1"]);
-	t("Find escaped attribute value", "input[name=foo\\[baz\\]]", ["attrbad2"]);
+	t( "Find escaped attribute value", "input[name=foo\\.baz]", ["attrbad1"] );
+	t( "Find escaped attribute value", "input[name=foo\\[baz\\]]", ["attrbad2"] );
 
-	t("input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"]);
-	t("input[type=search]", "#form input[type=search]", ["search"]);
+	t( "input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"] );
+	t( "input[type=search]", "#form input[type=search]", ["search"] );
 
 	attrbad.remove();
 
-	//#6428
-	t("Find escaped attribute value", "#form input[name=foo\\[bar\\]]", ["hidden2"]);
+	// #6428
+	t( "Find escaped attribute value", "#form input[name=foo\\[bar\\]]", ["hidden2"] );
 
-	//#3279
+	// #3279
 	var div = document.createElement("div");
 	div.innerHTML = "<div id='foo' xml:test='something'></div>";
 
 	deepEqual( Sizzle( "[xml\\:test]", div ), [ div.firstChild ], "Finding by attribute with escaped characters." );
+	div = null;
 });
 
 test("pseudo - child", function() {
-	expect(38);
+	expect( 38 );
 	t( "First Child", "#qunit-fixture p:first-child", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "#qunit-fixture a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
@@ -399,7 +408,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect(21);
+	expect( 21 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
@@ -469,7 +478,8 @@ test("pseudo - misc", function() {
 
 
 test("pseudo - :not", function() {
-	expect(24);
+	expect( 24 );
+
 	t( "Not", "a.blog:not(.link)", ["mark"] );
 
 	t( "Not - multiple", "#form option:not(:contains(Nothing),#option1b,:selected)", ["option1c", "option1d", "option2b", "option2c", "option3d", "option3e", "option4e", "option5b", "option5c"] );
@@ -503,7 +513,8 @@ test("pseudo - :not", function() {
 });
 
 test("pseudo - position", function() {
-	expect(25);
+	expect( 25 );
+
 	t( "nth Element", "#qunit-fixture p:nth(1)", ["ap"] );
 	t( "First Element", "#qunit-fixture p:first", ["firstp"] );
 	t( "Last Element", "p:last", ["first"] );
@@ -534,14 +545,14 @@ test("pseudo - position", function() {
 });
 
 test("pseudo - form", function() {
-	expect(10);
+	expect( 10 );
 
-	var implied = jQuery('<input id="impliedText"/>').appendTo("#form");
+	var extraTexts = jQuery("<input id=\"impliedText\"/><input id=\"capitalText\" type=\"TEXT\">").appendTo("#form");
 
-	t( "Form element :input", "#form :input", ["text1", "text2", "radio1", "radio2", "check1", "check2", "hidden1", "hidden2", "name", "search", "button", "area1", "select1", "select2", "select3", "select4", "select5", "impliedText"] );
+	t( "Form element :input", "#form :input", ["text1", "text2", "radio1", "radio2", "check1", "check2", "hidden1", "hidden2", "name", "search", "button", "area1", "select1", "select2", "select3", "select4", "select5", "impliedText", "capitalText"] );
 	t( "Form element :radio", "#form :radio", ["radio1", "radio2"] );
 	t( "Form element :checkbox", "#form :checkbox", ["check1", "check2"] );
-	t( "Form element :text", "#form :text", ["text1", "text2", "hidden2", "name", "impliedText"] );
+	t( "Form element :text", "#form :text", ["text1", "text2", "hidden2", "name", "impliedText", "capitalText"] );
 	t( "Form element :radio:checked", "#form :radio:checked", ["radio2"] );
 	t( "Form element :checkbox:checked", "#form :checkbox:checked", ["check1"] );
 	t( "Form element :radio:checked, :checkbox:checked", "#form :radio:checked, #form :checkbox:checked", ["radio2", "check1"] );
@@ -550,5 +561,5 @@ test("pseudo - form", function() {
 	t( "Selected Option Element are also :checked", "#form option:checked", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
 	t( "Hidden inputs should be treated as enabled. See QSA test.", "#hidden1:enabled", ["hidden1"] );
 
-	implied.remove();
+	extraTexts.remove();
 });

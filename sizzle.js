@@ -636,6 +636,7 @@ var Expr = Sizzle.selectors = {
 						[];
 				}
 			},
+
 		NAME: function( match, context ) {
 			if ( typeof context.getElementsByName !== strundefined ) {
 				var ret = [],
@@ -675,6 +676,7 @@ var Expr = Sizzle.selectors = {
 				return results;
 			}
 	},
+
 	preFilter: {
 		CLASS: function( match, curLoop, inplace, result, not, isXML ) {
 			match = " " + match[1].replace( rBackslash, "" ) + " ";
@@ -826,7 +828,7 @@ var Expr = Sizzle.selectors = {
 			var attr = elem.getAttribute( "type" ), type = elem.type;
 			// IE6 and 7 will map elem.type to 'text' for new HTML5 types (search, etc)
 			// use getAttribute instead to test this case
-			return elem.nodeName.toLowerCase() === "input" && "text" === type && ( attr === type || attr === null );
+			return elem.nodeName.toLowerCase() === "input" && "text" === type && ( attr === null || attr.toLowerCase() === type );
 		},
 
 		radio: function( elem ) {
@@ -896,21 +898,22 @@ var Expr = Sizzle.selectors = {
 		},
 
 		lt: function( elem, i, match ) {
-			return i < match[3] - 0;
+			return i < match[ 3 ] - 0;
 		},
 
 		gt: function( elem, i, match ) {
-			return i > match[3] - 0;
+			return i > match[ 3 ] - 0;
 		},
 
 		nth: function( elem, i, match ) {
-			return match[3] - 0 === i;
+			return match[ 3 ] - 0 === i;
 		},
 
 		eq: function( elem, i, match ) {
-			return match[3] - 0 === i;
+			return match[ 3 ] - 0 === i;
 		}
 	},
+
 	filter: {
 		PSEUDO: function( elem, match, i, array ) {
 			var name = match[1],
@@ -1014,15 +1017,15 @@ var Expr = Sizzle.selectors = {
 			},
 
 		TAG: function( elem, match ) {
-			return (match === "*" && elem.nodeType === 1) || !!elem.nodeName && elem.nodeName.toLowerCase() === match;
+			return ( match === "*" && elem.nodeType === 1 ) || !!elem.nodeName && elem.nodeName.toLowerCase() === match;
 		},
 
 		CLASS: function( elem, match ) {
-			return (" " + (elem.className || elem.getAttribute("class")) + " ").indexOf( match ) > -1;
+			return ( " " + ( elem.className || elem.getAttribute("class") ) + " " ).indexOf( match ) > -1;
 		},
 
 		ATTR: function( elem, match ) {
-			var name = match[1],
+			var name = match[ 1 ],
 				result = Sizzle.attr ?
 					Sizzle.attr( elem, name ) :
 					Expr.attrHandle[ name ] ?
@@ -1031,8 +1034,8 @@ var Expr = Sizzle.selectors = {
 						elem[ name ] :
 						elem.getAttribute( name ),
 				value = result + "",
-				type = match[2],
-				check = match[4];
+				type = match[ 2 ],
+				check = match[ 4 ];
 
 			return result == null ?
 				type === "!=" :
@@ -1058,7 +1061,7 @@ var Expr = Sizzle.selectors = {
 		},
 
 		POS: function( elem, match, i, array ) {
-			var name = match[2],
+			var name = match[ 2 ],
 				filter = Expr.setFilters[ name ];
 
 			if ( filter ) {
