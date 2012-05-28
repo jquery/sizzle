@@ -598,28 +598,12 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 
-		"": function(checkSet, part, isXML){
-			var nodeCheck,
-				doneName = done++;
-
-			if ( typeof part === "string" && !rNonWord.test( part ) ) {
-				part = part.toLowerCase();
-				nodeCheck = part;
-			}
-
-			dirCheck( "parentNode", part, doneName, checkSet, nodeCheck, isXML, nodeCheck !== undefined );
+		"": function( checkSet, part, isXML ) {
+			dirCheck( "parentNode", checkSet, part, isXML );
 		},
 
 		"~": function( checkSet, part, isXML ) {
-			var nodeCheck,
-				doneName = done++;
-
-			if ( typeof part === "string" && !rNonWord.test( part ) ) {
-				part = part.toLowerCase();
-				nodeCheck = part;
-			}
-
-			dirCheck( "previousSibling", part, doneName, checkSet, nodeCheck, isXML, nodeCheck !== undefined );
+			dirCheck( "previousSibling", checkSet, part, isXML );
 		}
 	},
 
@@ -1294,10 +1278,16 @@ if ( document.querySelectorAll ) {
 	})();
 }
 
-function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML, isNodeCheck ) {
-	var elem, match, isElem,
+function dirCheck( dir, checkSet, part, isXML ) {
+	var elem, match, isElem, nodeCheck,
+		doneName = done++,
 		i = 0,
 		len = checkSet.length;
+
+	if ( typeof part === "string" && !rNonWord.test( part ) ) {
+		part = part.toLowerCase();
+		nodeCheck = part;
+	}
 
 	for ( ; i < len; i++ ) {
 		elem = checkSet[ i ];
@@ -1318,19 +1308,19 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML, isNodeCheck )
 					elem.sizset = i;
 				}
 
-				if ( isNodeCheck ) {
-					if ( elem.nodeName.toLowerCase() === cur ) {
+				if ( nodeCheck ) {
+					if ( elem.nodeName.toLowerCase() === part ) {
 						match = elem;
 						break;
 					}
 				} else if ( isElem ) {
-					if ( typeof cur !== "string" ) {
-						if ( elem === cur ) {
+					if ( typeof part !== "string" ) {
+						if ( elem === part ) {
 							match = true;
 							break;
 						}
 
-					} else if ( Sizzle.filter( cur, [elem] ).length > 0 ) {
+					} else if ( Sizzle.filter( part, [elem] ).length > 0 ) {
 						match = elem;
 						break;
 					}
