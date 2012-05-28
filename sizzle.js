@@ -1208,29 +1208,37 @@ if ( document.querySelectorAll ) {
 			id = "__sizzle__",
 			rrelativeHierarchy = /^\s*[+~]/,
 			rapostrophe = /'/g,
+			// Build QSA regex
+			// Regex strategy adopted from Diego Perini
 			rbuggyQSA = [];
 
-		// Build QSA regex
-		// Regex strategy adopted from Diego Perini
 		assert(function( div ) {
+			div.innerHTML = "<select><option selected></option></select>";
+
+			// IE8 - Some boolean attributes are not treated correctly
+			if ( !div.querySelectorAll("[selected]").length ) {
+				rbuggyQSA.push("\\[[\\x20\\t\\n\\r\\f]*(?:checked|disabled|ismap|multiple|readonly|selected|value)");
+			}
 
 			// Webkit/Opera - :checked should return selected option elements
 			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
-			div.innerHTML = "<select><option selected='selected'></option></select>";
-			if ( !div.querySelectorAll( ":checked" ).length ) {
+			// IE8 throws error here (do not put tests after this one)
+			if ( !div.querySelectorAll(":checked").length ) {
 				rbuggyQSA.push(":checked");
 			}
+		});
 
-			// assertQSAAttrEmptyValue
+		assert(function( div ) {
+
 			// Opera 10/IE - ^= $= *= and empty values
 			div.innerHTML = "<p class=''></p>";
 			// Should not select anything
-			if ( !!div.querySelectorAll("[class^='']").length ) {
+			if ( div.querySelectorAll("[class^='']").length ) {
 				rbuggyQSA.push("[*^$]=[\\x20\\t\\n\\r\\f]*(?:\"\"|'')");
 			}
 
-			// assertQSAHiddenEnabled
-			// IE8 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
+			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
+			// IE8 throws error here (do not put tests after this one)
 			div.innerHTML = "<input type='hidden'>";
 			if ( !div.querySelectorAll(":enabled").length ) {
 				rbuggyQSA.push(":enabled", ":disabled");
