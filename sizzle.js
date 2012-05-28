@@ -314,7 +314,7 @@ var uniqueSort = Sizzle.uniqueSort = function( results ) {
 };
 
 // Element contains another
-var contains = jQuery.contains = docElem.compareDocumentPosition ?
+var contains = Sizzle.contains = docElem.compareDocumentPosition ?
 	function( a, b ) {
 		return !!(a.compareDocumentPosition(b) & 16);
 	} :
