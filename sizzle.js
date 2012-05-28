@@ -201,7 +201,7 @@ var select = function( selector, context, results, seed, contextXML ) {
 		// Take a shortcut and set the context if the root selector is an ID
 		// (but not if it'll be faster if the inner selector is an ID)
 		if ( !seed && parts.length > 1 && context.nodeType === 9 && !contextXML &&
-				matchExpr.ID.test(parts[0]) && !matchExpr.ID.test(parts[parts.length - 1]) ) {
+				matchExpr.ID.test( parts[0] ) && !matchExpr.ID.test( parts[parts.length - 1] ) ) {
 
 			ret = Sizzle.find( parts.shift(), context, contextXML );
 			context = ret.expr ?
@@ -778,7 +778,7 @@ var Expr = Sizzle.selectors = {
 		},
 
 		disabled: function( elem ) {
-			return !!elem.disabled;
+			return elem.disabled === true;
 		},
 
 		checked: function( elem ) {
