@@ -22,6 +22,7 @@ var document = window.document,
 	baseHasDuplicate = true,
 	rBackslash = /\\/g,
 	rNonWord = /\W/,
+	rtnfr = /[\t\n\f\r]/g,
 
 	// Used for testing something on an element
 	assert = function( fn ) {
@@ -364,14 +365,14 @@ Sizzle.find = function( expr, context, isXML ) {
 	}
 
 	for ( i = 0, len = Expr.order.length; i < len; i++ ) {
-		type = Expr.order[i];
+		type = Expr.order[ i ];
 
 		if ( (match = leftMatchExpr[ type ].exec( expr )) ) {
-			left = match[1];
+			left = match[ 1 ];
 			match.splice( 1, 1 );
 
 			if ( left.substr( left.length - 1 ) !== "\\" ) {
-				match[1] = (match[1] || "").replace( rBackslash, "" );
+				match[ 1 ] = (match[ 1 ] || "").replace( rBackslash, "" );
 				set = Expr.find[ type ]( match, context, isXML );
 
 				if ( set != null ) {
@@ -684,7 +685,7 @@ var Expr = Sizzle.selectors = {
 
 			for ( var i = 0, elem; (elem = curLoop[i]) != null; i++ ) {
 				if ( elem ) {
-					if ( not ^ (elem.className && (" " + elem.className + " ").replace(/[\t\n\f\r]/g, " ").indexOf(match) >= 0) ) {
+					if ( not ^ (elem.className && (" " + elem.className + " ").replace( rtnfr, " " ).indexOf( match ) >= 0) ) {
 						if ( !inplace ) {
 							result.push( elem );
 						}
