@@ -780,7 +780,7 @@ var Expr = Sizzle.selectors = {
 
 	filters: {
 		enabled: function( elem ) {
-			return elem.disabled === false && elem.type !== "hidden";
+			return elem.disabled === false;
 		},
 
 		disabled: function( elem ) {
