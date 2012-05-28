@@ -110,7 +110,7 @@ var Sizzle = function( selector, context, results ) {
 	contextXML = isXML( context );
 
 	if ( !contextXML ) {
-		if ((match = rquickExpr.exec(selector))) {
+		if ( (match = rquickExpr.exec( selector )) ) {
 			// Speed-up: Sizzle("#ID")
 			if ( match[1] ) {
 				// Ensure context is a document
@@ -1233,9 +1233,9 @@ if ( document.querySelectorAll ) {
 			if ( !div.querySelectorAll(":enabled").length ) {
 				rbuggyQSA.push(":enabled", ":disabled");
 			}
-
-			rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
 		});
+
+		rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
 
 		select = function( selector, context, results, seed, contextXML ) {
 			// Only use querySelectorAll when not filtering,

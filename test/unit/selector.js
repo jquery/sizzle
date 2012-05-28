@@ -1,11 +1,11 @@
 module("selector", { teardown: moduleTeardown });
 
-// ### NOTE: ###
+// #### NOTE: ####
 // jQuery should not be used in this module
 // except for DOM manipulation
 // If jQuery is mandatory for the selection, move the test to jquery/test/unit/selector.js
 // Use t() or Sizzle()
-// #############
+// ###############
 
 test("element", function() {
 	expect(17);
