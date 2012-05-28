@@ -8,7 +8,7 @@ module("selector", { teardown: moduleTeardown });
 // ###############
 
 test("element", function() {
-	expect(17);
+	expect(15);
 	QUnit.reset();
 
 	ok( Sizzle("*").length >= 30, "Select all" );
@@ -26,9 +26,6 @@ test("element", function() {
 	equal( Sizzle("param", document.getElementById("object1")).length, 2, "Object/param as context" );
 
 	deepEqual( Sizzle("select", document.getElementById("form") ), q("select1","select2","select3","select4","select5"), "Finding selects with a context." );
-
-	ok( Sizzle("#length").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
-	ok( Sizzle("#lengthtest input").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
 
 	// Check for unique-ness and sort order
 	deepEqual( Sizzle("p, div p"), Sizzle("p"), "Check for duplicates: p, div p" );
@@ -61,7 +58,7 @@ test("XML Document Selectors", function() {
 test("broken", function() {
 	expect(19);
 
-	function broken(name, selector) {
+	function broken( name, selector ) {
 		try {
 			Sizzle(selector);
 			ok( false, name + ": " + selector );
