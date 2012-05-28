@@ -113,24 +113,27 @@ var Sizzle = function( selector, context, results ) {
 		if ( (match = rquickExpr.exec( selector )) ) {
 			// Speed-up: Sizzle("#ID")
 			if ( match[1] ) {
-				// Ensure context is a document
-				if ( nodeType !== 9 ) {
-					elem = context.ownerDocument && context.ownerDocument.getElementById( match[1] );
-				} else {
+				if ( nodeType === 9 ) {
 					elem = context.getElementById( match[1] );
-				}
-
-				// Check parentNode to catch when Blackberry 4.6 returns
-				// nodes that are no longer in the document #6963
-				if ( elem && elem.parentNode ) {
-					// Handle the case where IE, Opera, and Webkit return items
-					// by name instead of ID
-					if ( elem.id === match[1] ) {
-						return results ? makeArray( [ elem ], results ) : [ elem ];
+					// Check parentNode to catch when Blackberry 4.6 returns
+					// nodes that are no longer in the document #6963
+					if ( elem && elem.parentNode ) {
+						// Handle the case where IE, Opera, and Webkit return items
+						// by name instead of ID
+						if ( elem.id === match[1] ) {
+							return makeArray( [ elem ], results );
+						}
+					} else {
+						return makeArray( [], results );
 					}
 				} else {
-					return makeArray( [], results );
+					// Context is not a document
+					elem = context.ownerDocument && context.ownerDocument.getElementById( match[1] );
+					if ( contains(context, elem) && elem.id === match[1] ) {
+						return makeArray( [ elem ], results );
+					}
 				}
+
 			// Speed-up: Sizzle("TAG")
 			} else if ( match[2] ) {
 				// Speed-up: Sizzle("body")
@@ -290,7 +293,7 @@ var makeArray = function( array, results ) {
 	results = results || [];
 	var i = 0,
 		len = array.length;
-	for (; i < len; i++) {
+	for ( ; i < len; i++ ) {
 		results.push( array[i] );
 	}
 	return results;

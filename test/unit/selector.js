@@ -59,13 +59,11 @@ test("broken", function() {
 	expect(19);
 
 	function broken( name, selector ) {
-		try {
-			Sizzle(selector);
-			ok( false, name + ": " + selector );
-		} catch(e){
-			ok( e.message.indexOf("Syntax error") >= 0,
-				name + ": " + selector );
-		}
+		raises(function() {
+			Sizzle( selector );
+		}, function( e ) {
+			return e.message.indexOf("Syntax error") >= 0;
+		}, name + ": " + selector );
 	}
 
 	broken( "Broken Selector", "[", [] );
