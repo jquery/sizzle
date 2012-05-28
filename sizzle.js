@@ -286,6 +286,13 @@ var select = function( selector, context, results, seed, contextXML ) {
 	return results;
 };
 
+var isXML = Sizzle.isXML = function( elem ) {
+	// documentElement is verified for cases where it doesn't yet exist
+	// (such as loading iframes in IE - #4833)
+	var documentElement = (elem ? elem.ownerDocument || elem : 0).documentElement;
+	return documentElement ? documentElement.nodeName !== "HTML" : false;
+};
+
 // Slice is no longer used
 // It is not actually faster
 // Results is expected to be an array or undefined
@@ -1288,13 +1295,16 @@ if ( document.querySelectorAll ) {
 }
 
 function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML, isNodeCheck ) {
-	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-		var elem = checkSet[i];
+	var elem, match, isElem,
+		i = 0,
+		len = checkSet.length;
+
+	for ( ; i < len; i++ ) {
+		elem = checkSet[ i ];
 
 		if ( elem ) {
-			var match = false;
-
-			elem = elem[dir];
+			match = false;
+			elem = elem[ dir ];
 
 			while ( elem ) {
 				if ( elem[ expando ] === doneName ) {
@@ -1302,7 +1312,8 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML, isNodeCheck )
 					break;
 				}
 
-				if ( elem.nodeType === 1 && !isXML ){
+				isElem = elem.nodeType === 1;
+				if ( isElem && !isXML ) {
 					elem[ expando ] = doneName;
 					elem.sizset = i;
 				}
@@ -1312,7 +1323,7 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML, isNodeCheck )
 						match = elem;
 						break;
 					}
-				} else if ( elem.nodeType === 1 ) {
+				} else if ( isElem ) {
 					if ( typeof cur !== "string" ) {
 						if ( elem === cur ) {
 							match = true;
@@ -1325,20 +1336,13 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML, isNodeCheck )
 					}
 				}
 
-				elem = elem[dir];
+				elem = elem[ dir ];
 			}
 
-			checkSet[i] = match;
+			checkSet[ i ] = match;
 		}
 	}
 }
-
-var isXML = Sizzle.isXML = function( elem ) {
-	// documentElement is verified for cases where it doesn't yet exist
-	// (such as loading iframes in IE - #4833)
-	var documentElement = (elem ? elem.ownerDocument || elem : 0).documentElement;
-	return documentElement ? documentElement.nodeName !== "HTML" : false;
-};
 
 var posProcess = function( selector, context, seed, isXML ) {
 	var match,
