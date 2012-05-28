@@ -25,8 +25,11 @@ var document = window.document,
 
 	// Used for testing something on an element
 	assert = function( fn ) {
-		var div = document.createElement("div"),
+		var pass = false,
+			div = document.createElement("div");
+		try {
 			pass = fn( div );
+		} catch (e) {}
 		// release memory in IE
 		div = null;
 		return pass;
@@ -781,11 +784,14 @@ var Expr = Sizzle.selectors = {
 		},
 
 		disabled: function( elem ) {
-			return elem.disabled === true;
+			return !!elem.disabled;
 		},
 
 		checked: function( elem ) {
-			return elem.checked === true;
+			// In CSS3, :checked should return both checked and selected elements
+			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
+			var nodeName = elem.nodeName.toLowerCase();
+			return (nodeName === "input" && !! elem.checked) || (nodeName === "option" && !!elem.selected);
 		},
 
 		selected: function( elem ) {
@@ -1077,7 +1083,7 @@ var characterEncoding = "(?:[-\\w]|[^\\x00-\\xa0]|\\\\.)",
 		ID: new RegExp("#(" + characterEncoding + "+)"),
 		CLASS: new RegExp("\\.(" + characterEncoding + "+)"),
 		NAME: new RegExp("\\[name=['\"]*(" + characterEncoding + "+)['\"]*\\]"),
-		TAG: new RegExp("^(" + characterEncoding + "+)"),
+		TAG: new RegExp("^(" + characterEncoding.replace( "[-", "[-\\*" ) + "+)"),
 		ATTR: new RegExp("\\[\\s*(" + characterEncoding + "+)\\s*(?:(\\S?=)\\s*(?:(['\"])(.*?)\\3|(#?" + characterEncoding + "*)|)|)\\s*\\]"),
 		CHILD: /:(only|nth|last|first)-child(?:\(\s*(even|odd|(?:[+\-]?\d+|(?:[+\-]?\d*)?n\s*(?:[+\-]\s*\d+)?))\s*\))?/,
 		PSEUDO: /:((?:[\w\u00c0-\uFFFF\-]|\\.)+)(?:\((['"]?)((?:\([^\)]+\)|[^\(\)]*)+)\2\))?/,
@@ -1197,22 +1203,45 @@ if ( docElem.compareDocumentPosition ) {
 if ( document.querySelectorAll ) {
 	(function(){
 		var oldSelect = select,
-			div = document.createElement("div"),
 			id = "__sizzle__",
 			rrelativeHierarchy = /^\s*[+~]/,
-			rapostrophe = /'/g;
+			rapostrophe = /'/g,
+			rbuggyQSA = [];
 
-		div.innerHTML = "<p class='TEST'></p>";
+		// Build QSA regex
+		// Regex strategy adopted from Diego Perini
+		assert(function( div ) {
 
-		// Safari can't handle uppercase or unicode characters when
-		// in quirks mode.
-		if ( div.querySelectorAll && div.querySelectorAll(".TEST").length === 0 ) {
-			return;
-		}
+			// Webkit/Opera - :checked should return selected option elements
+			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
+			div.innerHTML = "<select><option selected='selected'></option></select>";
+			if ( !div.querySelectorAll( ":checked" ).length ) {
+				rbuggyQSA.push(":checked");
+			}
+
+			// assertQSAAttrEmptyValue
+			// Opera 10/IE - ^= $= *= and empty values
+			div.innerHTML = "<p class=''></p>";
+			// Should not select anything
+			if ( !!div.querySelectorAll("[class^='']").length ) {
+				rbuggyQSA.push("[*^$]=[\\x20\\t\\n\\r\\f]*(?:\"\"|'')");
+			}
+
+			// assertQSAHiddenEnabled
+			// IE8 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
+			div.innerHTML = "<input type='hidden'>";
+			if ( !div.querySelectorAll(":enabled").length ) {
+				rbuggyQSA.push(":enabled", ":disabled");
+			}
+
+			rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
+		});
 
 		select = function( selector, context, results, seed, contextXML ) {
-			// Only use querySelectorAll on non-XML documents
-			if ( !seed && !contextXML ) {
+			// Only use querySelectorAll when not filtering,
+			// when this is not xml,
+			// and when no QSA bugs apply
+			if ( !seed && !contextXML && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
 				if ( context.nodeType === 9 ) {
 					try {
 						return makeArray( context.querySelectorAll(selector), results );
@@ -1241,7 +1270,7 @@ if ( document.querySelectorAll ) {
 						if ( !relativeHierarchySelector || parent ) {
 							return makeArray( context.querySelectorAll( "[id='" + nid + "'] " + selector ), results );
 						}
-					} catch(pseudoError) {
+					} catch(qsaError) {
 					} finally {
 						if ( !old ) {
 							oldContext.removeAttribute( "id" );
@@ -1252,9 +1281,6 @@ if ( document.querySelectorAll ) {
 
 			return oldSelect( selector, context, results, seed, contextXML );
 		};
-
-		// release memory in IE
-		div = null;
 	})();
 }
 

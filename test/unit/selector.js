@@ -4,11 +4,13 @@ test("element", function() {
 	expect(21);
 	QUnit.reset();
 
-	ok( jQuery("*").size() >= 30, "Select all" );
-	var all = jQuery("*"), good = true;
-	for ( var i = 0; i < all.length; i++ )
-		if ( all[i].nodeType == 8 )
+	ok( Sizzle("*").length >= 30, "Select all" );
+	var all = Sizzle("*"), good = true;
+	for ( var i = 0; i < all.length; i++ ) {
+		if ( all[i].nodeType == 8 ) {
 			good = false;
+		}
+	}
 	ok( good, "Select all elements, no comment nodes" );
 	t( "Element Selector", "#qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
 	t( "Element Selector", "body", ["body"] );
@@ -54,7 +56,7 @@ test("XML Document Selectors", function() {
 });
 
 test("broken", function() {
-	expect(18);
+	expect(19);
 
 	function broken(name, selector) {
 		try {
@@ -81,7 +83,7 @@ test("broken", function() {
 	// Sigh. WebKit thinks this is a real selector in qSA
 	// They've already fixed this and it'll be coming into
 	// current browsers soon.
-	//broken( "Nth-child", ":nth-child(asdf)", [] );
+	broken( "Nth-child", ":nth-child(asdf)", [] );
 	broken( "Nth-child", ":nth-child(2n+-0)", [] );
 	broken( "Nth-child", ":nth-child(2+0)", [] );
 	broken( "Nth-child", ":nth-child(- 1n)", [] );
@@ -267,7 +269,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect(45);
+	expect(46);
 
 	t( "Attribute Exists", "a[title]", ["google"] );
 	t( "Attribute Exists", "*[title]", ["google"] );
@@ -314,6 +316,7 @@ test("attributes", function() {
 	ok( match( opt, "[id*=option1][type!=checkbox]" ), "Attribute Is Not Equal Matches" );
 	ok( match( opt, "[id*=option1]" ), "Attribute With No Quotes Contains Matches" );
 	ok( match( opt, "[test=]" ), "Attribute With No Quotes No Content Matches" );
+	ok( !match( opt, "[test^='']" ), "Attribute with empty string value does not match startsWith selector (^=)" );
 	ok( match( opt, "[id=option1a]" ), "Attribute With No Quotes Equals Matches" );
 	ok( match( document.getElementById("simon1"), "a[href*=#]" ), "Attribute With No Quotes Href Contains Matches" );
 
@@ -560,7 +563,7 @@ test("pseudo - visibility", function() {
 }
 
 test("pseudo - form", function() {
-	expect(8);
+	expect(10);
 
 	var implied = jQuery('<input id="impliedText"/>').appendTo("#form");
 
@@ -573,6 +576,8 @@ test("pseudo - form", function() {
 	t( "Form element :radio:checked, :checkbox:checked", "#form :radio:checked, #form :checkbox:checked", ["radio2", "check1"] );
 
 	t( "Selected Option Element", "#form option:selected", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
+	t( "Selected Option Element are also :checked", "#form option:checked", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
+	t( "Hidden inputs should be treated as enabled. See QSA test.", "#hidden1:enabled", ["hidden1"] );
 
 	implied.remove();
 });
