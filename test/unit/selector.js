@@ -7,6 +7,44 @@ module("selector", { teardown: moduleTeardown });
 // Use t() or Sizzle()
 // ###############
 
+/*
+	======== QUnit Reference ========
+	http://docs.jquery.com/QUnit
+
+	Test methods:
+		expect(numAssertions)
+		stop()
+		start()
+			note: QUnit's eventual addition of an argument to stop/start is ignored in this test suite
+			so that start and stop can be passed as callbacks without worrying about
+				their parameters
+	Test assertions:
+		ok(value, [message])
+		equal(actual, expected, [message])
+		notEqual(actual, expected, [message])
+		deepEqual(actual, expected, [message])
+		notDeepEqual(actual, expected, [message])
+		strictEqual(actual, expected, [message])
+		notStrictEqual(actual, expected, [message])
+		raises(block, [expected], [message])
+
+	======== testinit.js reference ========
+	See data/testinit.js
+
+	q(...);
+		Returns an array of elements with the given IDs
+		@example q("main", "foo", "bar") => [<div id="main">, <span id="foo">, <input id="bar">]
+
+	t( testName, selector, [ "#array", "#of", "#ids" ] );
+		Asserts that a select matches the given IDs
+		@example t("Check for something", "//[a]", ["foo", "baar"]);
+
+	url( "some/url.php" );
+		Add random number to url to stop caching
+		@example url("data/test.html") => "data/test.html?10538358428943"
+		@example url("data/test.php?foo=bar") => "data/test.php?foo=bar&10538358345554"
+*/
+
 test("element", function() {
 	expect( 15 );
 	QUnit.reset();
