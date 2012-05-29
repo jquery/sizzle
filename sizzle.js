@@ -70,16 +70,15 @@ var document = window.document,
 		return true;
 	}),
 
-	// Opera can't find a second classname (in 9.6)
-	// Also, make sure that getElementsByClassName actually exists
-	assertFindSecondClassName = true,
-	// Safari caches class attributes, doesn't catch changes (in 3.2)
-	assertNoClassCache = assert(function( div ) {
+	// Determines a buggy getElementsByClassName
+	assertUsableClassName = assert(function( div ) {
+		// Opera can't find a second classname (in 9.6)
 		div.innerHTML = "<div class='test e'></div><div class='test'></div>";
 		if ( !div.getElementsByClassName || div.getElementsByClassName("e").length === 0 ) {
-			assertFindSecondClassName = false;
+			return false;
 		}
 
+		// Safari caches class attributes, doesn't catch changes (in 3.2)
 		div.lastChild.className = "e";
 		return div.getElementsByClassName("e").length !== 1;
 	});
@@ -143,7 +142,7 @@ var Sizzle = function( selector, context, results ) {
 				}
 				return makeArray( context.getElementsByTagName( selector ), results );
 			// Speed-up: Sizzle(".CLASS")
-			} else if ( match[3] && context.getElementsByClassName && assertFindSecondClassName && assertNoClassCache ) {
+			} else if ( assertUsableClassName && match[3] && context.getElementsByClassName ) {
 				return makeArray( context.getElementsByClassName( match[3] ), results );
 			}
 		}
@@ -1072,7 +1071,7 @@ var Expr = Sizzle.selectors = {
 };
 
 // Add getElementsByClassName if usable
-if ( assertFindSecondClassName && assertNoClassCache ) {
+if ( assertUsableClassName ) {
 	Expr.order.splice(1, 0, "CLASS");
 	Expr.find.CLASS = function( match, context, isXML ) {
 		if ( typeof context.getElementsByClassName !== strundefined && !isXML ) {
