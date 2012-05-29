@@ -35,7 +35,7 @@ module("selector", { teardown: moduleTeardown });
 		Returns an array of elements with the given IDs
 		@example q("main", "foo", "bar") => [<div id="main">, <span id="foo">, <input id="bar">]
 
-	t( testName, selector, [ "#array", "#of", "#ids" ] );
+	t( testName, selector, [ "array", "of", "ids" ] );
 		Asserts that a select matches the given IDs
 		@example t("Check for something", "//[a]", ["foo", "baar"]);
 
