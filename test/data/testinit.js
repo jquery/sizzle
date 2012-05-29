@@ -27,7 +27,7 @@ function q() {
  * @result returns true if "//[a]" return two elements with the IDs 'foo' and 'baar'
  */
 function t( a, b, c ) {
-	var f = Sizzle(b).get(),
+	var f = Sizzle(b),
 		s = "",
 		i = 0;
 
