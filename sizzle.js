@@ -44,16 +44,14 @@ var document = window.document,
 		POS: /:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^\-]|$)/
 	},
 
-	// Expose origPOS
-	// "global" as in regardless of relation to brackets/parens
-	origPOS = matchExpr.globalPOS = matchExpr.POS,
+	origPOS = matchExpr.POS,
 
 	leftMatchExpr = (function() {
 		var type,
 			// Increments parenthetical references
 			// for leftMatch creation
 			fescape = function( all, num ) {
-				return "\\" + (num - 0 + 1);
+				return "\\" + ( num - 0 + 1 );
 			},
 			leftMatch = {};
 
@@ -63,6 +61,11 @@ var document = window.document,
 			// Adds a capture group for characters left of the match
 			leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + matchExpr[ type ].source.replace( /\\(\d+)/g, fescape ) );
 		}
+
+		// Expose origPOS
+		// "global" as in regardless of relation to brackets/parens
+		matchExpr.globalPOS = origPOS;
+
 		return leftMatch;
 	})(),
 
@@ -450,7 +453,7 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 
 				anyFound = false;
 
-				match.splice(1,1);
+				match.splice( 1, 1 );
 
 				if ( left.substr( left.length - 1 ) === "\\" ) {
 					continue;
@@ -1380,7 +1383,9 @@ var posProcess = function( selector, context, seed, contextXML ) {
 	var match,
 		tmpSet = [],
 		later = "",
-		root = context.nodeType ? [context] : context;
+		root = context.nodeType ? [ context ] : context,
+		i = 0,
+		len = root.length;
 
 	// Position selectors must be done after the filter
 	// And so must :not(positional) so we move all PSEUDOs to the end
@@ -1389,9 +1394,11 @@ var posProcess = function( selector, context, seed, contextXML ) {
 		selector = selector.replace( matchExpr.PSEUDO, "" );
 	}
 
-	selector = Expr.relative[selector] ? selector + "*" : selector;
+	if ( Expr.relative[ selector ] ) {
+		selector += "*";
+	}
 
-	for ( var i = 0, l = root.length; i < l; i++ ) {
+	for ( ; i < len; i++ ) {
 		select( selector, root[i], tmpSet, seed, contextXML );
 	}
 
