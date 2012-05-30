@@ -95,7 +95,7 @@ test("XML Document Selectors", function() {
 });
 
 test("broken", function() {
-	expect( 19 );
+	expect( 18 );
 
 	function broken( name, selector ) {
 		raises(function() {
@@ -119,8 +119,8 @@ test("broken", function() {
 	//broken( "Nth-child", ":nth-child(-)", [] );
 	// Sigh. WebKit thinks this is a real selector in qSA
 	// They've already fixed this and it'll be coming into
-	// current browsers soon.
-	broken( "Nth-child", ":nth-child(asdf)", [] );
+	// current browsers soon. Currently, Safari 5.0 still has this problem
+	// broken( "Nth-child", ":nth-child(asdf)", [] );
 	broken( "Nth-child", ":nth-child(2n+-0)", [] );
 	broken( "Nth-child", ":nth-child(2+0)", [] );
 	broken( "Nth-child", ":nth-child(- 1n)", [] );

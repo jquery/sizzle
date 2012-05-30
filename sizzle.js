@@ -108,11 +108,8 @@ var document = window.document,
 	// Check to see if an attribute returns normalized href attributes
 	assertHrefNotNormalized = assert(function( div ) {
 		div.innerHTML = "<a href='#'></a>";
-		if ( div.firstChild && typeof div.firstChild.getAttribute !== strundefined &&
-			div.firstChild.getAttribute("href") !== "#" ) {
-			return false;
-		}
-		return true;
+		return div.firstChild && typeof div.firstChild.getAttribute !== strundefined &&
+			div.firstChild.getAttribute("href") === "#";
 	}),
 
 	// Determines a buggy getElementsByClassName
@@ -173,8 +170,8 @@ var Sizzle = function( selector, context, results ) {
 					}
 				} else {
 					// Context is not a document
-					elem = context.ownerDocument && context.ownerDocument.getElementById( match[1] );
-					if ( contains(context, elem) && elem.id === match[1] ) {
+					if ( context.ownerDocument && (elem = context.ownerDocument.getElementById( match[1] )) &&
+						contains( context, elem ) && elem.id === match[1] ) {
 						return makeArray( [ elem ], results );
 					}
 				}
