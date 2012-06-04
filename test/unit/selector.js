@@ -346,7 +346,7 @@ test("attributes", function() {
 	t( "Attribute Is Not Equal", "#ap a[hreflang!='en']", ["google","groups","anchor1"] );
 
 	var opt = document.getElementById("option1a"),
-		match = (window.Sizzle || window.jQuery.find).matchesSelector;
+		match = Sizzle.matchesSelector;
 
 	opt.setAttribute("test", "");
 
@@ -453,7 +453,7 @@ test("pseudo - misc", function() {
 	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
 
 	var select = document.getElementById("select1"),
-		match = (window.Sizzle || window.jQuery.find).matchesSelector;
+		match = Sizzle.matchesSelector;
 	ok( match( select, ":has(option)" ), "Has Option Matches" );
 
 	t( "Text Contains", "a:contains(Google)", ["google","groups"] );
