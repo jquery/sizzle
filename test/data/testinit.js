@@ -3,6 +3,25 @@ var jQuery = this.jQuery || "jQuery", // For testing .noConflict()
 	originaljQuery = jQuery,
 	original$ = $;
 
+(function() {
+	// Nullify querySelector all if qsa=no is in the params
+	// Isolates the Sizzle API
+	var keyvals, params, set;
+
+	if ( location.search ) {
+		keyvals = location.search.slice(1).split("&"),
+		params = {};
+
+		while ( keyvals.length ) {
+			set = keyvals.shift().split("=");
+			params[ set[0] ] = set[1];
+		}
+		if ( params.qsa && params.qsa === "no" ) {
+			document.querySelectorAll = null;
+		}
+	}
+})();
+
 /**
  * Returns an array of elements with the given IDs
  * @example q("main", "foo", "bar")

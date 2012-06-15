@@ -22,6 +22,7 @@ var document = window.document,
 	rquickExpr = /^#([\w\-]+$)|^(\w+$)|^\.([\w\-]+$)/,
 	chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
 
+	rsibling = /^[+~]$/,
 	rbackslash = /\\/g,
 	rnonWord = /\W/,
 	rstartsWithWord = /^\w/,
@@ -195,7 +196,7 @@ var Sizzle = function( selector, context, results ) {
 };
 
 var select = function( selector, context, results, seed, contextXML ) {
-	var m, set, checkSet, extra, ret, cur, pop, i,
+	var m, set, checkSet, extra, ret, cur, pop, prevCur, i,
 		origContext = context,
 		prune = true,
 		parts = [],
@@ -254,7 +255,7 @@ var select = function( selector, context, results, seed, contextXML ) {
 		if ( context ) {
 			ret = seed ?
 				{ expr: parts.pop(), set: makeArray( seed ) } :
-				Sizzle.find( parts.pop(), (parts.length >= 1 && (parts[0] === "~" || parts[0] === "+") && context.parentNode) || context, contextXML );
+				Sizzle.find( parts.pop(), (parts.length >= 1 && rsibling.test( parts[0] ) && context.parentNode) || context, contextXML );
 
 			set = ret.expr ?
 				Sizzle.filter( ret.expr, ret.set ) :
@@ -281,7 +282,12 @@ var select = function( selector, context, results, seed, contextXML ) {
 					pop = context;
 				}
 
-				Expr.relative[ cur ]( checkSet, pop, contextXML );
+				// If a specific combinator precedes a general of the same type,
+				// no filtering needs to be done
+				if ( !((cur === ">" && prevCur === "") || (cur === "+" && prevCur === "~")) ) {
+					Expr.relative[ cur ]( checkSet, pop, contextXML );
+				}
+				prevCur = cur;
 			}
 
 		} else {
@@ -778,7 +784,7 @@ var Expr = Sizzle.selectors = {
 			}
 
 			// TODO: Move to normal caching system
-			match[0] = done++;
+			match[0] = ++done;
 
 			return match;
 		},
@@ -994,7 +1000,7 @@ var Expr = Sizzle.selectors = {
 
 		CHILD: function( elem, match ) {
 			var first, last,
-				doneName, parent, cache,
+				doneName, parent,
 				count, diff,
 				type = match[1],
 				node = elem;
@@ -1035,19 +1041,22 @@ var Expr = Sizzle.selectors = {
 					doneName = match[0];
 					parent = elem.parentNode;
 
-					if ( parent && (parent[ expando ] !== doneName || !elem.nodeIndex) ) {
-						count = 0;
+					if ( parent && (parent[ expando ] !== doneName || !elem.sizset) ) {
 
+						count = 0;
 						for ( node = parent.firstChild; node; node = node.nextSibling ) {
 							if ( node.nodeType === 1 ) {
-								node.nodeIndex = ++count;
+								node.sizset = ++count;
+								if ( node === elem ) {
+									break;
+								}
 							}
 						}
 
 						parent[ expando ] = doneName;
 					}
 
-					diff = elem.nodeIndex - last;
+					diff = elem.sizset - last;
 
 					if ( first === 0 ) {
 						return diff === 0;
@@ -1328,9 +1337,8 @@ function dirCheck( dir, checkSet, part, xml ) {
 
 	if ( typeof part === "string" && !rnonWord.test( part ) ) {
 		part = part.toLowerCase();
-		nodeCheck = part;
+		nodeCheck = true;
 	}
-
 	for ( ; i < len; i++ ) {
 		elem = checkSet[i];
 

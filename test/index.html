@@ -13,7 +13,9 @@
 </head>
 
 <body id="body">
-	<h1 id="qunit-header">Sizzle Test Suite</h1>
+	<h1 id="qunit-header">Sizzle Test Suite
+		<a href="?qsa=no">(No querySelectorAll)</a>
+	</h1>
 	<h2 id="qunit-banner"></h2>
 	<div id="qunit-testrunner-toolbar"></div>
 	<h2 id="qunit-userAgent"></h2>
@@ -215,7 +217,15 @@ Z</textarea>
 		<div id="siblingTest">
 			<em id="siblingfirst">1</em>
 			<em id="siblingnext">2</em>
-		</div>
+			<em id="siblingthird">
+				<em id="siblingchild">
+					<em id="siblinggrandchild">
+						<em id="siblinggreatgrandchild"></em>
+					</em>
+				</em>
+			</em>
+			<span id="siblingspan"></span>
+		</div>​
 	</div>
 	</dl>
 	<div id="fx-test-group" style="position:absolute;width:1px;height:1px;overflow:hidden;">

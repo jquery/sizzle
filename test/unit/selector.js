@@ -258,7 +258,7 @@ test("multiple", function() {
 });
 
 test("child and adjacent", function() {
-	expect( 34 );
+	expect( 37 );
 
 	t( "Child", "p > a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p> a", ["simon1","google","groups","mark","yahoo","simon"] );
@@ -280,13 +280,17 @@ test("child and adjacent", function() {
 	t( "Element Preceded By", "#first ~ div", ["moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
 	t( "Element Preceded By", "#groups ~ a", ["mark"] );
 	t( "Element Preceded By", "#length ~ input", ["idTest"] );
-	t( "Element Preceded By", "#siblingfirst ~ em", ["siblingnext"] );
+	t( "Element Preceded By", "#siblingfirst ~ em", ["siblingnext", "siblingthird"] );
 	t( "Element Preceded By, Containing", "#liveHandlerOrder ~ div em:contains('1')", ["siblingfirst"] );
 
 	var siblingFirst = document.getElementById("siblingfirst");
 
-	deepEqual( Sizzle("~ em", siblingFirst), q("siblingnext"), "Element Preceded By with a context." );
+	deepEqual( Sizzle("~ em", siblingFirst), q("siblingnext", "siblingthird"), "Element Preceded By with a context." );
 	deepEqual( Sizzle("+ em", siblingFirst), q("siblingnext"), "Element Directly Preceded By with a context." );
+
+	t( "Multiple sibling combinators selects all levels", "#siblingTest em *", ["siblingchild", "siblinggrandchild", "siblinggreatgrandchild"] );
+	t( "Multiple sibling combinators selects all levels", "#siblingTest > em *", ["siblingchild", "siblinggrandchild", "siblinggreatgrandchild"] );
+	t( "Multiple sibling combinators doesn't miss general siblings", "#siblingTest > em:first-child + em ~ span", ["siblingspan"] );
 
 	equal( Sizzle("#listWithTabIndex").length, 1, "Parent div for next test is found via ID (#8310)" );
 	equal( Sizzle("#listWithTabIndex li:eq(2) ~ li").length, 1, "Find by general sibling combinator (#8310)" );
