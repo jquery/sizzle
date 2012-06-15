@@ -4,21 +4,11 @@ var jQuery = this.jQuery || "jQuery", // For testing .noConflict()
 	original$ = $;
 
 (function() {
-	// Nullify querySelector all if qsa=no is in the params
+	// Nullify querySelector all if noqsa=true is in the params
 	// Isolates the Sizzle API
-	var keyvals, params, set;
-
-	if ( location.search ) {
-		keyvals = location.search.slice(1).split("&"),
-		params = {};
-
-		while ( keyvals.length ) {
-			set = keyvals.shift().split("=");
-			params[ set[0] ] = set[1];
-		}
-		if ( params.qsa && params.qsa === "no" ) {
-			document.querySelectorAll = null;
-		}
+	QUnit.config.urlConfig.push( "noqsa" );
+	if ( QUnit.urlParams.noqsa ) {
+		document.querySelectorAll = null;
 	}
 })();
 
