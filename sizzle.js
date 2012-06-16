@@ -9,7 +9,7 @@
 var document = window.document,
 	docElem = document.documentElement,
 
-	expando = "sizcache" + (Math.random() + '').replace('.', ''),
+	expando = "sizcache" + (Math.random() + "").replace(".", ""),
 	done = 0,
 
 	toString = Object.prototype.toString,
@@ -82,6 +82,14 @@ var document = window.document,
 		div = null;
 		return pass;
 	},
+
+	// Check if attributes should be retrieved by attribute nodes
+	assertAttributes = assert(function( div ) {
+		div.innerHTML = "<select></select>";
+		var type = typeof div.lastChild.getAttribute("multiple");
+		// IE8 returns a string for some attributes even when not present
+		return type !== "boolean" && type !== "string";
+	}),
 
 	// Check to see if the browser returns elements by name when
 	// querying by getElementById (and provide a workaround)
@@ -419,6 +427,17 @@ var contains = Sizzle.contains = docElem.compareDocumentPosition ?
 		return false;
 	};
 
+Sizzle.attr = function( elem, name ) {
+	if ( Expr.attrHandle[ name ] ) {
+		return Expr.attrHandle[ name ]( elem );
+	}
+	if ( assertAttributes || isXML( elem ) ) {
+		return elem.getAttribute( name );
+	}
+	var attr = (elem.attributes || {})[ name ];
+	return attr && attr.specified ? attr.value : null;
+};
+
 Sizzle.matches = function( expr, set ) {
 	return select( expr, document, [], set, isXML( document ) );
 };
@@ -599,23 +618,7 @@ var Expr = Sizzle.selectors = {
 
 	order: [ "ID", "NAME", "TAG" ],
 
-	attrMap: {
-		"class": "className",
-		"for": "htmlFor"
-	},
-
-	attrHandle: {
-		href: assertHrefNotNormalized ?
-			function( elem ) {
-				return elem.getAttribute( "href" );
-			} :
-			function( elem ) {
-				return elem.getAttribute( "href", 2 );
-			},
-		type: function( elem ) {
-			return elem.getAttribute( "type" );
-		}
-	},
+	attrHandle: {},
 
 	relative: {
 		"+": function( checkSet, part ) {
@@ -790,11 +793,7 @@ var Expr = Sizzle.selectors = {
 		},
 
 		ATTR: function( match, curLoop, inplace, result, not, xml ) {
-			var name = match[1] = match[1].replace( rbackslash, "" );
-
-			if ( !xml && Expr.attrMap[ name ] ) {
-				match[1] = Expr.attrMap[ name ];
-			}
+			match[1] = match[1].replace( rbackslash, "" );
 
 			// Handle if an un-quoted value was used
 			match[4] = ( match[4] || match[5] || "" ).replace( rbackslash, "" );
@@ -1086,20 +1085,14 @@ var Expr = Sizzle.selectors = {
 
 		ATTR: function( elem, match ) {
 			var name = match[1],
-				result = Sizzle.attr ?
-					Sizzle.attr( elem, name ) :
-					Expr.attrHandle[ name ] ?
-					Expr.attrHandle[ name ]( elem ) :
-					elem[ name ] != null ?
-						elem[ name ] :
-						elem.getAttribute( name ),
+				result = Sizzle.attr( elem, name ),
 				value = result + "",
 				type = match[2],
 				check = match[4];
 
 			return result == null ?
 				type === "!=" :
-				!type && Sizzle.attr ?
+				!type ?
 				result != null :
 				type === "=" ?
 				value === check :
@@ -1130,6 +1123,18 @@ var Expr = Sizzle.selectors = {
 		}
 	}
 };
+
+// IE6/7 return a modified href
+if ( !assertHrefNotNormalized ) {
+	Expr.attrHandle = {
+		href: function( elem ) {
+			return elem.getAttribute( "href", 2 );
+		},
+		type: function( elem ) {
+			return elem.getAttribute("type");
+		}
+	};
+}
 
 // Add getElementsByClassName if usable
 if ( assertUsableClassName ) {
@@ -1365,8 +1370,8 @@ function dirCheck( dir, checkSet, part, xml ) {
 			} else if ( isElem ) {
 				if ( typeof part !== "string" ) {
 					if ( elem === part ) {
-						match = true;
-						break;
+						// We can stop here
+						return true;
 					}
 
 				} else if ( Sizzle.filter( part, [elem] ).length > 0 ) {
@@ -1378,11 +1383,11 @@ function dirCheck( dir, checkSet, part, xml ) {
 			levelIndex++;
 		}
 
-		return match === true || match.length ? match : false;
+		return match.length ? match : false;
 	});
 }
 
-var posProcess = function( selector, context, seed, contextXML ) {
+function posProcess( selector, context, seed, contextXML ) {
 	var match,
 		tmpSet = [],
 		later = "",
@@ -1406,7 +1411,7 @@ var posProcess = function( selector, context, seed, contextXML ) {
 	}
 
 	return Sizzle.filter( later, tmpSet );
-};
+}
 
 // EXPOSE
 
