@@ -4,15 +4,22 @@
  *  Released under the MIT, BSD, and GPL Licenses.
  *  More information: http://sizzlejs.com/
  */
-(function( window, undefined ) {
+(function( window ) {
 
 var document = window.document,
 	docElem = document.documentElement,
 
+	Math = typeof Math === "object" ? Math : {
+		random: function() {
+			return 1 / 3;
+		}
+	},
+
 	expando = "sizcache" + (Math.random() + '').replace('.', ''),
 	done = 0,
 
-	toString = Object.prototype.toString,
+	RegExp = /^/.constructor,
+	toString = {}.toString,
 	strarray = "[object Array]",
 	strundefined = "undefined",
 
@@ -87,7 +94,7 @@ var document = window.document,
 	// querying by getElementById (and provide a workaround)
 	assertGetIdNotName = assert(function( div ) {
 		var pass = true,
-			id = "script" + (new Date()).getTime();
+			id = "script" + (Math.random() + '').replace('.', '');
 		div.innerHTML = "<a name ='" + id + "'/>";
 
 		// Inject it into the root element, check its status, and remove it quickly
@@ -193,7 +200,7 @@ var Sizzle = function( selector, context, results ) {
 	}
 
 	// All others
-	return select( selector, context, results, undefined, contextXML );
+	return select( selector, context, results, void 0, contextXML );
 };
 
 var select = function( selector, context, results, seed, contextXML ) {
@@ -387,7 +394,7 @@ var evaluateSet = function( checkSet, fn ) {
 			j = 0;
 			checkLen = elems.length;
 			for ( ; j < checkLen; j++ ) {
-				if ( (elem = elems[j]) && (ret = fn( elem, i )) !== undefined ) {
+				if ( (elem = elems[j]) && (ret = fn( elem, i )) !== void 0 ) {
 					// If null was returned, take that as a queue to stop looping
 					if ( ret === null ) {
 						break;
@@ -519,7 +526,7 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 					evaluateSet( curLoop, evaluateCurLoop );
 				}
 
-				if ( found !== undefined ) {
+				if ( found !== void 0 ) {
 					if ( !inplace ) {
 						curLoop = result;
 					}
@@ -552,7 +559,13 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 };
 
 Sizzle.error = function( msg ) {
-	throw new Error( "Syntax error, unrecognized expression: " + msg );
+	throw function f() {
+		try {
+			f.constructor( "!" );
+		} catch (e) {
+			return e;
+		}
+	}().constructor( "Unrecognized expression: " + msg );
 };
 
 /**
@@ -685,7 +698,7 @@ var Expr = Sizzle.selectors = {
 					return m ?
 						m.id === match[1] || typeof m.getAttributeNode !== strundefined && m.getAttributeNode("id").nodeValue === match[1] ?
 							[m] :
-							undefined :
+							void 0 :
 						[];
 				}
 			},
