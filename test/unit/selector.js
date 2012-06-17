@@ -101,7 +101,7 @@ test("broken", function() {
 		raises(function() {
 			Sizzle( selector );
 		}, function( e ) {
-			return e.message.indexOf("Syntax error") >= 0;
+			return e.message.indexOf("Unrecognized expression") >= 0;
 		}, name + ": " + selector );
 	}
 
