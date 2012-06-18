@@ -21,6 +21,7 @@ var document = window.document,
 
 	// Regex
 	rquickExpr = /^#([\w\-]+$)|^(\w+$)|^\.([\w\-]+$)/,
+	rquickMatch = /^(\w*)(?:#([\w\-]+))?(?:\.([\w\-]+))?$/,
 	chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
 
 	rsibling = /^[+~]$/,
@@ -74,6 +75,7 @@ var document = window.document,
 	// Cache for chunking through parts
 	partsCache = {},
 	extraCache = {},
+	// Cache for quick matching
 	filterCache = {},
 
 	// Used for testing something on an element
@@ -468,24 +470,57 @@ Sizzle.find = function( expr, context, contextXML ) {
 	}
 
 	if ( !set ) {
-		set = Expr.find.TAG( [ 0, "*"], context );
+		set = Expr.find.TAG( [ 0, "*" ], context );
 	}
 
 	return { set: set, expr: expr };
 };
 
 Sizzle.filter = function( expr, set, inplace, not ) {
-	var match, anyFound,
-		type, found, elem, filter, left,
+	var anyFound,
+		type, found, elem, filter, left, attrs,
 		i, pass,
+		match = filterCache[ expr ],
 		old = expr,
 		result = [],
-		curLoop = set,
 		isXMLFilter = set && set[0] && isXML( set[0] );
 
+	// Quick match => tag#id.class
+	//   0  1    2   3
+	// [ _, tag, id, class ]
+	if ( !match ) {
+		match = rquickMatch.exec( expr );
+		if ( match ) {
+			match[1] = ( match[1] || "" ).toLowerCase();
+			match[3] = match[3] && (" " + match[3] + " ");
+			filterCache[ expr ] = match;
+		}
+	}
+	if ( match && !isXMLFilter ) {
+		for ( i = 0; (elem = set[i]) != null; i++ ) {
+			if ( elem ) {
+				attrs = elem.attributes || {};
+				found = (!match[1] || (elem.nodeName && elem.nodeName.toLowerCase() === match[1])) &&
+						(!match[2] || (attrs.id || {}).value === match[2]) &&
+						(!match[3] || ~(" " + ((attrs["class"] || {}).value || "").replace( rtnfr, " " ) + " ").indexOf( match[3] ));
+				pass = not ^ found;
+				if ( inplace && !pass ) {
+					set[i] = false;
+				} else if ( pass ) {
+					result.push( elem );
+				}
+			}
+		}
+		if ( !inplace ) {
+			set = result;
+		}
+		return set;
+	}
+
+	// Regular matching
 	while ( expr && set.length ) {
 		for ( type in Expr.filter ) {
-			if ( (match = leftMatchExpr[ type ].exec( expr )) != null && match[2] ) {
+			if ( (match = leftMatchExpr[ type ].exec( expr )) && match[2] ) {
 				filter = Expr.filter[ type ];
 				left = match[1];
 
@@ -497,12 +532,12 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 					continue;
 				}
 
-				if ( curLoop === result ) {
+				if ( set === result ) {
 					result = [];
 				}
 
 				if ( Expr.preFilter[ type ] ) {
-					match = Expr.preFilter[ type ]( match, curLoop, inplace, result, not, isXMLFilter );
+					match = Expr.preFilter[ type ]( match, set, inplace, result, not, isXMLFilter );
 
 					if ( !match ) {
 						anyFound = found = true;
@@ -513,9 +548,9 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 				}
 
 				if ( match ) {
-					for ( i = 0; (elem = curLoop[i]) != null; i++ ) {
+					for ( i = 0; (elem = set[i]) != null; i++ ) {
 						if ( elem ) {
-							found = filter( elem, match, i, curLoop );
+							found = filter( elem, match, i, set );
 							pass = not ^ found;
 
 							if ( inplace && found != null ) {
@@ -523,7 +558,7 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 									anyFound = true;
 
 								} else {
-									curLoop[i] = false;
+									set[i] = false;
 								}
 
 							} else if ( pass ) {
@@ -536,7 +571,7 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 
 				if ( found !== undefined ) {
 					if ( !inplace ) {
-						curLoop = result;
+						set = result;
 					}
 
 					expr = expr.replace( matchExpr[ type ], "" );
@@ -563,7 +598,7 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 		old = expr;
 	}
 
-	return curLoop;
+	return set;
 };
 
 Sizzle.error = function( msg ) {
@@ -760,7 +795,7 @@ var Expr = Sizzle.selectors = {
 
 			for ( ; (elem = curLoop[i]) != null; i++ ) {
 				if ( elem ) {
-					if ( not ^ (elem.className && (" " + elem.className + " ").replace( rtnfr, " " ).indexOf( match ) >= 0) ) {
+					if ( not ^ (elem.className && ~(" " + elem.className + " ").replace( rtnfr, " " ).indexOf( match )) ) {
 						if ( !inplace ) {
 							result.push( elem );
 						}
@@ -948,7 +983,7 @@ var Expr = Sizzle.selectors = {
 		},
 
 		contains: function( elem, i, match ) {
-			return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( match[3] ) >= 0;
+			return ~( elem.textContent || elem.innerText || getText( elem ) ).indexOf( match[3] );
 		}
 	},
 
@@ -1091,11 +1126,11 @@ var Expr = Sizzle.selectors = {
 			},
 
 		TAG: function( elem, match ) {
-			return ( match === "*" && elem.nodeType === 1 ) || !!elem.nodeName && elem.nodeName.toLowerCase() === match;
+			return ( match === "*" && elem.nodeType === 1 ) || elem.nodeName && elem.nodeName.toLowerCase() === match;
 		},
 
 		CLASS: function( elem, match ) {
-			return ( " " + ( elem.className || elem.getAttribute("class") ) + " " ).indexOf( match ) > -1;
+			return ~( " " + ( elem.className || elem.getAttribute("class") ) + " " ).indexOf( match );
 		},
 
 		ATTR: function( elem, match ) {
@@ -1112,9 +1147,9 @@ var Expr = Sizzle.selectors = {
 				type === "=" ?
 				value === check :
 				type === "*=" ?
-				value.indexOf( check ) >= 0 :
+				~value.indexOf( check ) :
 				type === "~=" ?
-				( " " + value + " " ).indexOf( check ) >= 0 :
+				~( " " + value + " " ).indexOf( check ) :
 				!check ?
 				value && result !== false :
 				type === "!=" ?
