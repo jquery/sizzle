@@ -46,8 +46,12 @@ module("selector", { teardown: moduleTeardown });
 */
 
 test("element", function() {
-	expect( 15 );
+	expect( 17 );
 	QUnit.reset();
+
+	equal( Sizzle("").length, 0, "Empty selector returns an empty array" );
+	var form = document.getElementById("form");
+	ok( !Sizzle.matchesSelector( form, "" ), "Empty string passed to matchesSelector does not match" );
 
 	ok( Sizzle("*").length >= 30, "Select all" );
 	var all = Sizzle("*"), good = true;
@@ -63,7 +67,7 @@ test("element", function() {
 	t( "Parent Element", "div p", ["firstp","ap","sndp","en","sap","first"] );
 	equal( Sizzle("param", document.getElementById("object1")).length, 2, "Object/param as context" );
 
-	deepEqual( Sizzle("select", document.getElementById("form") ), q("select1","select2","select3","select4","select5"), "Finding selects with a context." );
+	deepEqual( Sizzle("select", form), q("select1","select2","select3","select4","select5"), "Finding selects with a context." );
 
 	// Check for unique-ness and sort order
 	deepEqual( Sizzle("p, div p"), Sizzle("p"), "Check for duplicates: p, div p" );
@@ -105,29 +109,29 @@ test("broken", function() {
 		}, name + ": " + selector );
 	}
 
-	broken( "Broken Selector", "[", [] );
-	broken( "Broken Selector", "(", [] );
-	broken( "Broken Selector", "{", [] );
-	broken( "Broken Selector", "<", [] );
-	broken( "Broken Selector", "()", [] );
-	broken( "Broken Selector", "<>", [] );
-	broken( "Broken Selector", "{}", [] );
-	broken( "Doesn't exist", ":visble", [] );
-	broken( "Nth-child", ":nth-child", [] );
+	broken( "Broken Selector", "[" );
+	broken( "Broken Selector", "(" );
+	broken( "Broken Selector", "{" );
+	broken( "Broken Selector", "<" );
+	broken( "Broken Selector", "()" );
+	broken( "Broken Selector", "<>" );
+	broken( "Broken Selector", "{}" );
+	broken( "Doesn't exist", ":visble" );
+	broken( "Nth-child", ":nth-child" );
 	// Sigh again. IE 9 thinks this is also a real selector
 	// not super critical that we fix this case
-	//broken( "Nth-child", ":nth-child(-)", [] );
+	//broken( "Nth-child", ":nth-child(-)" );
 	// Sigh. WebKit thinks this is a real selector in qSA
 	// They've already fixed this and it'll be coming into
 	// current browsers soon. Currently, Safari 5.0 still has this problem
 	// broken( "Nth-child", ":nth-child(asdf)", [] );
-	broken( "Nth-child", ":nth-child(2n+-0)", [] );
-	broken( "Nth-child", ":nth-child(2+0)", [] );
-	broken( "Nth-child", ":nth-child(- 1n)", [] );
-	broken( "Nth-child", ":nth-child(-1 n)", [] );
-	broken( "First-child", ":first-child(n)", [] );
-	broken( "Last-child", ":last-child(n)", [] );
-	broken( "Only-child", ":only-child(n)", [] );
+	broken( "Nth-child", ":nth-child(2n+-0)" );
+	broken( "Nth-child", ":nth-child(2+0)" );
+	broken( "Nth-child", ":nth-child(- 1n)" );
+	broken( "Nth-child", ":nth-child(-1 n)" );
+	broken( "First-child", ":first-child(n)" );
+	broken( "Last-child", ":last-child(n)" );
+	broken( "Only-child", ":only-child(n)" );
 
 	// Make sure attribute value quoting works correctly. See: #6093
 	var attrbad = jQuery('<input type="hidden" value="2" name="foo.baz" id="attrbad1"/><input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>').appendTo("body");

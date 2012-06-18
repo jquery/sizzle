@@ -71,6 +71,11 @@ var document = window.document,
 		return leftMatch;
 	})(),
 
+	// Cache for chunking through parts
+	partsCache = {},
+	extraCache = {},
+	filterCache = {},
+
 	// Used for testing something on an element
 	assert = function( fn ) {
 		var pass = false,
@@ -145,7 +150,7 @@ var document = window.document,
 	return 0;
 });
 
-var Sizzle = function( selector, context, results ) {
+var Sizzle = function( selector, context, results, seed ) {
 	results = results || [];
 	context = context || document;
 	var match, elem, contextXML,
@@ -161,7 +166,7 @@ var Sizzle = function( selector, context, results ) {
 
 	contextXML = isXML( context );
 
-	if ( !contextXML ) {
+	if ( !contextXML && !seed ) {
 		if ( (match = rquickExpr.exec( selector )) ) {
 			// Speed-up: Sizzle("#ID")
 			if ( match[1] ) {
@@ -201,33 +206,42 @@ var Sizzle = function( selector, context, results ) {
 	}
 
 	// All others
-	return select( selector, context, results, undefined, contextXML );
+	return select( selector, context, results, seed, contextXML );
 };
 
 var select = function( selector, context, results, seed, contextXML ) {
-	var m, set, checkSet, extra, ret, cur, pop,
+	var m, set, checkSet, extra, ret, cur, pop, parts,
 		i, len, elem, contextNodeType, checkIndexes, setIndex,
 		origContext = context,
 		prune = true,
-		parts = [],
 		soFar = selector;
 
-	do {
-		// Reset the position of the chunker regexp (start from head)
-		chunker.exec( "" );
-		m = chunker.exec( soFar );
+	// Split the selector into parts
+	if ( (parts = partsCache[ selector ]) === undefined ) {
+		parts = [];
+		do {
+			// Reset the position of the chunker regexp (start from head)
+			chunker.exec( "" );
+			m = chunker.exec( soFar );
 
-		if ( m ) {
-			soFar = m[3];
+			if ( m ) {
+				soFar = m[3];
 
-			parts.push( m[1] );
+				parts.push( m[1] );
 
-			if ( m[2] ) {
-				extra = m[3];
-				break;
+				if ( m[2] ) {
+					extra = m[3];
+					break;
+				}
 			}
-		}
-	} while ( m );
+		} while ( m );
+
+		partsCache[ selector ] = parts && parts.slice( 0 );
+		extraCache[ selector ] = extra;
+	} else {
+		parts = parts.slice( 0 );
+		extra = extraCache[ selector ];
+	}
 
 	if ( parts.length > 1 && origPOS.exec( selector ) ) {
 
@@ -420,11 +434,11 @@ Sizzle.attr = function( elem, name ) {
 };
 
 Sizzle.matches = function( expr, set ) {
-	return select( expr, document, [], set, isXML( document ) );
+	return Sizzle( expr, null, null, set );
 };
 
 Sizzle.matchesSelector = function( node, expr ) {
-	return select( expr, document, [], [ node ], isXML( document ) ).length > 0;
+	return Sizzle( expr, null, null, [ node ] ).length > 0;
 };
 
 Sizzle.find = function( expr, context, contextXML ) {
@@ -763,7 +777,7 @@ var Expr = Sizzle.selectors = {
 			return match[1].replace( rbackslash, "" );
 		},
 
-		TAG: function( match, curLoop ) {
+		TAG: function( match ) {
 			return match[1].replace( rbackslash, "" ).toLowerCase();
 		},
 
@@ -793,7 +807,7 @@ var Expr = Sizzle.selectors = {
 			return match;
 		},
 
-		ATTR: function( match, curLoop, inplace, result, not, xml ) {
+		ATTR: function( match ) {
 			match[1] = match[1].replace( rbackslash, "" );
 
 			// Handle if an un-quoted value was used
@@ -1340,9 +1354,10 @@ function dirCheck( dir, checkSet, checkIndexes, part, xml ) {
 		j, matchLen,
 		i = 0,
 		len = checkSet.length,
+		isPartStr = typeof part === "string",
 		doneName = ++done;
 
-	if ( typeof part === "string" && !rnonWord.test( part ) ) {
+	if ( isPartStr && !rnonWord.test( part ) ) {
 		part = part.toLowerCase();
 		nodeCheck = true;
 	}
@@ -1373,7 +1388,7 @@ function dirCheck( dir, checkSet, checkIndexes, part, xml ) {
 						match.push( elem );
 					}
 				} else if ( isElem ) {
-					if ( typeof part !== "string" ) {
+					if ( !isPartStr ) {
 						if ( elem === part ) {
 							// We can stop here
 							match = true;
