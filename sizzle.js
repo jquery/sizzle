@@ -13,7 +13,7 @@ var document = window.document,
 	done = 0,
 
 	toString = Object.prototype.toString,
-	strarray = "[object Array]",
+	concat = Array.prototype.concat,
 	strundefined = "undefined",
 
 	hasDuplicate = false,
@@ -205,7 +205,8 @@ var Sizzle = function( selector, context, results ) {
 };
 
 var select = function( selector, context, results, seed, contextXML ) {
-	var m, set, checkSet, extra, ret, cur, pop, contextNodeType,
+	var m, set, checkSet, extra, ret, cur, pop,
+		i, len, elem, contextNodeType, checkIndexes, setIndex,
 		origContext = context,
 		prune = true,
 		parts = [],
@@ -272,6 +273,12 @@ var select = function( selector, context, results, seed, contextXML ) {
 
 			if ( parts.length > 0 ) {
 				checkSet = makeArray( set );
+				i = 0;
+				len = checkSet.length;
+				checkIndexes = [];
+				for ( ; i < len; i++ ) {
+					checkIndexes[i] = i;
+				}
 
 			} else {
 				prune = false;
@@ -291,7 +298,9 @@ var select = function( selector, context, results, seed, contextXML ) {
 					pop = context;
 				}
 
-				Expr.relative[ cur ]( checkSet, pop, contextXML );
+				Expr.relative[ cur ]( checkSet, checkIndexes, pop, contextXML );
+				checkSet = concat.apply( [], checkSet );
+				checkIndexes = concat.apply( [], checkIndexes );
 			}
 
 		} else {
@@ -307,18 +316,22 @@ var select = function( selector, context, results, seed, contextXML ) {
 		Sizzle.error( cur || selector );
 	}
 
-	if ( toString.call(checkSet) === strarray ) {
+	if ( toString.call( checkSet ) === "[object Array]" ) {
 		if ( !prune ) {
 			results.push.apply( results, checkSet );
 
 		} else {
 			contextNodeType = context && context.nodeType === 1;
-			evaluateSet( checkSet, function( elem, i ) {
+			set = makeArray( set );
+			for ( i = 0; (elem = checkSet[i]) != null; i++ ) {
 				if ( elem === true || (elem.nodeType === 1 && ( !contextNodeType || contains(context, elem) )) ) {
-					results.push( set[i] );
-					return null;
+					setIndex = checkIndexes ? checkIndexes[i] : i;
+					if ( set[ setIndex ] ) {
+						results.push( set[ setIndex ] );
+						set[ setIndex ] = false;
+					}
 				}
-			});
+			}
 		}
 
 	} else {
@@ -375,38 +388,6 @@ var uniqueSort = Sizzle.uniqueSort = function( results ) {
 	}
 
 	return results;
-};
-
-/**
- * The checkset may contains arrays
- * This applies a given function to each element
- * @param {Array} checkSet An array that may contain elements, booleans, or arrays of elements
- * @param {Function} fn A callback to apply to each element in checkSet.
- *   Callback params: ( elem, i )
- *   Expected return value: If the callback returns a value other than undefined, checkSet will be set
- *   If null is returned, the inner loop breaks
- */
-var evaluateSet = function( checkSet, fn ) {
-	var j, checkLen, elems, elem, ret,
-		i = 0;
-
-	for ( ; (elems = checkSet[i]) != null; i++ ) {
-		if ( toString.call( elems ) === strarray ) {
-			j = 0;
-			checkLen = elems.length;
-			for ( ; j < checkLen; j++ ) {
-				if ( (elem = elems[j]) && (ret = fn( elem, i )) !== undefined ) {
-					// If null was returned, take that as a queue to stop looping
-					if ( ret === null ) {
-						break;
-					}
-					checkSet[i][j] = ret;
-				}
-			}
-		} else if ( elems && (ret = fn( elems, i )) != null ) {
-			checkSet[i] = ret;
-		}
-	}
 };
 
 // Element contains another
@@ -481,29 +462,12 @@ Sizzle.find = function( expr, context, contextXML ) {
 
 Sizzle.filter = function( expr, set, inplace, not ) {
 	var match, anyFound,
-		type, found, filter, left,
+		type, found, elem, filter, left,
 		i, pass,
 		old = expr,
 		result = [],
 		curLoop = set,
-		isXMLFilter = set && set[0] && isXML( set[0] ),
-		evaluateCurLoop = function( elem, i ) {
-			found = filter( elem, match, i, curLoop );
-			pass = not ^ found;
-
-			if ( inplace && found != null ) {
-				if ( pass ) {
-					anyFound = true;
-
-				} else {
-					return false;
-				}
-
-			} else if ( pass ) {
-				result.push( elem );
-				anyFound = true;
-			}
-		};
+		isXMLFilter = set && set[0] && isXML( set[0] );
 
 	while ( expr && set.length ) {
 		for ( type in Expr.filter ) {
@@ -535,7 +499,25 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 				}
 
 				if ( match ) {
-					evaluateSet( curLoop, evaluateCurLoop );
+					for ( i = 0; (elem = curLoop[i]) != null; i++ ) {
+						if ( elem ) {
+							found = filter( elem, match, i, curLoop );
+							pass = not ^ found;
+
+							if ( inplace && found != null ) {
+								if ( pass ) {
+									anyFound = true;
+
+								} else {
+									curLoop[i] = false;
+								}
+
+							} else if ( pass ) {
+								result.push( elem );
+								anyFound = true;
+							}
+						}
+					}
 				}
 
 				if ( found !== undefined ) {
@@ -621,40 +603,55 @@ var Expr = Sizzle.selectors = {
 	attrHandle: {},
 
 	relative: {
-		"+": function( checkSet, part ) {
-			var isPartStr = typeof part === "string",
+		"+": function( checkSet, checkIndexes, part ) {
+			var elem,
+				i = 0,
+				len = checkSet.length,
+				isPartStr = typeof part === "string",
 				isTag = isPartStr && !rnonWord.test( part ),
 				isPartStrNotTag = isPartStr && !isTag;
 
 			if ( isTag ) {
 				part = part.toLowerCase();
 			}
-			evaluateSet( checkSet, function( elem ) {
-				while ( (elem = elem.previousSibling) && elem.nodeType !== 1 ) {}
-				return isPartStrNotTag || elem && elem.nodeName.toLowerCase() === part ?
-					elem || false :
-					elem === part;
-			});
+
+			for ( ; i < len; i++ ) {
+				if ( (elem = checkSet[i]) ) {
+					while ( (elem = elem.previousSibling) && elem.nodeType !== 1 ) {}
+					checkSet[i] = isPartStrNotTag || elem && elem.nodeName.toLowerCase() === part ?
+						elem || false :
+						elem === part;
+				}
+			}
 
 			if ( isPartStrNotTag ) {
 				Sizzle.filter( part, checkSet, true );
 			}
 		},
 
-		">": function( checkSet, part ) {
-			var isPartStr = typeof part === "string";
+		">": function( checkSet, checkIndexes, part ) {
+			var elem,
+				i = 0,
+				len = checkSet.length,
+				isPartStr = typeof part === "string";
 
 			if ( isPartStr && !rnonWord.test( part ) ) {
 				part = part.toLowerCase();
-				evaluateSet( checkSet, function( elem ) {
-					var parent = elem.parentNode;
-					return parent.nodeName.toLowerCase() === part ? parent : false;
-				});
+				for ( ; i < len; i++ ){
+					if ( (elem = checkSet[i]) ) {
+						var parent = elem.parentNode;
+						checkSet[i] = parent.nodeName.toLowerCase() === part ? parent : false;
+					}
+				}
 
 			} else {
-				evaluateSet( checkSet, function( elem ) {
-					return isPartStr ? elem.parentNode : elem.parentNode === part;
-				});
+				for ( ; i < len; i++ ){
+					if ( (elem = checkSet[i]) ) {
+						checkSet[i] = isPartStr ?
+							elem.parentNode :
+							elem.parentNode === part;
+					}
+				}
 
 				if ( isPartStr ) {
 					Sizzle.filter( part, checkSet, true );
@@ -662,12 +659,12 @@ var Expr = Sizzle.selectors = {
 			}
 		},
 
-		"": function( checkSet, part, xml ) {
-			dirCheck( "parentNode", checkSet, part, xml );
+		"": function( checkSet, checkIndexes, part, xml ) {
+			dirCheck( "parentNode", checkSet, checkIndexes, part, xml );
 		},
 
-		"~": function( checkSet, part, xml ) {
-			dirCheck( "previousSibling", checkSet, part, xml );
+		"~": function( checkSet, checkIndexes, part, xml ) {
+			dirCheck( "previousSibling", checkSet, checkIndexes, part, xml );
 		}
 	},
 
@@ -738,22 +735,26 @@ var Expr = Sizzle.selectors = {
 
 	preFilter: {
 		CLASS: function( match, curLoop, inplace, result, not, xml ) {
+			var elem,
+				i = 0;
+
 			match = " " + match[1].replace( rbackslash, "" ) + " ";
 
 			if ( xml ) {
 				return match;
 			}
 
-			evaluateSet( curLoop, function( elem ) {
-				if ( not ^ (elem.className && (" " + elem.className + " ").replace( rtnfr, " " ).indexOf( match ) >= 0) ) {
-					if ( !inplace ) {
-						result.push( elem );
+			for ( ; (elem = curLoop[i]) != null; i++ ) {
+				if ( elem ) {
+					if ( not ^ (elem.className && (" " + elem.className + " ").replace( rtnfr, " " ).indexOf( match ) >= 0) ) {
+						if ( !inplace ) {
+							result.push( elem );
+						}
+					} else if ( inplace ) {
+						curLoop[i] = false;
 					}
-
-				} else if ( inplace ) {
-					return false;
 				}
-			});
+			}
 
 			return false;
 		},
@@ -1334,8 +1335,11 @@ if ( document.querySelectorAll ) {
 	})();
 }
 
-function dirCheck( dir, checkSet, part, xml ) {
-	var nodeCheck,
+function dirCheck( dir, checkSet, checkIndexes, part, xml ) {
+	var elem, nodeCheck, isElem, match, levelIndex, cached,
+		j, matchLen,
+		i = 0,
+		len = checkSet.length,
 		doneName = ++done;
 
 	if ( typeof part === "string" && !rnonWord.test( part ) ) {
@@ -1343,48 +1347,62 @@ function dirCheck( dir, checkSet, part, xml ) {
 		nodeCheck = true;
 	}
 
-	evaluateSet( checkSet, function( elem, i ) {
-		var isElem, cached,
-			levelIndex = 0,
+	for ( ; i < len; i++ ) {
+		if ( (elem = checkSet[i]) ) {
 			match = [];
-		elem = elem[ dir ];
-
-		while ( elem ) {
-			if ( elem[ expando ] === doneName && elem.sizLevelIndex === levelIndex ) {
-				cached = checkSet[ elem.sizset ];
-				match = match.length ? cached.length ? match.concat( cached ) : match : cached;
-				break;
-			}
-
-			isElem = elem.nodeType === 1;
-			if ( isElem && !xml ) {
-				elem[ expando ] = doneName;
-				elem.sizset = i;
-				elem.sizLevelIndex = levelIndex;
-			}
-
-			if ( nodeCheck ) {
-				if ( elem.nodeName.toLowerCase() === part ) {
-					match.push( elem );
-				}
-			} else if ( isElem ) {
-				if ( typeof part !== "string" ) {
-					if ( elem === part ) {
-						// We can stop here
-						return true;
-					}
-
-				} else if ( Sizzle.filter( part, [elem] ).length > 0 ) {
-					match.push( elem );
-				}
-			}
+			levelIndex = 0;
 
 			elem = elem[ dir ];
-			levelIndex++;
-		}
 
-		return match.length ? match : false;
-	});
+			while ( elem ) {
+				if ( elem[ expando ] === doneName && elem.sizLevelIndex === levelIndex ) {
+					cached = checkSet[ elem.sizset ];
+					match = match.length ? cached.length ? match.concat( cached ) : match : cached;
+					break;
+				}
+
+				isElem = elem.nodeType === 1;
+				if ( isElem && !xml ) {
+					elem[ expando ] = doneName;
+					elem.sizset = i;
+					elem.sizLevelIndex = levelIndex;
+				}
+
+				if ( nodeCheck ) {
+					if ( elem.nodeName.toLowerCase() === part ) {
+						match.push( elem );
+					}
+				} else if ( isElem ) {
+					if ( typeof part !== "string" ) {
+						if ( elem === part ) {
+							// We can stop here
+							match = true;
+							break;
+						}
+
+					} else if ( Sizzle.filter( part, [elem] ).length > 0 ) {
+						match.push( elem );
+					}
+				}
+
+				elem = elem[ dir ];
+				levelIndex++;
+			}
+
+			if ( (matchLen = match.length) ) {
+				checkSet[i] = match;
+				if ( matchLen > 1 ) {
+					checkIndexes[i] = [];
+					j = 0;
+					for ( ; j < matchLen; j++ ) {
+						checkIndexes[i].push( i );
+					}
+				}
+			} else {
+				checkSet[i] = typeof match === "boolean" ? match : false;
+			}
+		}
+	}
 }
 
 function posProcess( selector, context, seed, contextXML ) {

@@ -258,7 +258,7 @@ test("multiple", function() {
 });
 
 test("child and adjacent", function() {
-	expect( 38 );
+	expect( 39 );
 
 	t( "Child", "p > a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p> a", ["simon1","google","groups","mark","yahoo","simon"] );
@@ -281,6 +281,7 @@ test("child and adjacent", function() {
 	t( "Element Preceded By", "#groups ~ a", ["mark"] );
 	t( "Element Preceded By", "#length ~ input", ["idTest"] );
 	t( "Element Preceded By", "#siblingfirst ~ em", ["siblingnext", "siblingthird"] );
+	t( "Element Preceded By (multiple)", "#siblingTest em ~ em ~ em ~ span", ["siblingspan"] );
 	t( "Element Preceded By, Containing", "#liveHandlerOrder ~ div em:contains('1')", ["siblingfirst"] );
 
 	var siblingFirst = document.getElementById("siblingfirst");
