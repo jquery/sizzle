@@ -46,7 +46,7 @@ module("selector", { teardown: moduleTeardown });
 */
 
 test("element", function() {
-	expect( 17 );
+	expect( 20 );
 	QUnit.reset();
 
 	equal( Sizzle("").length, 0, "Empty selector returns an empty array" );
@@ -81,6 +81,11 @@ test("element", function() {
 	deepEqual( Sizzle("#idTest", lengthtest), q("idTest"), "Finding element with id of ID." );
 	deepEqual( Sizzle("[name='id']", lengthtest), q("idTest"), "Finding element with id of ID." );
 	deepEqual( Sizzle("input[id='idTest']", lengthtest), q("idTest"), "Finding elements with id of ID." );
+
+	var siblingTest = document.getElementById("siblingTest");
+	deepEqual( Sizzle("div em", siblingTest), [], "Element-rooted QSA does not select based on document context" );
+	deepEqual( Sizzle("div em, div em, em:not(div em)", siblingTest), [], "Element-rooted QSA does not select based on document context" );
+	deepEqual( Sizzle("div em, em\\,", siblingTest), [], "Escaped commas do not get treated with an id in element-rooted QSA" );
 });
 
 test("XML Document Selectors", function() {

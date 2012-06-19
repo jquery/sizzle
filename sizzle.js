@@ -143,15 +143,6 @@ var document = window.document,
 	});
 
 
-// Check if the JavaScript engine is using some sort of
-// optimization where it does not always call our comparision
-// function. If that is the case, discard the hasDuplicate value.
-//   Thus far that includes Google Chrome.
-[0, 0].sort(function() {
-	baseHasDuplicate = false;
-	return 0;
-});
-
 var Sizzle = function( selector, context, results, seed ) {
 	results = results || [];
 	context = context || document;
@@ -362,67 +353,102 @@ var select = function( selector, context, results, seed, contextXML ) {
 	return results;
 };
 
-var isXML = Sizzle.isXML = function( elem ) {
-	// documentElement is verified for cases where it doesn't yet exist
-	// (such as loading iframes in IE - #4833)
-	var documentElement = (elem ? elem.ownerDocument || elem : 0).documentElement;
-	return documentElement ? documentElement.nodeName !== "HTML" : false;
-};
+if ( document.querySelectorAll ) {
+	(function(){
+		var oldSelect = select,
+			id = "__sizzle__",
+			rdivision = /[^\\],/g,
+			rrelativeHierarchy = /^\s*[+~]/,
+			rapostrophe = /'/g,
+			// Build QSA regex
+			// Regex strategy adopted from Diego Perini
+			rbuggyQSA = [];
 
-// Slice is no longer used
-// It is not actually faster
-// Results is expected to be an array or undefined
-// typeof len is checked for if array is a form nodelist containing an element with name "length" (wow)
-var makeArray = function( array, results ) {
-	results = results || [];
-	var i = 0,
-		len = array.length;
-	if ( typeof len === "number" ) {
-		for ( ; i < len; i++ ) {
-			results.push( array[i] );
-		}
-	} else {
-		for ( ; array[i]; i++ ) {
-			results.push( array[i] );
-		}
-	}
-	return results;
-};
+		assert(function( div ) {
+			div.innerHTML = "<select><option selected></option></select>";
 
-var uniqueSort = Sizzle.uniqueSort = function( results ) {
-	if ( sortOrder ) {
-		hasDuplicate = baseHasDuplicate;
-		results.sort( sortOrder );
+			// IE8 - Some boolean attributes are not treated correctly
+			if ( !div.querySelectorAll("[selected]").length ) {
+				rbuggyQSA.push("\\[[\\x20\\t\\n\\r\\f]*(?:checked|disabled|ismap|multiple|readonly|selected|value)");
+			}
 
-		if ( hasDuplicate ) {
-			for ( var i = 1; i < results.length; i++ ) {
-				if ( results[i] === results[ i - 1 ] ) {
-					results.splice( i--, 1 );
+			// Webkit/Opera - :checked should return selected option elements
+			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
+			// IE8 throws error here (do not put tests after this one)
+			if ( !div.querySelectorAll(":checked").length ) {
+				rbuggyQSA.push(":checked");
+			}
+		});
+
+		assert(function( div ) {
+
+			// Opera 10/IE - ^= $= *= and empty values
+			div.innerHTML = "<p class=''></p>";
+			// Should not select anything
+			if ( div.querySelectorAll("[class^='']").length ) {
+				rbuggyQSA.push("[*^$]=[\\x20\\t\\n\\r\\f]*(?:\"\"|'')");
+			}
+
+			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
+			// IE8 throws error here (do not put tests after this one)
+			div.innerHTML = "<input type='hidden'>";
+			if ( !div.querySelectorAll(":enabled").length ) {
+				rbuggyQSA.push(":enabled", ":disabled");
+			}
+		});
+
+		rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
+
+		select = function( selector, context, results, seed, contextXML ) {
+			// Only use querySelectorAll when not filtering,
+			// when this is not xml,
+			// and when no QSA bugs apply
+			if ( !seed && !contextXML && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
+				if ( context.nodeType === 9 ) {
+					try {
+						return makeArray( context.querySelectorAll( selector ), results );
+					} catch(qsaError) {}
+				// qSA works strangely on Element-rooted queries
+				// We can work around this by specifying an extra ID on the root
+				// and working up from there (Thanks to Andrew Dupont for the technique)
+				// IE 8 doesn't work on object elements
+				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
+					var newSelector,
+						oldContext = context,
+						old = context.getAttribute( "id" ),
+						nid = old || id,
+						parent = context.parentNode,
+						relativeHierarchySelector = rrelativeHierarchy.test( selector );
+
+					if ( !old ) {
+						context.setAttribute( "id", nid );
+					} else {
+						nid = nid.replace( rapostrophe, "\\$&" );
+					}
+
+					if ( relativeHierarchySelector && parent ) {
+						context = parent;
+					}
+
+					try {
+						if ( !relativeHierarchySelector || parent ) {
+							nid = "[id='" + nid + "'] ";
+							newSelector = nid + selector.replace( rdivision, "," + nid );
+							return makeArray( context.querySelectorAll( newSelector ), results );
+						}
+					} catch(qsaError) {
+					} finally {
+						if ( !old ) {
+							oldContext.removeAttribute( "id" );
+						}
+					}
 				}
 			}
-		}
-	}
 
-	return results;
-};
-
-// Element contains another
-var contains = Sizzle.contains = docElem.compareDocumentPosition ?
-	function( a, b ) {
-		return !!(a.compareDocumentPosition( b ) & 16);
-	} :
-	docElem.contains ?
-	function( a, b ) {
-		return a !== b && ( a.contains ? a.contains( b ) : false );
-	} :
-	function( a, b ) {
-		while ( (b = b.parentNode) ) {
-			if ( b === a ) {
-				return true;
-			}
-		}
-		return false;
-	};
+			return oldSelect( selector, context, results, seed, contextXML );
+		};
+	})();
+}
 
 Sizzle.attr = function( elem, name ) {
 	if ( Expr.attrHandle[ name ] ) {
@@ -605,6 +631,51 @@ Sizzle.error = function( msg ) {
 	throw new Error( "Syntax error, unrecognized expression: " + msg );
 };
 
+
+// Slice is no longer used
+// Results is expected to be an array or undefined
+// typeof len is checked for if array is a form nodelist containing an element with name "length" (wow)
+function makeArray( array, results ) {
+	results = results || [];
+	var i = 0,
+		len = array.length;
+	if ( typeof len === "number" ) {
+		for ( ; i < len; i++ ) {
+			results.push( array[i] );
+		}
+	} else {
+		for ( ; array[i]; i++ ) {
+			results.push( array[i] );
+		}
+	}
+	return results;
+}
+
+var isXML = Sizzle.isXML = function( elem ) {
+	// documentElement is verified for cases where it doesn't yet exist
+	// (such as loading iframes in IE - #4833)
+	var documentElement = (elem ? elem.ownerDocument || elem : 0).documentElement;
+	return documentElement ? documentElement.nodeName !== "HTML" : false;
+};
+
+// Element contains another
+var contains = Sizzle.contains = docElem.compareDocumentPosition ?
+	function( a, b ) {
+		return !!(a.compareDocumentPosition( b ) & 16);
+	} :
+	docElem.contains ?
+	function( a, b ) {
+		return a !== b && ( a.contains ? a.contains( b ) : false );
+	} :
+	function( a, b ) {
+		while ( (b = b.parentNode) ) {
+			if ( b === a ) {
+				return true;
+			}
+		}
+		return false;
+	};
+
 /**
  * Utility function for retreiving the text value of an array of DOM nodes
  * @param {Array|Element} elem
@@ -641,6 +712,104 @@ var getText = Sizzle.getText = function( elem ) {
 	}
 	return ret;
 };
+
+function dirCheck( dir, checkSet, checkIndexes, part, xml ) {
+	var elem, nodeCheck, isElem, match, levelIndex, cached,
+		j, matchLen,
+		i = 0,
+		len = checkSet.length,
+		isPartStr = typeof part === "string",
+		doneName = ++done;
+
+	if ( isPartStr && !rnonWord.test( part ) ) {
+		part = part.toLowerCase();
+		nodeCheck = true;
+	}
+
+	for ( ; i < len; i++ ) {
+		if ( (elem = checkSet[i]) ) {
+			match = [];
+			levelIndex = 0;
+
+			elem = elem[ dir ];
+
+			while ( elem ) {
+				if ( elem[ expando ] === doneName && elem.sizLevelIndex === levelIndex ) {
+					cached = checkSet[ elem.sizset ];
+					match = match.length ? cached.length ? match.concat( cached ) : match : cached;
+					break;
+				}
+
+				isElem = elem.nodeType === 1;
+				if ( isElem && !xml ) {
+					elem[ expando ] = doneName;
+					elem.sizset = i;
+					elem.sizLevelIndex = levelIndex;
+				}
+
+				if ( nodeCheck ) {
+					if ( elem.nodeName.toLowerCase() === part ) {
+						match.push( elem );
+					}
+				} else if ( isElem ) {
+					if ( !isPartStr ) {
+						if ( elem === part ) {
+							// We can stop here
+							match = true;
+							break;
+						}
+
+					} else if ( Sizzle.filter( part, [elem] ).length > 0 ) {
+						match.push( elem );
+					}
+				}
+
+				elem = elem[ dir ];
+				levelIndex++;
+			}
+
+			if ( (matchLen = match.length) ) {
+				checkSet[i] = match;
+				if ( matchLen > 1 ) {
+					checkIndexes[i] = [];
+					j = 0;
+					for ( ; j < matchLen; j++ ) {
+						checkIndexes[i].push( i );
+					}
+				}
+			} else {
+				checkSet[i] = typeof match === "boolean" ? match : false;
+			}
+		}
+	}
+}
+
+function posProcess( selector, context, seed, contextXML ) {
+	var match,
+		tmpSet = [],
+		later = "",
+		root = context.nodeType ? [ context ] : context,
+		i = 0,
+		len = root.length;
+
+	// Position selectors must be done after the filter
+	// And so must :not(positional) so we move all PSEUDOs to the end
+	while ( (match = matchExpr.PSEUDO.exec( selector )) ) {
+		later += match[0];
+		selector = selector.replace( matchExpr.PSEUDO, "" );
+	}
+
+	if ( Expr.relative[ selector ] ) {
+		selector += "*";
+	}
+
+	for ( ; i < len; i++ ) {
+		select( selector, root[i], tmpSet, seed, contextXML );
+	}
+
+	return Sizzle.filter( later, tmpSet );
+}
+
 
 var Expr = Sizzle.selectors = {
 
@@ -1196,8 +1365,17 @@ if ( assertUsableClassName ) {
 	};
 }
 
-var sortOrder, siblingCheck;
+// Check if the JavaScript engine is using some sort of
+// optimization where it does not always call our comparision
+// function. If that is the case, discard the hasDuplicate value.
+//   Thus far that includes Google Chrome.
+[0, 0].sort(function() {
+	baseHasDuplicate = false;
+	return 0;
+});
 
+
+var sortOrder, siblingCheck;
 if ( docElem.compareDocumentPosition ) {
 	sortOrder = function( a, b ) {
 		if ( a === b ) {
@@ -1292,194 +1470,23 @@ if ( docElem.compareDocumentPosition ) {
 	};
 }
 
-if ( document.querySelectorAll ) {
-	(function(){
-		var oldSelect = select,
-			id = "__sizzle__",
-			rrelativeHierarchy = /^\s*[+~]/,
-			rapostrophe = /'/g,
-			// Build QSA regex
-			// Regex strategy adopted from Diego Perini
-			rbuggyQSA = [];
+// Document sorting and removing duplicates
+var uniqueSort = Sizzle.uniqueSort = function( results ) {
+	if ( sortOrder ) {
+		hasDuplicate = baseHasDuplicate;
+		results.sort( sortOrder );
 
-		assert(function( div ) {
-			div.innerHTML = "<select><option selected></option></select>";
-
-			// IE8 - Some boolean attributes are not treated correctly
-			if ( !div.querySelectorAll("[selected]").length ) {
-				rbuggyQSA.push("\\[[\\x20\\t\\n\\r\\f]*(?:checked|disabled|ismap|multiple|readonly|selected|value)");
-			}
-
-			// Webkit/Opera - :checked should return selected option elements
-			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
-			// IE8 throws error here (do not put tests after this one)
-			if ( !div.querySelectorAll(":checked").length ) {
-				rbuggyQSA.push(":checked");
-			}
-		});
-
-		assert(function( div ) {
-
-			// Opera 10/IE - ^= $= *= and empty values
-			div.innerHTML = "<p class=''></p>";
-			// Should not select anything
-			if ( div.querySelectorAll("[class^='']").length ) {
-				rbuggyQSA.push("[*^$]=[\\x20\\t\\n\\r\\f]*(?:\"\"|'')");
-			}
-
-			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
-			// IE8 throws error here (do not put tests after this one)
-			div.innerHTML = "<input type='hidden'>";
-			if ( !div.querySelectorAll(":enabled").length ) {
-				rbuggyQSA.push(":enabled", ":disabled");
-			}
-		});
-
-		rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
-
-		select = function( selector, context, results, seed, contextXML ) {
-			// Only use querySelectorAll when not filtering,
-			// when this is not xml,
-			// and when no QSA bugs apply
-			if ( !seed && !contextXML && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
-				if ( context.nodeType === 9 ) {
-					try {
-						return makeArray( context.querySelectorAll( selector ), results );
-					} catch(qsaError) {}
-				// qSA works strangely on Element-rooted queries
-				// We can work around this by specifying an extra ID on the root
-				// and working up from there (Thanks to Andrew Dupont for the technique)
-				// IE 8 doesn't work on object elements
-				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
-					var oldContext = context,
-						old = context.getAttribute( "id" ),
-						nid = old || id,
-						parent = context.parentNode,
-						relativeHierarchySelector = rrelativeHierarchy.test( selector );
-
-					if ( !old ) {
-						context.setAttribute( "id", nid );
-					} else {
-						nid = nid.replace( rapostrophe, "\\$&" );
-					}
-					if ( relativeHierarchySelector && parent ) {
-						context = parent;
-					}
-
-					try {
-						if ( !relativeHierarchySelector || parent ) {
-							return makeArray( context.querySelectorAll( "[id='" + nid + "'] " + selector ), results );
-						}
-					} catch(qsaError) {
-					} finally {
-						if ( !old ) {
-							oldContext.removeAttribute( "id" );
-						}
-					}
+		if ( hasDuplicate ) {
+			for ( var i = 1; i < results.length; i++ ) {
+				if ( results[i] === results[ i - 1 ] ) {
+					results.splice( i--, 1 );
 				}
-			}
-
-			return oldSelect( selector, context, results, seed, contextXML );
-		};
-	})();
-}
-
-function dirCheck( dir, checkSet, checkIndexes, part, xml ) {
-	var elem, nodeCheck, isElem, match, levelIndex, cached,
-		j, matchLen,
-		i = 0,
-		len = checkSet.length,
-		isPartStr = typeof part === "string",
-		doneName = ++done;
-
-	if ( isPartStr && !rnonWord.test( part ) ) {
-		part = part.toLowerCase();
-		nodeCheck = true;
-	}
-
-	for ( ; i < len; i++ ) {
-		if ( (elem = checkSet[i]) ) {
-			match = [];
-			levelIndex = 0;
-
-			elem = elem[ dir ];
-
-			while ( elem ) {
-				if ( elem[ expando ] === doneName && elem.sizLevelIndex === levelIndex ) {
-					cached = checkSet[ elem.sizset ];
-					match = match.length ? cached.length ? match.concat( cached ) : match : cached;
-					break;
-				}
-
-				isElem = elem.nodeType === 1;
-				if ( isElem && !xml ) {
-					elem[ expando ] = doneName;
-					elem.sizset = i;
-					elem.sizLevelIndex = levelIndex;
-				}
-
-				if ( nodeCheck ) {
-					if ( elem.nodeName.toLowerCase() === part ) {
-						match.push( elem );
-					}
-				} else if ( isElem ) {
-					if ( !isPartStr ) {
-						if ( elem === part ) {
-							// We can stop here
-							match = true;
-							break;
-						}
-
-					} else if ( Sizzle.filter( part, [elem] ).length > 0 ) {
-						match.push( elem );
-					}
-				}
-
-				elem = elem[ dir ];
-				levelIndex++;
-			}
-
-			if ( (matchLen = match.length) ) {
-				checkSet[i] = match;
-				if ( matchLen > 1 ) {
-					checkIndexes[i] = [];
-					j = 0;
-					for ( ; j < matchLen; j++ ) {
-						checkIndexes[i].push( i );
-					}
-				}
-			} else {
-				checkSet[i] = typeof match === "boolean" ? match : false;
 			}
 		}
 	}
-}
 
-function posProcess( selector, context, seed, contextXML ) {
-	var match,
-		tmpSet = [],
-		later = "",
-		root = context.nodeType ? [ context ] : context,
-		i = 0,
-		len = root.length;
-
-	// Position selectors must be done after the filter
-	// And so must :not(positional) so we move all PSEUDOs to the end
-	while ( (match = matchExpr.PSEUDO.exec( selector )) ) {
-		later += match[0];
-		selector = selector.replace( matchExpr.PSEUDO, "" );
-	}
-
-	if ( Expr.relative[ selector ] ) {
-		selector += "*";
-	}
-
-	for ( ; i < len; i++ ) {
-		select( selector, root[i], tmpSet, seed, contextXML );
-	}
-
-	return Sizzle.filter( later, tmpSet );
-}
+	return results;
+};
 
 // EXPOSE
 
