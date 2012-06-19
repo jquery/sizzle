@@ -25,7 +25,7 @@ var document = window.document,
 	chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
 
 	rsibling = /^[+~]$/,
-	rbackslash = /\\/g,
+	rbackslash = /\\(?!\\)/g,
 	rnonWord = /\W/,
 	rstartsWithWord = /^\w/,
 	rnonDigit = /\D/,
