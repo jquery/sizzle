@@ -433,7 +433,7 @@ if ( document.querySelectorAll ) {
 					try {
 						if ( !relativeHierarchySelector || parent ) {
 							nid = "[id='" + nid + "'] ";
-							newSelector = nid + selector.replace( rdivision, "," + nid );
+							newSelector = nid + selector.replace( rdivision, "$&" + nid );
 							return makeArray( context.querySelectorAll( newSelector ), results );
 						}
 					} catch(qsaError) {
