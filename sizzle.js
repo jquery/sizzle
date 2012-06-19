@@ -732,7 +732,7 @@ var Expr = Sizzle.selectors = {
 					var m = context.getElementById( match[1] );
 
 					return m ?
-						m.id === match[1] || typeof m.getAttributeNode !== strundefined && m.getAttributeNode("id").nodeValue === match[1] ?
+						m.id === match[1] || typeof m.getAttributeNode !== strundefined && m.getAttributeNode("id").value === match[1] ?
 							[m] :
 							undefined :
 						[];
@@ -1122,7 +1122,7 @@ var Expr = Sizzle.selectors = {
 			} :
 			function( elem, match ) {
 				var node = typeof elem.getAttributeNode !== strundefined && elem.getAttributeNode("id");
-				return elem.nodeType === 1 && node && node.nodeValue === match;
+				return elem.nodeType === 1 && node && node.value === match;
 			},
 
 		TAG: function( elem, match ) {
