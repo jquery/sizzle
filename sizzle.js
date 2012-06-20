@@ -653,7 +653,7 @@ if ( document.querySelectorAll ) {
 				// Make sure that attribute selectors are quoted
 				expr = expr.replace( rattributeQuotes, "='$1']" );
 
-				if ( !isXML( elem ) && (!rbuggyMatches || rbuggyMatches.test( expr )) && (!rbuggyQSA || !rbuggyQSA.test( expr )) ) {
+				if ( !isXML( elem ) && (!rbuggyMatches || !rbuggyMatches.test( expr )) && (!rbuggyQSA || !rbuggyQSA.test( expr )) ) {
 					try {
 						var ret = matches.call( elem, expr );
 
