@@ -568,10 +568,10 @@ if ( document.querySelectorAll ) {
 
 		assert(function( div ) {
 
-			// Opera 10/IE - ^= $= *= and empty values
-			div.innerHTML = "<p class=''></p>";
+			// Opera 10-12/IE9 - ^= $= *= and empty values
 			// Should not select anything
-			if ( div.querySelectorAll("[class^='']").length ) {
+			div.innerHTML = "<p test=''></p>";
+			if ( div.querySelectorAll("[test^='']").length ) {
 				rbuggyQSA.push("[*^$]=[\\x20\\t\\n\\r\\f]*(?:\"\"|'')");
 			}
 
@@ -637,15 +637,21 @@ if ( document.querySelectorAll ) {
 		if ( matches ) {
 			assert(function( div ) {
 				// Check to see if it's possible to do matchesSelector
-				// on a disconnected node (IE 9 fails this)
+				// on a disconnected node (IE 9)
 				disconnectedMatch = matches.call( div, "div" );
+
+				// This should fail with an exception
+				// Gecko does not error, returns false instead
 				try {
-					// This should fail with an exception
-					// Gecko does not error, returns false instead
 					matches.call( div, "[test!='']:sizzle" );
 					rbuggyMatches.push( Expr.match.PSEUDO );
 				} catch ( e ) {}
 			});
+
+			// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
+			// A support test would require too much code (would include document ready)
+			// just skip matchesSelector for :active
+			rbuggyMatches.push(":active");
 
 			rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join("|") );
 
@@ -658,7 +664,7 @@ if ( document.querySelectorAll ) {
 						var ret = matches.call( elem, expr );
 
 						// IE 9's matchesSelector returns false on disconnected nodes
-						if ( ret || !disconnectedMatch ||
+						if ( ret || disconnectedMatch ||
 								// As well, disconnected nodes are said to be in a document
 								// fragment in IE 9
 								elem.document && elem.document.nodeType !== 11 ) {
