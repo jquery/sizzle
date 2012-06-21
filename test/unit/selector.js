@@ -1,3 +1,26 @@
+/*global
+	QUnit: true,
+	q: true,
+	t: true,
+	url: true,
+	createWithFriesXML: true,
+	Sizzle: true,
+	module: true,
+	test: true,
+	expect: true,
+	stop: true,
+	start: true,
+	ok: true,
+	equal: true,
+	notEqual: true,
+	deepEqual: true,
+	notDeepEqual: true,
+	strictEqual: true,
+	notStrictEqual: true,
+	raises: true,
+	moduleTeardown: true
+*/
+
 module("selector", { teardown: moduleTeardown });
 
 // #### NOTE: ####
@@ -243,7 +266,7 @@ test("name", function() {
 	deepEqual( Sizzle("input[name=action]", form), q("text1"), "Name selector within the context of another element" );
 	deepEqual( Sizzle("input[name='foo[bar]']", form), q("hidden2"), "Name selector for grouped form element within the context of another element" );
 
-	var form = jQuery("<form><input name='id'/></form>").appendTo("body");
+	form = jQuery("<form><input name='id'/></form>").appendTo("body");
 	equal( Sizzle("input", form[0]).length, 1, "Make sure that rooted queries on forms (with possible expandos) work." );
 
 	form.remove();
@@ -485,7 +508,7 @@ test("pseudo - misc", function() {
 	document.body.appendChild( tmp );
 
 	jQuery.each( [ "button", "submit", "reset" ], function( i, type ) {
-		jQuery( tmp ).append( 
+		jQuery( tmp ).append(
 			"<input id='input_T' type='T'/><button id='button_T' type='T'>test</button>".replace(/T/g, type) );
 
 		t( "Input Buttons :" + type, "#tmp_input :" + type, [ "input_" + type, "button_" + type ] );
