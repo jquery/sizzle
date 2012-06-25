@@ -708,7 +708,7 @@ var isXML = Sizzle.isXML = function( elem ) {
 // Element contains another
 var contains = Sizzle.contains = docElem.compareDocumentPosition ?
 	function( a, b ) {
-		return !!(a.compareDocumentPosition( b ) & 16);
+		return a.compareDocumentPosition( b ) & 16 > 0;
 	} :
 	docElem.contains ?
 	function( a, b ) {
