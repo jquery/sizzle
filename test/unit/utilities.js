@@ -1,13 +1,14 @@
 module("utilities", { teardown: moduleTeardown });
 
 test("contains", function() {
-	expect(13);
+	expect(15);
 	QUnit.reset();
 
 	var container = document.getElementById("nonnodes"),
 		element = container.firstChild,
 		text = element.nextSibling,
-		nonContained = container.nextSibling;
+		nonContained = container.nextSibling,
+		detached = document.createElement("a");
 	ok( element && element.nodeType === 1, "preliminary: found element" );
 	ok( text && text.nodeType === 3, "preliminary: found text" );
 	ok( nonContained, "preliminary: found non-descendant" );
@@ -21,4 +22,6 @@ test("contains", function() {
 	ok( !window.Sizzle.contains(container, document), "document" );
 	ok( !window.Sizzle.contains(container, document.documentElement), "documentElement (negative)" );
 	ok( window.Sizzle.contains(document, document.documentElement), "documentElement (positive)" );
+	ok( window.Sizzle.contains(document, element), "document container (positive)" );
+	ok( !window.Sizzle.contains(document, detached), "document container (negative)" );
 });
