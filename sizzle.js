@@ -761,12 +761,11 @@ var getText = Sizzle.getText = function( elem ) {
 };
 
 function dirCheck( dir, checkSet, checkIndexes, part, xml ) {
-	var elem, nodeCheck, isElem, match, levelIndex, cached,
+	var elem, nodeCheck, isElem, match,
 		j, matchLen,
 		i = 0,
 		len = checkSet.length,
-		isPartStr = typeof part === "string",
-		doneName = ++done;
+		isPartStr = typeof part === "string";
 
 	if ( isPartStr && !rnonWord.test( part ) ) {
 		part = part.toLowerCase();
@@ -776,23 +775,11 @@ function dirCheck( dir, checkSet, checkIndexes, part, xml ) {
 	for ( ; i < len; i++ ) {
 		if ( (elem = checkSet[i]) ) {
 			match = [];
-			levelIndex = 0;
 
 			elem = elem[ dir ];
 
 			while ( elem ) {
-				if ( elem[ expando ] === doneName && elem.sizLevelIndex === levelIndex ) {
-					cached = checkSet[ elem.sizset ];
-					match = match.length ? cached.length ? match.concat( cached ) : match : cached;
-					break;
-				}
-
 				isElem = elem.nodeType === 1;
-				if ( isElem && !xml ) {
-					elem[ expando ] = doneName;
-					elem.sizset = i;
-					elem.sizLevelIndex = levelIndex;
-				}
 
 				if ( nodeCheck ) {
 					if ( elem.nodeName.toLowerCase() === part ) {
@@ -812,7 +799,6 @@ function dirCheck( dir, checkSet, checkIndexes, part, xml ) {
 				}
 
 				elem = elem[ dir ];
-				levelIndex++;
 			}
 
 			if ( (matchLen = match.length) ) {
