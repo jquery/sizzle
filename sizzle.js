@@ -72,9 +72,6 @@ var document = window.document,
 		return leftMatch;
 	})(),
 
-	// Cache for chunking through parts
-	partsCache = {},
-	extraCache = {},
 	// Cache for quick matching
 	filterCache = {},
 
@@ -207,31 +204,23 @@ var select = function( selector, context, results, seed, contextXML ) {
 		soFar = selector;
 
 	// Split the selector into parts
-	if ( (parts = partsCache[ selector ]) === undefined ) {
-		parts = [];
-		do {
-			// Reset the position of the chunker regexp (start from head)
-			chunker.exec( "" );
-			m = chunker.exec( soFar );
+	parts = [];
+	do {
+		// Reset the position of the chunker regexp (start from head)
+		chunker.exec( "" );
+		m = chunker.exec( soFar );
 
-			if ( m ) {
-				soFar = m[3];
+		if ( m ) {
+			soFar = m[3];
 
-				parts.push( m[1] );
+			parts.push( m[1] );
 
-				if ( m[2] ) {
-					extra = m[3];
-					break;
-				}
+			if ( m[2] ) {
+				extra = m[3];
+				break;
 			}
-		} while ( m );
-
-		partsCache[ selector ] = parts && parts.slice( 0 );
-		extraCache[ selector ] = extra;
-	} else {
-		parts = parts.slice( 0 );
-		extra = extraCache[ selector ];
-	}
+		}
+	} while ( m );
 
 	if ( parts.length > 1 && origPOS.exec( selector ) ) {
 
@@ -681,19 +670,13 @@ if ( document.querySelectorAll ) {
 
 // Slice is no longer used
 // Results is expected to be an array or undefined
-// typeof len is checked for if array is a form nodelist containing an element with name "length" (wow)
 function makeArray( array, results ) {
-	results = results || [];
-	var i = 0,
-		len = array.length;
-	if ( typeof len === "number" ) {
-		for ( ; i < len; i++ ) {
-			results.push( array[i] );
-		}
-	} else {
-		for ( ; array[i]; i++ ) {
-			results.push( array[i] );
-		}
+	var elem, i = 0;
+	if ( !results ) {
+		results = [];
+	}
+	for ( i = 0; (elem = array[i]); i++ ) {
+		results.push( elem );
 	}
 	return results;
 }
@@ -762,63 +745,6 @@ var getText = Sizzle.getText = function( elem ) {
 	return ret;
 };
 
-function dirCheck( dir, checkSet, checkIndexes, part, xml ) {
-	var elem, nodeCheck, isElem, match,
-		j, matchLen,
-		i = 0,
-		len = checkSet.length,
-		isPartStr = typeof part === "string";
-
-	if ( isPartStr && !rnonWord.test( part ) ) {
-		part = part.toLowerCase();
-		nodeCheck = true;
-	}
-
-	for ( ; i < len; i++ ) {
-		if ( (elem = checkSet[i]) ) {
-			match = [];
-
-			elem = elem[ dir ];
-
-			while ( elem ) {
-				isElem = elem.nodeType === 1;
-
-				if ( nodeCheck ) {
-					if ( elem.nodeName.toLowerCase() === part ) {
-						match.push( elem );
-					}
-				} else if ( isElem ) {
-					if ( !isPartStr ) {
-						if ( elem === part ) {
-							// We can stop here
-							match = true;
-							break;
-						}
-
-					} else if ( Sizzle.filter( part, [elem] ).length > 0 ) {
-						match.push( elem );
-					}
-				}
-
-				elem = elem[ dir ];
-			}
-
-			if ( (matchLen = match.length) ) {
-				checkSet[i] = match;
-				if ( matchLen > 1 ) {
-					checkIndexes[i] = [];
-					j = 0;
-					for ( ; j < matchLen; j++ ) {
-						checkIndexes[i].push( i );
-					}
-				}
-			} else {
-				checkSet[i] = typeof match === "boolean" ? match : false;
-			}
-		}
-	}
-}
-
 function posProcess( selector, context, seed, contextXML ) {
 	var match,
 		tmpSet = [],
@@ -845,6 +771,76 @@ function posProcess( selector, context, seed, contextXML ) {
 	return Sizzle.filter( later, tmpSet );
 }
 
+// Avoids another call on the stack
+function relativeFunction( dir, firstMatch ) {
+	return function( checkSet, checkIndexes, part, xml ) {
+		var elem, nodeCheck, isElem, match,
+			j, matchLen,
+			i = 0,
+			len = checkSet.length,
+			isPartStr = typeof part === "string";
+
+		if ( isPartStr && !rnonWord.test( part ) ) {
+			part = part.toLowerCase();
+			nodeCheck = true;
+		}
+
+		for ( ; i < len; i++ ) {
+			if ( (elem = checkSet[i]) ) {
+				match = [];
+
+				elem = elem[ dir ];
+
+				while ( elem ) {
+					isElem = elem.nodeType === 1;
+
+					if ( nodeCheck ) {
+						if ( elem.nodeName.toLowerCase() === part ) {
+							match.push( elem );
+						}
+					} else if ( isElem ) {
+						if ( !isPartStr ) {
+							if ( elem === part ) {
+								// We can stop here
+								match = true;
+								break;
+							}
+
+						} else if ( Sizzle.filter( part, [elem] ).length > 0 ) {
+							match.push( elem );
+						}
+					}
+
+					if ( firstMatch && isElem ) {
+						break;
+					}
+					elem = elem[ dir ];
+				}
+
+				if ( (matchLen = match.length) ) {
+					checkSet[i] = match;
+					if ( matchLen > 1 ) {
+						checkIndexes[i] = [];
+						j = 0;
+						for ( ; j < matchLen; j++ ) {
+							checkIndexes[i].push( i );
+						}
+					}
+				} else {
+					checkSet[i] = typeof match === "boolean" ? match : false;
+				}
+			}
+		}
+	};
+}
+
+// Returns a function for use in filters to save space
+function iFun( type ) {
+	return function( elem ) {
+		// Check the input's nodeName and type
+		return elem.nodeName.toLowerCase() === "input" && elem.type === type;
+	};
+}
 
 var Expr = Sizzle.selectors = {
 
@@ -856,69 +852,10 @@ var Expr = Sizzle.selectors = {
 	attrHandle: {},
 
 	relative: {
-		"+": function( checkSet, checkIndexes, part ) {
-			var elem,
-				i = 0,
-				len = checkSet.length,
-				isPartStr = typeof part === "string",
-				isTag = isPartStr && !rnonWord.test( part ),
-				isPartStrNotTag = isPartStr && !isTag;
-
-			if ( isTag ) {
-				part = part.toLowerCase();
-			}
-
-			for ( ; i < len; i++ ) {
-				if ( (elem = checkSet[i]) ) {
-					while ( (elem = elem.previousSibling) && elem.nodeType !== 1 ) {}
-					checkSet[i] = isPartStrNotTag || elem && elem.nodeName.toLowerCase() === part ?
-						elem || false :
-						elem === part;
-				}
-			}
-
-			if ( isPartStrNotTag ) {
-				Sizzle.filter( part, checkSet, true );
-			}
-		},
-
-		">": function( checkSet, checkIndexes, part ) {
-			var elem,
-				i = 0,
-				len = checkSet.length,
-				isPartStr = typeof part === "string";
-
-			if ( isPartStr && !rnonWord.test( part ) ) {
-				part = part.toLowerCase();
-				for ( ; i < len; i++ ){
-					if ( (elem = checkSet[i]) ) {
-						var parent = elem.parentNode;
-						checkSet[i] = parent.nodeName.toLowerCase() === part ? parent : false;
-					}
-				}
-
-			} else {
-				for ( ; i < len; i++ ){
-					if ( (elem = checkSet[i]) ) {
-						checkSet[i] = isPartStr ?
-							elem.parentNode :
-							elem.parentNode === part;
-					}
-				}
-
-				if ( isPartStr ) {
-					Sizzle.filter( part, checkSet, true );
-				}
-			}
-		},
-
-		"": function( checkSet, checkIndexes, part, xml ) {
-			dirCheck( "parentNode", checkSet, checkIndexes, part, xml );
-		},
-
-		"~": function( checkSet, checkIndexes, part, xml ) {
-			dirCheck( "previousSibling", checkSet, checkIndexes, part, xml );
-		}
+		">": relativeFunction( "parentNode", true ),
+		"": relativeFunction( "parentNode" ),
+		"+": relativeFunction( "previousSibling", true ),
+		"~": relativeFunction( "previousSibling" )
 	},
 
 	find: {
@@ -1138,29 +1075,16 @@ var Expr = Sizzle.selectors = {
 			return elem.nodeName.toLowerCase() === "input" && "text" === type && ( attr === null || attr.toLowerCase() === type );
 		},
 
-		radio: function( elem ) {
-			return elem.nodeName.toLowerCase() === "input" && "radio" === elem.type;
-		},
-
-		checkbox: function( elem ) {
-			return elem.nodeName.toLowerCase() === "input" && "checkbox" === elem.type;
-		},
-
-		file: function( elem ) {
-			return elem.nodeName.toLowerCase() === "input" && "file" === elem.type;
-		},
-
-		password: function( elem ) {
-			return elem.nodeName.toLowerCase() === "input" && "password" === elem.type;
-		},
+		// Input types
+		radio: iFun("radio"),
+		checkbox: iFun("checkbox"),
+		file: iFun("file"),
+		password: iFun("password"),
+		image: iFun("image"),
 
 		submit: function( elem ) {
 			var name = elem.nodeName.toLowerCase();
 			return (name === "input" || name === "button") && "submit" === elem.type;
-		},
-
-		image: function( elem ) {
-			return elem.nodeName.toLowerCase() === "input" && "image" === elem.type;
 		},
 
 		reset: function( elem ) {

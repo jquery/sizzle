@@ -7,6 +7,7 @@
 	Sizzle: true,
 	module: true,
 	test: true,
+	asyncTest: true,
 	expect: true,
 	stop: true,
 	start: true,

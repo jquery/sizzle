@@ -1,6 +1,30 @@
-module("utilities", { teardown: moduleTeardown });
+/*global
+	QUnit: true,
+	q: true,
+	t: true,
+	url: true,
+	createWithFriesXML: true,
+	Sizzle: true,
+	module: true,
+	test: true,
+	asyncTest: true,
+	expect: true,
+	stop: true,
+	start: true,
+	ok: true,
+	equal: true,
+	notEqual: true,
+	deepEqual: true,
+	notDeepEqual: true,
+	strictEqual: true,
+	notStrictEqual: true,
+	raises: true,
+	moduleTeardown: true
+*/
 
-test("contains", function() {
+module("selector", { teardown: moduleTeardown });
+
+test("Sizzle.contains", function() {
 	expect(15);
 
 	var container = document.getElementById("nonnodes"),
