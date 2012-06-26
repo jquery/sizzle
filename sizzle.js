@@ -708,11 +708,13 @@ var isXML = Sizzle.isXML = function( elem ) {
 // Element contains another
 var contains = Sizzle.contains = docElem.compareDocumentPosition ?
 	function( a, b ) {
-		return !!(a.compareDocumentPosition( b ) & 16);
+		return !!( a.compareDocumentPosition( b ) & 16 );
 	} :
 	docElem.contains ?
 	function( a, b ) {
-		return a !== b && ( a.contains ? a.contains( b ) : false );
+		var adown = a.nodeType === 9 ? a.documentElement : a,
+			bup = b.parentNode;
+		return a === bup || !!( bup && bup.nodeType === 1 && adown.contains && adown.contains(bup) );
 	} :
 	function( a, b ) {
 		while ( (b = b.parentNode) ) {
