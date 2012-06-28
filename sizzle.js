@@ -9,7 +9,7 @@
 var document = window.document,
 	docElem = document.documentElement,
 
-	expando = "sizcache" + (Math.random() + "").replace(".", ""),
+	expando = ( "sizcache" + Math.random() ).replace( ".", "" ),
 	done = 0,
 
 	toString = Object.prototype.toString,
@@ -197,10 +197,10 @@ var Sizzle = function( selector, context, results, seed ) {
 };
 
 var select = function( selector, context, results, seed, contextXML ) {
-	var m, set, checkSet, extra, ret, cur, pop, parts,
-		i, len, elem, contextNodeType, checkIndexes, setIndex,
+	var m, set, checkSet, extra, ret, cur, pop, parts, prefiltered,
+		i, elem, contextNodeType, setIndex, indexCount,
+		checkIndexes = [],
 		origContext = context,
-		prune = true,
 		soFar = selector;
 
 	// Split the selector into parts
@@ -264,36 +264,31 @@ var select = function( selector, context, results, seed, contextXML ) {
 				Sizzle.filter( ret.expr, ret.set ) :
 				ret.set;
 
-			if ( parts.length > 0 ) {
+			if ( parts.length ) {
 				checkSet = makeArray( set );
-				i = 0;
-				len = checkSet.length;
-				checkIndexes = [];
-				for ( ; i < len; i++ ) {
-					checkIndexes[i] = i;
+
+				indexCount = checkSet.length;
+				for ( i = 0; i < indexCount; i++ ) {
+					checkIndexes.push( i );
+				}
+
+				while ( parts.length ) {
+					cur = parts.pop();
+
+					if ( Expr.relative[ cur ] ) {
+						pop = parts.pop() || context;
+					} else {
+						pop = cur;
+						cur = "";
+					}
+
+					Expr.relative[ cur ]( checkSet, checkIndexes, pop, contextXML );
+					checkSet = concat.apply( [], checkSet );
+					checkIndexes = concat.apply( [], checkIndexes );
 				}
 
 			} else {
-				prune = false;
-			}
-
-			while ( parts.length ) {
-				cur = parts.pop();
-
-				if ( Expr.relative[ cur ] ) {
-					pop = parts.pop();
-				} else {
-					pop = cur;
-					cur = "";
-				}
-
-				if ( pop == null ) {
-					pop = context;
-				}
-
-				Expr.relative[ cur ]( checkSet, checkIndexes, pop, contextXML );
-				checkSet = concat.apply( [], checkSet );
-				checkIndexes = concat.apply( [], checkIndexes );
+				prefiltered = true;
 			}
 
 		} else {
@@ -310,7 +305,7 @@ var select = function( selector, context, results, seed, contextXML ) {
 	}
 
 	if ( toString.call( checkSet ) === "[object Array]" ) {
-		if ( !prune ) {
+		if ( prefiltered ) {
 			results.push.apply( results, checkSet );
 
 		} else {
@@ -318,7 +313,7 @@ var select = function( selector, context, results, seed, contextXML ) {
 			set = makeArray( set );
 			for ( i = 0; (elem = checkSet[i]) != null; i++ ) {
 				if ( elem === true || (elem.nodeType === 1 && ( !contextNodeType || contains(context, elem) )) ) {
-					setIndex = checkIndexes ? checkIndexes[i] : i;
+					setIndex = indexCount ? checkIndexes[i] : i;
 					if ( set[ setIndex ] ) {
 						results.push( set[ setIndex ] );
 						set[ setIndex ] = false;
@@ -672,10 +667,7 @@ if ( document.querySelectorAll ) {
 // Results is expected to be an array or undefined
 function makeArray( array, results ) {
 	var elem, i = 0;
-	if ( !results ) {
-		results = [];
-	}
-	for ( i = 0; (elem = array[i]); i++ ) {
+	for ( results = results || []; (elem = array[i]); i++ ) {
 		results.push( elem );
 	}
 	return results;
@@ -684,7 +676,7 @@ function makeArray( array, results ) {
 var isXML = Sizzle.isXML = function( elem ) {
 	// documentElement is verified for cases where it doesn't yet exist
 	// (such as loading iframes in IE - #4833)
-	var documentElement = (elem ? elem.ownerDocument || elem : 0).documentElement;
+	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
 	return documentElement ? documentElement.nodeName !== "HTML" : false;
 };
 
@@ -713,9 +705,10 @@ var contains = Sizzle.contains = docElem.compareDocumentPosition ?
  * @param {Array|Element} elem
  */
 var getText = Sizzle.getText = function( elem ) {
-	var i, node,
-		nodeType = elem.nodeType,
-		ret = "";
+	var node,
+		ret = "",
+		i = 0,
+		nodeType = elem.nodeType;
 
 	if ( nodeType ) {
 		if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
@@ -732,14 +725,13 @@ var getText = Sizzle.getText = function( elem ) {
 		} else if ( nodeType === 3 || nodeType === 4 ) {
 			return elem.nodeValue;
 		}
+		// Do not include comment or processing instruction nodes
 	} else {
 
 		// If no nodeType, this is expected to be an array
-		for ( i = 0; (node = elem[i]); i++ ) {
+		for ( ; (node = elem[i]); i++ ) {
 			// Do not traverse comment nodes
-			if ( node.nodeType !== 8 ) {
-				ret += getText( node );
-			}
+			ret += getText( node );
 		}
 	}
 	return ret;
@@ -749,8 +741,8 @@ function posProcess( selector, context, seed, contextXML ) {
 	var match,
 		tmpSet = [],
 		later = "",
-		root = context.nodeType ? [ context ] : context,
 		i = 0,
+		root = context.nodeType ? [ context ] : context,
 		len = root.length;
 
 	// Position selectors must be done after the filter
@@ -774,24 +766,22 @@ function posProcess( selector, context, seed, contextXML ) {
 // Avoids another call on the stack
 function relativeFunction( dir, firstMatch ) {
 	return function( checkSet, checkIndexes, part, xml ) {
-		var elem, nodeCheck, isElem, match,
+		var elem, isElem, match,
 			j, matchLen,
-			i = 0,
 			len = checkSet.length,
-			isPartStr = typeof part === "string";
+			i = 0,
+			isPartStr = typeof part === "string",
+			nodeCheck = isPartStr && !rnonWord.test( part );
 
-		if ( isPartStr && !rnonWord.test( part ) ) {
+		if ( nodeCheck ) {
 			part = part.toLowerCase();
-			nodeCheck = true;
 		}
 
 		for ( ; i < len; i++ ) {
 			if ( (elem = checkSet[i]) ) {
 				match = [];
 
-				elem = elem[ dir ];
-
-				while ( elem ) {
+				while ( (elem = elem[ dir ]) ) {
 					isElem = elem.nodeType === 1;
 
 					if ( nodeCheck ) {
@@ -799,35 +789,27 @@ function relativeFunction( dir, firstMatch ) {
 							match.push( elem );
 						}
 					} else if ( isElem ) {
-						if ( !isPartStr ) {
-							if ( elem === part ) {
-								// We can stop here
-								match = true;
-								break;
-							}
-
-						} else if ( Sizzle.filter( part, [elem] ).length > 0 ) {
+						if ( isPartStr && Sizzle.filter( part, [elem] ).length > 0 ) {
 							match.push( elem );
+						} else if ( elem === part ) {
+							// We can stop here
+							elem = match = true;
 						}
 					}
 
 					if ( firstMatch && isElem ) {
 						break;
 					}
-					elem = elem[ dir ];
 				}
 
 				if ( (matchLen = match.length) ) {
 					checkSet[i] = match;
 					if ( matchLen > 1 ) {
-						checkIndexes[i] = [];
-						j = 0;
-						for ( ; j < matchLen; j++ ) {
-							checkIndexes[i].push( i );
-						}
+						checkIndexes[i] = ( new Array(matchLen + 1) )
+							.join( "," + checkIndexes[i] ).split(",").slice(1);
 					}
 				} else {
-					checkSet[i] = typeof match === "boolean" ? match : false;
+					checkSet[i] = typeof match === "boolean";
 				}
 			}
 		}
@@ -1431,12 +1413,14 @@ if ( docElem.compareDocumentPosition ) {
 
 // Document sorting and removing duplicates
 var uniqueSort = Sizzle.uniqueSort = function( results ) {
+	var i = 1;
+
 	if ( sortOrder ) {
 		hasDuplicate = baseHasDuplicate;
 		results.sort( sortOrder );
 
 		if ( hasDuplicate ) {
-			for ( var i = 1; i < results.length; i++ ) {
+			for ( ; i < results.length; i++ ) {
 				if ( results[i] === results[ i - 1 ] ) {
 					results.splice( i--, 1 );
 				}
