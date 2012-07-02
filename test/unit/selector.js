@@ -70,8 +70,7 @@ module("selector", { teardown: moduleTeardown });
 */
 
 test("element", function() {
-	expect( 20 );
-	QUnit.reset();
+	expect( 22 );
 
 	equal( Sizzle("").length, 0, "Empty selector returns an empty array" );
 	var form = document.getElementById("form");
@@ -108,8 +107,17 @@ test("element", function() {
 
 	var siblingTest = document.getElementById("siblingTest");
 	deepEqual( Sizzle("div em", siblingTest), [], "Element-rooted QSA does not select based on document context" );
-	deepEqual( Sizzle("div em, div em, em:not(div em)", siblingTest), [], "Element-rooted QSA does not select based on document context" );
+	deepEqual( Sizzle("div em, div em, div em:not(div em)", siblingTest), [], "Element-rooted QSA does not select based on document context" );
 	deepEqual( Sizzle("div em, em\\,", siblingTest), [], "Escaped commas do not get treated with an id in element-rooted QSA" );
+
+	var html = "";
+	for ( i = 0; i < 100; i++ ) {
+		html = "<div>" + html + "</div>";
+	}
+	html = jQuery( html ).appendTo( document.body );
+	ok( !!Sizzle("body div div div").length, "No stack or performance problems with large amounts of descendents" );
+	ok( !!Sizzle("body>div div div").length, "No stack or performance problems with large amounts of descendents" );
+	html.remove();
 });
 
 test("XML Document Selectors", function() {
@@ -166,6 +174,7 @@ test("broken", function() {
 	var attrbad = jQuery('<input type="hidden" value="2" name="foo.baz" id="attrbad1"/><input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>').appendTo("body");
 
 	broken( "Attribute not escaped", "input[name=foo.baz]", [] );
+	// Shouldn't be matching those inner brackets
 	broken( "Attribute not escaped", "input[name=foo[baz]]", [] );
 
 	attrbad.remove();
@@ -281,7 +290,7 @@ test("name", function() {
 	equal( Sizzle("[name=tName2]")[0], a[1], "Find elements that have similar IDs" );
 	t( "Find elements that have similar IDs", "#tName2ID", ["tName2ID"] );
 
-	a.remove();
+	a.parent().remove();
 });
 
 test("multiple", function() {
@@ -437,7 +446,7 @@ test("attributes", function() {
 });
 
 test("pseudo - child", function() {
-	expect( 38 );
+	expect( 37 );
 	t( "First Child", "#qunit-fixture p:first-child", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "#qunit-fixture a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
@@ -469,7 +478,6 @@ test("pseudo - child", function() {
 	t( "Nth-child", "#form select:first option:nth-child(1n+0)", ["option1a", "option1b", "option1c", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(1n)", ["option1a", "option1b", "option1c", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(n)", ["option1a", "option1b", "option1c", "option1d"] );
-	t( "Nth-child", "#form select:first option:nth-child(+n)", ["option1a", "option1b", "option1c", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(even)", ["option1b", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(odd)", ["option1a", "option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(2n)", ["option1b", "option1d"] );
@@ -595,8 +603,9 @@ test("pseudo - :not", function() {
 });
 
 test("pseudo - position", function() {
-	expect( 25 );
+	expect( 26 );
 
+	t( "First element", "div:first", ["qunit-testrunner-toolbar"] );
 	t( "nth Element", "#qunit-fixture p:nth(1)", ["ap"] );
 	t( "First Element", "#qunit-fixture p:first", ["firstp"] );
 	t( "Last Element", "p:last", ["first"] );
@@ -618,7 +627,7 @@ test("pseudo - position", function() {
 
 	t( "Check element position", "div div:eq(0)", ["nothiddendivchild"] );
 	t( "Check element position", "div div:eq(5)", ["t2037"] );
-	t( "Check element position", "div div:eq(28)", ["fx-queue"] );
+	t( "Check element position", "div div:eq(28)", ["slideup"] );
 	t( "Check element position", "div div:first", ["nothiddendivchild"] );
 	t( "Check element position", "div > div:first", ["nothiddendivchild"] );
 	t( "Check element position", "#dl div:first div:first", ["foo"] );
