@@ -20,25 +20,27 @@ var tokenize,
 
 	// Regex
 	rquickExpr = /^#([\w\-]+$)|^(\w+$)|^\.([\w\-]+$)/,
-	rcomma = /^\s*,\s*/,
-	rcombinators = /^\s*([\s>~+])\s*/,
+	rcomma = /^[\x20\t\n\r\f]*,[\x20\t\n\r\f]*/,
+	rcombinators = /^[\x20\t\n\r\f]*([\s>~+])[\x20\t\n\r\f]*/,
 	rbackslash = /\\(?!\\)/g,
-	rsibling = /^\s*[+~]\s*$/,
+	rsibling = /^[\x20\t\n\r\f]*[+~][\x20\t\n\r\f]*$/,
 
 	rnonDigit = /\D/,
 	rnth = /(-?)(\d*)(?:n([+\-]?\d*))?/,
-	radjacent = /^\+|\s*/g,
+	radjacent = /^\+|[\x20\t\n\r\f]*/g,
 	rheader = /h\d/i,
 	rinputs = /input|select|textarea|button/i,
-	rtnfr = /[\t\n\f\r]/g,
 
 	// http://www.w3.org/TR/css3-syntax/#characters
 	characterEncoding = "(?:[-\\w]|[^\\x00-\\xa0]|\\\\.)",
 	// Javascript identifier syntax (with added # for unquoted hash)
 	identifier = "(?:-?[#_a-zA-Z]{1}[-\\w]*|[^\\x00-\\xa0]+|\\\\.+)",
+	// Whitespace characters http://www.w3.org/TR/css3-selectors/#whitespace
+	whitespace = "[\\x20\\t\\n\\r\\f]",
 	// Acceptable operators
 	operators = "([~*^$|!]?={1})",
-	attributes = "\\[\\s*(" + characterEncoding + "+)\\s*(?:" + operators + "\\s*(?:(['\"])(.*?)\\3|(" + identifier + "+)|)|)\\s*\\]",
+	attributes = "\\[" + whitespace + "*(" + characterEncoding + "+)" + whitespace +
+		"*(?:" + operators + whitespace + "*(?:(['\"])(.*?)\\3|(" + identifier + "+)|)|)" + whitespace + "*\\]",
 	pseudos = ":(" + characterEncoding + "+)(?:\\((['\"]?)((?:\\([^\\)]+\\)|[^\\(\\)]*)+)\\2\\))?",
 	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\))?(?=[^\\-]|$)",
 
@@ -49,7 +51,8 @@ var tokenize,
 		TAG: new RegExp( "^(" + characterEncoding.replace( "[-", "[-\\*" ) + "+)" ),
 		ATTR: new RegExp( "^" + attributes ),
 		PSEUDO: new RegExp( "^" + pseudos ),
-		CHILD: /^:(only|nth|last|first)-child(?:\(\s*(even|odd|(?:[+\-]?\d+|(?:[+\-]?\d*)?n\s*(?:[+\-]\s*\d+)?))\s*\))?/,
+		CHILD: new RegExp( "^:(only|nth|last|first)-child(?:\\(" + whitespace + "*(even|odd|(?:[+\\-]?\\d+|(?:[+\\-]?\\d*)?n" +
+			whitespace + "*(?:[+\\-]" + whitespace + "*\\d+)?))" + whitespace + "*\\))?" ),
 		POS: new RegExp( "^" + pos ),
 		// For use in libraries implementing .is(), an unanchored POS
 		globalPOS: new RegExp( pos )
@@ -69,7 +72,7 @@ var tokenize,
 		"|\\\\.)+", "g"),
 
 	rpos = new RegExp( pos, "g" ),
-	rposgroups = new RegExp( "^" + rpos.source + "(?!\\s)" ),
+	rposgroups = new RegExp( "^" + pos + "(?!" + whitespace + ")" ),
 	rendsWithNot = /:not\($/,
 
 	maxCacheLength = 50,
@@ -307,16 +310,6 @@ var Expr = Sizzle.selectors = {
 	},
 
 	preFilter: {
-		ID: function( match ) {
-			match[1] = match[1].replace( rbackslash, "" );
-			return match;
-		},
-
-		TAG: function( match ) {
-			match[1] = match[1].replace( rbackslash, "" ).toLowerCase();
-			return match;
-		},
-
 		ATTR: function( match ) {
 			match[1] = match[1].replace( rbackslash, "" );
 
@@ -364,11 +357,13 @@ var Expr = Sizzle.selectors = {
 	filter: {
 		ID: assertGetIdNotName ?
 			function( id ) {
+				id = id.replace( rbackslash, "" );
 				return function( elem ) {
 					return elem.getAttribute("id") === id;
 				};
 			} :
 			function( id ) {
+				id = id.replace( rbackslash, "" );
 				return function( elem ) {
 					var node = typeof elem.getAttributeNode !== strundefined && elem.getAttributeNode("id");
 					return node && node.value === id;
@@ -379,16 +374,22 @@ var Expr = Sizzle.selectors = {
 			if ( nodeName === "*" ) {
 				return createFunction( true );
 			}
+			nodeName = nodeName.replace( rbackslash, "" ).toLowerCase();
+
 			return function( elem ) {
 				return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
 			};
 		},
 
 		CLASS: function( className ) {
-			var pattern = classCache[ className ] || ( classCache[ className ] = new RegExp("(^|\\s)" + className + "(\\s|$)") );
-			cachedClasses.push( className );
-			if ( cachedClasses.length > maxCacheLength ) {
-				delete classCache[ cachedClasses.shift() ];
+			var pattern = classCache[ className ];
+			if ( !pattern ) {
+				pattern = classCache[ className ] = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" );
+				cachedClasses.push( className );
+				// Avoid too large of a cache
+				if ( cachedClasses.length > maxCacheLength ) {
+					delete classCache[ cachedClasses.shift() ];
+				}
 			}
 			return function( elem ) {
 				return pattern.test( elem.className || elem.getAttribute("class") );
@@ -932,7 +933,7 @@ function handlePOS( selector, context, results, seed, isSingle ) {
 		ret = [],
 		anchor = 0,
 		// This is for making sure non-participating
-		// matching groups are represented cross-browser
+		// matching groups are represented cross-browser (IE6-8)
 		setUndefined = function() {
 			for ( var i = 1, len = arguments.length - 2; i < len; i++ ) {
 				if ( arguments[i] === undefined ) {
@@ -1224,9 +1225,9 @@ if ( document.querySelectorAll ) {
 			oldSelect = select,
 			id = "__sizzle__",
 			rdivision = /[^\\],/g,
-			rrelativeHierarchy = /^\s*[+~]/,
+			rrelativeHierarchy = /^[\x20\t\n\r\f]*[+~]/,
 			rapostrophe = /'/g,
-			rattributeQuotes = /\=\s*([^'"\]]*)\s*\]/g,
+			rattributeQuotes = /\=[\x20\t\n\r\f]*([^'"\]]*)[\x20\t\n\r\f]*\]/g,
 			rbuggyQSA = [],
 			rbuggyMatches = [],
 			matches = docElem.matchesSelector ||
