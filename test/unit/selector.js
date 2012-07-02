@@ -446,7 +446,7 @@ test("attributes", function() {
 });
 
 test("pseudo - child", function() {
-	expect( 37 );
+	expect( 38 );
 	t( "First Child", "#qunit-fixture p:first-child", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "#qunit-fixture a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
@@ -454,6 +454,7 @@ test("pseudo - child", function() {
 	t( "Is A Parent", "#qunit-fixture p:parent", ["firstp","ap","sndp","en","sap","first"] );
 
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
+	t( "First Child", ".nothiddendiv div:first-child", ["nothiddendivchild"] );
 	t( "Nth Child", "p:nth-child(1)", ["firstp","sndp"] );
 	t( "Nth Child With Whitespace", "p:nth-child( 1 )", ["firstp","sndp"] );
 	t( "Not Nth Child", "#qunit-fixture p:not(:nth-child(1))", ["ap","en","sap","first"] );

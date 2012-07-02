@@ -14,7 +14,6 @@ var tokenize,
 	expando = ( "sizcache" + Math.random() ).replace( ".", "" ),
 	done = 0,
 
-	push = Array.prototype.push,
 	strundefined = "undefined",
 	hasDuplicate = false,
 	baseHasDuplicate = true,
@@ -50,7 +49,7 @@ var tokenize,
 		TAG: new RegExp( "^(" + characterEncoding.replace( "[-", "[-\\*" ) + "+)" ),
 		ATTR: new RegExp( "^" + attributes ),
 		PSEUDO: new RegExp( "^" + pseudos ),
-		CHILD: /^\s*:(only|nth|last|first)-child(?:\(\s*(even|odd|(?:[+\-]?\d+|(?:[+\-]?\d*)?n\s*(?:[+\-]\s*\d+)?))\s*\))?/,
+		CHILD: /^:(only|nth|last|first)-child(?:\(\s*(even|odd|(?:[+\-]?\d+|(?:[+\-]?\d*)?n\s*(?:[+\-]\s*\d+)?))\s*\))?/,
 		POS: new RegExp( "^" + pos ),
 		// For use in libraries implementing .is(), an unanchored POS
 		globalPOS: new RegExp( pos )
@@ -218,7 +217,7 @@ var Sizzle = function( selector, context, results, seed ) {
 				return makeArray( context.getElementsByTagName( selector ), results );
 
 			// Speed-up: Sizzle(".CLASS")
-			} else if ( assertUsableClassName && (m = match[3]) && context.getElementsByClassName ) {
+			} else if ( assertUsableClassName && context.getElementsByClassName && (m = match[3]) ) {
 				return makeArray( context.getElementsByClassName( m ), results );
 			}
 		}
@@ -915,7 +914,7 @@ function handlePOSGroup( selector, posfilter, argument, contexts, seed, not ) {
 		fn = Expr.setFilters[ posfilter ];
 
 	if ( !fn ) {
-		Sizzle.error( selector + posfilter );
+		Sizzle.error( posfilter );
 	}
 
 	if ( selector ) {
@@ -932,6 +931,8 @@ function handlePOS( selector, context, results, seed, isSingle ) {
 		elements = seed || null,
 		ret = [],
 		anchor = 0,
+		// This is for making sure non-participating
+		// matching groups are represented cross-browser
 		setUndefined = function() {
 			for ( var i = 1, len = arguments.length - 2; i < len; i++ ) {
 				if ( arguments[i] === undefined ) {
