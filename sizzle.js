@@ -87,28 +87,21 @@ var tokenize,
 		return fn;
 	},
 
-	// Utility for creating a function that returns the given value
-	createFunction = function( x ) {
-		return markFunction(function() {
-			return x;
-		});
-	},
-
 	// Returns a function to use in pseudos for input types
-	createInputFunction = markFunction(function( type ) {
+	createInputFunction = function( type ) {
 		return function( elem ) {
 			// Check the input's nodeName and type
 			return elem.nodeName.toLowerCase() === "input" && elem.type === type;
 		};
-	}),
+	},
 
 	// Returns a function to use in pseudos for buttons
-	createButtonFunction = markFunction(function( type ) {
+	createButtonFunction = function( type ) {
 		return function( elem ) {
 			var name = elem.nodeName.toLowerCase();
 			return (name === "input" || name === "button") && elem.type === type;
 		};
-	}),
+	},
 
 	// Used for testing something on an element
 	assert = function( fn ) {
@@ -372,7 +365,7 @@ var Expr = Sizzle.selectors = {
 
 		TAG: function( nodeName ) {
 			if ( nodeName === "*" ) {
-				return createFunction( true );
+				return function() { return true; };
 			}
 			nodeName = nodeName.replace( rbackslash, "" ).toLowerCase();
 
@@ -509,10 +502,9 @@ var Expr = Sizzle.selectors = {
 				Sizzle.error( "unsupported pseudo: " + pseudo );
 			}
 
-			// If the function does not return a function
-			// This is for back-compat
-			// The user may also set fn.sizzleFilter to indicate
-			// that they know a function should be returned when creating a pseudo
+			// The user may set fn.sizzleFilter to indicate
+			// that arguments are needed to create the filter function
+			// just as Sizzle does
 			if ( !fn.sizzleFilter ) {
 				return fn;
 			}
@@ -529,22 +521,22 @@ var Expr = Sizzle.selectors = {
 			};
 		}),
 
-		enabled: createFunction(function( elem ) {
+		enabled: function( elem ) {
 			return elem.disabled === false;
-		}),
+		},
 
-		disabled: createFunction(function( elem ) {
+		disabled: function( elem ) {
 			return elem.disabled === true;
-		}),
+		},
 
-		checked: createFunction(function( elem ) {
+		checked: function( elem ) {
 			// In CSS3, :checked should return both checked and selected elements
 			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 			var nodeName = elem.nodeName.toLowerCase();
 			return (nodeName === "input" && !! elem.checked) || (nodeName === "option" && !!elem.selected);
-		}),
+		},
 
-		selected: createFunction(function( elem ) {
+		selected: function( elem ) {
 			// Accessing this property makes selected-by-default
 			// options in Safari work properly
 			if ( elem.parentNode ) {
@@ -552,15 +544,15 @@ var Expr = Sizzle.selectors = {
 			}
 
 			return elem.selected === true;
-		}),
+		},
 
-		parent: createFunction(function( elem ) {
+		parent: function( elem ) {
 			return !!elem.firstChild;
-		}),
+		},
 
-		empty: createFunction(function( elem ) {
+		empty: function( elem ) {
 			return !elem.firstChild;
-		}),
+		},
 
 		contains: markFunction(function( text ) {
 			return function( elem ) {
@@ -574,16 +566,16 @@ var Expr = Sizzle.selectors = {
 			};
 		}),
 
-		header: createFunction(function( elem ) {
+		header: function( elem ) {
 			return rheader.test( elem.nodeName );
-		}),
+		},
 
-		text: createFunction(function( elem ) {
+		text: function( elem ) {
 			var attr = elem.getAttribute( "type" ), type = elem.type;
 			// IE6 and 7 will map elem.type to 'text' for new HTML5 types (search, etc)
 			// use getAttribute instead to test this case
 			return elem.nodeName.toLowerCase() === "input" && "text" === type && ( attr === null || attr.toLowerCase() === type );
-		}),
+		},
 
 		// Input types
 		radio: createInputFunction("radio"),
@@ -595,23 +587,23 @@ var Expr = Sizzle.selectors = {
 		submit: createButtonFunction("submit"),
 		reset: createButtonFunction("reset"),
 
-		button: createFunction(function( elem ) {
+		button: function( elem ) {
 			var name = elem.nodeName.toLowerCase();
 			return name === "input" && "button" === elem.type || name === "button";
-		}),
+		},
 
-		input: createFunction(function( elem ) {
+		input: function( elem ) {
 			return rinputs.test( elem.nodeName );
-		}),
+		},
 
-		focus: createFunction(function( elem ) {
+		focus: function( elem ) {
 			var doc = elem.ownerDocument;
 			return elem === doc.activeElement && (!doc.hasFocus || doc.hasFocus()) && !!(elem.type || elem.href);
-		}),
+		},
 
-		active: createFunction(function( elem ) {
+		active: function( elem ) {
 			return elem === elem.ownerDocument.activeElement;
-		})
+		}
 	},
 
 	setFilters: {
