@@ -385,7 +385,7 @@ var Expr = Sizzle.selectors = {
 				}
 			}
 			return function( elem ) {
-				return pattern.test( elem.className || elem.getAttribute("class") );
+				return pattern.test( elem.className || elem.getAttribute("class") || "" );
 			};
 		},
 
