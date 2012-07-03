@@ -75,7 +75,6 @@ var tokenize,
 	rposgroups = new RegExp( "^" + pos + "(?!" + whitespace + ")" ),
 	rendsWithNot = /:not\($/,
 
-	maxCacheLength = 50,
 	classCache = {},
 	cachedClasses = [],
 	compilerCache = {},
@@ -224,6 +223,9 @@ var Sizzle = function( selector, context, results, seed ) {
 };
 
 var Expr = Sizzle.selectors = {
+
+	// Can be adjusted by the user
+	maxCacheLength: 50,
 
 	match: matchExpr,
 
@@ -380,7 +382,7 @@ var Expr = Sizzle.selectors = {
 				pattern = classCache[ className ] = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" );
 				cachedClasses.push( className );
 				// Avoid too large of a cache
-				if ( cachedClasses.length > maxCacheLength ) {
+				if ( cachedClasses.length > Expr.maxCacheLength ) {
 					delete classCache[ cachedClasses.shift() ];
 				}
 			}
@@ -1115,7 +1117,7 @@ function matcherFromGroupMatchers( matchers ) {
 	};
 }
 
-function compile( selector, context, xml ) {
+var compile = Sizzle.compile = function( selector, context, xml ) {
 	var tokens, group, i,
 		cached = compilerCache[ selector ];
 
@@ -1135,11 +1137,11 @@ function compile( selector, context, xml ) {
 	cached.context = context;
 	cachedSelectors.push( selector );
 	// Ensure only the most recent are cached
-	if ( cachedSelectors.length > maxCacheLength ) {
+	if ( cachedSelectors.length > Expr.maxCacheLength ) {
 		delete compilerCache[ cachedSelectors.shift() ];
 	}
 	return cached;
-}
+};
 
 Sizzle.matches = function( expr, elements ) {
 	return Sizzle( expr, null, null, elements );
