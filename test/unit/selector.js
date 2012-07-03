@@ -363,7 +363,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 49 );
+	expect( 50 );
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists", "#qunit-fixture *[title]", ["google"] );
@@ -426,6 +426,11 @@ test("attributes", function() {
 	t( "Select options via :selected", "select[name='select2'] option:selected", ["option2d"] );
 
 	t( "Grouped Form Elements", "input[name='foo[bar]']", ["hidden2"] );
+
+	var a = document.getElementById("groups"),
+		title = "Don't click me";
+	a.title = title;
+	ok( match( a, "a[title=\"Don't click me\"]" ), "Quote within attribute value does not mess up tokenizer" );
 
 	// Uncomment if the boolHook is removed
 	// var check2 = document.getElementById("check2");

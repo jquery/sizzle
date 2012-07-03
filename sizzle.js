@@ -23,8 +23,7 @@ var tokenize,
 
 	// Regex
 	rquickExpr = /^#([\w\-]+$)|^(\w+$)|^\.([\w\-]+$)/,
-	rcomma = /^[\x20\t\n\r\f]*,[\x20\t\n\r\f]*/,
-	rcombinators = /^[\x20\t\n\r\f]*([\x20\t\n\r\f>~+])[\x20\t\n\r\f]*/,
+
 	rbackslash = /\\(?!\\)/g,
 	rsibling = /^[\x20\t\n\r\f]*[+~][\x20\t\n\r\f]*$/,
 
@@ -46,6 +45,7 @@ var tokenize,
 		"*(?:" + operators + whitespace + "*(?:(['\"])(.*?)\\3|(" + identifier + "+)|)|)" + whitespace + "*\\]",
 	pseudos = ":(" + characterEncoding + "+)(?:\\(([\"']?)([^()]*|.*)\\2\\))?",
 	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\))?(?=[^\\-]|$)",
+	combinators = whitespace + "*([\\x20\\t\\n\\r\\f>~+])" + whitespace + "*",
 
 	matchExpr = {
 		ID: new RegExp( "^#(" + characterEncoding + "+)" ),
@@ -61,11 +61,14 @@ var tokenize,
 		globalPOS: new RegExp( pos )
 	},
 
+	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
+	rcombinators = new RegExp( "^" + combinators ),
+
 	rtokens = new RegExp( "(" +
-		attributes + "|" +
-		pseudos +
+		attributes.replace( "3", "4" ) + "|" +
+		pseudos.replace( "2", "8" ) +
 		"|\\\\[>+~]|[^\\x20\\t\\n\\r\\f>+~]|\\\\.)+|" +
-		rcombinators.source.replace("^", ""), "g" ),
+		combinators, "g" ),
 
 	// Split on commas not within brackets/parens/quotes
 	rgroups = new RegExp( "(" +
