@@ -502,10 +502,11 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 21 );
+	expect( 22 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
+	ok( Sizzle("#qunit-fixture :not(:has(:has(*)))").length, "All not grandparents" );
 
 	var select = document.getElementById("select1"),
 		match = Sizzle.matchesSelector;

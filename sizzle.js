@@ -41,7 +41,7 @@ var tokenize,
 	identifier = "(?:-?[#_a-zA-Z]{1}[-\\w]*|[^\\x00-\\xa0]+|\\\\.+)",
 	attributes = "\\[" + whitespace + "*(" + characterEncoding + "+)" + whitespace +
 		"*(?:" + operators + whitespace + "*(?:(['\"])(.*?)\\3|(" + identifier + "+)|)|)" + whitespace + "*\\]",
-	pseudos = ":(" + characterEncoding + "+)(?:\\((['\"]?)((?:\\([^\\)]+\\)|[^\\(\\)]*)+)\\2\\))?",
+	pseudos = ":(" + characterEncoding + "+)(?:\\(([\"']?)(.*)\\2\\))?",
 	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\))?(?=[^\\-]|$)",
 
 	matchExpr = {
