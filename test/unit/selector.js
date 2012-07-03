@@ -228,7 +228,7 @@ test("id", function() {
 });
 
 test("class", function() {
-	expect( 19 );
+	expect( 22 );
 
 	t( "Class Selector", ".blog", ["mark","simon"] );
 	t( "Class Selector", ".GROUPS", ["groups"] );
@@ -259,6 +259,10 @@ test("class", function() {
 	deepEqual( Sizzle(".e", div), [ div.firstChild, div.lastChild ], "Finding a modified class." );
 
 	ok( !Sizzle.matchesSelector( div, ".null"), ".null does not match an element with no class" );
+	ok( !Sizzle.matchesSelector( div.firstChild, ".null div"), ".null does not match an element with no class" );
+	div.className = "null";
+	ok( Sizzle.matchesSelector( div, ".null"), ".null matches element with class 'null'" );
+	ok( Sizzle.matchesSelector( div.firstChild, ".null div"), "caching system respects DOM changes" );
 });
 
 test("name", function() {
