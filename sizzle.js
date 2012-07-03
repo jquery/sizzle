@@ -15,6 +15,8 @@ var tokenize,
 	expando = ( "sizcache" + Math.random() ).replace( ".", "" ),
 	done = 0,
 
+	slice = [].slice,
+	push = [].push,
 	strundefined = "undefined",
 	hasDuplicate = false,
 	baseHasDuplicate = true,
@@ -201,26 +203,30 @@ var Sizzle = function( selector, context, results, seed ) {
 						// Handle the case where IE, Opera, and Webkit return items
 						// by name instead of ID
 						if ( elem.id === m ) {
-							return makeArray( [ elem ], results );
+							results.push( elem );
+							return results;
 						}
 					} else {
-						return makeArray( [], results );
+						return results;
 					}
 				} else {
 					// Context is not a document
 					if ( context.ownerDocument && (elem = context.ownerDocument.getElementById( m )) &&
 						contains( context, elem ) && elem.id === m ) {
-						return makeArray( [ elem ], results );
+						results.push( elem );
+						return results;
 					}
 				}
 
 			// Speed-up: Sizzle("TAG")
 			} else if ( match[2] ) {
-				return makeArray( context.getElementsByTagName( selector ), results );
+				push.apply( results, slice.call(context.getElementsByTagName( selector ), 0) );
+				return results;
 
 			// Speed-up: Sizzle(".CLASS")
 			} else if ( assertUsableClassName && context.getElementsByClassName && (m = match[3]) ) {
-				return makeArray( context.getElementsByClassName( m ), results );
+				push.apply( results, slice.call(context.getElementsByClassName( m ), 0) );
+				return results;
 			}
 		}
 	}
@@ -682,17 +688,17 @@ if ( assertUsableClassName ) {
 	};
 }
 
-// Slice is no longer used
-// Results is expected to be an array or undefined
-function makeArray( array, results ) {
-	var elem, i = 0;
-	if ( !results ) {
-		results = [];
-	}
-	for ( i = 0; (elem = array[i]); i++ ) {
-		results.push( elem );
-	}
-	return results;
+// If slice is not available, provide a backup
+try {
+	slice.call( docElem.childNodes, 0 )[0].nodeType;
+} catch ( e ) {
+	slice = function( i ) {
+		var elem, results = [];
+		for ( ; (elem = this[i]); i++ ) {
+			results.push( elem );
+		}
+		return results;
+	};
 }
 
 var isXML = Sizzle.isXML = function( elem ) {
@@ -922,7 +928,7 @@ function handlePOSGroup( selector, posfilter, argument, contexts, seed, not ) {
 	} else {
 		results = seed;
 	}
-	return fn( results, argument, not );
+	return results.length ? fn( results, argument, not ) : [];
 }
 
 function handlePOS( selector, context, results, seed, isSingle ) {
@@ -988,7 +994,8 @@ function handlePOS( selector, context, results, seed, isSingle ) {
 	}
 
 	// Do not sort if this is a single filter
-	return makeArray( (seed && isSingle ? ret : Sizzle.uniqueSort(ret)), results );
+	push.apply( results, (seed && isSingle ? ret : Sizzle.uniqueSort(ret)) );
+	return results;
 }
 
 (function () {
@@ -1177,7 +1184,7 @@ var select = function( selector, context, results, seed, xml ) {
 
 	if ( context ) {
 		if ( seed ) {
-			elements = makeArray( seed );
+			elements = slice.call( seed, 0 );
 
 		} else {
 
@@ -1207,7 +1214,8 @@ var select = function( selector, context, results, seed, xml ) {
 						selector.slice( position ).replace( matchExpr[ type ], "" );
 
 					if ( !selector ) {
-						return makeArray( elements, results );
+						push.apply( results, slice.call(elements, 0) );
+						return results;
 					}
 				}
 			}
@@ -1293,7 +1301,8 @@ if ( document.querySelectorAll ) {
 			if ( !seed && !xml && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
 				if ( context.nodeType === 9 ) {
 					try {
-						return makeArray( context.querySelectorAll( selector ), results );
+						push.apply( results, slice.call(context.querySelectorAll( selector ), 0) );
+						return results;
 					} catch(qsaError) {}
 				// qSA works strangely on Element-rooted queries
 				// We can work around this by specifying an extra ID on the root
@@ -1321,7 +1330,8 @@ if ( document.querySelectorAll ) {
 						if ( !relativeHierarchySelector || parent ) {
 							nid = "[id='" + nid + "'] ";
 							newSelector = nid + selector.replace( rdivision, "$&" + nid );
-							return makeArray( context.querySelectorAll( newSelector ), results );
+							push.apply( results, slice.call(context.querySelectorAll( newSelector ), 0) );
+							return results;
 						}
 					} catch(qsaError) {
 					} finally {
