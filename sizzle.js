@@ -122,38 +122,44 @@ var tokenize,
 		return type !== "boolean" && type !== "string";
 	}),
 
-	// Check to see if the browser returns elements by name when
-	// querying by getElementById (and provide a workaround)
-	assertGetIdNotName = assert(function( div ) {
-		var pass = true,
-			id = "script" + (new Date()).getTime();
-		div.innerHTML = "<a name ='" + id + "'/>";
-
-		// Inject it into the root element, check its status, and remove it quickly
+	// Check if getElementById returns elements by name
+	// Check if getElementsByName privileges form controls or returns elements by ID
+	assertGetIdNotName,
+	assertUsableName = assert(function( div ) {
+		// Inject content
+		div.id = expando + 0;
+		div.innerHTML = "<a name='" + expando + "'/><div name='" + expando + "'/>";
 		docElem.insertBefore( div, docElem.firstChild );
 
-		if ( document.getElementById( id ) ) {
-			pass = false;
-		}
+		// Test
+		var pass = document.getElementsByName &&
+			// buggy browsers will return fewer than the correct 2
+			document.getElementsByName( expando ).length ===
+			// buggy browsers will return more than the correct 0
+			2 + document.getElementsByName( expando + 0 ).length;
+		assertGetIdNotName = !document.getElementById( expando );
+
+		// Cleanup
 		docElem.removeChild( div );
+
 		return pass;
 	}),
 
-	// Check to see if the browser returns only elements
+	// Check if the browser returns only elements
 	// when doing getElementsByTagName("*")
 	assertTagNameNoComments = assert(function( div ) {
 		div.appendChild( document.createComment("") );
 		return div.getElementsByTagName("*").length === 0;
 	}),
 
-	// Check to see if an attribute returns normalized href attributes
+	// Check if getAttribute returns normalized href attributes
 	assertHrefNotNormalized = assert(function( div ) {
 		div.innerHTML = "<a href='#'></a>";
 		return div.firstChild && typeof div.firstChild.getAttribute !== strundefined &&
 			div.firstChild.getAttribute("href") === "#";
 	}),
 
-	// Determines a buggy getElementsByClassName
+	// Check if getElementsByClassName can be trusted
 	assertUsableClassName = assert(function( div ) {
 		// Opera can't find a second classname (in 9.6)
 		div.innerHTML = "<div class='test e'></div><div class='test'></div>";
@@ -229,7 +235,7 @@ var Expr = Sizzle.selectors = {
 
 	match: matchExpr,
 
-	order: [ "ID", "TAG", "NAME" ],
+	order: [ "ID", "TAG" ],
 
 	attrHandle: {},
 
@@ -254,22 +260,6 @@ var Expr = Sizzle.selectors = {
 						[];
 				}
 			},
-
-		NAME: function( name, context ) {
-			if ( typeof context.getElementsByName !== strundefined ) {
-				var ret = [],
-					results = context.getElementsByName( name ),
-					i = 0,
-					len = results.length;
-				for ( ; i < len; i++ ) {
-					if ( results[i].getAttribute("name") === name ) {
-						ret.push( results[i] );
-					}
-				}
-
-				return !ret.length ? null : ret;
-			}
-		},
 
 		TAG: assertTagNameNoComments ?
 			function( tag, context ) {
@@ -667,6 +657,16 @@ if ( !assertHrefNotNormalized ) {
 		},
 		type: function( elem ) {
 			return elem.getAttribute("type");
+		}
+	};
+}
+
+// Add getElementsByName if usable
+if ( assertUsableName ) {
+	Expr.order.push("NAME");
+	Expr.find.NAME = function( name, context ) {
+		if ( typeof context.getElementsByName !== strundefined ) {
+			return context.getElementsByName( name );
 		}
 	};
 }
