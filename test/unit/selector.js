@@ -370,8 +370,8 @@ test("attributes", function() {
 	t( "Attribute Exists", "#qunit-fixture [title]", ["google"] );
 	t( "Attribute Exists", "#qunit-fixture a[ title ]", ["google"] );
 
-	t( "Boolean attribute exists", "#select2 option[selected]", ["option2d"])
-	t( "Boolean attribute equals", "#select2 option[selected='selected']", ["option2d"])
+	t( "Boolean attribute exists", "#select2 option[selected]", ["option2d"]);
+	t( "Boolean attribute equals", "#select2 option[selected='selected']", ["option2d"]);
 
 	t( "Attribute Equals", "#qunit-fixture a[rel='bookmark']", ["simon1"] );
 	t( "Attribute Equals", "#qunit-fixture a[rel='bookmark']", ["simon1"] );
