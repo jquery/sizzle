@@ -21,7 +21,7 @@ var tokenize,
 	// Regex
 	rquickExpr = /^#([\w\-]+$)|^(\w+$)|^\.([\w\-]+$)/,
 	rcomma = /^[\x20\t\n\r\f]*,[\x20\t\n\r\f]*/,
-	rcombinators = /^[\x20\t\n\r\f]*([\s>~+])[\x20\t\n\r\f]*/,
+	rcombinators = /^[\x20\t\n\r\f]*([\x20\t\n\r\f>~+])[\x20\t\n\r\f]*/,
 	rbackslash = /\\(?!\\)/g,
 	rsibling = /^[\x20\t\n\r\f]*[+~][\x20\t\n\r\f]*$/,
 
@@ -61,7 +61,7 @@ var tokenize,
 	rtokens = new RegExp( "(" +
 		attributes + "|" +
 		pseudos +
-		"|\\\\[>+~]|[^\\s>+~]|\\\\.)+|" +
+		"|\\\\[>+~]|[^\\x20\\t\\n\\r\\f>+~]|\\\\.)+|" +
 		rcombinators.source.replace("^", ""), "g" ),
 
 	// Split on commas not within brackets/parens/quotes
