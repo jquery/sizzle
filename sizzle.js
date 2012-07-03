@@ -426,7 +426,7 @@ var Expr = Sizzle.selectors = {
 		CHILD: function( type, first, last ) {
 
 			if ( type === "nth" ) {
-				var doneName = ++done;
+				var doneName = done++;
 
 				return function( elem ) {
 					var parent, count, diff,
@@ -1043,7 +1043,8 @@ function handlePOS( selector, context, results, seed, isSingle ) {
 
 function addCombinator( matcher, combinator, context ) {
 	var dir = combinator.dir,
-		firstMatch = combinator.firstMatch;
+		firstMatch = combinator.firstMatch,
+		doneName = done++;
 
 	if ( !matcher ) {
 		// If there is no matcher to check, check against the context
@@ -1054,8 +1055,17 @@ function addCombinator( matcher, combinator, context ) {
 	return function( elem, context ) {
 		while ( (elem = elem[ dir ]) ) {
 			if ( elem.nodeType === 1 ) {
-				if ( matcher( elem, context ) ) {
-					return elem;
+				if ( elem[ expando ] === doneName ) {
+					if ( elem.sizset ) {
+						return elem;
+					}
+				} else {
+					elem[ expando ] = doneName;
+					if ( matcher( elem, context ) ) {
+						elem.sizset = true;
+						return elem;
+					}
+					elem.sizset = false;
 				}
 				if ( firstMatch ) {
 					break;
