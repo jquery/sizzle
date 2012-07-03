@@ -232,7 +232,7 @@ var Sizzle = function( selector, context, results, seed ) {
 var Expr = Sizzle.selectors = {
 
 	// Can be adjusted by the user
-	maxCacheLength: 50,
+	cacheLength: 50,
 
 	match: matchExpr,
 
@@ -373,7 +373,7 @@ var Expr = Sizzle.selectors = {
 				pattern = classCache[ className ] = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" );
 				cachedClasses.push( className );
 				// Avoid too large of a cache
-				if ( cachedClasses.length > Expr.maxCacheLength ) {
+				if ( cachedClasses.length > Expr.cacheLength ) {
 					delete classCache[ cachedClasses.shift() ];
 				}
 			}
@@ -1141,7 +1141,7 @@ var compile = Sizzle.compile = function( selector, context, xml ) {
 	cached.runs = 0;
 	cachedSelectors.push( selector );
 	// Ensure only the most recent are cached
-	if ( cachedSelectors.length > Expr.maxCacheLength ) {
+	if ( cachedSelectors.length > Expr.cacheLength ) {
 		delete compilerCache[ cachedSelectors.shift() ];
 	}
 	return cached;
