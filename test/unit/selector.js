@@ -357,18 +357,21 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 47 );
+	expect( 49 );
 
-	t( "Attribute Exists", "a[title]", ["google"] );
-	t( "Attribute Exists", "*[title]", ["google"] );
-	t( "Attribute Exists", "[title]", ["google"] );
-	t( "Attribute Exists", "a[ title ]", ["google"] );
+	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
+	t( "Attribute Exists", "#qunit-fixture *[title]", ["google"] );
+	t( "Attribute Exists", "#qunit-fixture [title]", ["google"] );
+	t( "Attribute Exists", "#qunit-fixture a[ title ]", ["google"] );
 
-	t( "Attribute Equals", "a[rel='bookmark']", ["simon1"] );
-	t( "Attribute Equals", 'a[rel="bookmark"]', ["simon1"] );
-	t( "Attribute Equals", "a[rel=bookmark]", ["simon1"] );
-	t( "Attribute Equals", "a[href='http://www.google.com/']", ["google"] );
-	t( "Attribute Equals", "a[ rel = 'bookmark' ]", ["simon1"] );
+	t( "Boolean attribute exists", "#select2 option[selected]", ["option2d"])
+	t( "Boolean attribute equals", "#select2 option[selected='selected']", ["option2d"])
+
+	t( "Attribute Equals", "#qunit-fixture a[rel='bookmark']", ["simon1"] );
+	t( "Attribute Equals", "#qunit-fixture a[rel='bookmark']", ["simon1"] );
+	t( "Attribute Equals", "#qunit-fixture a[rel=bookmark]", ["simon1"] );
+	t( "Attribute Equals", "#qunit-fixture a[href='http://www.google.com/']", ["google"] );
+	t( "Attribute Equals", "#qunit-fixture a[ rel = 'bookmark' ]", ["simon1"] );
 
 	document.getElementById("anchor2").href = "#2";
 	t( "href Attribute", "p a[href^=#]", ["anchor2"] );

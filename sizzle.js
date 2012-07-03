@@ -33,12 +33,12 @@ var tokenize,
 
 	// http://www.w3.org/TR/css3-syntax/#characters
 	characterEncoding = "(?:[-\\w]|[^\\x00-\\xa0]|\\\\.)",
-	// Javascript identifier syntax (with added # for unquoted hash)
-	identifier = "(?:-?[#_a-zA-Z]{1}[-\\w]*|[^\\x00-\\xa0]+|\\\\.+)",
 	// Whitespace characters http://www.w3.org/TR/css3-selectors/#whitespace
 	whitespace = "[\\x20\\t\\n\\r\\f]",
-	// Acceptable operators
+	// Acceptable operators http://www.w3.org/TR/selectors/#attribute-selectors
 	operators = "([~*^$|!]?={1})",
+	// Javascript identifier syntax (with added # for unquoted hash)
+	identifier = "(?:-?[#_a-zA-Z]{1}[-\\w]*|[^\\x00-\\xa0]+|\\\\.+)",
 	attributes = "\\[" + whitespace + "*(" + characterEncoding + "+)" + whitespace +
 		"*(?:" + operators + whitespace + "*(?:(['\"])(.*?)\\3|(" + identifier + "+)|)|)" + whitespace + "*\\]",
 	pseudos = ":(" + characterEncoding + "+)(?:\\((['\"]?)((?:\\([^\\)]+\\)|[^\\(\\)]*)+)\\2\\))?",
@@ -764,7 +764,11 @@ Sizzle.attr = function( elem, name ) {
 		return elem.getAttribute( name );
 	}
 	var attr = (elem.attributes || {})[ name ];
-	return attr && attr.specified ? attr.value : null;
+	return attr ?
+		typeof elem[ name ] === "boolean" ?
+			elem[ name ] === true ? name : null :
+			attr.specified ? attr.value : null :
+		null;
 };
 
 Sizzle.error = function( msg ) {
