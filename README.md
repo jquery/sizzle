@@ -1,13 +1,12 @@
-A pure-JavaScript CSS selector engine designed to be easily dropped in to a host library.
+# Sizzle
 
-More information:
- http://sizzlejs.com/
+__A pure-JavaScript CSS selector engine designed to be easily dropped in to a host library.__
 
-Discussion:
-  http://groups.google.com/group/sizzlejs
+More information: http://sizzlejs.com/
 
-Documentation:
-  https://wiki.github.com/jquery/sizzle/Sizzle-Documentation
+Discussion: http://groups.google.com/group/sizzlejs
+
+Documentation: https://wiki.github.com/jquery/sizzle/Sizzle-Documentation
 
 Testing Sizzle:
  - run `make` to pull down QUnit from github, which is the only thing the Makefile does.
