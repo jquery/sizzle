@@ -8,6 +8,8 @@
 
 var tokenize,
 	cachedruns,
+	sortOrder,
+	siblingCheck,
 
 	document = window.document,
 	docElem = document.documentElement,
@@ -22,30 +24,47 @@ var tokenize,
 	baseHasDuplicate = true,
 
 	// Regex
-	rquickExpr = /^#([\w\-]+$)|^(\w+$)|^\.([\w\-]+$)/,
-
-	rbackslash = /\\(?!\\)/g,
-	rsibling = /^[\x20\t\n\r\f]*[+~][\x20\t\n\r\f]*$/,
-
-	rnonDigit = /\D/,
-	rnth = /(-?)(\d*)(?:n([+\-]?\d*))?/,
-	radjacent = /^\+|[\x20\t\n\r\f]*/g,
-	rheader = /h\d/i,
-	rinputs = /input|select|textarea|button/i,
-
 	// http://www.w3.org/TR/css3-syntax/#characters
 	characterEncoding = "(?:[-\\w]|[^\\x00-\\xa0]|\\\\.)",
 	// Whitespace characters http://www.w3.org/TR/css3-selectors/#whitespace
 	whitespace = "[\\x20\\t\\n\\r\\f]",
 	// Acceptable operators http://www.w3.org/TR/selectors/#attribute-selectors
-	operators = "([~*^$|!]?={1})",
+	operators = "([*^$|!~]?={1})",
 	// Javascript identifier syntax (with added # for unquoted hash)
 	identifier = "(?:-?[#_a-zA-Z]{1}[-\\w]*|[^\\x00-\\xa0]+|\\\\.+)",
 	attributes = "\\[" + whitespace + "*(" + characterEncoding + "+)" + whitespace +
 		"*(?:" + operators + whitespace + "*(?:(['\"])(.*?)\\3|(" + identifier + "+)|)|)" + whitespace + "*\\]",
 	pseudos = ":(" + characterEncoding + "+)(?:\\(([\"']?)([^()]*|.*)\\2\\))?",
 	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\))?(?=[^\\-]|$)",
-	combinators = whitespace + "*([\\x20\\t\\n\\r\\f>~+])" + whitespace + "*",
+	combinators = whitespace + "*([\\x20\\t\\n\\r\\f>+~])" + whitespace + "*",
+
+	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
+	rcombinators = new RegExp( "^" + combinators ),
+	rtokens = new RegExp( "(" +
+		attributes.replace( "3", "4" ) + "|" +
+		pseudos.replace( "2", "8" ) +
+		"|\\\\[>+~]|[^\\x20\\t\\n\\r\\f>+~]|\\\\.)+|" +
+		combinators, "g" ),
+
+	rposgroups = new RegExp( "^" + pos + "(?!" + whitespace + ")" ),
+	rpos = new RegExp( pos, "g" ),
+
+	rquickExpr = /^(?:(\w+)|#([\w\-]+)|\.([\w\-]+))$/,
+
+	rsibling = /^[\x20\t\n\r\f]*[+~][\x20\t\n\r\f]*$/,
+	rendsWithNot = /:not\($/,
+
+	rnth = /(-?)(\d*)(?:n([+\-]?\d*))?/,
+	rnonDigit = /\D/,
+	rheader = /h\d/i,
+	rinputs = /input|select|textarea|button/i,
+
+	radjacent = /^\+|[\x20\t\n\r\f]*/g,
+	rbackslash = /\\(?!\\)/g,
+
+	// Split on commas not within brackets/parens/quotes
+	// ignoring space: ( [^,\\\[\]]+ | \[[^\[]*\] | \([^\(]*\) | \\. )+
+	rgroups = /([^,\\\[\]]+|\[[^\[]*\]|\([^\(]*\)|\\.)+/g,
 
 	matchExpr = {
 		ID: new RegExp( "^#(" + characterEncoding + "+)" ),
@@ -60,26 +79,6 @@ var tokenize,
 		// For use in libraries implementing .is(), an unanchored POS
 		globalPOS: new RegExp( pos )
 	},
-
-	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
-	rcombinators = new RegExp( "^" + combinators ),
-
-	rtokens = new RegExp( "(" +
-		attributes.replace( "3", "4" ) + "|" +
-		pseudos.replace( "2", "8" ) +
-		"|\\\\[>+~]|[^\\x20\\t\\n\\r\\f>+~]|\\\\.)+|" +
-		combinators, "g" ),
-
-	// Split on commas not within brackets/parens/quotes
-	rgroups = new RegExp( "(" +
-		"[^,\\\\\\[\\]]+" +
-		"|" + (/\[[^\[]*\]/).source +
-		"|" + (/\([^\(]*\)/).source +
-		"|\\\\.)+", "g"),
-
-	rpos = new RegExp( pos, "g" ),
-	rposgroups = new RegExp( "^" + pos + "(?!" + whitespace + ")" ),
-	rendsWithNot = /:not\($/,
 
 	classCache = {},
 	cachedClasses = [],
@@ -168,7 +167,7 @@ var tokenize,
 	// Check if getElementsByClassName can be trusted
 	assertUsableClassName = assert(function( div ) {
 		// Opera can't find a second classname (in 9.6)
-		div.innerHTML = "<div class='test e'></div><div class='test'></div>";
+		div.innerHTML = "<div class='hidden e'></div><div class='hidden'></div>";
 		if ( !div.getElementsByClassName || div.getElementsByClassName("e").length === 0 ) {
 			return false;
 		}
@@ -196,8 +195,13 @@ var Sizzle = function( selector, context, results, seed ) {
 
 	if ( !xml && !seed ) {
 		if ( (match = rquickExpr.exec( selector )) ) {
+			// Speed-up: Sizzle("TAG")
+			if ( match[1] ) {
+				push.apply( results, slice.call(context.getElementsByTagName( selector ), 0) );
+				return results;
+
 			// Speed-up: Sizzle("#ID")
-			if ( (m = match[1]) ) {
+			} else if ( (m = match[2]) ) {
 				if ( nodeType === 9 ) {
 					elem = context.getElementById( m );
 					// Check parentNode to catch when Blackberry 4.6 returns
@@ -221,13 +225,8 @@ var Sizzle = function( selector, context, results, seed ) {
 					}
 				}
 
-			// Speed-up: Sizzle("TAG")
-			} else if ( match[2] ) {
-				push.apply( results, slice.call(context.getElementsByTagName( selector ), 0) );
-				return results;
-
 			// Speed-up: Sizzle(".CLASS")
-			} else if ( assertUsableClassName && context.getElementsByClassName && (m = match[3]) ) {
+			} else if ( (m = match[3]) && assertUsableClassName && context.getElementsByClassName ) {
 				push.apply( results, slice.call(context.getElementsByClassName( m ), 0) );
 				return results;
 			}
@@ -282,12 +281,13 @@ var Expr = Sizzle.selectors = {
 
 				// Filter out possible comments
 				if ( tag === "*" ) {
-					var tmp = [],
+					var elem,
+						tmp = [],
 						i = 0;
 
-					for ( ; results[i]; i++ ) {
-						if ( results[i].nodeType === 1 ) {
-							tmp.push( results[i] );
+					for ( ; (elem = results[i]); i++ ) {
+						if ( elem.nodeType === 1 ) {
+							tmp.push( elem );
 						}
 					}
 
@@ -332,8 +332,8 @@ var Expr = Sizzle.selectors = {
 					!rnonDigit.test( match[2] ) && "0n+" + match[2] || match[2] );
 
 				// calculate the numbers (first)n+(last) including if they are negative
-				match[2] = (test[1] + (test[2] || 1)) - 0;
-				match[3] = test[3] - 0;
+				match[2] = +(test[1] + (test[2] || 1));
+				match[3] = +test[3];
 			} else if ( match[2] ) {
 				Sizzle.error( match[0] );
 			}
@@ -342,10 +342,9 @@ var Expr = Sizzle.selectors = {
 		},
 
 		PSEUDO: function( match ) {
-			if ( matchExpr.POS.test( match[0] ) || matchExpr.CHILD.test( match[0] ) ) {
-				return null;
-			}
-			return match;
+			return matchExpr.POS.test( match[0] ) || matchExpr.CHILD.test( match[0] ) ?
+				null :
+				match;
 		}
 	},
 
@@ -431,7 +430,8 @@ var Expr = Sizzle.selectors = {
 				var doneName = done++;
 
 				return function( elem ) {
-					var parent, count, diff,
+					var parent, diff,
+						count = 0,
 						node = elem;
 
 					if ( first === 1 && last === 0 ) {
@@ -441,8 +441,6 @@ var Expr = Sizzle.selectors = {
 					parent = elem.parentNode;
 
 					if ( parent && (parent[ expando ] !== doneName || !elem.sizset) ) {
-
-						count = 0;
 						for ( node = parent.firstChild; node; node = node.nextSibling ) {
 							if ( node.nodeType === 1 ) {
 								node.sizset = ++count;
@@ -535,7 +533,7 @@ var Expr = Sizzle.selectors = {
 			// In CSS3, :checked should return both checked and selected elements
 			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 			var nodeName = elem.nodeName.toLowerCase();
-			return (nodeName === "input" && !! elem.checked) || (nodeName === "option" && !!elem.selected);
+			return (nodeName === "input" && !!elem.checked) || (nodeName === "option" && !!elem.selected);
 		},
 
 		selected: function( elem ) {
@@ -619,21 +617,21 @@ var Expr = Sizzle.selectors = {
 		},
 
 		even: function( elements, argument, not ) {
-			var results = [],
-				i = not ? 1 : 0,
-				len = elements.length;
-			for ( ; i < len; i = i + 2 ) {
-				results.push( elements[i] );
+			var elem,
+				results = [],
+				i = not ? 1 : 0;
+			for ( ; (elem = elements[i]); i = i + 2 ) {
+				results.push( elem );
 			}
 			return results;
 		},
 
 		odd: function( elements, argument, not ) {
-			var results = [],
-				i = not ? 0 : 1,
-				len = elements.length;
-			for ( ; i < len; i = i + 2 ) {
-				results.push( elements[i] );
+			var elem,
+				results = [],
+				i = not ? 0 : 1;
+			for ( ; (elem = elements[i]); i = i + 2 ) {
+				results.push( elem );
 			}
 			return results;
 		},
@@ -748,7 +746,7 @@ var getText = Sizzle.getText = function( elem ) {
 			if ( typeof elem.textContent === "string" ) {
 				return elem.textContent;
 			} else {
-				// Traverse it's children
+				// Traverse its children
 				for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
 					ret += getText( elem );
 				}
@@ -778,7 +776,7 @@ Sizzle.attr = function( elem, name ) {
 	var attr = (elem.attributes || {})[ name ];
 	return attr ?
 		typeof elem[ name ] === "boolean" ?
-			elem[ name ] === true ? name : null :
+			elem[ name ] ? name : null :
 			attr.specified ? attr.value : null :
 		null;
 };
@@ -792,12 +790,10 @@ Sizzle.error = function( msg ) {
 // function. If that is the case, discard the hasDuplicate value.
 //   Thus far that includes Google Chrome.
 [0, 0].sort(function() {
-	baseHasDuplicate = false;
-	return 0;
+	return (baseHasDuplicate = 0);
 });
 
 
-var sortOrder, siblingCheck;
 if ( docElem.compareDocumentPosition ) {
 	sortOrder = function( a, b ) {
 		if ( a === b ) {
@@ -805,11 +801,10 @@ if ( docElem.compareDocumentPosition ) {
 			return 0;
 		}
 
-		if ( !a.compareDocumentPosition || !b.compareDocumentPosition ) {
-			return a.compareDocumentPosition ? -1 : 1;
-		}
-
-		return a.compareDocumentPosition(b) & 4 ? -1 : 1;
+		return ( !a.compareDocumentPosition || !b.compareDocumentPosition ?
+			a.compareDocumentPosition :
+			a.compareDocumentPosition(b) & 4
+		) ? -1 : 1;
 	};
 
 } else {
@@ -894,15 +889,16 @@ if ( docElem.compareDocumentPosition ) {
 
 // Document sorting and removing duplicates
 Sizzle.uniqueSort = function( results ) {
-	var i = 1;
+	var elem,
+		i = 1;
 
 	if ( sortOrder ) {
 		hasDuplicate = baseHasDuplicate;
 		results.sort( sortOrder );
 
 		if ( hasDuplicate ) {
-			for ( ; i < results.length; i++ ) {
-				if ( results[i] === results[ i - 1 ] ) {
+			for ( ; (elem = results[i]); i++ ) {
+				if ( elem === results[ i - 1 ] ) {
 					results.splice( i--, 1 );
 				}
 			}
@@ -963,11 +959,8 @@ function handlePOS( selector, context, results, seed, isSingle ) {
 			anchor = lastIndex;
 
 			currentContexts = [ context ];
-			if ( rendsWithNot.test( part ) ) {
+			if ( (not = rendsWithNot.test( part )) ) {
 				part = part.replace( rendsWithNot, "" ).replace( rcombinators, "$&*" );
-				not = true;
-			} else {
-				not = false;
 			}
 			if ( (m = part.match( rgroups )) && m[0] !== part ) {
 				part = part.replace( rcomma, "" );
@@ -1066,7 +1059,7 @@ function addCombinator( matcher, combinator, context ) {
 		};
 	}
 	return function( elem, context ) {
-		var cachedkey = doneName + "c" + cachedruns;
+		var cachedkey = doneName + "." + cachedruns;
 		while ( (elem = elem[ dir ]) ) {
 			if ( elem.nodeType === 1 ) {
 				if ( elem[ expando ] === cachedkey ) {
@@ -1090,13 +1083,12 @@ function addCombinator( matcher, combinator, context ) {
 }
 
 function addMatcher( higher, deeper ) {
-	if ( !higher ) {
-		return deeper;
-	}
-	return function( elem, context ) {
-		var result = deeper( elem, context );
-		return result && higher( result === true ? elem : result, context );
-	};
+	return higher ?
+		function( elem, context ) {
+			var result = deeper( elem, context );
+			return result && higher( result === true ? elem : result, context );
+		} :
+		deeper;
 }
 
 // ["TAG", ">", "ID", " ", "CLASS"]
@@ -1168,8 +1160,8 @@ Sizzle.matchesSelector = function( elem, expr ) {
 var select = function( selector, context, results, seed, xml ) {
 	var elements, matcher, i, len, elem, token, position,
 		type, match, findContext, notTokens,
-		tokens = selector.match( rtokens ),
 		isSingle = (match = selector.match( rgroups )) && match.length === 1,
+		tokens = selector.match( rtokens ),
 		contextNodeType = context.nodeType;
 
 	// POS handling
@@ -1247,13 +1239,15 @@ if ( document.querySelectorAll ) {
 	(function() {
 		var disconnectedMatch,
 			oldSelect = select,
-			id = "__sizzle__",
 			rdivision = /[^\\],/g,
 			rrelativeHierarchy = /^[\x20\t\n\r\f]*[+~]/,
 			rapostrophe = /'/g,
 			rattributeQuotes = /\=[\x20\t\n\r\f]*([^'"\]]*)[\x20\t\n\r\f]*\]/g,
 			rbuggyQSA = [],
-			rbuggyMatches = [],
+			// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
+			// A support test would require too much code (would include document ready)
+			// just skip matchesSelector for :active
+			rbuggyMatches = [":active"],
 			matches = docElem.matchesSelector ||
 				docElem.mozMatchesSelector ||
 				docElem.webkitMatchesSelector ||
@@ -1267,7 +1261,7 @@ if ( document.querySelectorAll ) {
 
 			// IE8 - Some boolean attributes are not treated correctly
 			if ( !div.querySelectorAll("[selected]").length ) {
-				rbuggyQSA.push("\\[[\\x20\\t\\n\\r\\f]*(?:checked|disabled|ismap|multiple|readonly|selected|value)");
+				rbuggyQSA.push( "\\[" + whitespace + "*(?:checked|disabled|ismap|multiple|readonly|selected|value)" );
 			}
 
 			// Webkit/Opera - :checked should return selected option elements
@@ -1284,7 +1278,7 @@ if ( document.querySelectorAll ) {
 			// Should not select anything
 			div.innerHTML = "<p test=''></p>";
 			if ( div.querySelectorAll("[test^='']").length ) {
-				rbuggyQSA.push("[*^$]=[\\x20\\t\\n\\r\\f]*(?:\"\"|'')");
+				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:\"\"|'')" );
 			}
 
 			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
@@ -1315,14 +1309,14 @@ if ( document.querySelectorAll ) {
 					var newSelector,
 						oldContext = context,
 						old = context.getAttribute( "id" ),
-						nid = old || id,
+						nid = old || expando,
 						parent = context.parentNode,
 						relativeHierarchySelector = rrelativeHierarchy.test( selector );
 
-					if ( !old ) {
-						context.setAttribute( "id", nid );
-					} else {
+					if ( old ) {
 						nid = nid.replace( rapostrophe, "\\$&" );
+					} else {
+						context.setAttribute( "id", nid );
 					}
 
 					if ( relativeHierarchySelector && parent ) {
@@ -1330,7 +1324,7 @@ if ( document.querySelectorAll ) {
 					}
 
 					try {
-						if ( !relativeHierarchySelector || parent ) {
+						if ( context ) {
 							nid = "[id='" + nid + "'] ";
 							newSelector = nid + selector.replace( rdivision, "$&" + nid );
 							push.apply( results, slice.call(context.querySelectorAll( newSelector ), 0) );
@@ -1362,18 +1356,15 @@ if ( document.querySelectorAll ) {
 				} catch ( e ) {}
 			});
 
-			// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
-			// A support test would require too much code (would include document ready)
-			// just skip matchesSelector for :active
-			rbuggyMatches.push(":active");
-
-			rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join("|") );
+			// rbuggyMatches always contains :active, so no need for a length check
+			rbuggyMatches = /* rbuggyMatches.length && */ new RegExp( rbuggyMatches.join("|") );
 
 			Sizzle.matchesSelector = function( elem, expr ) {
 				// Make sure that attribute selectors are quoted
 				expr = expr.replace( rattributeQuotes, "='$1']" );
 
-				if ( !isXML( elem ) && (!rbuggyMatches || !rbuggyMatches.test( expr )) && (!rbuggyQSA || !rbuggyQSA.test( expr )) ) {
+				// rbuggyMatches always contains :active, so no need for an existence check
+				if ( !isXML( elem ) && !rbuggyMatches.test( expr ) && (!rbuggyQSA || !rbuggyQSA.test( expr )) ) {
 					try {
 						var ret = matches.call( elem, expr );
 
