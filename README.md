@@ -6,7 +6,7 @@ More information: http://sizzlejs.com/
 
 Discussion: http://groups.google.com/group/sizzlejs
 
-Documentation: https://wiki.github.com/jquery/sizzle/Sizzle-Documentation
+Documentation: https://github.com/jquery/sizzle/wiki/Sizzle-Documentation
 
 Testing Sizzle:
  - run `make` to pull down QUnit from github, which is the only thing the Makefile does.
