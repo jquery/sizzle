@@ -460,8 +460,9 @@ test("attributes", function() {
 });
 
 test("pseudo - child", function() {
-	expect( 38 );
+	expect( 40 );
 	t( "First Child", "#qunit-fixture p:first-child", ["firstp","sndp"] );
+	t( "First Child (case-insensitive)", "#qunit-fixture p:FIRST-CHILD", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "#qunit-fixture a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
 	t( "Empty", "ul:empty", ["firstUL"] );
@@ -489,6 +490,7 @@ test("pseudo - child", function() {
 
 	t( "Nth-child", "#form select:first option:nth-child(-1)", [] );
 	t( "Nth-child", "#form select:first option:nth-child(3)", ["option1c"] );
+	t( "Nth-child(case-insensitive)", "#form select:first option:NTH-child(3)", ["option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(0n+3)", ["option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(1n+0)", ["option1a", "option1b", "option1c", "option1d"] );
 	t( "Nth-child", "#form select:first option:nth-child(1n)", ["option1a", "option1b", "option1c", "option1d"] );
@@ -513,9 +515,10 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 22 );
+	expect( 23 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
+	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
 	ok( Sizzle("#qunit-fixture :not(:has(:has(*)))").length, "All not grandparents" );
 
@@ -619,9 +622,10 @@ test("pseudo - :not", function() {
 });
 
 test("pseudo - position", function() {
-	expect( 26 );
+	expect( 27 );
 
 	t( "First element", "div:first", ["qunit-testrunner-toolbar"] );
+	t( "First element(case-insensitive)", "div:fiRst", ["qunit-testrunner-toolbar"] );
 	t( "nth Element", "#qunit-fixture p:nth(1)", ["ap"] );
 	t( "First Element", "#qunit-fixture p:first", ["firstp"] );
 	t( "Last Element", "p:last", ["first"] );

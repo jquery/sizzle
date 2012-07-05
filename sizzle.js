@@ -47,8 +47,8 @@ var tokenize,
 		"|\\\\[>+~]|[^\\x20\\t\\n\\r\\f>+~]|\\\\.)+|" +
 		combinators, "g" ),
 
-	rposgroups = new RegExp( "^" + pos + "(?!" + whitespace + ")" ),
-	rpos = new RegExp( pos, "g" ),
+	rposgroups = new RegExp( "^" + pos + "(?!" + whitespace + ")", "i" ),
+	rpos = new RegExp( pos, "ig" ),
 
 	rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
 
@@ -75,7 +75,7 @@ var tokenize,
 		ATTR: new RegExp( "^" + attributes ),
 		PSEUDO: new RegExp( "^" + pseudos ),
 		CHILD: new RegExp( "^:(only|nth|last|first)-child(?:\\(" + whitespace + "*(even|odd|(?:[+\\-]?\\d+|(?:[+\\-]?\\d*)?n" +
-			whitespace + "*(?:[+\\-]" + whitespace + "*\\d+)?))" + whitespace + "*\\))?" ),
+			whitespace + "*(?:[+\\-]" + whitespace + "*\\d+)?))" + whitespace + "*\\))?", "i" ),
 		POS: new RegExp( "^" + pos ),
 		// For use in libraries implementing .is(), an unanchored POS
 		globalPOS: new RegExp( pos )
@@ -319,6 +319,8 @@ var Expr = Sizzle.selectors = {
 		},
 
 		CHILD: function( match ) {
+			match[1] = match[1].toLowerCase();
+
 			if ( match[1] === "nth" ) {
 				if ( !match[2] ) {
 					Sizzle.error( match[0] );
@@ -496,7 +498,9 @@ var Expr = Sizzle.selectors = {
 		},
 
 		PSEUDO: function( pseudo, possibleQuote, argument, context, xml ) {
-			var fn = Expr.pseudos[ pseudo ];
+			// pseudo-class names are case-insensitive
+			// http://www.w3.org/TR/selectors/#pseudo-classes
+			var fn = Expr.pseudos[ pseudo.toLowerCase() ];
 
 			if ( !fn ) {
 				Sizzle.error( "unsupported pseudo: " + pseudo );
@@ -916,7 +920,7 @@ function multipleContexts( selector, contexts, results, seed ) {
 
 function handlePOSGroup( selector, posfilter, argument, contexts, seed, not ) {
 	var results = [],
-		fn = Expr.setFilters[ posfilter ];
+		fn = Expr.setFilters[ posfilter.toLowerCase() ];
 
 	if ( !fn ) {
 		Sizzle.error( posfilter );
