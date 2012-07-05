@@ -768,10 +768,14 @@ var getText = Sizzle.getText = function( elem ) {
 };
 
 Sizzle.attr = function( elem, name ) {
+	var xml = isXML( elem );
+	if ( !xml ) {
+		name = name.toLowerCase();
+	}
 	if ( Expr.attrHandle[ name ] ) {
 		return Expr.attrHandle[ name ]( elem );
 	}
-	if ( assertAttributes || isXML( elem ) ) {
+	if ( assertAttributes || xml ) {
 		return elem.getAttribute( name );
 	}
 	var attr = (elem.attributes || {})[ name ];

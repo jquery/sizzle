@@ -363,9 +363,10 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 50 );
+	expect( 51 );
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
+	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
 	t( "Attribute Exists", "#qunit-fixture *[title]", ["google"] );
 	t( "Attribute Exists", "#qunit-fixture [title]", ["google"] );
 	t( "Attribute Exists", "#qunit-fixture a[ title ]", ["google"] );
