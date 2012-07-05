@@ -1063,16 +1063,12 @@ function addCombinator( matcher, combinator, context ) {
 		while ( (elem = elem[ dir ]) ) {
 			if ( elem.nodeType === 1 ) {
 				if ( elem[ expando ] === cachedkey ) {
-					if ( elem.sizset ) {
-						return elem;
-					}
+					return false;
 				} else {
 					elem[ expando ] = cachedkey;
 					if ( matcher( elem, context ) ) {
-						elem.sizset = true;
 						return elem;
 					}
-					elem.sizset = false;
 				}
 				if ( firstMatch ) {
 					break;
@@ -1228,6 +1224,7 @@ var select = function( selector, context, results, seed, xml ) {
 				if ( matcher(elem, context) ) {
 					results.push( elem );
 				}
+				cachedruns = ++matcher.runs;
 			}
 		}
 	}
