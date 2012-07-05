@@ -47,9 +47,6 @@ var tokenize,
 		"|\\\\[>+~]|[^\\x20\\t\\n\\r\\f>+~]|\\\\.)+|" +
 		combinators, "g" ),
 
-	rposgroups = new RegExp( "^" + pos + "(?!" + whitespace + ")", "i" ),
-	rpos = new RegExp( pos, "ig" ),
-
 	rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
 
 	rsibling = /^[\x20\t\n\r\f]*[+~][\x20\t\n\r\f]*$/,
@@ -76,9 +73,9 @@ var tokenize,
 		PSEUDO: new RegExp( "^" + pseudos ),
 		CHILD: new RegExp( "^:(only|nth|last|first)-child(?:\\(" + whitespace + "*(even|odd|(?:[+\\-]?\\d+|(?:[+\\-]?\\d*)?n" +
 			whitespace + "*(?:[+\\-]" + whitespace + "*\\d+)?))" + whitespace + "*\\))?", "i" ),
-		POS: new RegExp( "^" + pos ),
-		// For use in libraries implementing .is(), an unanchored POS
-		globalPOS: new RegExp( pos )
+		POS: new RegExp( pos, "ig" ),
+		// For use in libraries implementing .is(), an unaltered POS
+		globalPOS: new RegExp( pos, "i" )
 	},
 
 	classCache = {},
@@ -344,7 +341,7 @@ var Expr = Sizzle.selectors = {
 		},
 
 		PSEUDO: function( match ) {
-			return matchExpr.POS.test( match[0] ) || matchExpr.CHILD.test( match[0] ) ?
+			return matchExpr.CHILD.test( match[0] ) ?
 				null :
 				match;
 		}
@@ -940,6 +937,9 @@ function handlePOS( selector, context, results, seed, isSingle ) {
 		elements = seed || null,
 		ret = [],
 		anchor = 0,
+		rpos = matchExpr.POS,
+		// This is generated here in case matchExpr.POS is extended
+		rposgroups = new RegExp( "^" + matchExpr.POS.source + "(?!" + whitespace + ")", "i" ),
 		// This is for making sure non-participating
 		// matching groups are represented cross-browser (IE6-8)
 		setUndefined = function() {
@@ -1169,7 +1169,7 @@ var select = function( selector, context, results, seed, xml ) {
 		contextNodeType = context.nodeType;
 
 	// POS handling
-	if ( rpos.test(selector) ) {
+	if ( matchExpr.POS.test(selector) ) {
 		return handlePOS( selector, context, results, seed, isSingle );
 	}
 
