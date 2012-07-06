@@ -623,7 +623,7 @@ test("pseudo - :not", function() {
 });
 
 test("pseudo - position", function() {
-	expect( 28 );
+	expect( 29 );
 
 	t( "First element", "div:first", ["qunit-testrunner-toolbar"] );
 	t( "First element(case-insensitive)", "div:fiRst", ["qunit-testrunner-toolbar"] );
@@ -654,6 +654,8 @@ test("pseudo - position", function() {
 	t( "Check element position", "#dl div:first div:first", ["foo"] );
 	t( "Check element position", "#dl div:first > div:first", ["foo"] );
 	t( "Check element position", "div#nothiddendiv:first > div:first", ["nothiddendivchild"] );
+
+	t( "Check sort order with POS and comma", "#qunit-fixture em>em>em>em:first-child,div>em:first", ["siblingfirst", "siblinggreatgrandchild"] );
 
 	// Sizzle extension
 	var oldPOS = Sizzle.selectors.match.POS;

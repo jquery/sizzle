@@ -47,6 +47,7 @@ var tokenize,
 		pseudos.replace( "2", "8" ) +
 		"|\\\\[>+~]|[^\\x20\\t\\n\\r\\f>+~]|\\\\.)+|" +
 		combinators, "g" ),
+	rstartWithWhitespace = new RegExp( "^" + whitespace ),
 
 	rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
 
@@ -498,7 +499,8 @@ var Expr = Sizzle.selectors = {
 		PSEUDO: function( pseudo, possibleQuote, argument, context, xml ) {
 			// pseudo-class names are case-insensitive
 			// http://www.w3.org/TR/selectors/#pseudo-classes
-			var fn = Expr.pseudos[ pseudo.toLowerCase() ];
+			// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
+			var fn = Expr.pseudos[ pseudo ] || Expr.pseudos[ pseudo.toLowerCase() ];
 
 			if ( !fn ) {
 				Sizzle.error( "unsupported pseudo: " + pseudo );
@@ -936,12 +938,12 @@ function handlePOSGroup( selector, posfilter, argument, contexts, seed, not ) {
 	return results.length ? fn( results, argument, not ) : [];
 }
 
-function handlePOS( selector, context, results, seed, isSingle ) {
-	var match, m, not,
+function handlePOS( selector, context, results, seed ) {
+	var match, not, anchor, ret, elements,
 		currentContexts, part, lastIndex,
-		elements = seed || null,
-		ret = [],
-		anchor = 0,
+		groups = selector.match( rgroups ),
+		i = 0,
+		len = groups.length,
 		rpos = matchExpr.POS,
 		// This is generated here in case matchExpr.POS is extended
 		rposgroups = new RegExp( "^" + matchExpr.POS.source + "(?!" + whitespace + ")", "i" ),
@@ -955,52 +957,55 @@ function handlePOS( selector, context, results, seed, isSingle ) {
 			}
 		};
 
-	// Make sure the regex index is reset to 0
-	rpos.exec("");
-
-	while ( (match = rpos.exec( selector )) ) {
-		lastIndex = match.index + match[0].length;
-		if ( lastIndex > anchor ) {
-			part = selector.slice( anchor, match.index );
-			if ( match.length > 1 ) {
-				match[0].replace( rposgroups, setUndefined );
-			}
-			anchor = lastIndex;
-
-			currentContexts = [ context ];
-			if ( (not = rendsWithNot.test( part )) ) {
-				part = part.replace( rendsWithNot, "" ).replace( rcombinators, "$&*" );
-			}
-			if ( (m = part.match( rgroups )) && m[0] !== part ) {
-				part = part.replace( rcomma, "" );
-				ret = ret.concat( elements );
-				elements = seed;
-			}
-
-			if ( rcombinators.test(part) ) {
-				currentContexts = elements || [ context ];
-				elements = seed;
-			}
-
-			elements = handlePOSGroup( part, match[1], match[2], currentContexts, elements, not );
-		}
-
-		if ( rpos.lastIndex === match.index ) {
-			rpos.lastIndex++;
-		}
-	}
-
-	ret = ret.concat( elements );
-
-	if ( (part = selector.slice( anchor )) && part !== ")" ) {
-		elements = ret;
+	for ( ; i < len; i++ ) {
+		// Reset regex index to 0
+		rpos.exec("");
+		selector = groups[i].replace( rstartWithWhitespace, "" );
 		ret = [];
-		multipleContexts( part, elements, ret, seed );
+		anchor = 0;
+		elements = seed || null;
+		while ( (match = rpos.exec( selector )) ) {
+			lastIndex = match.index + match[0].length;
+			if ( lastIndex > anchor ) {
+				part = selector.slice( anchor, match.index );
+				if ( match.length > 1 ) {
+					match[0].replace( rposgroups, setUndefined );
+				}
+				anchor = lastIndex;
+
+				currentContexts = [ context ];
+				if ( (not = rendsWithNot.test( part )) ) {
+					part = part.replace( rendsWithNot, "" ).replace( rcombinators, "$&*" );
+				}
+
+				if ( rcombinators.test(part) ) {
+					currentContexts = elements || [ context ];
+					elements = seed;
+				}
+
+				elements = handlePOSGroup( part, match[1], match[2], currentContexts, elements, not );
+			}
+
+			if ( rpos.lastIndex === match.index ) {
+				rpos.lastIndex++;
+			}
+		}
+
+		if ( elements ) {
+			ret = ret.concat( elements );
+
+			if ( (part = selector.slice( anchor )) && part !== ")" ) {
+				multipleContexts( part, ret, results, seed );
+			} else {
+				push.apply( results, ret );
+			}
+		} else {
+			Sizzle( selector, context, results, seed );
+		}
 	}
 
 	// Do not sort if this is a single filter
-	push.apply( results, (seed && isSingle ? ret : Sizzle.uniqueSort(ret)) );
-	return results;
+	return len === 1 ? results : Sizzle.uniqueSort( results );
 }
 
 (function () {
@@ -1184,7 +1189,7 @@ var select = function( selector, context, results, seed, xml ) {
 
 	// POS handling
 	if ( matchExpr.POS.test(selector) ) {
-		return handlePOS( selector, context, results, seed, isSingle );
+		return handlePOS( selector, context, results, seed );
 	}
 
 	// Take a shortcut and set the context if the root selector is an ID
