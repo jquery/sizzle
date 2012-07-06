@@ -8,6 +8,7 @@
 
 var tokenize,
 	cachedruns,
+	dirruns,
 	sortOrder,
 	siblingCheck,
 
@@ -1066,24 +1067,37 @@ function addCombinator( matcher, combinator, context ) {
 			return elem === context;
 		};
 	}
-	return function( elem, context ) {
-		var cachedkey = doneName + "." + cachedruns;
-		while ( (elem = elem[ dir ]) ) {
-			if ( elem.nodeType === 1 ) {
-				if ( elem[ expando ] === cachedkey ) {
-					return false;
-				} else {
-					elem[ expando ] = cachedkey;
-					if ( matcher( elem, context ) ) {
-						return elem;
-					}
-				}
-				if ( firstMatch ) {
-					break;
+	return firstMatch ?
+		function( elem, context ) {
+			while ( (elem = elem[ dir ]) ) {
+				if ( elem.nodeType === 1 ) {
+					return matcher( elem, context ) ? elem : false;
 				}
 			}
-		}
-	};
+		} :
+		function( elem, context ) {
+			var cache,
+				dirkey = doneName + "." + dirruns,
+				cachedkey = dirkey + "." + cachedruns;
+			while ( (elem = elem[ dir ]) ) {
+				if ( elem.nodeType === 1 ) {
+					if ( (cache = elem[ expando ]) === cachedkey ) {
+						return false;
+					} else if ( typeof cache === "string" && cache.indexOf(dirkey) === 0 ) {
+						if ( elem.sizset ) {
+							return elem;
+						}
+					} else {
+						elem[ expando ] = cachedkey;
+						if ( matcher( elem, context ) ) {
+							elem.sizset = true;
+							return elem;
+						}
+						elem.sizset = false;
+					}
+				}
+			}
+		};
 }
 
 function addMatcher( higher, deeper ) {
@@ -1131,7 +1145,7 @@ var compile = Sizzle.compile = function( selector, context, xml ) {
 
 	// Return a cached group function if already generated (context dependent)
 	if ( cached && cached.context === context ) {
-		cached.runs++;
+		cached.dirruns++;
 		return cached;
 	}
 
@@ -1144,7 +1158,7 @@ var compile = Sizzle.compile = function( selector, context, xml ) {
 	// Cache the compiled function
 	cached = compilerCache[ selector ] = matcherFromGroupMatchers( group );
 	cached.context = context;
-	cached.runs = 0;
+	cached.runs = cached.dirruns = 0;
 	cachedSelectors.push( selector );
 	// Ensure only the most recent are cached
 	if ( cachedSelectors.length > Expr.cacheLength ) {
@@ -1227,12 +1241,12 @@ var select = function( selector, context, results, seed, xml ) {
 		// Only loop over the given elements once
 		// If selector is empty, we're already done
 		if ( selector && (matcher = compile( selector, context, xml )) ) {
-			cachedruns = matcher.runs;
+			dirruns = matcher.dirruns++;
 			for ( i = 0; (elem = elements[i]); i++ ) {
+				cachedruns = matcher.runs++;
 				if ( matcher(elem, context) ) {
 					results.push( elem );
 				}
-				cachedruns = ++matcher.runs;
 			}
 		}
 	}
