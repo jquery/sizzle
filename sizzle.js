@@ -1241,7 +1241,7 @@ var select = function( selector, context, results, seed, xml ) {
 		// Only loop over the given elements once
 		// If selector is empty, we're already done
 		if ( selector && (matcher = compile( selector, context, xml )) ) {
-			dirruns = matcher.dirruns++;
+			dirruns = matcher.dirruns;
 			for ( i = 0; (elem = elements[i]); i++ ) {
 				cachedruns = matcher.runs++;
 				if ( matcher(elem, context) ) {
