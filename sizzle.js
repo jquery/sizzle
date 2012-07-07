@@ -247,6 +247,8 @@ var Expr = Sizzle.selectors = {
 
 	attrHandle: {},
 
+	createPseudo: markFunction,
+
 	find: {
 		ID: assertGetIdNotName ?
 			function( id, context, xml ) {
