@@ -1412,7 +1412,7 @@ if ( document.querySelectorAll ) {
 
 // EXPOSE
 if (typeof window.define === 'function' && window.define.amd) {
-	define(Sizzle);
+	define(function() {return Sizzle;});
 } else if (typeof module !== 'undefined') {
 	module.exports = Sizzle;
 } else {
