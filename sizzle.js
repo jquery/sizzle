@@ -6,65 +6,61 @@
  */
 (function( window, undefined ) {
 
-var tokenize,
-	cachedruns,
+var cachedruns,
 	dirruns,
 	sortOrder,
 	siblingCheck,
+	assertGetIdNotName,
 
 	document = window.document,
 	docElem = document.documentElement,
 
-	expando = ( "sizcache" + Math.random() ).replace( ".", "" ),
-	done = 0,
-
-	slice = [].slice,
-	push = [].push,
 	strundefined = "undefined",
 	hasDuplicate = false,
 	baseHasDuplicate = true,
+	done = 0,
+	slice = [].slice,
+	push = [].push,
+
+	expando = ( "sizcache" + Math.random() ).replace( ".", "" ),
 
 	// Regex
 
+	// Whitespace characters http://www.w3.org/TR/css3-selectors/#whitespace
+	whitespace = "[\\x20\\t\\r\\n\\f]",
 	// http://www.w3.org/TR/css3-syntax/#characters
 	characterEncoding = "(?:[-\\w]|[^\\x00-\\xa0]|\\\\.)",
-	// Whitespace characters http://www.w3.org/TR/css3-selectors/#whitespace
-	whitespace = "[\\x20\\t\\n\\r\\f]",
-	// Acceptable operators http://www.w3.org/TR/selectors/#attribute-selectors
-	operators = "([*^$|!~]?={1})",
 	// Javascript identifier syntax (with added # for unquoted hash)
-	identifier = "(?:-?[#_a-zA-Z]{1}[-\\w]*|[^\\x00-\\xa0]+|\\\\.+)",
+	identifier = "(?:-?[#_a-zA-Z][-\\w]*|[^\\x00-\\xa0]|\\\\.)",
+	// Acceptable operators http://www.w3.org/TR/selectors/#attribute-selectors
+	operators = "([*^$|!~]?=)",
 	attributes = "\\[" + whitespace + "*(" + characterEncoding + "+)" + whitespace +
-		"*(?:" + operators + whitespace + "*(?:(['\"])(.*?)\\3|(" + identifier + "+)|)|)" + whitespace + "*\\]",
-	pseudos = ":(" + characterEncoding + "+)(?:\\(([\"']?)([^()]*|.*)\\2\\))?",
-	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\))?(?=[^\\-]|$)",
-	combinators = whitespace + "*([\\x20\\t\\n\\r\\f>+~])" + whitespace + "*",
+		"*(?:" + operators + whitespace + "*(?:(['\"])((?:[^\\\\]|\\\\.)*?)\\3|(" + identifier + "+)|)|)" + whitespace + "*\\]",
+	pseudos = ":(" + characterEncoding + "+)(\\((?:(['\"])((?:[^\\\\]|\\\\.)*?)\\3|(.*))\\)|)",
+	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\)|)(?=[^-]|$)",
 
+	rcombinators = new RegExp( "^" + whitespace + "*([\\x20\\t\\r\\n\\f>+~])" + whitespace + "*" ),
 	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
-	rcombinators = new RegExp( "^" + combinators ),
-	rtokens = new RegExp( "(" +
-		attributes.replace( "3", "4" ) + "|" +
-		pseudos.replace( "2", "8" ) +
-		"|\\\\[>+~]|[^\\x20\\t\\n\\r\\f>+~]|\\\\.)+|" +
-		combinators, "g" ),
-	rstartWithWhitespace = new RegExp( "^" + whitespace ),
+	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
+	rtokens = new RegExp( "(?:" +
+		attributes + "|" +
+		pseudos.replace( 3, 8 ) +
+		"|[^\\\\\\x20\\t\\r\\n\\f>+~]|\\\\.)+|" +
+		whitespace + "*([\\x20\\t\\r\\n\\f>+~])" + whitespace + "*", "g" ),
+	rgroups = new RegExp( "(?=[^\\x20\\t\\r\\n\\f])(?:" +
+		attributes + "|" +
+		pseudos.replace( 3, 8 ) +
+		"|[^\\\\,()[\\]])+", "g"),
 
 	rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
 
-	rsibling = /^[\x20\t\n\r\f]*[+~][\x20\t\n\r\f]*$/,
+	rsibling = /^[\x20\t\r\n\f]*[+~]/,
 	rendsWithNot = /:not\($/,
 
-	rnth = /(-?)(\d*)(?:n([+\-]?\d*))?/,
-	rnonDigit = /\D/,
 	rheader = /h\d/i,
 	rinputs = /input|select|textarea|button/i,
 
-	radjacent = /^\+|[\x20\t\n\r\f]*/g,
 	rbackslash = /\\(?!\\)/g,
-
-	// Split on commas not within brackets/parens/quotes
-	// ignoring space: ( [^,\\\[\]]+ | \[[^\[]*\] | \([^\(]*\) | \\. )+
-	rgroups = /([^,\\\[\]]+|\[[^\[]*\]|\([^\(]*\)|\\.)+/g,
 
 	matchExpr = {
 		ID: new RegExp( "^#(" + characterEncoding + "+)" ),
@@ -73,8 +69,9 @@ var tokenize,
 		TAG: new RegExp( "^(" + characterEncoding.replace( "[-", "[-\\*" ) + "+)" ),
 		ATTR: new RegExp( "^" + attributes ),
 		PSEUDO: new RegExp( "^" + pseudos ),
-		CHILD: new RegExp( "^:(only|nth|last|first)-child(?:\\(" + whitespace + "*(even|odd|(?:[+\\-]?\\d+|(?:[+\\-]?\\d*)?n" +
-			whitespace + "*(?:[+\\-]" + whitespace + "*\\d+)?))" + whitespace + "*\\))?", "i" ),
+		CHILD: new RegExp( "^:(only|nth|last|first)-child(?:\\(" + whitespace +
+			"*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace +
+			"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
 		POS: new RegExp( pos, "ig" ),
 		// For use in libraries implementing .is(), an unaltered POS
 		globalPOS: new RegExp( pos, "i" )
@@ -129,11 +126,10 @@ var tokenize,
 
 	// Check if getElementById returns elements by name
 	// Check if getElementsByName privileges form controls or returns elements by ID
-	assertGetIdNotName,
 	assertUsableName = assert(function( div ) {
 		// Inject content
 		div.id = expando + 0;
-		div.innerHTML = "<a name='" + expando + "'/><div name='" + expando + "'/>";
+		div.innerHTML = "<a name='" + expando + "'></a><div name='" + expando + "'></div>";
 		docElem.insertBefore( div, docElem.firstChild );
 
 		// Test
@@ -219,6 +215,7 @@ var Sizzle = function( selector, context, results, seed ) {
 						return results;
 					}
 				}
+
 			// Speed-up: Sizzle("TAG")
 			} else if ( match[2] ) {
 				push.apply( results, slice.call(context.getElementsByTagName( selector ), 0) );
@@ -292,16 +289,16 @@ var Expr = Sizzle.selectors = {
 						}
 					}
 
-					results = tmp;
+					return tmp;
 				}
 				return results;
 			}
 	},
 
 	relative: {
-		">": { dir: "parentNode", firstMatch: true },
+		">": { dir: "parentNode", first: true },
 		" ": { dir: "parentNode" },
-		"+": { dir: "previousSibling", firstMatch: true },
+		"+": { dir: "previousSibling", first: true },
 		"~": { dir: "previousSibling" }
 	},
 
@@ -320,23 +317,29 @@ var Expr = Sizzle.selectors = {
 		},
 
 		CHILD: function( match ) {
+			/* matches from matchExpr.CHILD
+				1 type (only|nth|...)
+				2 argument (even|odd|\d*|\d*n([+-]\d+)?|...)
+				3 xn-component of xn+y argument ([+-]?\d*n|)
+				4 sign of xn-component
+				5 x of xn-component
+				6 sign of y-component
+				7 y of y-component
+			*/
 			match[1] = match[1].toLowerCase();
 
 			if ( match[1] === "nth" ) {
+				// nth-child requires argument
 				if ( !match[2] ) {
 					Sizzle.error( match[0] );
 				}
 
-				match[2] = match[2].replace( radjacent, "" );
+				// numeric x and y parameters for Expr.filter.CHILD
+				// remember that false/true cast respectively to 0/1
+				match[3] = +( match[3] ? match[4] + (match[5] || 1) : 2 * ( match[2] === "even" || match[2] === "odd" ) );
+				match[4] = +( ( match[6] + match[7] ) || match[2] === "odd" );
 
-				// parse equations like 'even', 'odd', '5', '2n', '3n+2', '4n-1', '-n+6'
-				var test = rnth.exec(
-					match[2] === "even" && "2n" || match[2] === "odd" && "2n+1" ||
-					!rnonDigit.test( match[2] ) && "0n+" + match[2] || match[2] );
-
-				// calculate the numbers (first)n+(last) including if they are negative
-				match[2] = +(test[1] + (test[2] || 1));
-				match[3] = +test[3];
+			// other types prohibit arguments
 			} else if ( match[2] ) {
 				Sizzle.error( match[0] );
 			}
@@ -345,9 +348,31 @@ var Expr = Sizzle.selectors = {
 		},
 
 		PSEUDO: function( match ) {
-			return matchExpr.CHILD.test( match[0] ) ?
-				null :
-				match;
+			if ( matchExpr.CHILD.test( match[0] ) ) {
+				return null;
+			}
+
+			// clean up unquoted arguments
+			if ( match[2] && !match[3] ) {
+
+				// parse as much as possible
+				var unquoted = match[5],
+					excess = ~unquoted.indexOf(")") && tokenize( unquoted, null, true, true );
+
+				// advance to the next closing parenthesis
+				if ( excess ) {
+					excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length;
+				}
+
+				// update match properties
+				if ( excess ) {
+					unquoted = unquoted.slice( 0, excess );
+					match[0] = match[0].slice( 0, excess );
+				}
+				match[4] = unquoted;
+			}
+
+			return match;
 		}
 	},
 
@@ -427,7 +452,7 @@ var Expr = Sizzle.selectors = {
 			};
 		},
 
-		CHILD: function( type, first, last ) {
+		CHILD: function( type, argument, first, last ) {
 
 			if ( type === "nth" ) {
 				var doneName = done++;
@@ -498,7 +523,7 @@ var Expr = Sizzle.selectors = {
 			};
 		},
 
-		PSEUDO: function( pseudo, possibleQuote, argument, context, xml ) {
+		PSEUDO: function( pseudo, parenthesized, possibleQuote, argument, unquoted, context, xml ) {
 			// pseudo-class names are case-insensitive
 			// http://www.w3.org/TR/selectors/#pseudo-classes
 			// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
@@ -568,7 +593,7 @@ var Expr = Sizzle.selectors = {
 
 		has: markFunction(function( selector ) {
 			return function( elem ) {
-				return !!Sizzle( selector, elem ).length;
+				return Sizzle( selector, elem ).length > 0;
 			};
 		}),
 
@@ -577,10 +602,12 @@ var Expr = Sizzle.selectors = {
 		},
 
 		text: function( elem ) {
-			var attr = elem.getAttribute( "type" ), type = elem.type;
+			var type, attr;
 			// IE6 and 7 will map elem.type to 'text' for new HTML5 types (search, etc)
 			// use getAttribute instead to test this case
-			return elem.nodeName.toLowerCase() === "input" && "text" === type && ( attr === null || attr.toLowerCase() === type );
+			return elem.nodeName.toLowerCase() === "input" &&
+				(type = elem.type) === "text" &&
+				( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === type );
 		},
 
 		// Input types
@@ -595,7 +622,7 @@ var Expr = Sizzle.selectors = {
 
 		button: function( elem ) {
 			var name = elem.nodeName.toLowerCase();
-			return name === "input" && "button" === elem.type || name === "button";
+			return name === "input" && elem.type === "button" || name === "button";
 		},
 
 		input: function( elem ) {
@@ -962,7 +989,7 @@ function handlePOS( selector, context, results, seed ) {
 	for ( ; i < len; i++ ) {
 		// Reset regex index to 0
 		rpos.exec("");
-		selector = groups[i].replace( rstartWithWhitespace, "" );
+		selector = groups[i];
 		ret = [];
 		anchor = 0;
 		elements = seed || null;
@@ -970,21 +997,21 @@ function handlePOS( selector, context, results, seed ) {
 			lastIndex = match.index + match[0].length;
 			if ( lastIndex > anchor ) {
 				part = selector.slice( anchor, match.index );
-				if ( match.length > 1 ) {
-					match[0].replace( rposgroups, setUndefined );
-				}
 				anchor = lastIndex;
-
 				currentContexts = [ context ];
+
+				if ( rcombinators.test(part) ) {
+					currentContexts = elements || currentContexts;
+					elements = seed;
+				}
+
 				if ( (not = rendsWithNot.test( part )) ) {
 					part = part.replace( rendsWithNot, "" ).replace( rcombinators, "$&*" );
 				}
 
-				if ( rcombinators.test(part) ) {
-					currentContexts = elements || [ context ];
-					elements = seed;
+				if ( match.length > 1 ) {
+					match[0].replace( rposgroups, setUndefined );
 				}
-
 				elements = handlePOSGroup( part, match[1], match[2], currentContexts, elements, not );
 			}
 
@@ -1010,62 +1037,60 @@ function handlePOS( selector, context, results, seed ) {
 	return len === 1 ? results : Sizzle.uniqueSort( results );
 }
 
-(function () {
-	var soFar, match, tokens,
-		advance = function( pattern, type, xml ) {
-			if ( (match = pattern.exec( soFar )) &&
-					( !type || !Expr.preFilter[ type ] || (match = Expr.preFilter[ type ]( match, xml )) ) ) {
+function tokenize( selector, context, xml, parseOnly ) {
+	var match, tokens, type,
+		groups = [],
+		invalid = true,
+		soFar = selector,
+		preFilters = Expr.preFilter,
+		filters = Expr.filter,
+		checkContext = !xml && context !== document;
+
+	while ( soFar ) {
+		if ( invalid || (match = rcomma.exec( soFar )) ) {
+			groups.push(tokens = []);
+			if ( match ) {
 				soFar = soFar.slice( match[0].length );
 			}
-			return match;
-		};
 
-	tokenize = function( selector, context, xml ) {
-		soFar = selector;
-		tokens = [];
-
-		var type, matched,
-			checkContext = !xml && context !== document,
-			groups = [ tokens ];
-
-		// Need to make sure we're within a narrower context if necessary
-		// Adding a descendent combinator will generate what is needed automatically
-		if ( checkContext ) {
-			soFar = " " + soFar;
+			// Need to make sure we're within a narrower context if necessary
+			// Adding a descendant combinator will generate what is needed
+			if ( checkContext ) {
+				soFar = " " + soFar;
+			}
 		}
+		invalid = true;
+		if ( (match = rcombinators.exec( soFar )) ) {
+			soFar = soFar.slice( match[0].length );
 
-		while ( soFar ) {
-			matched = false;
-			if ( advance(rcomma) ) {
-				groups.push(tokens = []);
-				if ( checkContext ) {
-					soFar = " " + soFar;
-				}
-			}
-			if ( advance(rcombinators) ) {
-				tokens.push({ part: match.pop(), captures: match });
-				matched = true;
-			}
-			for ( type in Expr.filter ) {
-				if ( advance(matchExpr[ type ], type, xml) ) {
-					match.shift();
-					tokens.push({ part: type, captures: match });
-					matched = true;
-				}
-			}
+			// Cast whitespace combinators to space
+			tokens.push({ part: match.pop().replace(rtrim, " "), captures: match });
+			invalid = false;
+		}
+		for ( type in filters ) {
+			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
+				(match = preFilters[ type ]( match, xml )) ) ) {
 
-			if ( !matched ) {
-				Sizzle.error( selector );
+				soFar = soFar.slice( match.shift().length );
+				tokens.push({ part: type, captures: match });
+				invalid = false;
 			}
 		}
 
-		return groups;
-	};
-})();
+		if ( invalid ) {
+			break;
+		}
+	}
+
+	return parseOnly ?
+		soFar.length :
+		invalid ?
+			Sizzle.error( selector ) :
+			groups;
+}
 
 function addCombinator( matcher, combinator, context ) {
 	var dir = combinator.dir,
-		firstMatch = combinator.firstMatch,
 		doneName = done++;
 
 	if ( !matcher ) {
@@ -1074,7 +1099,7 @@ function addCombinator( matcher, combinator, context ) {
 			return elem === context;
 		};
 	}
-	return firstMatch ?
+	return combinator.first ?
 		function( elem, context ) {
 			while ( (elem = elem[ dir ]) ) {
 				if ( elem.nodeType === 1 ) {
@@ -1183,9 +1208,11 @@ Sizzle.matchesSelector = function( elem, expr ) {
 };
 
 var select = function( selector, context, results, seed, xml ) {
-	var elements, matcher, i, len, elem, token, position,
-		type, match, findContext, notTokens,
-		isSingle = (match = selector.match( rgroups )) && match.length === 1,
+	selector = selector.replace(rtrim, "$1");
+	var elements, matcher, i, len, elem, token,
+		type, findContext, notTokens,
+		match = selector.match( rgroups ),
+		isSingle = match && match.length === 1,
 		tokens = selector.match( rtokens ),
 		contextNodeType = context.nodeType;
 
@@ -1194,66 +1221,67 @@ var select = function( selector, context, results, seed, xml ) {
 		return handlePOS( selector, context, results, seed );
 	}
 
-	// Take a shortcut and set the context if the root selector is an ID
-	if ( !seed && isSingle && tokens.length > 1 && contextNodeType === 9 && !xml &&
-			(match = matchExpr.ID.exec( tokens[0] )) ) {
+	if ( seed ) {
+		elements = slice.call( seed, 0 );
 
-		context = Expr.find.ID( match[1], context, xml )[0];
-		selector = selector.slice( tokens.shift().length );
-	}
+	// Maintain document order by not limiting the set
+	} else if ( isSingle ) {
 
-	if ( context ) {
-		if ( seed ) {
-			elements = slice.call( seed, 0 );
+		// Take a shortcut and set the context if the root selector is an ID
+		if ( tokens.length > 1 && contextNodeType === 9 && !xml &&
+				(match = matchExpr.ID.exec( tokens[0] )) ) {
 
-		} else {
+			context = Expr.find.ID( match[1], context, xml )[0];
+			if ( !context ) {
+				return results;
+			}
 
-			// Maintain document order by not limiting the set
-			if ( isSingle ) {
-				findContext = (tokens.length >= 1 && rsibling.test( tokens[0] ) && context.parentNode) || context;
+			selector = selector.slice( tokens.shift().length );
+		}
 
-				// Get the last token, excluding :not
-				notTokens = tokens.pop().split(":not");
-				token = notTokens[0];
 
-				for ( i = 0, len = Expr.order.length; i < len; i++ ) {
-					type = Expr.order[i];
+		findContext = (tokens.length >= 1 && rsibling.test( tokens[0] ) && context.parentNode) || context;
 
-					if ( (match = matchExpr[ type ].exec( token )) ) {
-						elements = Expr.find[ type ]( (match[1] || "").replace( rbackslash, "" ), findContext, xml );
+		// Get the last token, excluding :not
+		notTokens = tokens.pop();
+		token = notTokens.split(":not")[0];
 
-						if ( elements != null ) {
-							break;
-						}
-					}
+		for ( i = 0, len = Expr.order.length; i < len; i++ ) {
+			type = Expr.order[i];
+
+			if ( (match = matchExpr[ type ].exec( token )) ) {
+				elements = Expr.find[ type ]( (match[1] || "").replace( rbackslash, "" ), findContext, xml );
+
+				if ( elements == null ) {
+					continue;
 				}
 
-				if ( elements && !notTokens[1] ) {
-					position = selector.length - token.length;
-					selector = selector.slice( 0, position ) +
-						selector.slice( position ).replace( matchExpr[ type ], "" );
+				if ( token === notTokens ) {
+					selector = selector.slice( 0, selector.length - notTokens.length ) +
+						token.replace( matchExpr[ type ], "" );
 
 					if ( !selector ) {
 						push.apply( results, slice.call(elements, 0) );
-						return results;
 					}
 				}
-			}
-
-			if ( !elements ) {
-				elements = Expr.find.TAG( "*", context );
+				break;
 			}
 		}
+	}
 
-		// Only loop over the given elements once
-		// If selector is empty, we're already done
-		if ( selector && (matcher = compile( selector, context, xml )) ) {
-			dirruns = matcher.dirruns;
-			for ( i = 0; (elem = elements[i]); i++ ) {
-				cachedruns = matcher.runs++;
-				if ( matcher(elem, context) ) {
-					results.push( elem );
-				}
+	// Only loop over the given elements once
+	// If selector is empty, we're already done
+	if ( selector ) {
+		matcher = compile( selector, context, xml );
+		dirruns = matcher.dirruns;
+
+		if ( elements == null ) {
+			elements = Expr.find.TAG( "*", context );
+		}
+		for ( i = 0; (elem = elements[i]); i++ ) {
+			cachedruns = matcher.runs++;
+			if ( matcher(elem, context) ) {
+				results.push( elem );
 			}
 		}
 	}
@@ -1266,9 +1294,8 @@ if ( document.querySelectorAll ) {
 		var disconnectedMatch,
 			oldSelect = select,
 			rdivision = /[^\\],/g,
-			rrelativeHierarchy = /^[\x20\t\n\r\f]*[+~]/,
 			rapostrophe = /'/g,
-			rattributeQuotes = /\=[\x20\t\n\r\f]*([^'"\]]*)[\x20\t\n\r\f]*\]/g,
+			rattributeQuotes = /\=[\x20\t\r\n\f]*([^'"\]]*)[\x20\t\r\n\f]*\]/g,
 			rbuggyQSA = [],
 			// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
 			// A support test would require too much code (would include document ready)
@@ -1336,8 +1363,7 @@ if ( document.querySelectorAll ) {
 						oldContext = context,
 						old = context.getAttribute( "id" ),
 						nid = old || expando,
-						parent = context.parentNode,
-						relativeHierarchySelector = rrelativeHierarchy.test( selector );
+						parent = context.parentNode;
 
 					if ( old ) {
 						nid = nid.replace( rapostrophe, "\\$&" );
@@ -1345,7 +1371,7 @@ if ( document.querySelectorAll ) {
 						context.setAttribute( "id", nid );
 					}
 
-					if ( relativeHierarchySelector && parent ) {
+					if ( parent && rsibling.test( selector ) ) {
 						context = parent;
 					}
 

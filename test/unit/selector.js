@@ -70,9 +70,11 @@ module("selector", { teardown: moduleTeardown });
 */
 
 test("element", function() {
-	expect( 22 );
+	expect( 35 );
 
 	equal( Sizzle("").length, 0, "Empty selector returns an empty array" );
+	equal( Sizzle(" ").length, 0, "Empty selector returns an empty array" );
+	equal( Sizzle("\t").length, 0, "Empty selector returns an empty array" );
 	var form = document.getElementById("form");
 	ok( !Sizzle.matchesSelector( form, "" ), "Empty string passed to matchesSelector does not match" );
 
@@ -84,10 +86,23 @@ test("element", function() {
 		}
 	}
 	ok( good, "Select all elements, no comment nodes" );
-	t( "Element Selector", "#qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
-	t( "Element Selector", "body", ["body"] );
 	t( "Element Selector", "html", ["html"] );
+	t( "Element Selector", "body", ["body"] );
+	t( "Element Selector", "#qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
+
+	t( "Leading space", " #qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Leading tab", "\t#qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Leading carriage return", "\r#qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Leading line feed", "\n#qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Leading form feed", "\f#qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Trailing space", "#qunit-fixture p ", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Trailing tab", "#qunit-fixture p\t", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Trailing carriage return", "#qunit-fixture p\r", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Trailing line feed", "#qunit-fixture p\n", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Trailing form feed", "#qunit-fixture p\f", ["firstp","ap","sndp","en","sap","first"] );
+
 	t( "Parent Element", "div p", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Parent Element (non-space descendant combinator)", "div\tp", ["firstp","ap","sndp","en","sap","first"] );
 	equal( Sizzle("param", document.getElementById("object1")).length, 2, "Object/param as context" );
 
 	deepEqual( Sizzle("select", form), q("select1","select2","select3","select4","select5"), "Finding selects with a context." );
@@ -136,7 +151,7 @@ test("XML Document Selectors", function() {
 });
 
 test("broken", function() {
-	expect( 19 );
+	expect( 22 );
 
 	function broken( name, selector ) {
 		raises(function() {
@@ -153,6 +168,8 @@ test("broken", function() {
 	broken( "Broken Selector", "()" );
 	broken( "Broken Selector", "<>" );
 	broken( "Broken Selector", "{}" );
+	broken( "Broken Selector", "," );
+	broken( "Broken Selector", ",a" );
 	// Hangs on IE 9 if regular expression is inefficient
 	broken( "Broken Selector", "[id=012345678901234567890123456789");
 	broken( "Doesn't exist", ":visble" );
@@ -171,6 +188,7 @@ test("broken", function() {
 	broken( "First-child", ":first-child(n)" );
 	broken( "Last-child", ":last-child(n)" );
 	broken( "Only-child", ":only-child(n)" );
+	broken( "Missing quotes", "a:contains(Google Groups (Link))" );
 
 	// Make sure attribute value quoting works correctly. See: #6093
 	var attrbad = jQuery('<input type="hidden" value="2" name="foo.baz" id="attrbad1"/><input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>').appendTo("body");
@@ -302,12 +320,14 @@ test("name", function() {
 });
 
 test("multiple", function() {
-	expect(4);
+	expect(6);
 
 	t( "Comma Support", "h2, #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
 	t( "Comma Support", "h2 , #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
 	t( "Comma Support", "h2 , #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
 	t( "Comma Support", "h2,#qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
+	t( "Comma Support", "h2,#qunit-fixture p ", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
+	t( "Comma Support", "h2\t,\r#qunit-fixture p\n", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
 });
 
 test("child and adjacent", function() {
@@ -365,7 +385,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 51 );
+	expect( 52 );
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
@@ -441,10 +461,11 @@ test("attributes", function() {
 	// ok( !Sizzle.matches("[checked]", [ check2 ] ), "Dynamic boolean attributes match when they should with Sizzle.matches (#11115)" );
 
 	// Make sure attribute value quoting works correctly. See: #6093
-	var attrbad = jQuery("<input type=\"hidden\" value=\"2\" name=\"foo.baz\" id=\"attrbad1\"/><input type=\"hidden\" value=\"2\" name=\"foo[baz]\" id=\"attrbad2\"/>").appendTo("body");
+	var attrbad = jQuery("<input type=\"hidden\" value=\"2\" name=\"foo.baz\" id=\"attrbad1\"/><input type=\"hidden\" value=\"2\" name=\"foo[baz]\" id=\"attrbad2\"/><input type=\"hidden\" data-attr=\"foo_baz']\" id=\"attrbad3\"/>").appendTo("body");
 
 	t( "Find escaped attribute value", "input[name=foo\\.baz]", ["attrbad1"] );
 	t( "Find escaped attribute value", "input[name=foo\\[baz\\]]", ["attrbad2"] );
+	t( "Find escaped attribute value", "input[data-attr='foo_baz\\']']", ["attrbad3"] );
 
 	t( "input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"] );
 	t( "input[type=search]", "#form input[type=search]", ["search"] );
@@ -518,7 +539,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 23 );
+	expect( 24 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -532,8 +553,8 @@ test("pseudo - misc", function() {
 	t( "Text Contains", "a:contains(Google)", ["google","groups"] );
 	t( "Text Contains", "a:contains(Google Groups)", ["groups"] );
 
-	t( "Text Contains", "a:contains(Google Groups (Link))", ["groups"] );
-	t( "Text Contains", "a:contains((Link))", ["groups"] );
+	t( "Text Contains", "a:contains('Google Groups (Link)')", ["groups"] );
+	t( "Text Contains", "a:contains(\"(Link)\")", ["groups"] );
 
 	var tmp = document.createElement("div");
 	tmp.id = "tmp_input";
@@ -586,6 +607,8 @@ test("pseudo - misc", function() {
 	ok( !match( input, ":focus" ), ":focus doesn't match" );
 	ok( !match( input, ":active" ), ":active doesn't match" );
 	document.body.removeChild( input );
+
+	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code)", ["ap"] );
 });
 
 
