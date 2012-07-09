@@ -1411,8 +1411,8 @@ if ( document.querySelectorAll ) {
 }
 
 // EXPOSE
-if (typeof define === 'function' && define.amd) {
-	define(function() {return Sizzle;});
+if ( typeof define === "function" && define.amd ) {
+	define(function() { return Sizzle; });
 } else {
 	window.Sizzle = Sizzle;
 }
