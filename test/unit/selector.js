@@ -151,7 +151,7 @@ test("XML Document Selectors", function() {
 });
 
 test("broken", function() {
-	expect( 22 );
+	expect( 21 );
 
 	function broken( name, selector ) {
 		raises(function() {
@@ -188,7 +188,6 @@ test("broken", function() {
 	broken( "First-child", ":first-child(n)" );
 	broken( "Last-child", ":last-child(n)" );
 	broken( "Only-child", ":only-child(n)" );
-	broken( "Missing quotes", "a:contains(Google Groups (Link))" );
 
 	// Make sure attribute value quoting works correctly. See: #6093
 	var attrbad = jQuery('<input type="hidden" value="2" name="foo.baz" id="attrbad1"/><input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>').appendTo("body");
@@ -539,11 +538,12 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 24 );
+	expect( 28 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
+	t( "Has Children - :has()", "p:has( a )", ["firstp","ap","en","sap"] );
 	ok( Sizzle("#qunit-fixture :not(:has(:has(*)))").length, "All not grandparents" );
 
 	var select = document.getElementById("select1"),
@@ -555,6 +555,8 @@ test("pseudo - misc", function() {
 
 	t( "Text Contains", "a:contains('Google Groups (Link)')", ["groups"] );
 	t( "Text Contains", "a:contains(\"(Link)\")", ["groups"] );
+	t( "Text Contains", "a:contains(Google Groups (Link))", ["groups"] );
+	t( "Text Contains", "a:contains((Link))", ["groups"] );
 
 	var tmp = document.createElement("div");
 	tmp.id = "tmp_input";
@@ -609,11 +611,12 @@ test("pseudo - misc", function() {
 	document.body.removeChild( input );
 
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code)", ["ap"] );
+	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code):contains(This link)", ["ap"] );
 });
 
 
 test("pseudo - :not", function() {
-	expect( 24 );
+	expect( 26 );
 
 	t( "Not", "a.blog:not(.link)", ["mark"] );
 
@@ -628,6 +631,8 @@ test("pseudo - :not", function() {
 	t( ":not() failing interior", "#qunit-fixture p:not(p#blargh)", ["firstp","ap","sndp","en","sap","first"] );
 
 	t( ":not Multiple", "#qunit-fixture p:not(a)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not Multiple", "#qunit-fixture p:not( a )", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not Multiple", "#qunit-fixture p:not( p )", [] );
 	t( ":not Multiple", "#qunit-fixture p:not(a, b)", ["firstp","ap","sndp","en","sap","first"] );
 	t( ":not Multiple", "#qunit-fixture p:not(a, b, div)", ["firstp","ap","sndp","en","sap","first"] );
 	t( ":not Multiple", "p:not(p)", [] );

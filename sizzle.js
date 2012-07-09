@@ -30,26 +30,33 @@ var cachedruns,
 	whitespace = "[\\x20\\t\\r\\n\\f]",
 	// http://www.w3.org/TR/css3-syntax/#characters
 	characterEncoding = "(?:[-\\w]|[^\\x00-\\xa0]|\\\\.)",
+
 	// Javascript identifier syntax (with added # for unquoted hash)
 	identifier = "(?:-?[#_a-zA-Z][-\\w]*|[^\\x00-\\xa0]|\\\\.)",
 	// Acceptable operators http://www.w3.org/TR/selectors/#attribute-selectors
 	operators = "([*^$|!~]?=)",
 	attributes = "\\[" + whitespace + "*(" + characterEncoding + "+)" + whitespace +
 		"*(?:" + operators + whitespace + "*(?:(['\"])((?:[^\\\\]|\\\\.)*?)\\3|(" + identifier + "+)|)|)" + whitespace + "*\\]",
-	pseudos = ":(" + characterEncoding + "+)(\\((?:(['\"])((?:[^\\\\]|\\\\.)*?)\\3|(.*))\\)|)",
-	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\)|)(?=[^-]|$)",
 
-	rcombinators = new RegExp( "^" + whitespace + "*([\\x20\\t\\r\\n\\f>+~])" + whitespace + "*" ),
+	pseudos = ":(" + characterEncoding + "+)(?:\\((?:(['\"])((?:[^\\\\]|\\\\.)*)\\2|([^()]*|.*))\\))?",
+	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\)|)(?=[^-]|$)",
+	combinators = whitespace + "*([\\x20\\t\\r\\n\\f>+~])" + whitespace + "*",
+
+	rcombinators = new RegExp( "^" + combinators ),
 	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
+
+	rtrailingPseudo = new RegExp("((?:\\)(?!" + whitespace + "*:)|[^)])*)\\)" + whitespace + "*:(?!\\\\)"),
 	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
+
 	rtokens = new RegExp( "(?:" +
 		attributes + "|" +
-		pseudos.replace( 3, 8 ) +
+		pseudos.replace( 2, 6 ) +
 		"|[^\\\\\\x20\\t\\r\\n\\f>+~]|\\\\.)+|" +
-		whitespace + "*([\\x20\\t\\r\\n\\f>+~])" + whitespace + "*", "g" ),
+		combinators, "g" ),
+
 	rgroups = new RegExp( "(?=[^\\x20\\t\\r\\n\\f])(?:" +
 		attributes + "|" +
-		pseudos.replace( 3, 8 ) +
+		pseudos.replace( 2, 6 ) +
 		"|[^\\\\,()[\\]])+", "g"),
 
 	rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
@@ -348,29 +355,29 @@ var Expr = Sizzle.selectors = {
 		},
 
 		PSEUDO: function( match ) {
+			var unquoted, beforeClosing;
+
 			if ( matchExpr.CHILD.test( match[0] ) ) {
 				return null;
 			}
 
-			// clean up unquoted arguments
-			if ( match[2] && !match[3] ) {
+			// Clean up unquoted
+			if ( (unquoted = match[4]) ) {
 
-				// parse as much as possible
-				var unquoted = match[5],
-					excess = ~unquoted.indexOf(")") && tokenize( unquoted, null, true, true );
-
-				// advance to the next closing parenthesis
-				if ( excess ) {
-					excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length;
+				// Check if we've picked up trailing pseudos
+				if ( (beforeClosing = rtrailingPseudo.exec( unquoted )) && !beforeClosing.index ) {
+					unquoted = beforeClosing[1];
+					match[0] = match[0].slice( 0, match[0].indexOf( unquoted ) + unquoted.length + 1 );
 				}
 
-				// update match properties
-				if ( excess ) {
-					unquoted = unquoted.slice( 0, excess );
-					match[0] = match[0].slice( 0, excess );
-				}
-				match[4] = unquoted;
+				match[2] = unquoted;
+			} else {
+				match[2] = match[3];
 			}
+
+			// Splice out unneeded captures for passing
+			// arguments to the pseudo filter method
+			match = match.splice( 0, 3 );
 
 			return match;
 		}
@@ -523,7 +530,7 @@ var Expr = Sizzle.selectors = {
 			};
 		},
 
-		PSEUDO: function( pseudo, parenthesized, possibleQuote, argument, unquoted, context, xml ) {
+		PSEUDO: function( pseudo, argument, context, xml ) {
 			// pseudo-class names are case-insensitive
 			// http://www.w3.org/TR/selectors/#pseudo-classes
 			// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
@@ -546,7 +553,10 @@ var Expr = Sizzle.selectors = {
 
 	pseudos: {
 		not: markFunction(function( selector, context, xml ) {
-			var matcher = compile( selector, context, xml );
+			// Trim the selector passed to compile
+			// to avoid treating leading and trailing
+			// spaces as combinators
+			var matcher = compile( selector.replace( rtrim, "$1" ), context, xml );
 			return function( elem ) {
 				return !matcher( elem );
 			};
@@ -967,10 +977,9 @@ function handlePOSGroup( selector, posfilter, argument, contexts, seed, not ) {
 	return results.length ? fn( results, argument, not ) : [];
 }
 
-function handlePOS( selector, context, results, seed ) {
+function handlePOS( selector, context, results, seed, groups ) {
 	var match, not, anchor, ret, elements,
 		currentContexts, part, lastIndex,
-		groups = selector.match( rgroups ),
 		i = 0,
 		len = groups.length,
 		rpos = matchExpr.POS,
@@ -1037,17 +1046,19 @@ function handlePOS( selector, context, results, seed ) {
 	return len === 1 ? results : Sizzle.uniqueSort( results );
 }
 
-function tokenize( selector, context, xml, parseOnly ) {
-	var match, tokens, type,
+function tokenize( selector, context, xml ) {
+	var match, tokens, type, invalid,
 		groups = [],
-		invalid = true,
 		soFar = selector,
 		preFilters = Expr.preFilter,
 		filters = Expr.filter,
 		checkContext = !xml && context !== document;
 
 	while ( soFar ) {
-		if ( invalid || (match = rcomma.exec( soFar )) ) {
+		invalid = true;
+
+		// Comma or start
+		if ( !tokens || (match = rcomma.exec( soFar )) ) {
 			groups.push(tokens = []);
 			if ( match ) {
 				soFar = soFar.slice( match[0].length );
@@ -1059,7 +1070,7 @@ function tokenize( selector, context, xml, parseOnly ) {
 				soFar = " " + soFar;
 			}
 		}
-		invalid = true;
+		// Combinators
 		if ( (match = rcombinators.exec( soFar )) ) {
 			soFar = soFar.slice( match[0].length );
 
@@ -1067,9 +1078,10 @@ function tokenize( selector, context, xml, parseOnly ) {
 			tokens.push({ part: match.pop().replace(rtrim, " "), captures: match });
 			invalid = false;
 		}
+		// Filters
 		for ( type in filters ) {
 			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
-				(match = preFilters[ type ]( match, xml )) ) ) {
+				(match = preFilters[ type ]( match, context, xml )) ) ) {
 
 				soFar = soFar.slice( match.shift().length );
 				tokens.push({ part: type, captures: match });
@@ -1078,15 +1090,11 @@ function tokenize( selector, context, xml, parseOnly ) {
 		}
 
 		if ( invalid ) {
-			break;
+			Sizzle.error( selector );
 		}
 	}
 
-	return parseOnly ?
-		soFar.length :
-		invalid ?
-			Sizzle.error( selector ) :
-			groups;
+	return groups;
 }
 
 function addCombinator( matcher, combinator, context ) {
@@ -1103,7 +1111,7 @@ function addCombinator( matcher, combinator, context ) {
 		function( elem, context ) {
 			while ( (elem = elem[ dir ]) ) {
 				if ( elem.nodeType === 1 ) {
-					return matcher( elem, context ) ? elem : false;
+					return matcher( elem, context ) && elem;
 				}
 			}
 		} :
@@ -1208,24 +1216,25 @@ Sizzle.matchesSelector = function( elem, expr ) {
 };
 
 var select = function( selector, context, results, seed, xml ) {
-	selector = selector.replace(rtrim, "$1");
+	// Remove excessive whitespace
+	selector = selector.replace( rtrim, "$1" );
 	var elements, matcher, i, len, elem, token,
 		type, findContext, notTokens,
 		match = selector.match( rgroups ),
-		isSingle = match && match.length === 1,
 		tokens = selector.match( rtokens ),
 		contextNodeType = context.nodeType;
 
 	// POS handling
 	if ( matchExpr.POS.test(selector) ) {
-		return handlePOS( selector, context, results, seed );
+		return handlePOS( selector, context, results, seed, match );
 	}
 
 	if ( seed ) {
 		elements = slice.call( seed, 0 );
 
-	// Maintain document order by not limiting the set
-	} else if ( isSingle ) {
+	// To maintain document order, only narrow the
+	// set if there is one group
+	} else if ( match && match.length === 1 ) {
 
 		// Take a shortcut and set the context if the root selector is an ID
 		if ( tokens.length > 1 && contextNodeType === 9 && !xml &&
