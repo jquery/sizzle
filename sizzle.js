@@ -1416,4 +1416,6 @@ if ( typeof define === "function" && define.amd ) {
 } else {
 	window.Sizzle = Sizzle;
 }
+// EXPOSE
+
 })( window );
