@@ -1411,10 +1411,8 @@ if ( document.querySelectorAll ) {
 }
 
 // EXPOSE
-if (typeof window.define === 'function' && window.define.amd) {
+if (typeof define === 'function' && define.amd) {
 	define(function() {return Sizzle;});
-} else if (typeof module !== 'undefined') {
-	module.exports = Sizzle;
 } else {
 	window.Sizzle = Sizzle;
 }
