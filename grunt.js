@@ -27,7 +27,8 @@ module.exports = function( grunt ) {
 				maxerr: 100
 			},
 			globals: {
-				jQuery: true
+				jQuery: true,
+				define: true
 			}
 		}
 	});
