@@ -103,7 +103,8 @@ test("element", function() {
 
 	t( "Parent Element", "div p", ["firstp","ap","sndp","en","sap","first"] );
 	t( "Parent Element (non-space descendant combinator)", "div\tp", ["firstp","ap","sndp","en","sap","first"] );
-	equal( Sizzle("param", document.getElementById("object1")).length, 2, "Object/param as context" );
+	var obj1 = document.getElementById("object1");
+	equal( Sizzle("param", obj1).length, 2, "Object/param as context" );
 
 	deepEqual( Sizzle("select", form), q("select1","select2","select3","select4","select5"), "Finding selects with a context." );
 
@@ -219,7 +220,7 @@ test("id", function() {
 	t( "Child escaped ID", "form > #foo\\:bar", ["foo:bar"] );
 	t( "Child escaped ID", "form > #test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
 
-	var fiddle = jQuery("<div id='fiddle\\Foo'><span id='fiddleSpan'></div></div>").appendTo("#foo\\:bar");
+	var fiddle = jQuery("<div id='fiddle\\Foo'><span id='fiddleSpan'></span></div>").appendTo("#qunit-fixture");
 	deepEqual( Sizzle( "> span", Sizzle("#fiddle\\\\Foo")[0] ), q([ "fiddleSpan" ]), "Escaped ID as context" );
 	fiddle.remove();
 
