@@ -200,7 +200,7 @@ test("broken", function() {
 });
 
 test("id", function() {
-	expect( 29 );
+	expect( 30 );
 
 	t( "ID Selector", "#body", ["body"] );
 	t( "ID Selector w/ Element", "body#body", ["body"] );
@@ -218,6 +218,10 @@ test("id", function() {
 	t( "Descendant escaped ID", "div #test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
 	t( "Child escaped ID", "form > #foo\\:bar", ["foo:bar"] );
 	t( "Child escaped ID", "form > #test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
+
+	var fiddle = jQuery("<div id='fiddle\\Foo'><span id='fiddleSpan'></div></div>").appendTo("#foo\\:bar");
+	deepEqual( Sizzle( "> span", Sizzle("#fiddle\\\\Foo")[0] ), q([ "fiddleSpan" ]), "Escaped ID as context" );
+	fiddle.remove();
 
 	t( "ID Selector, child ID present", "#form > #radio1", ["radio1"] ); // bug #267
 	t( "ID Selector, not an ancestor ID", "#form #first", [] );

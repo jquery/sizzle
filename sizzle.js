@@ -375,11 +375,9 @@ var Expr = Sizzle.selectors = {
 				match[2] = match[3];
 			}
 
-			// Splice out unneeded captures for passing
+			// Reduce the match to needed captures for passing
 			// arguments to the pseudo filter method
-			match = match.splice( 0, 3 );
-
-			return match;
+			return match.slice( 0, 3 );
 		}
 	},
 
@@ -1047,7 +1045,8 @@ function handlePOS( selector, context, results, seed, groups ) {
 }
 
 function tokenize( selector, context, xml ) {
-	var match, tokens, type, invalid,
+	var match, tokens, type,
+		unmatched = true,
 		groups = [],
 		soFar = selector,
 		preFilters = Expr.preFilter,
@@ -1055,10 +1054,9 @@ function tokenize( selector, context, xml ) {
 		checkContext = !xml && context !== document;
 
 	while ( soFar ) {
-		invalid = true;
 
 		// Comma or start
-		if ( !tokens || (match = rcomma.exec( soFar )) ) {
+		if ( unmatched || (match = rcomma.exec( soFar )) ) {
 			groups.push(tokens = []);
 			if ( match ) {
 				soFar = soFar.slice( match[0].length );
@@ -1070,14 +1068,17 @@ function tokenize( selector, context, xml ) {
 				soFar = " " + soFar;
 			}
 		}
+		unmatched = true;
+
 		// Combinators
 		if ( (match = rcombinators.exec( soFar )) ) {
 			soFar = soFar.slice( match[0].length );
 
 			// Cast whitespace combinators to space
 			tokens.push({ part: match.pop().replace(rtrim, " "), captures: match });
-			invalid = false;
+			unmatched = false;
 		}
+
 		// Filters
 		for ( type in filters ) {
 			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
@@ -1085,11 +1086,11 @@ function tokenize( selector, context, xml ) {
 
 				soFar = soFar.slice( match.shift().length );
 				tokens.push({ part: type, captures: match });
-				invalid = false;
+				unmatched = false;
 			}
 		}
 
-		if ( invalid ) {
+		if ( unmatched ) {
 			Sizzle.error( selector );
 		}
 	}
@@ -1303,7 +1304,7 @@ if ( document.querySelectorAll ) {
 		var disconnectedMatch,
 			oldSelect = select,
 			rdivision = /[^\\],/g,
-			rapostrophe = /'/g,
+			rescape = /'|\\/g,
 			rattributeQuotes = /\=[\x20\t\r\n\f]*([^'"\]]*)[\x20\t\r\n\f]*\]/g,
 			rbuggyQSA = [],
 			// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
@@ -1375,7 +1376,7 @@ if ( document.querySelectorAll ) {
 						parent = context.parentNode;
 
 					if ( old ) {
-						nid = nid.replace( rapostrophe, "\\$&" );
+						nid = nid.replace( rescape, "\\$&" );
 					} else {
 						context.setAttribute( "id", nid );
 					}
