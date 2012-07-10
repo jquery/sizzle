@@ -24,7 +24,8 @@ module.exports = function( grunt ) {
 				trailing: true,
 				undef: true,
 				smarttabs: true,
-				maxerr: 100
+				maxerr: 100,
+				sub: true
 			},
 			globals: {
 				jQuery: true,
