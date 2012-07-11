@@ -31,8 +31,8 @@ var cachedruns,
 	// http://www.w3.org/TR/css3-syntax/#characters
 	characterEncoding = "(?:\\\\.|[-\\w]|[^\\x00-\\xa0])",
 
-	// Javascript identifier syntax (with added # for unquoted hash)
-	identifier = "(?:\\\\.|-?[#_a-zA-Z][-\\w]*|[^\\x00-\\xa0])",
+	// Loosely modeled on Javascript identifier characters
+	identifier = "(?:[\\w#_-]|[^\\x00-\\xa0]|\\\\.)",
 	// Acceptable operators http://www.w3.org/TR/selectors/#attribute-selectors
 	operators = "([*^$|!~]?=)",
 	attributes = "\\[" + whitespace + "*(" + characterEncoding + "+)" + whitespace +
