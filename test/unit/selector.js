@@ -152,7 +152,7 @@ test("XML Document Selectors", function() {
 });
 
 test("broken", function() {
-	expect( 21 );
+	expect( 22 );
 
 	function broken( name, selector ) {
 		raises(function() {
@@ -189,6 +189,7 @@ test("broken", function() {
 	broken( "First-child", ":first-child(n)" );
 	broken( "Last-child", ":last-child(n)" );
 	broken( "Only-child", ":only-child(n)" );
+	broken( "Missing quotes", "a:contains(Google Groups (Link))" );
 
 	// Make sure attribute value quoting works correctly. See: #6093
 	var attrbad = jQuery('<input type="hidden" value="2" name="foo.baz" id="attrbad1"/><input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>').appendTo("body");
@@ -543,7 +544,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 28 );
+	expect( 30 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -560,8 +561,6 @@ test("pseudo - misc", function() {
 
 	t( "Text Contains", "a:contains('Google Groups (Link)')", ["groups"] );
 	t( "Text Contains", "a:contains(\"(Link)\")", ["groups"] );
-	t( "Text Contains", "a:contains(Google Groups (Link))", ["groups"] );
-	t( "Text Contains", "a:contains((Link))", ["groups"] );
 
 	var tmp = document.createElement("div");
 	tmp.id = "tmp_input";
@@ -617,6 +616,11 @@ test("pseudo - misc", function() {
 
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code)", ["ap"] );
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code):contains(This link)", ["ap"] );
+
+	t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
+	t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
+	t( "Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=\\)]", ["sndp"] );
+	t( "Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=')']", ["sndp"] );
 });
 
 
