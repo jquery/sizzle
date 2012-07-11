@@ -252,7 +252,7 @@ test("id", function() {
 });
 
 test("class", function() {
-	expect( 22 );
+	expect( 24 );
 
 	t( "Class Selector", ".blog", ["mark","simon"] );
 	t( "Class Selector", ".GROUPS", ["groups"] );
@@ -287,6 +287,8 @@ test("class", function() {
 	div.className = "null";
 	ok( Sizzle.matchesSelector( div, ".null"), ".null matches element with class 'null'" );
 	ok( Sizzle.matchesSelector( div.firstChild, ".null div"), "caching system respects DOM changes" );
+	ok( !Sizzle.matchesSelector( document, ".foo" ), "testing class on document doesn't error" );
+	ok( !Sizzle.matchesSelector( window, ".foo" ), "testing class on window doesn't error" );
 });
 
 test("name", function() {
