@@ -29,36 +29,35 @@ var cachedruns,
 	// Whitespace characters http://www.w3.org/TR/css3-selectors/#whitespace
 	whitespace = "[\\x20\\t\\r\\n\\f]",
 	// http://www.w3.org/TR/css3-syntax/#characters
-	characterEncoding = "(?:[-\\w]|[^\\x00-\\xa0]|\\\\.)",
+	characterEncoding = "(?:\\\\.|[-\\w]|[^\\x00-\\xa0])",
 
 	// Javascript identifier syntax (with added # for unquoted hash)
-	identifier = "(?:-?[#_a-zA-Z][-\\w]*|[^\\x00-\\xa0]|\\\\.)",
+	identifier = "(?:\\\\.|-?[#_a-zA-Z][-\\w]*|[^\\x00-\\xa0])",
 	// Acceptable operators http://www.w3.org/TR/selectors/#attribute-selectors
 	operators = "([*^$|!~]?=)",
 	attributes = "\\[" + whitespace + "*(" + characterEncoding + "+)" + whitespace +
-		"*(?:" + operators + whitespace + "*(?:(['\"])((?:[^\\\\]|\\\\.)*?)\\3|(" + identifier + "+)|)|)" + whitespace + "*\\]",
-
-	pseudos = ":(" + characterEncoding + "+)(?:\\((?:(['\"])((?:[^\\\\]|\\\\.)*)\\2|([^()]*|.*))\\))?",
+		"*(?:" + operators + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\3|(" + identifier + "+)|)|)" + whitespace + "*\\]",
+	pseudos = ":(" + characterEncoding + "+)(?:\\((?:(['\"])((?:\\\\.|[^\\\\])*?)\\2|(.*))\\)|)",
 	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\)|)(?=[^-]|$)",
 	combinators = whitespace + "*([\\x20\\t\\r\\n\\f>+~])" + whitespace + "*",
+	groups = "(?=[^\\x20\\t\\r\\n\\f])(?:\\\\.|" + attributes + "|" + pseudos.replace( 2, 6 ) + "|[^\\\\(),])+",
 
-	rcombinators = new RegExp( "^" + combinators ),
-	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
-
-	rtrailingPseudo = new RegExp("((?:\\)(?!" + whitespace + "*:)|[^)])*)\\)" + whitespace + "*:(?!\\\\)"),
+	// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
 	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
 
-	rtokens = new RegExp( "(?:" +
-		attributes + "|" +
-		pseudos.replace( 2, 6 ) +
-		"|[^\\\\\\x20\\t\\r\\n\\f>+~]|\\\\.)+|" +
-		combinators, "g" ),
+	rcombinators = new RegExp( "^" + combinators ),
 
-	rgroups = new RegExp( "(?=[^\\x20\\t\\r\\n\\f])(?:" +
-		attributes + "|" +
-		pseudos.replace( 2, 6 ) +
-		"|[^\\\\,()[\\]])+", "g"),
+	// All simple (non-comma) selectors, excluding insignifant trailing whitespace
+	rgroups = new RegExp( groups + "?(?=" + whitespace + "*,|$)", "g" ),
 
+	// A selector, or everything after leading whitespace
+	// Optionally followed in either case by a ")" for terminating sub-selectors
+	rselector = new RegExp( "^(?:(?!,)(?:(?:^|,)" + whitespace + "*" + groups + ")*?|" + whitespace + "*(.*?))(\\)|$)" ),
+
+	// All combinators and selector components (attribute test, tag, pseudo, etc.), the latter appearing together when consecutive
+	rtokens = new RegExp( groups.slice( 19, -6 ) + "\\x20\\t\\r\\n\\f>+~])+|" + combinators, "g" ),
+
+	// Easily-parseable/retrievable ID or TAG or CLASS selectors
 	rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
 
 	rsibling = /^[\x20\t\r\n\f]*[+~]/,
@@ -355,29 +354,24 @@ var Expr = Sizzle.selectors = {
 		},
 
 		"PSEUDO": function( match ) {
-			var unquoted, beforeClosing;
+			var argument,
+				unquoted = match[4];
 
 			if ( matchExpr["CHILD"].test( match[0] ) ) {
 				return null;
 			}
 
-			// Clean up unquoted
-			if ( (unquoted = match[4]) ) {
+			// Relinquish our claim on characters in `unquoted` from a closing parenthesis on
+			if ( unquoted && (argument = rselector.exec( unquoted )) && argument.pop() ) {
 
-				// Check if we've picked up trailing pseudos
-				if ( (beforeClosing = rtrailingPseudo.exec( unquoted )) && !beforeClosing.index ) {
-					unquoted = beforeClosing[1];
-					match[0] = match[0].slice( 0, match[0].indexOf( unquoted ) + unquoted.length + 1 );
-				}
-
-				match[2] = unquoted;
-			} else {
-				match[2] = match[3];
+				match[0] = match[0].slice( 0, argument[0].length - unquoted.length - 1 );
+				unquoted = argument[0].slice( 0, -1 );
 			}
 
-			// Reduce the match to needed captures for passing
-			// arguments to the pseudo filter method
-			return match.slice( 0, 3 );
+			// Quoted or unquoted, we have the full argument
+			// Return only captures needed by the pseudo filter method (type and argument)
+			match.splice( 2, 3, unquoted || match[3] );
+			return match;
 		}
 	},
 
@@ -1045,54 +1039,58 @@ function handlePOS( selector, context, results, seed, groups ) {
 }
 
 function tokenize( selector, context, xml ) {
-	var match, tokens, type,
-		unmatched = true,
+	var tokens, soFar, type,
 		groups = [],
-		soFar = selector,
+		i = 0,
+
+		// Catch obvious selector issues: terminal ")"; nonempty fallback match
+		// rselector never fails to match *something*
+		match = rselector.exec( selector ),
+		matched = !match.pop() && !match.pop(),
+		selectorGroups = matched && selector.match( rgroups ) || [""],
+
 		preFilters = Expr.preFilter,
 		filters = Expr.filter,
 		checkContext = !xml && context !== document;
 
-	while ( soFar ) {
+	for ( ; (soFar = selectorGroups[i]) != null && matched; i++ ) {
+		groups.push( tokens = [] );
 
-		// Comma or start
-		if ( unmatched || (match = rcomma.exec( soFar )) ) {
-			groups.push(tokens = []);
-			if ( match ) {
+		// Need to make sure we're within a narrower context if necessary
+		// Adding a descendant combinator will generate what is needed
+		if ( checkContext ) {
+			soFar = " " + soFar;
+		}
+
+		while ( soFar ) {
+			matched = false;
+
+			// Combinators
+			if ( (match = rcombinators.exec( soFar )) ) {
 				soFar = soFar.slice( match[0].length );
+
+				// Cast descendant combinators to space
+				matched = tokens.push({ part: match.pop().replace( rtrim, " " ), captures: match });
 			}
 
-			// Need to make sure we're within a narrower context if necessary
-			// Adding a descendant combinator will generate what is needed
-			if ( checkContext ) {
-				soFar = " " + soFar;
+			// Filters
+			for ( type in filters ) {
+				if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
+					(match = preFilters[ type ]( match, context, xml )) ) ) {
+
+					soFar = soFar.slice( match.shift().length );
+					matched = tokens.push({ part: type, captures: match });
+				}
+			}
+
+			if ( !matched ) {
+				break;
 			}
 		}
-		unmatched = true;
+	}
 
-		// Combinators
-		if ( (match = rcombinators.exec( soFar )) ) {
-			soFar = soFar.slice( match[0].length );
-
-			// Cast whitespace combinators to space
-			tokens.push({ part: match.pop().replace(rtrim, " "), captures: match });
-			unmatched = false;
-		}
-
-		// Filters
-		for ( type in filters ) {
-			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
-				(match = preFilters[ type ]( match, context, xml )) ) ) {
-
-				soFar = soFar.slice( match.shift().length );
-				tokens.push({ part: type, captures: match });
-				unmatched = false;
-			}
-		}
-
-		if ( unmatched ) {
-			Sizzle.error( selector );
-		}
+	if ( !matched ) {
+		Sizzle.error( selector );
 	}
 
 	return groups;
