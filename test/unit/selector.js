@@ -389,7 +389,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 52 );
+	expect( 54 );
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
@@ -405,6 +405,8 @@ test("attributes", function() {
 	t( "Attribute Equals", "#qunit-fixture a[rel=bookmark]", ["simon1"] );
 	t( "Attribute Equals", "#qunit-fixture a[href='http://www.google.com/']", ["google"] );
 	t( "Attribute Equals", "#qunit-fixture a[ rel = 'bookmark' ]", ["simon1"] );
+	t( "Attribute Equals Number", "#qunit-fixture option[value=1]", ["option1b","option2b","option3b","option4b","option5c"] );
+	t( "Attribute Equals Number", "#qunit-fixture li[tabindex=-1]", ["foodWithNegativeTabIndex"] );
 
 	document.getElementById("anchor2").href = "#2";
 	t( "href Attribute", "p a[href^=#]", ["anchor2"] );
