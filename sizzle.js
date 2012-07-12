@@ -413,7 +413,7 @@ var Expr = Sizzle.selectors = {
 				}
 			}
 			return function( elem ) {
-				return pattern.test( elem.className || (elem.getAttribute && elem.getAttribute("class")) || "" );
+				return pattern.test( elem.className || (typeof elem.getAttribute !== strundefined && elem.getAttribute("class")) || "" );
 			};
 		},
 
