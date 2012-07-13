@@ -79,7 +79,7 @@ var cachedruns,
 			"*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace +
 			"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
 		"POS": new RegExp( pos, "ig" ),
-		// For use in libraries implementing .is(), an unaltered POS
+		// For use in libraries implementing .is()
 		"needsContext": new RegExp( "^" + whitespace + "*[>+~]|" + pos, "i" )
 	},
 
