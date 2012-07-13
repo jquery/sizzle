@@ -80,7 +80,7 @@ var cachedruns,
 			"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
 		"POS": new RegExp( pos, "ig" ),
 		// For use in libraries implementing .is(), an unaltered POS
-		"globalPOS": new RegExp( pos, "i" )
+		"needsContext": new RegExp( "^" + whitespace + "*[>+~]|" + pos, "i" )
 	},
 
 	classCache = {},
