@@ -948,39 +948,39 @@ Sizzle.uniqueSort = function( results ) {
 };
 
 function multipleContexts( selector, contexts, results, seed ) {
-	for ( var i = 0, len = contexts.length; i < len; i++ ) {
+	var i = 0, len = contexts.length;
+	for ( ; i < len; i++ ) {
 		Sizzle( selector, contexts[i], results, seed );
 	}
 }
 
 function handlePOSGroup( selector, posfilter, argument, contexts, seed, not ) {
-	var results = [],
+	var results,
 		fn = Expr.setFilters[ posfilter.toLowerCase() ];
 
 	if ( !fn ) {
 		Sizzle.error( posfilter );
 	}
 
-	if ( selector ) {
-		multipleContexts( selector, contexts, results, seed );
-	} else {
-		results = seed;
+	if ( selector || !(results = seed) ) {
+		multipleContexts( selector || "*", contexts, (results = []), seed );
 	}
-	return results.length ? fn( results, argument, not ) : [];
+
+	return results.length > 0 ? fn( results, argument, not ) : [];
 }
 
 function handlePOS( selector, context, results, seed, groups ) {
-	var match, not, anchor, ret, elements,
-		currentContexts, part, lastIndex,
+	var match, not, anchor, ret, elements, currentContexts, part, lastIndex,
 		i = 0,
 		len = groups.length,
 		rpos = matchExpr["POS"],
 		// This is generated here in case matchExpr["POS"] is extended
-		rposgroups = new RegExp( "^" + matchExpr["POS"].source + "(?!" + whitespace + ")", "i" ),
+		rposgroups = new RegExp( "^" + rpos.source + "(?!" + whitespace + ")", "i" ),
 		// This is for making sure non-participating
 		// matching groups are represented cross-browser (IE6-8)
 		setUndefined = function() {
-			for ( var i = 1, len = arguments.length - 2; i < len; i++ ) {
+			var i = 1, len = arguments.length - 2;
+			for ( ; i < len; i++ ) {
 				if ( arguments[i] === undefined ) {
 					match[i] = undefined;
 				}
@@ -993,21 +993,23 @@ function handlePOS( selector, context, results, seed, groups ) {
 		selector = groups[i];
 		ret = [];
 		anchor = 0;
-		elements = seed || null;
+		elements = seed;
 		while ( (match = rpos.exec( selector )) ) {
-			lastIndex = match.index + match[0].length;
+			lastIndex = rpos.lastIndex = match.index + match[0].length;
 			if ( lastIndex > anchor ) {
 				part = selector.slice( anchor, match.index );
 				anchor = lastIndex;
 				currentContexts = [ context ];
 
 				if ( rcombinators.test(part) ) {
-					currentContexts = elements || currentContexts;
+					if ( elements ) {
+						currentContexts = elements;
+					}
 					elements = seed;
 				}
 
 				if ( (not = rendsWithNot.test( part )) ) {
-					part = part.replace( rendsWithNot, "" ).replace( rcombinators, "$&*" );
+					part = part.slice( 0, -5 ).replace( rcombinators, "$&*" );
 				}
 
 				if ( match.length > 1 ) {
@@ -1015,14 +1017,10 @@ function handlePOS( selector, context, results, seed, groups ) {
 				}
 				elements = handlePOSGroup( part, match[1], match[2], currentContexts, elements, not );
 			}
-
-			if ( rpos.lastIndex === match.index ) {
-				rpos.lastIndex++;
-			}
 		}
 
 		if ( elements ) {
-			ret = ret.concat( elements );
+			push.apply( ret, elements );
 
 			if ( (part = selector.slice( anchor )) && part !== ")" ) {
 				multipleContexts( part, ret, results, seed );
