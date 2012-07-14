@@ -948,7 +948,8 @@ Sizzle.uniqueSort = function( results ) {
 };
 
 function multipleContexts( selector, contexts, results, seed ) {
-	var i = 0, len = contexts.length;
+	var i = 0,
+		len = contexts.length;
 	for ( ; i < len; i++ ) {
 		Sizzle( selector, contexts[i], results, seed );
 	}
@@ -979,7 +980,8 @@ function handlePOS( selector, context, results, seed, groups ) {
 		// This is for making sure non-participating
 		// matching groups are represented cross-browser (IE6-8)
 		setUndefined = function() {
-			var i = 1, len = arguments.length - 2;
+			var i = 1,
+				len = arguments.length - 2;
 			for ( ; i < len; i++ ) {
 				if ( arguments[i] === undefined ) {
 					match[i] = undefined;
