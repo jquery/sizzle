@@ -1301,7 +1301,6 @@ if ( document.querySelectorAll ) {
 	(function() {
 		var disconnectedMatch,
 			oldSelect = select,
-			rdivision = /[^\\],/g,
 			rescape = /'|\\/g,
 			rattributeQuotes = /\=[\x20\t\r\n\f]*([^'"\]]*)[\x20\t\r\n\f]*\]/g,
 			rbuggyQSA = [],
@@ -1385,8 +1384,7 @@ if ( document.querySelectorAll ) {
 
 					try {
 						if ( context ) {
-							nid = "[id='" + nid + "'] ";
-							newSelector = nid + selector.replace( rdivision, "$&" + nid );
+							newSelector = selector.replace( rtrim, "" ).replace( rgroups, "[id='" + nid + "'] $&" );
 							push.apply( results, slice.call(context.querySelectorAll( newSelector ), 0) );
 							return results;
 						}

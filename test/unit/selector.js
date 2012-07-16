@@ -392,7 +392,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 54 );
+	expect( 58 );
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
@@ -425,6 +425,11 @@ test("attributes", function() {
 	t( "Attribute containing []", "input[name$='[bar]']", ["hidden2"] );
 	t( "Attribute containing []", "input[name$='foo[bar]']", ["hidden2"] );
 	t( "Attribute containing []", "input[name*='foo[bar]']", ["hidden2"] );
+
+	deepEqual( Sizzle( "input[value='0,1']" ), [ document.getElementById("el12087") ], "Without context, single-quoted attribute containing ','" );
+	deepEqual( Sizzle( 'input[value="0,1"]' ), [ document.getElementById("el12087") ], "Without context, double-quoted attribute containing ','" );
+	deepEqual( Sizzle( "input[value='0,1']", document.getElementById("t12087") ), [ document.getElementById("el12087") ], "With context, single-quoted attribute containing ','" );
+	deepEqual( Sizzle( 'input[value="0,1"]', document.getElementById("t12087") ), [ document.getElementById("el12087") ], "With context, double-quoted attribute containing ','" );
 
 	t( "Multiple Attribute Equals", "#form input[type='radio'], #form input[type='hidden']", ["radio1", "radio2", "hidden1"] );
 	t( "Multiple Attribute Equals", "#form input[type='radio'], #form input[type=\"hidden\"]", ["radio1", "radio2", "hidden1"] );
@@ -691,7 +696,7 @@ test("pseudo - position", function() {
 
 	t( "Check element position", "div div:eq(0)", ["nothiddendivchild"] );
 	t( "Check element position", "div div:eq(5)", ["t2037"] );
-	t( "Check element position", "div div:eq(28)", ["slideup"] );
+	t( "Check element position", "div div:eq(29)", ["slideup"] );
 	t( "Check element position", "div div:first", ["nothiddendivchild"] );
 	t( "Check element position", "div > div:first", ["nothiddendivchild"] );
 	t( "Check element position", "#dl div:first div:first", ["foo"] );
