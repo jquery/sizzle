@@ -426,10 +426,10 @@ test("attributes", function() {
 	t( "Attribute containing []", "input[name$='foo[bar]']", ["hidden2"] );
 	t( "Attribute containing []", "input[name*='foo[bar]']", ["hidden2"] );
 
-	deepEqual( Sizzle( "input[value='0,1']" ), [ document.getElementById("el12087") ], "Without context, single-quoted attribute containing ','" );
-	deepEqual( Sizzle( 'input[value="0,1"]' ), [ document.getElementById("el12087") ], "Without context, double-quoted attribute containing ','" );
-	deepEqual( Sizzle( "input[value='0,1']", document.getElementById("t12087") ), [ document.getElementById("el12087") ], "With context, single-quoted attribute containing ','" );
-	deepEqual( Sizzle( 'input[value="0,1"]', document.getElementById("t12087") ), [ document.getElementById("el12087") ], "With context, double-quoted attribute containing ','" );
+	deepEqual( Sizzle( "input[data-comma='0,1']" ), [ document.getElementById("el12087") ], "Without context, single-quoted attribute containing ','" );
+	deepEqual( Sizzle( 'input[data-comma="0,1"]' ), [ document.getElementById("el12087") ], "Without context, double-quoted attribute containing ','" );
+	deepEqual( Sizzle( "input[data-comma='0,1']", document.getElementById("t12087") ), [ document.getElementById("el12087") ], "With context, single-quoted attribute containing ','" );
+	deepEqual( Sizzle( 'input[data-comma="0,1"]', document.getElementById("t12087") ), [ document.getElementById("el12087") ], "With context, double-quoted attribute containing ','" );
 
 	t( "Multiple Attribute Equals", "#form input[type='radio'], #form input[type='hidden']", ["radio1", "radio2", "hidden1"] );
 	t( "Multiple Attribute Equals", "#form input[type='radio'], #form input[type=\"hidden\"]", ["radio1", "radio2", "hidden1"] );
