@@ -409,7 +409,7 @@ test("attributes", function() {
 	t( "Attribute Equals", "#qunit-fixture a[href='http://www.google.com/']", ["google"] );
 	t( "Attribute Equals", "#qunit-fixture a[ rel = 'bookmark' ]", ["simon1"] );
 	t( "Attribute Equals Number", "#qunit-fixture option[value=1]", ["option1b","option2b","option3b","option4b","option5c"] );
-	t( "Attribute Equals Number", "#qunit-fixture li[tabindex=-1]", ["foodWithNegativeTabIndex"] );
+	t( "Attribute Equals Number", "#qunit-fixture li[tabIndex=-1]", ["foodWithNegativeTabIndex"] );
 
 	document.getElementById("anchor2").href = "#2";
 	t( "href Attribute", "p a[href^=#]", ["anchor2"] );
