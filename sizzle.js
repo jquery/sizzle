@@ -60,7 +60,7 @@ var cachedruns,
 	// Easily-parseable/retrievable ID or TAG or CLASS selectors
 	rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
 
-	rsibling = /^[\x20\t\r\n\f]*[+~]/,
+	rsibling = /[\x20\t\r\n\f]*[+~]/,
 	rendsWithNot = /:not\($/,
 
 	rheader = /h\d/i,
@@ -1250,7 +1250,7 @@ var select = function( selector, context, results, seed, xml ) {
 		}
 
 
-		findContext = (tokens.length >= 1 && rsibling.test( tokens[0] ) && context.parentNode) || context;
+		findContext = (tokens.length >= 1 && (match = rsibling.exec( tokens[0] )) && !match.index && context.parentNode) || context;
 
 		// Get the last token, excluding :not
 		notTokens = tokens.pop();
@@ -1370,7 +1370,7 @@ if ( document.querySelectorAll ) {
 				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
 					var old = context.getAttribute("id"),
 						nid = old || expando,
-						newContext = rsibling.test( selector ) ? context.parentNode : context;
+						newContext = rsibling.test( selector ) && context.parentNode || context;
 
 					if ( old ) {
 						nid = nid.replace( rescape, "\\$&" );
