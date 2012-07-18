@@ -811,8 +811,9 @@ Sizzle.attr = function( elem, name ) {
 	if ( assertAttributes || xml ) {
 		return elem.getAttribute( normalized );
 	}
-	attr = elem.attributes || {};
-	attr = attr[ normalized ] || attr[ name ];
+	if ( (attr = elem.attributes) ) {
+		attr = attr[ normalized ] || attr[ name ];
+	}
 	return attr ?
 		typeof elem[ normalized ] === "boolean" ?
 			elem[ normalized ] ? normalized : null :
