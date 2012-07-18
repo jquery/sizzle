@@ -1368,11 +1368,9 @@ if ( document.querySelectorAll ) {
 				// and working up from there (Thanks to Andrew Dupont for the technique)
 				// IE 8 doesn't work on object elements
 				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
-					var newSelector,
-						oldContext = context,
-						old = context.getAttribute( "id" ),
+					var old = context.getAttribute("id"),
 						nid = old || expando,
-						parent = context.parentNode;
+						newContext = rsibling.test( selector ) ? context.parentNode : context;
 
 					if ( old ) {
 						nid = nid.replace( rescape, "\\$&" );
@@ -1380,20 +1378,15 @@ if ( document.querySelectorAll ) {
 						context.setAttribute( "id", nid );
 					}
 
-					if ( parent && rsibling.test( selector ) ) {
-						context = parent;
-					}
-
 					try {
-						if ( context ) {
-							newSelector = selector.replace( rgroups, "[id='" + nid + "'] $&" );
-							push.apply( results, slice.call(context.querySelectorAll( newSelector ), 0) );
-							return results;
-						}
+						push.apply( results, slice.call( newContext.querySelectorAll(
+							selector.replace( rgroups, "[id='" + nid + "'] $&" )
+						), 0 ) );
+						return results;
 					} catch(qsaError) {
 					} finally {
 						if ( !old ) {
-							oldContext.removeAttribute( "id" );
+							context.removeAttribute("id");
 						}
 					}
 				}
