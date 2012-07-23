@@ -1022,7 +1022,7 @@ function handlePOS( selector, context, results, seed, groups ) {
 		}
 
 		if ( elements ) {
-			push.apply( ret, elements );
+			ret = ret.concat( elements );
 
 			if ( (part = selector.slice( anchor )) && part !== ")" ) {
 				multipleContexts( part, ret, results, seed );
