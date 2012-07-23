@@ -1384,7 +1384,7 @@ if ( document.querySelectorAll ) {
 
 					try {
 						if ( context ) {
-							newSelector = selector.replace( rtrim, "" ).replace( rgroups, "[id='" + nid + "'] $&" );
+							newSelector = selector.replace( rgroups, "[id='" + nid + "'] $&" );
 							push.apply( results, slice.call(context.querySelectorAll( newSelector ), 0) );
 							return results;
 						}
