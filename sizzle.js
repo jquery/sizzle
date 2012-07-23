@@ -1249,7 +1249,7 @@ var select = function( selector, context, results, seed, xml ) {
 			selector = selector.slice( tokens.shift().length );
 		}
 
-		findContext = (tokens.length >= 1 && (match = rsibling.exec( tokens[0] )) && !match.index && context.parentNode) || context;
+		findContext = ( (match = rsibling.exec( tokens[0] )) && !match.index && context.parentNode ) || context;
 
 		// Get the last token, excluding :not
 		notTokens = tokens.pop();
