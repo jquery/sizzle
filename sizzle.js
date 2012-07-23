@@ -803,19 +803,21 @@ var getText = Sizzle.getText = function( elem ) {
 
 Sizzle.attr = function( elem, name ) {
 	var attr,
-		xml = isXML( elem ),
-		normalized = xml ? name : name.toLowerCase();
-	if ( Expr.attrHandle[ normalized ] ) {
-		return Expr.attrHandle[ normalized ]( elem );
+		xml = isXML( elem );
+
+	if ( !xml ) {
+		name = name.toLowerCase();
+	}
+	if ( Expr.attrHandle[ name ] ) {
+		return Expr.attrHandle[ name ]( elem );
 	}
 	if ( assertAttributes || xml ) {
-		return elem.getAttribute( normalized );
+		return elem.getAttribute( name );
 	}
-	attr = elem.attributes || {};
-	attr = attr[ normalized ] || attr[ name ];
+	attr = elem.getAttributeNode( name );
 	return attr ?
-		typeof elem[ normalized ] === "boolean" ?
-			elem[ normalized ] ? normalized : null :
+		typeof elem[ name ] === "boolean" ?
+			elem[ name ] ? name : null :
 			attr.specified ? attr.value : null :
 		null;
 };
