@@ -397,7 +397,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 58 );
+	expect( 59 );
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
@@ -481,6 +481,8 @@ test("attributes", function() {
 
 	// Make sure attribute value quoting works correctly. See: #6093
 	var attrbad = jQuery("<input type=\"hidden\" value=\"2\" name=\"foo.baz\" id=\"attrbad1\"/><input type=\"hidden\" value=\"2\" name=\"foo[baz]\" id=\"attrbad2\"/><input type=\"hidden\" data-attr=\"foo_baz']\" id=\"attrbad3\"/>").appendTo("body");
+
+	t( "Underscores are valid unquoted", "input[id=types_all]", ["types_all"] );
 
 	t( "Find escaped attribute value", "input[name=foo\\.baz]", ["attrbad1"] );
 	t( "Find escaped attribute value", "input[name=foo\\[baz\\]]", ["attrbad2"] );

@@ -31,12 +31,15 @@ var cachedruns,
 	// http://www.w3.org/TR/css3-syntax/#characters
 	characterEncoding = "(?:\\\\.|[-\\w]|[^\\x00-\\xa0])",
 
-	// Loosely modeled on Javascript identifier characters
-	identifier = "(?:[\\w#_-]|[^\\x00-\\xa0]|\\\\.)",
+	// Loosely modeled on CSS identifier characters
+	// An unquoted value should be a CSS identifier (http://www.w3.org/TR/css3-selectors/#attribute-selectors)
+	// Proper syntax: http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
+	identifier = "(?:[-#\\w]|[^\\x00-\\xa0]|\\\\.)+",
+
 	// Acceptable operators http://www.w3.org/TR/selectors/#attribute-selectors
 	operators = "([*^$|!~]?=)",
 	attributes = "\\[" + whitespace + "*(" + characterEncoding + "+)" + whitespace +
-		"*(?:" + operators + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\3|(" + identifier + "+)|)|)" + whitespace + "*\\]",
+		"*(?:" + operators + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\3|(" + identifier + ")|)|)" + whitespace + "*\\]",
 	pseudos = ":(" + characterEncoding + "+)(?:\\((?:(['\"])((?:\\\\.|[^\\\\])*?)\\2|(.*))\\)|)",
 	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\)|)(?=[^-]|$)",
 	combinators = whitespace + "*([\\x20\\t\\r\\n\\f>+~])" + whitespace + "*",
