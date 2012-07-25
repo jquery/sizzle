@@ -505,12 +505,13 @@ test("attributes", function() {
 });
 
 test("pseudo - child", function() {
-	expect( 40 );
+	expect( 41 );
 	t( "First Child", "#qunit-fixture p:first-child", ["firstp","sndp"] );
 	t( "First Child (case-insensitive)", "#qunit-fixture p:FIRST-CHILD", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "#qunit-fixture a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
 	t( "Empty", "ul:empty", ["firstUL"] );
+	t( "Empty with comment node", "ol:empty", ["empty"] );
 	t( "Is A Parent", "#qunit-fixture p:parent", ["firstp","ap","sndp","en","sap","first"] );
 
 	t( "First Child", "p:first-child", ["firstp","sndp"] );

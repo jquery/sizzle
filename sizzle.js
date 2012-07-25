@@ -583,11 +583,24 @@ var Expr = Sizzle.selectors = {
 		},
 
 		"parent": function( elem ) {
-			return !!elem.firstChild;
+			return !Expr.pseudos["empty"]( elem );
 		},
 
 		"empty": function( elem ) {
-			return !elem.firstChild;
+			// http://www.w3.org/TR/selectors/#empty-pseudo
+			// :empty is only affected by element nodes and content nodes(including text(3), cdata(4)),
+			//   not comment, processing instructions, or others
+			// Thanks to Diego Perini for the nodeName shortcut
+			//   Greater than "@" means alpha characters (specifically not starting with "#" or "?")
+			var nodeType;
+			elem = elem.firstChild;
+			while ( elem ) {
+				if ( elem.nodeName > "@" || (nodeType = elem.nodeType) === 3 || nodeType === 4 ) {
+					return false;
+				}
+				elem = elem.nextSibling;
+			}
+			return true;
 		},
 
 		"contains": markFunction(function( text ) {
