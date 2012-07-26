@@ -1202,7 +1202,6 @@ var compile = Sizzle.compile = function( selector, context, xml ) {
 
 	// Return a cached group function if already generated (context dependent)
 	if ( cached && cached.context === context ) {
-		cached.dirruns++;
 		return cached;
 	}
 
@@ -1298,7 +1297,7 @@ var select = function( selector, context, results, seed, xml ) {
 	// If selector is empty, we're already done
 	if ( selector ) {
 		matcher = compile( selector, context, xml );
-		dirruns = matcher.dirruns;
+		dirruns = matcher.dirruns++;
 
 		if ( elements == null ) {
 			elements = Expr.find["TAG"]( "*", (rsibling.test( selector ) && context.parentNode) || context );
