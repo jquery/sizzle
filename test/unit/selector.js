@@ -561,12 +561,14 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 34 );
+	expect( 35 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
 	t( "Has Children - :has()", "p:has( a )", ["firstp","ap","en","sap"] );
+	t( "Multiple matches with the same context (cache check)", "#form select:has(option:first-child:contains('o'))", ["select1", "select2", "select3", "select4"] );
+
 	ok( Sizzle("#qunit-fixture :not(:has(:has(*)))").length, "All not grandparents" );
 
 	var select = document.getElementById("select1"),

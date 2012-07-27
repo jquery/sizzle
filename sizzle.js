@@ -1139,7 +1139,7 @@ function addCombinator( matcher, combinator, context ) {
 			while ( (elem = elem[ dir ]) ) {
 				if ( elem.nodeType === 1 ) {
 					if ( (cache = elem[ expando ]) === cachedkey ) {
-						return false;
+						return elem.sizset;
 					} else if ( typeof cache === "string" && cache.indexOf(dirkey) === 0 ) {
 						if ( elem.sizset ) {
 							return elem;
