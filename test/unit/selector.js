@@ -641,9 +641,9 @@ test("pseudo - misc", function() {
 	t( "Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=')']", ["sndp"] );
 
 	t( "Multi-pseudo", "#ap:has(*), #ap:has(*)", ["ap"] );
-	t( "Multi-positional", "#ap:gt(0), #ap:gt(0)", ["ap"] );
+	t( "Multi-positional", "#ap:gt(0), #ap:lt(1)", ["ap"] );
 	t( "Multi-pseudo with leading nonexistent id", "#nonexistent:has(*), #ap:has(*)", ["ap"] );
-	t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:gt(0)", ["ap"] );
+	t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:lt(1)", ["ap"] );
 });
 
 
