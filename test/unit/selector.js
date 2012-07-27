@@ -561,7 +561,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 30 );
+	expect( 34 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -631,6 +631,7 @@ test("pseudo - misc", function() {
 	ok( !match( input, ":active" ), ":active doesn't match" );
 	document.body.removeChild( input );
 
+	// Tokenization edge cases
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code)", ["ap"] );
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code):contains(This link)", ["ap"] );
 
@@ -638,6 +639,11 @@ test("pseudo - misc", function() {
 	t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
 	t( "Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=\\)]", ["sndp"] );
 	t( "Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=')']", ["sndp"] );
+
+	t( "Multi-pseudo", "#ap:has(*), #ap:has(*)", ["ap"] );
+	t( "Multi-positional", "#ap:gt(0), #ap:gt(0)", ["ap"] );
+	t( "Multi-pseudo with leading nonexistent id", "#nonexistent:has(*), #ap:has(*)", ["ap"] );
+	t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:gt(0)", ["ap"] );
 });
 
 
