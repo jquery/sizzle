@@ -561,7 +561,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 35 );
+	expect( 39 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -641,11 +641,16 @@ test("pseudo - misc", function() {
 	t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
 	t( "Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=\\)]", ["sndp"] );
 	t( "Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=')']", ["sndp"] );
+	t( "Nested compound pseudos", "#foo:not(:nth-child(1), :nth-child(2))", ["foo"] );
+	t( "Pseudo argument with quoted special characters", "#foo:not(p, div[title*='()'])", ["foo"] );
 
 	t( "Multi-pseudo", "#ap:has(*), #ap:has(*)", ["ap"] );
 	t( "Multi-positional", "#ap:gt(0), #ap:lt(1)", ["ap"] );
 	t( "Multi-pseudo with leading nonexistent id", "#nonexistent:has(*), #ap:has(*)", ["ap"] );
 	t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:lt(1)", ["ap"] );
+	t( "Multi-pseudo with argument containing special characters", "#ap:lt(1), #nonexistent:contains(])", ["ap"] );
+
+	deepEqual( Sizzle(":nth-child(1) + *, :nth-child(4)", document.getElementById("ap")), q("groups", "mark"), "Element-rooted multi-pseudo" );
 });
 
 
