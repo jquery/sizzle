@@ -21,6 +21,7 @@ var cachedruns,
 	done = 0,
 	slice = [].slice,
 	push = [].push,
+	Token = String,
 
 	expando = ( "sizcache" + Math.random() ).replace( ".", "" ),
 
@@ -85,12 +86,6 @@ var cachedruns,
 	cachedClasses = [],
 	compilerCache = {},
 	cachedSelectors = [],
-
-	// Return the original text of a tokenized selector
-	// We'd use `new String` instead of object literals, but jshint complains
-	partToString = function() {
-		return this.text;
-	},
 
 	// Mark a function for use in filtering
 	markFunction = function( fn ) {
@@ -1060,7 +1055,6 @@ function handlePOS( selector, context, results, seed, groups ) {
 function tokenize( selector, context, xml ) {
 	var tokens, type,
 		groups = [],
-		original = [],
 		i = 0,
 		soFar = selector,
 
@@ -1079,7 +1073,6 @@ function tokenize( selector, context, xml ) {
 		if ( !tokens || (match = rcomma.exec( soFar )) ) {
 			if ( tokens ) {
 				soFar = soFar.slice( match[0].length );
-				original.push( tokens.join("") );
 			}
 
 			// Need to make sure we're within a narrower context if necessary
@@ -1094,11 +1087,11 @@ function tokenize( selector, context, xml ) {
 
 		// Combinators
 		if ( (match = rcombinators.exec( soFar )) ) {
-			soFar = soFar.slice( match[0].length );
+			tokens.push( matched = new Token( match.shift() ) );
+			soFar = soFar.slice( matched.length );
 
 			// Cast descendant combinators to space
-			matched = tokens.push({ toString: partToString, text: match.shift(),
-				type: match[0].replace( rtrim, " " ) });
+			matched.type = match[0].replace( rtrim, " " );
 		}
 
 		// Filters
@@ -1106,9 +1099,11 @@ function tokenize( selector, context, xml ) {
 			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
 				(match = preFilters[ type ]( match, context, xml )) ) ) {
 
-				soFar = soFar.slice( match[0].length );
-				matched = tokens.push({ toString: partToString, text: match.shift(),
-					type: type, matches: match });
+				tokens.push( matched = new Token( match.shift() ) );
+				soFar = soFar.slice( matched.length );
+
+				matched.type = type;
+				matched.matches = match;
 			}
 		}
 	}
@@ -1117,7 +1112,7 @@ function tokenize( selector, context, xml ) {
 		Sizzle.error( selector );
 	}
 
-	groups.text = original.concat( tokens.join("") ).join(",");
+	groups.text = selector;
 	return groups;
 }
 
