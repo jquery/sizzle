@@ -1064,8 +1064,7 @@ function tokenize( selector, context, xml ) {
 		matched = !match.pop() && !match.pop(),
 
 		preFilters = Expr.preFilter,
-		filters = Expr.filter,
-		checkContext = !xml && context !== document;
+		filters = Expr.filter;
 
 	while ( matched && soFar ) {
 
@@ -1073,12 +1072,6 @@ function tokenize( selector, context, xml ) {
 		if ( !tokens || (match = rcomma.exec( soFar )) ) {
 			if ( tokens ) {
 				soFar = soFar.slice( match[0].length );
-			}
-
-			// Need to make sure we're within a narrower context if necessary
-			// Adding a descendant combinator will generate what is needed
-			if ( checkContext ) {
-				soFar = " " + soFar;
 			}
 
 			groups.push( tokens = [] );
@@ -1113,7 +1106,12 @@ function tokenize( selector, context, xml ) {
 	}
 
 	groups.text = selector;
-	return groups;
+	cachedSelectors.push( selector );
+	// Ensure only the most recent are cached
+	while ( cachedSelectors.length > Expr.cacheLength ) {
+		delete compilerCache[ cachedSelectors.shift() ];
+	}
+	return (compilerCache[ selector ] = groups);
 }
 
 function addCombinator( matcher, combinator, context ) {
@@ -1169,14 +1167,16 @@ function addMatcher( higher, deeper ) {
 }
 
 // ["TAG", ">", "ID", " ", "CLASS"]
-function matcherFromTokens( tokens, context, xml ) {
-	var token, matcher,
+function matcherFromTokens( tokens, context, xml, checkContext ) {
+	var token, matcher, relative,
 		i = 0;
 
 	for ( ; (token = tokens[i]); i++ ) {
-		if ( Expr.relative[ token.type ] ) {
-			matcher = addCombinator( matcher, Expr.relative[ token.type ], context );
-		} else {
+		if ( (relative = Expr.relative[ token.type ]) || checkContext ) {
+			matcher = addCombinator( matcher, relative || Expr.relative[" "], context );
+			checkContext = false;
+		}
+		if ( !relative ) {
 			token.matches.push( context, xml );
 			matcher = addMatcher( matcher, Expr.filter[ token.type ].apply( null, token.matches ) );
 		}
@@ -1200,31 +1200,29 @@ function matcherFromGroupMatchers( matchers ) {
 
 var compile = Sizzle.compile = function( selector, context, xml ) {
 	var tokens, group, i,
-		cached = compilerCache[ selector.text || selector ];
+		cached = compilerCache[ selector.text || selector ],
+		matcher = cached && cached.matcher,
+		checkContext = !xml && context !== document;
 
 	// Return a cached group function if already generated (context dependent)
-	if ( cached && cached.context === context ) {
-		cached.dirruns++;
-		return cached;
+	if ( matcher && matcher.context === context ) {
+		matcher.dirruns++;
+		return matcher;
 	}
 
 	// Generate a function of recursive functions that can be used to check each element
 	// Only tokenize once
-	group = selector.text ? selector : tokenize( selector, context, xml );
+	matcher = [];
+	group = selector.text ? selector : compilerCache[ selector ] || tokenize( selector, context, xml );
 	for ( i = 0; (tokens = group[i]); i++ ) {
-		group[i] = matcherFromTokens( tokens, context, xml );
+		matcher[i] = matcherFromTokens( tokens, context, xml, checkContext );
 	}
 
 	// Cache the compiled function
-	cached = compilerCache[ selector ] = matcherFromGroupMatchers( group );
-	cached.context = context;
-	cached.runs = cached.dirruns = 0;
-	cachedSelectors.push( selector );
-	// Ensure only the most recent are cached
-	if ( cachedSelectors.length > Expr.cacheLength ) {
-		delete compilerCache[ cachedSelectors.shift() ];
-	}
-	return cached;
+	matcher = group.matcher = matcherFromGroupMatchers( matcher );
+	matcher.context = context;
+	matcher.runs = matcher.dirruns = 0;
+	return matcher;
 };
 
 Sizzle.matches = function( expr, elements ) {
@@ -1241,8 +1239,8 @@ var select = function( selector, context, results, seed, xml ) {
 	var elements, token, j, idxFilter, elem, matcher,
 		findContext = context,
 		lastOrder = Expr.order.length,
-		groups = selector ? tokenize( selector, context, xml ) : [],
-		firstGroup = groups[0] || groups,
+		groups = selector ? compilerCache[ selector ] || tokenize( selector, context, xml ) : [],
+		firstGroup = [].concat( groups[0] || groups ),
 		i = firstGroup.length;
 
 	// POS handling
@@ -1307,14 +1305,20 @@ var select = function( selector, context, results, seed, xml ) {
 			}
 		}
 
-		if ( !( groups.text = firstGroup.join("") ) ) {
-			push.apply( results, slice.call(elements, 0) );
+		if ( firstGroup.length !== groups[0].length ) {
+			groups = [ firstGroup ];
+			selector = groups.text = firstGroup.join("");
+			if ( selector ) {
+				compilerCache[ selector ] = groups;
+			} else {
+				push.apply( results, slice.call( elements, 0 ) );
+			}
 		}
 	}
 
 	// Only loop over the given elements once
 	// If the selector is empty, we're already done
-	if ( groups.text ) {
+	if ( selector ) {
 		matcher = compile( groups, context, xml );
 		dirruns = matcher.dirruns;
 
@@ -1406,7 +1410,7 @@ if ( document.querySelectorAll ) {
 						old = context.getAttribute("id"),
 						nid = old || expando,
 						newContext = rsibling.test( selector ) && context.parentNode || context,
-						groups = tokenize( selector, newContext ),
+						groups = compilerCache[ selector ] || tokenize( selector, newContext ),
 						len = groups.length;
 
 					if ( old ) {
