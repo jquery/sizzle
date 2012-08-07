@@ -1043,7 +1043,11 @@ function handlePOS( selector, context, results, seed, groups ) {
 			ret = ret.concat( elements );
 
 			if ( (part = selector.slice( anchor )) && part !== ")" ) {
-				multipleContexts( part, ret, results, seed );
+				if ( rcombinators.test(part) ) {
+					multipleContexts( part, ret, results, seed );
+				} else {
+					Sizzle( part, context, results, seed ? seed.concat(elements) : elements );
+				}
 			} else {
 				push.apply( results, ret );
 			}
