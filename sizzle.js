@@ -1,8 +1,8 @@
 /*!
  * Sizzle CSS Selector Engine
- *  Copyright 2012, The Dojo Foundation
- *  Released under the MIT, BSD, and GPL Licenses.
- *  More information: http://sizzlejs.com/
+ *  Copyright 2012 jQuery Foundation and other contributors
+ *  Released under the MIT license
+ *  http://sizzlejs.com/
  */
 (function( window, undefined ) {
 
