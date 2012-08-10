@@ -152,7 +152,7 @@ test("XML Document Selectors", function() {
 });
 
 test("broken", function() {
-	expect( 22 );
+	expect( 21 );
 
 	function broken( name, selector ) {
 		raises(function() {
@@ -189,7 +189,6 @@ test("broken", function() {
 	broken( "First-child", ":first-child(n)" );
 	broken( "Last-child", ":last-child(n)" );
 	broken( "Only-child", ":only-child(n)" );
-	broken( "Missing quotes", "a:contains(Google Groups (Link))" );
 
 	// Make sure attribute value quoting works correctly. See: #6093
 	var attrbad = jQuery('<input type="hidden" value="2" name="foo.baz" id="attrbad1"/><input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>').appendTo("body");
@@ -561,7 +560,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 35 );
+	expect( 37 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -580,6 +579,9 @@ test("pseudo - misc", function() {
 
 	t( "Text Contains", "a:contains('Google Groups (Link)')", ["groups"] );
 	t( "Text Contains", "a:contains(\"(Link)\")", ["groups"] );
+	t( "Text Contains", "a:contains(Google Groups (Link))", ["groups"] );
+	t( "Text Contains", "a:contains((Link))", ["groups"] );
+
 
 	var tmp = document.createElement("div");
 	tmp.id = "tmp_input";
@@ -650,7 +652,7 @@ test("pseudo - misc", function() {
 
 
 test("pseudo - :not", function() {
-	expect( 26 );
+	expect( 29 );
 
 	t( "Not", "a.blog:not(.link)", ["mark"] );
 
@@ -674,6 +676,7 @@ test("pseudo - :not", function() {
 	t( ":not Multiple", "p:not(p,a)", [] );
 	t( ":not Multiple", "p:not(a,p,b)", [] );
 	t( ":not Multiple", ":input:not(:image,:input,:submit)", [] );
+	t( ":not Multiple", "#qunit-fixture p:not(:has(a), :nth-child(1))", ["first"] );
 
 	t( "No element not selector", ".container div:not(.excluded) div", [] );
 
@@ -681,9 +684,12 @@ test("pseudo - :not", function() {
 	t( ":not() Equals attribute", "#form select:not([name=select1])", ["select2", "select3", "select4","select5"]);
 	t( ":not() Equals quoted attribute", "#form select:not([name='select1'])", ["select2", "select3", "select4", "select5"]);
 
-	t( ":not() Multiple Class", "#foo a:not(.blog)", ["yahoo","anchor2"] );
-	t( ":not() Multiple Class", "#foo a:not(.link)", ["yahoo","anchor2"] );
-	t( ":not() Multiple Class", "#foo a:not(.blog.link)", ["yahoo","anchor2"] );
+	t( ":not() Multiple Class", "#foo a:not(.blog)", ["yahoo", "anchor2"] );
+	t( ":not() Multiple Class", "#foo a:not(.link)", ["yahoo", "anchor2"] );
+	t( ":not() Multiple Class", "#foo a:not(.blog.link)", ["yahoo", "anchor2"] );
+
+	t( ":not chaining", "#qunit-fixture div[id]:not(:has(div, span)):not(:has(*))", ["nothiddendivchild", "divWithNoTabIndex", "fx-tests"] );
+	t( ":not chaining", "#form select:not(.select1):contains(Nothing) > option:not(option)", [] );
 });
 
 test("pseudo - position", function() {
