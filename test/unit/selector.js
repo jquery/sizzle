@@ -652,9 +652,10 @@ test("pseudo - misc", function() {
 
 
 test("pseudo - :not", function() {
-	expect( 29 );
+	expect( 30 );
 
 	t( "Not", "a.blog:not(.link)", ["mark"] );
+	t( ":not() with :first", "#foo p:not(:first) .link", ["simon"] );
 
 	t( "Not - multiple", "#form option:not(:contains(Nothing),#option1b,:selected)", ["option1c", "option1d", "option2b", "option2c", "option3d", "option3e", "option4e", "option5b", "option5c"] );
 	t( "Not - recursive", "#form option:not(:not(:selected))[id^='option3']", [ "option3b", "option3c"] );
