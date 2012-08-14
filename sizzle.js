@@ -1423,7 +1423,7 @@ if ( document.querySelectorAll ) {
 				// Gecko does not error, returns false instead
 				try {
 					matches.call( div, "[test!='']:sizzle" );
-					rbuggyMatches.push( Expr.match.PSEUDO );
+					rbuggyMatches.push( Expr.match.PSEUDO.source, Expr.match.POS.source, "!=" );
 				} catch ( e ) {}
 			});
 
