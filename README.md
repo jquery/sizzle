@@ -8,6 +8,8 @@ Discussion: http://groups.google.com/group/sizzlejs
 
 Documentation: https://github.com/jquery/sizzle/wiki/Sizzle-Documentation
 
+Browser support: https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#wiki-browsers
+
 Testing Sizzle:
  - run `make` to pull down QUnit from github, which is the only thing the Makefile does.
  - Open test/index.html in your browser to run the tests.
