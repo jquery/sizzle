@@ -313,7 +313,8 @@ test("name", function() {
 
 	form.remove();
 
-	var a = jQuery('<div><a id="tName1ID" name="tName1">tName1 A</a><a id="tName2ID" name="tName2">tName2 A</a><div id="tName1">tName1 Div</div></div>').appendTo('#qunit-fixture').children();
+	var a = jQuery("<div><a id=\"tName1ID\" name=\"tName1\">tName1 A</a><a id=\"tName2ID\" name=\"tName2\">tName2 A</a><div id=\"tName1\">tName1 Div</div></div>")
+		.appendTo("#qunit-fixture").children();
 
 	equal( a.length, 3, "Make sure the right number of elements were inserted." );
 	equal( a[1].id, "tName2ID", "Make sure the right number of elements were inserted." );
@@ -689,7 +690,7 @@ test("pseudo - :not", function() {
 	t( ":not() Multiple Class", "#foo a:not(.link)", ["yahoo", "anchor2"] );
 	t( ":not() Multiple Class", "#foo a:not(.blog.link)", ["yahoo", "anchor2"] );
 
-	t( ":not chaining", "#qunit-fixture div[id]:not(:has(div, span)):not(:has(*))", ["nothiddendivchild", "divWithNoTabIndex", "fx-tests"] );
+	t( ":not chaining", "#qunit-fixture div[id]:not(:has(div, span)):not(:has(*))", ["divWithNoTabIndex"] );
 	t( ":not chaining", "#form select:not(.select1):contains(Nothing) > option:not(option)", [] );
 });
 
