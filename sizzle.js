@@ -198,7 +198,6 @@ var cachedruns,
 	});
 
 
-
 function Sizzle( selector, context, results, seed ) {
 	results = results || [];
 	context = context || document;
@@ -986,7 +985,7 @@ Sizzle.uniqueSort = function( results ) {
 
 function tokenize( selector, context, xml ) {
 	var matched, match, tokens, type,
-		soFar, groups, i,
+		soFar, groups, group, i,
 		preFilters, filters,
 		checkContext = !xml && context !== document,
 		// Token cache should maintain spaces
@@ -1009,8 +1008,10 @@ function tokenize( selector, context, xml ) {
 		if ( !matched || (match = rcomma.exec( soFar )) ) {
 			if ( match ) {
 				soFar = soFar.slice( match[0].length );
+				tokens.selector = group;
 			}
 			groups.push( tokens = [] );
+			group = "";
 
 			// Need to make sure we're within a narrower context if necessary
 			// Adding a descendant combinator will generate what is needed
@@ -1023,6 +1024,7 @@ function tokenize( selector, context, xml ) {
 
 		// Combinators
 		if ( (match = rcombinators.exec( soFar )) ) {
+			group += match[0];
 			soFar = soFar.slice( match[0].length );
 
 			// Cast descendant combinators to space
@@ -1036,8 +1038,9 @@ function tokenize( selector, context, xml ) {
 		// Filters
 		for ( type in filters ) {
 			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
-				(match = preFilters[ type ]( match, context, xml )) ) ) {
+				( match = preFilters[ type ](match, context, xml) )) ) {
 
+				group += match[0];
 				soFar = soFar.slice( match[0].length );
 				matched = tokens.push({
 					part: type,
@@ -1050,6 +1053,11 @@ function tokenize( selector, context, xml ) {
 		if ( !matched ) {
 			Sizzle.error( selector );
 		}
+	}
+
+	// Attach the full group as a selector
+	if ( group ) {
+		tokens.selector = group;
 	}
 
 	// Cache the tokens
@@ -1160,20 +1168,6 @@ var compile = Sizzle.compile = function( selector, context, xml ) {
 	return cached;
 };
 
-/**
- * @param {Array} An array of tokens to convert
- * @return A selector representing the array of tokens
- */
-function selectorFromTokens( tokens ) {
-	var selector = "",
-		i = 0,
-		len = tokens.length;
-	for ( ; i < len; i++ ) {
-		selector += tokens[i].string;
-	}
-	return selector;
-}
-
 function multipleContexts( selector, contexts, results, seed ) {
 	var i = 0,
 		len = contexts.length;
@@ -1219,7 +1213,7 @@ function handlePOS( selector, context, results, seed, groups ) {
 	for ( ; i < len; i++ ) {
 		// Reset regex index to 0
 		rpos.exec("");
-		selector = selectorFromTokens( groups[i] );
+		selector = groups[i].selector;
 		ret = [];
 		anchor = 0;
 		elements = seed;
@@ -1444,7 +1438,7 @@ if ( document.querySelectorAll ) {
 					// There is always a context check
 					nid = "[id='" + nid + "']";
 					for ( i = 0, len = groups.length; i < len; i++ ) {
-						groups[i] = nid + selectorFromTokens( groups[i] );
+						groups[i] = nid + groups[i].selector;
 					}
 					try {
 						push.apply( results, slice.call( newContext.querySelectorAll(
