@@ -21,6 +21,7 @@ var cachedruns,
 	done = 0,
 	slice = [].slice,
 	push = [].push,
+	Token = String,
 
 	expando = ( "sizcache" + Math.random() ).replace( ".", "" ),
 
@@ -40,7 +41,7 @@ var cachedruns,
 	operators = "([*^$|!~]?=)",
 	attributes = "\\[" + whitespace + "*(" + characterEncoding + ")" + whitespace +
 		"*(?:" + operators + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\3|(" + identifier + ")|)|)" + whitespace + "*\\]",
-	pseudos = ":(" + characterEncoding + ")(?:\\((?:(['\"])((?:\\\\.|[^\\\\])*?)\\2|((?:[^,]|\\\\,|(?:,(?=[^\\[]*\\]))|(?:,(?=[^\\(]*\\))))*))\\)|)",
+	pseudos = ":(" + characterEncoding + ")(?:\\((?:(['\"])((?:\\\\.|[^\\\\])*?)\\2|(.*))\\)|)",
 	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\)|)(?=[^-]|$)",
 	combinators = whitespace + "*([\\x20\\t\\r\\n\\f>+~])" + whitespace + "*",
 	groups = "(?=[^\\x20\\t\\r\\n\\f])(?:\\\\.|" + attributes + "|" + pseudos.replace( 2, 7 ) + "|[^\\\\(),])+",
@@ -49,16 +50,11 @@ var cachedruns,
 	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
 
 	rcombinators = new RegExp( "^" + combinators ),
-
-	// All simple (non-comma) selectors, excluding insignifant trailing whitespace
-	rgroups = new RegExp( groups + "?(?=" + whitespace + "*,|$)", "g" ),
+	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
 
 	// A selector, or everything after leading whitespace
 	// Optionally followed in either case by a ")" for terminating sub-selectors
 	rselector = new RegExp( "^(?:(?!,)(?:(?:^|,)" + whitespace + "*" + groups + ")*?|" + whitespace + "*(.*?))(\\)|$)" ),
-
-	// All combinators and selector components (attribute test, tag, pseudo, etc.), the latter appearing together when consecutive
-	rtokens = new RegExp( groups.slice( 19, -6 ) + "\\x20\\t\\r\\n\\f>+~])+|" + combinators, "g" ),
 
 	// Easily-parseable/retrievable ID or TAG or CLASS selectors
 	rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
@@ -1010,7 +1006,7 @@ function handlePOS( selector, context, results, seed, groups ) {
 	for ( ; i < len; i++ ) {
 		// Reset regex index to 0
 		rpos.exec("");
-		selector = groups[i];
+		selector = groups[i].join("");
 		ret = [];
 		anchor = 0;
 		elements = seed;
@@ -1061,52 +1057,50 @@ function handlePOS( selector, context, results, seed, groups ) {
 }
 
 function tokenize( selector, context, xml ) {
-	var tokens, soFar, type,
+	var tokens, type,
 		groups = [],
 		i = 0,
+		soFar = selector,
 
 		// Catch obvious selector issues: terminal ")"; nonempty fallback match
 		// rselector never fails to match *something*
 		match = rselector.exec( selector ),
 		matched = !match.pop() && !match.pop(),
-		selectorGroups = matched && selector.match( rgroups ) || [""],
 
 		preFilters = Expr.preFilter,
-		filters = Expr.filter,
-		checkContext = !xml && context !== document;
+		filters = Expr.filter;
 
-	for ( ; (soFar = selectorGroups[i]) != null && matched; i++ ) {
-		groups.push( tokens = [] );
+	while ( matched && soFar ) {
 
-		// Need to make sure we're within a narrower context if necessary
-		// Adding a descendant combinator will generate what is needed
-		if ( checkContext ) {
-			soFar = " " + soFar;
+		// Comma or start
+		if ( !tokens || (match = rcomma.exec( soFar )) ) {
+			if ( tokens ) {
+				soFar = soFar.slice( match[0].length );
+			}
+
+			groups.push( tokens = [] );
+		}
+		matched = false;
+
+		// Combinators
+		if ( (match = rcombinators.exec( soFar )) ) {
+			tokens.push( matched = new Token( match.shift() ) );
+			soFar = soFar.slice( matched.length );
+
+			// Cast descendant combinators to space
+			matched.type = match[0].replace( rtrim, " " );
 		}
 
-		while ( soFar ) {
-			matched = false;
+		// Filters
+		for ( type in filters ) {
+			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
+				(match = preFilters[ type ]( match, context, xml )) ) ) {
 
-			// Combinators
-			if ( (match = rcombinators.exec( soFar )) ) {
-				soFar = soFar.slice( match[0].length );
+				tokens.push( matched = new Token( match.shift() ) );
+				soFar = soFar.slice( matched.length );
 
-				// Cast descendant combinators to space
-				matched = tokens.push({ part: match.pop().replace( rtrim, " " ), captures: match });
-			}
-
-			// Filters
-			for ( type in filters ) {
-				if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
-					(match = preFilters[ type ]( match, context, xml )) ) ) {
-
-					soFar = soFar.slice( match.shift().length );
-					matched = tokens.push({ part: type, captures: match });
-				}
-			}
-
-			if ( !matched ) {
-				break;
+				matched.type = type;
+				matched.matches = match;
 			}
 		}
 	}
@@ -1115,7 +1109,13 @@ function tokenize( selector, context, xml ) {
 		Sizzle.error( selector );
 	}
 
-	return groups;
+	groups.text = selector;
+	cachedSelectors.push( selector );
+	// Ensure only the most recent are cached
+	while ( cachedSelectors.length > Expr.cacheLength ) {
+		delete compilerCache[ cachedSelectors.shift() ];
+	}
+	return (compilerCache[ selector ] = groups);
 }
 
 function addCombinator( matcher, combinator, context ) {
@@ -1171,16 +1171,18 @@ function addMatcher( higher, deeper ) {
 }
 
 // ["TAG", ">", "ID", " ", "CLASS"]
-function matcherFromTokens( tokens, context, xml ) {
-	var token, matcher,
+function matcherFromTokens( tokens, context, xml, checkContext ) {
+	var token, matcher, relative,
 		i = 0;
 
 	for ( ; (token = tokens[i]); i++ ) {
-		if ( Expr.relative[ token.part ] ) {
-			matcher = addCombinator( matcher, Expr.relative[ token.part ], context );
-		} else {
-			token.captures.push( context, xml );
-			matcher = addMatcher( matcher, Expr.filter[ token.part ].apply( null, token.captures ) );
+		if ( (relative = Expr.relative[ token.type ]) || checkContext ) {
+			matcher = addCombinator( matcher, relative || Expr.relative[" "], context );
+			checkContext = false;
+		}
+		if ( !relative ) {
+			token.matches.push( context, xml );
+			matcher = addMatcher( matcher, Expr.filter[ token.type ].apply( null, token.matches ) );
 		}
 	}
 
@@ -1202,29 +1204,29 @@ function matcherFromGroupMatchers( matchers ) {
 
 var compile = Sizzle.compile = function( selector, context, xml ) {
 	var tokens, group, i,
-		cached = compilerCache[ selector ];
+		cached = compilerCache[ selector.text || selector ],
+		matcher = cached && cached.matcher,
+		checkContext = !xml && context !== document;
 
 	// Return a cached group function if already generated (context dependent)
-	if ( cached && cached.context === context ) {
-		return cached;
+	if ( matcher && matcher.context === context ) {
+		matcher.dirruns++;
+		return matcher;
 	}
 
 	// Generate a function of recursive functions that can be used to check each element
-	group = tokenize( selector, context, xml );
+	// Only tokenize once
+	matcher = [];
+	group = selector.text ? selector : compilerCache[ selector ] || tokenize( selector, context, xml );
 	for ( i = 0; (tokens = group[i]); i++ ) {
-		group[i] = matcherFromTokens( tokens, context, xml );
+		matcher[i] = matcherFromTokens( tokens, context, xml, checkContext );
 	}
 
 	// Cache the compiled function
-	cached = compilerCache[ selector ] = matcherFromGroupMatchers( group );
-	cached.context = context;
-	cached.runs = cached.dirruns = 0;
-	cachedSelectors.push( selector );
-	// Ensure only the most recent are cached
-	if ( cachedSelectors.length > Expr.cacheLength ) {
-		delete compilerCache[ cachedSelectors.shift() ];
-	}
-	return cached;
+	matcher = group.matcher = matcherFromGroupMatchers( matcher );
+	matcher.context = context;
+	matcher.runs = matcher.dirruns = 0;
+	return matcher;
 };
 
 Sizzle.matches = function( expr, elements ) {
@@ -1238,73 +1240,94 @@ Sizzle.matchesSelector = function( elem, expr ) {
 var select = function( selector, context, results, seed, xml ) {
 	// Remove excessive whitespace
 	selector = selector.replace( rtrim, "$1" );
-	var elements, matcher, i, len, elem, token,
-		type, findContext, notTokens,
-		match = selector.match( rgroups ),
-		tokens = selector.match( rtokens ),
-		contextNodeType = context.nodeType;
+	var elements, token, j, idxFilter, elem, matcher,
+		findContext = context,
+		lastOrder = Expr.order.length,
+		groups = selector ? compilerCache[ selector ] || tokenize( selector, context, xml ) : [],
+		firstGroup = [].concat( groups[0] || groups ),
+		i = firstGroup.length;
 
 	// POS handling
 	if ( matchExpr["POS"].test(selector) ) {
-		return handlePOS( selector, context, results, seed, match );
+		return handlePOS( selector, context, results, seed, groups );
 	}
 
 	if ( seed ) {
 		elements = slice.call( seed, 0 );
 
-	// To maintain document order, only narrow the
-	// set if there is one group
-	} else if ( match && match.length === 1 ) {
+	// To maintain document order, only narrow the set if there is one group
+	} else if ( groups.length === 1 ) {
 
-		// Take a shortcut and set the context if the root selector is an ID
-		if ( tokens.length > 1 && contextNodeType === 9 && !xml &&
-				(match = matchExpr["ID"].exec( tokens[0] )) ) {
+		// Seek from the end for the highest-preference initial filter
+		for ( ; i--; ) {
+			token = firstGroup[i].type;
 
-			context = Expr.find["ID"]( match[1], context, xml )[0];
-			if ( !context ) {
-				return results;
-			}
+			// Hitting a relative selector means we're done, but can still refine context
+			if ( Expr.relative[ token ] ) {
+				token = firstGroup[0].type;
 
-			selector = selector.slice( tokens.shift().length );
-		}
+				// Initial standalone ID selectors can shortcut to element context
+				if ( token === "ID" && !xml && context.nodeType === 9 &&
+					Expr.relative[ (token = firstGroup[1].type) ] ) {
 
-		findContext = ( (match = rsibling.exec( tokens[0] )) && !match.index && context.parentNode ) || context;
+					elem = firstGroup.splice( 0, 1 )[0];
+					context = Expr.find["ID"]( elem.matches[0], findContext, xml )[0];
+					if ( !context ) {
+						return results;
+					}
 
-		// Get the last token, excluding :not
-		notTokens = tokens.pop();
-		token = notTokens.split(":not")[0];
-
-		for ( i = 0, len = Expr.order.length; i < len; i++ ) {
-			type = Expr.order[i];
-
-			if ( (match = matchExpr[ type ].exec( token )) ) {
-				elements = Expr.find[ type ]( (match[1] || "").replace( rbackslash, "" ), findContext, xml );
-
-				if ( elements == null ) {
-					continue;
-				}
-
-				if ( token === notTokens ) {
-					selector = selector.slice( 0, selector.length - notTokens.length ) +
-						token.replace( matchExpr[ type ], "" );
-
-					if ( !selector ) {
-						push.apply( results, slice.call(elements, 0) );
+					if ( idxFilter ) {
+						idxFilter--;
 					}
 				}
+
+				// Take context up a level for initial sibling selectors
+				if ( Expr.relative[ token ] ) {
+					findContext = rsibling.test( token ) && context.parentNode || context;
+				}
+
 				break;
+			}
+
+			// Try filters against token
+			for ( j = 0; j < lastOrder; j++ ) {
+				// Remember the position of a match
+				// and set a new lower bound from it
+				if ( token === Expr.order[j] ) {
+					idxFilter = i;
+					lastOrder = j;
+				}
+			}
+		}
+
+		// A selected filter can reduce the initial element set
+		if ( idxFilter != null ) {
+			if ( (elements = Expr.find[ firstGroup[ idxFilter ].type ](
+				firstGroup[ idxFilter ].matches[0].replace( rbackslash, "" ), findContext, xml )) != null ) {
+
+				firstGroup.splice( idxFilter, 1 );
+			}
+		}
+
+		if ( firstGroup.length !== groups[0].length ) {
+			groups = [ firstGroup ];
+			selector = groups.text = firstGroup.join("");
+			if ( selector ) {
+				compilerCache[ selector ] = groups;
+			} else {
+				push.apply( results, slice.call( elements, 0 ) );
 			}
 		}
 	}
 
 	// Only loop over the given elements once
-	// If selector is empty, we're already done
+	// If the selector is empty, we're already done
 	if ( selector ) {
-		matcher = compile( selector, context, xml );
-		dirruns = matcher.dirruns++;
+		matcher = compile( groups, context, xml );
+		dirruns = matcher.dirruns;
 
 		if ( elements == null ) {
-			elements = Expr.find["TAG"]( "*", (rsibling.test( selector ) && context.parentNode) || context );
+			elements = Expr.find["TAG"]( "*", ( rsibling.test( selector ) && context.parentNode ) || context );
 		}
 		for ( i = 0; (elem = elements[i]); i++ ) {
 			cachedruns = matcher.runs++;
@@ -1386,9 +1409,13 @@ if ( document.querySelectorAll ) {
 				// and working up from there (Thanks to Andrew Dupont for the technique)
 				// IE 8 doesn't work on object elements
 				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
-					var old = context.getAttribute("id"),
+					var newSelector = "",
+						i = 0,
+						old = context.getAttribute("id"),
 						nid = old || expando,
-						newContext = rsibling.test( selector ) && context.parentNode || context;
+						newContext = rsibling.test( selector ) && context.parentNode || context,
+						groups = compilerCache[ selector ] || tokenize( selector, newContext ),
+						len = groups.length;
 
 					if ( old ) {
 						nid = nid.replace( rescape, "\\$&" );
@@ -1397,8 +1424,12 @@ if ( document.querySelectorAll ) {
 					}
 
 					try {
+						nid = ",[id='" + nid + "'] ";
+						for ( ; i < len; i++ ) {
+							newSelector += nid + groups[i].join("");
+						}
 						push.apply( results, slice.call( newContext.querySelectorAll(
-							selector.replace( rgroups, "[id='" + nid + "'] $&" )
+							newSelector.slice( 1 )
 						), 0 ) );
 						return results;
 					} catch(qsaError) {
