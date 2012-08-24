@@ -779,15 +779,15 @@ var isXML = Sizzle.isXML = function( elem ) {
 };
 
 // Element contains another
-var contains = Sizzle.contains = docElem.compareDocumentPosition ?
-	function( a, b ) {
-		return !!( a.compareDocumentPosition( b ) & 16 );
-	} :
-	docElem.contains ?
+var contains = Sizzle.contains = docElem.contains ?
 	function( a, b ) {
 		var adown = a.nodeType === 9 ? a.documentElement : a,
-			bup = b.parentNode;
+			bup = b && b.parentNode;
 		return a === bup || !!( bup && bup.nodeType === 1 && adown.contains && adown.contains(bup) );
+	} :
+	docElem.compareDocumentPosition ?
+	function( a, b ) {
+		return !!( a.compareDocumentPosition( b ) & 16 );
 	} :
 	function( a, b ) {
 		while ( (b = b.parentNode) ) {

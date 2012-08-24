@@ -25,7 +25,7 @@
 module("selector", { teardown: moduleTeardown });
 
 test("Sizzle.contains", function() {
-	expect(15);
+	expect( 16 );
 
 	var container = document.getElementById("nonnodes"),
 		element = container.firstChild,
@@ -44,6 +44,7 @@ test("Sizzle.contains", function() {
 	ok( !Sizzle.contains(container, nonContained), "non-descendant" );
 	ok( !Sizzle.contains(container, document), "document" );
 	ok( !Sizzle.contains(container, document.documentElement), "documentElement (negative)" );
+	ok( !Sizzle.contains(container, null), "Passing null does not throw an error" );
 	ok( Sizzle.contains(document, document.documentElement), "documentElement (positive)" );
 	ok( Sizzle.contains(document, element), "document container (positive)" );
 	ok( !Sizzle.contains(document, detached), "document container (negative)" );
