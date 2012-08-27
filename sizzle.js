@@ -787,7 +787,7 @@ var contains = Sizzle.contains = docElem.contains ?
 	} :
 	docElem.compareDocumentPosition ?
 	function( a, b ) {
-		return !!( a.compareDocumentPosition( b ) & 16 );
+		return b && !!( a.compareDocumentPosition( b ) & 16 );
 	} :
 	function( a, b ) {
 		while ( (b = b.parentNode) ) {
