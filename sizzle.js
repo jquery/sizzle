@@ -6,23 +6,51 @@
  */
 (function( window, undefined ) {
 
-var cachedruns,
-	dirruns,
-	sortOrder,
-	siblingCheck,
+var dirruns,
+	cachedruns,
 	assertGetIdNotName,
+	Expr,
+	getText,
+	isXML,
+	contains,
+	compile,
+	sortOrder,
+	hasDuplicate,
+
+	baseHasDuplicate = true,
+	strundefined = "undefined",
+
+	expando = ( "sizcache" + Math.random() ).replace( ".", "" ),
 
 	document = window.document,
 	docElem = document.documentElement,
-
-	strundefined = "undefined",
-	hasDuplicate = false,
-	baseHasDuplicate = true,
 	done = 0,
 	slice = [].slice,
 	push = [].push,
 
-	expando = ( "sizcache" + Math.random() ).replace( ".", "" ),
+	// Augment a function for special use by Sizzle
+	markFunction = function( fn, value ) {
+		fn[ expando ] = value || true;
+		return fn;
+	},
+
+	createCache = function() {
+		var cache = {},
+			keys = [];
+
+		return markFunction(function( key, value ) {
+			// Only keep the most recent entries
+			if ( keys.push( key ) > Expr.cacheLength ) {
+				delete cache[ keys.shift() ];
+			}
+
+			return (cache[ key ] = value);
+		}, cache );
+	},
+
+	classCache = createCache(),
+	tokenCache = createCache(),
+	compilerCache = createCache(),
 
 	// Regex
 
@@ -82,63 +110,34 @@ var cachedruns,
 		"needsContext": new RegExp( "^" + whitespace + "*[>+~]|" + pos, "i" )
 	},
 
-	Cache = (function() {
-		var Cache = function() {
-			this.c = {};
-			this.k = [];
-		};
-		Cache.prototype = {
-			s: function( key, value ) {
-				this.c[ key ] = value;
-				this.k.push( key );
-
-				// Ensure only the most recent are cached
-				if ( this.k.length > Expr.cacheLength ) {
-					delete this.c[ this.k.shift() ];
-				}
-				return value;
-			}
-		};
-		return Cache;
-	})(),
-
-	classCache = new Cache(),
-	tokenCache = new Cache(),
-	compilerCache = new Cache(),
-
-	// Mark a function for use in filtering
-	markFunction = function( fn ) {
-		fn.sizzleFilter = true;
-		return fn;
-	},
-
-	// Returns a function to use in pseudos for input types
-	createInputFunction = function( type ) {
-		return function( elem ) {
-			// Check the input's nodeName and type
-			return elem.nodeName.toLowerCase() === "input" && elem.type === type;
-		};
-	},
-
-	// Returns a function to use in pseudos for buttons
-	createButtonFunction = function( type ) {
-		return function( elem ) {
-			var name = elem.nodeName.toLowerCase();
-			return (name === "input" || name === "button") && elem.type === type;
-		};
-	},
+	// Support
 
 	// Used for testing something on an element
 	assert = function( fn ) {
-		var pass = false,
-			div = document.createElement("div");
+		var div = document.createElement("div");
+
 		try {
-			pass = fn( div );
-		} catch (e) {}
-		// release memory in IE
-		div = null;
-		return pass;
+			return fn( div );
+		} catch (e) {
+			return false;
+		} finally {
+			// release memory in IE
+			div = null;
+		}
 	},
+
+	// Check if getElementsByTagName("*") returns only elements
+	assertTagNameNoComments = assert(function( div ) {
+		div.appendChild( document.createComment("") );
+		return !div.getElementsByTagName("*").length;
+	}),
+
+	// Check if getAttribute returns normalized href attributes
+	assertHrefNotNormalized = assert(function( div ) {
+		div.innerHTML = "<a href='#'></a>";
+		return div.firstChild && typeof div.firstChild.getAttribute !== strundefined &&
+			div.firstChild.getAttribute("href") === "#";
+	}),
 
 	// Check if attributes should be retrieved by attribute nodes
 	assertAttributes = assert(function( div ) {
@@ -146,6 +145,19 @@ var cachedruns,
 		var type = typeof div.lastChild.getAttribute("multiple");
 		// IE8 returns a string for some attributes even when not present
 		return type !== "boolean" && type !== "string";
+	}),
+
+	// Check if getElementsByClassName can be trusted
+	assertUsableClassName = assert(function( div ) {
+		// Opera can't find a second classname (in 9.6)
+		div.innerHTML = "<div class='hidden e'></div><div class='hidden'></div>";
+		if ( !div.getElementsByClassName || !div.getElementsByClassName("e").length ) {
+			return false;
+		}
+
+		// Safari 3.2 caches class attributes and doesn't catch changes
+		div.lastChild.className = "e";
+		return div.getElementsByClassName("e").length === 2;
 	}),
 
 	// Check if getElementById returns elements by name
@@ -168,35 +180,20 @@ var cachedruns,
 		docElem.removeChild( div );
 
 		return pass;
-	}),
-
-	// Check if the browser returns only elements
-	// when doing getElementsByTagName("*")
-	assertTagNameNoComments = assert(function( div ) {
-		div.appendChild( document.createComment("") );
-		return div.getElementsByTagName("*").length === 0;
-	}),
-
-	// Check if getAttribute returns normalized href attributes
-	assertHrefNotNormalized = assert(function( div ) {
-		div.innerHTML = "<a href='#'></a>";
-		return div.firstChild && typeof div.firstChild.getAttribute !== strundefined &&
-			div.firstChild.getAttribute("href") === "#";
-	}),
-
-	// Check if getElementsByClassName can be trusted
-	assertUsableClassName = assert(function( div ) {
-		// Opera can't find a second classname (in 9.6)
-		div.innerHTML = "<div class='hidden e'></div><div class='hidden'></div>";
-		if ( !div.getElementsByClassName || div.getElementsByClassName("e").length === 0 ) {
-			return false;
-		}
-
-		// Safari caches class attributes, doesn't catch changes (in 3.2)
-		div.lastChild.className = "e";
-		return div.getElementsByClassName("e").length !== 1;
 	});
 
+// If slice is not available, provide a backup
+try {
+	slice.call( docElem.childNodes, 0 )[0].nodeType;
+} catch ( e ) {
+	slice = function( i ) {
+		var elem, results = [];
+		for ( ; (elem = this[i]); i++ ) {
+			results.push( elem );
+		}
+		return results;
+	};
+}
 
 function Sizzle( selector, context, results, seed ) {
 	results = results || [];
@@ -258,16 +255,140 @@ function Sizzle( selector, context, results, seed ) {
 	return select( selector, context, results, seed, xml );
 }
 
-var Expr = Sizzle.selectors = {
+Sizzle.matches = function( expr, elements ) {
+	return Sizzle( expr, null, null, elements );
+};
+
+Sizzle.matchesSelector = function( elem, expr ) {
+	return Sizzle( expr, null, null, [ elem ] ).length > 0;
+};
+
+// Returns a function to use in pseudos for input types
+function createInputPseudo( type ) {
+	return function( elem ) {
+		var name = elem.nodeName.toLowerCase();
+		return name === "input" && elem.type === type;
+	};
+}
+
+// Returns a function to use in pseudos for buttons
+function createButtonPseudo( type ) {
+	return function( elem ) {
+		var name = elem.nodeName.toLowerCase();
+		return (name === "input" || name === "button") && elem.type === type;
+	};
+}
+
+/**
+ * Utility function for retrieving the text value of an array of DOM nodes
+ * @param {Array|Element} elem
+ */
+getText = Sizzle.getText = function( elem ) {
+	var node,
+		ret = "",
+		i = 0,
+		nodeType = elem.nodeType;
+
+	if ( nodeType ) {
+		if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
+			// Use textContent for elements
+			// innerText usage removed for consistency of new lines (see #11153)
+			if ( typeof elem.textContent === "string" ) {
+				return elem.textContent;
+			} else {
+				// Traverse its children
+				for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
+					ret += getText( elem );
+				}
+			}
+		} else if ( nodeType === 3 || nodeType === 4 ) {
+			return elem.nodeValue;
+		}
+		// Do not include comment or processing instruction nodes
+	} else {
+
+		// If no nodeType, this is expected to be an array
+		for ( ; (node = elem[i]); i++ ) {
+			// Do not traverse comment nodes
+			ret += getText( node );
+		}
+	}
+	return ret;
+};
+
+isXML = Sizzle.isXML = function isXML( elem ) {
+	// documentElement is verified for cases where it doesn't yet exist
+	// (such as loading iframes in IE - #4833)
+	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
+	return documentElement ? documentElement.nodeName !== "HTML" : false;
+};
+
+// Element contains another
+contains = Sizzle.contains = docElem.contains ?
+	function( a, b ) {
+		var adown = a.nodeType === 9 ? a.documentElement : a,
+			bup = b && b.parentNode;
+		return a === bup || !!( bup && bup.nodeType === 1 && adown.contains && adown.contains(bup) );
+	} :
+	docElem.compareDocumentPosition ?
+	function( a, b ) {
+		return b && !!( a.compareDocumentPosition( b ) & 16 );
+	} :
+	function( a, b ) {
+		while ( (b = b.parentNode) ) {
+			if ( b === a ) {
+				return true;
+			}
+		}
+		return false;
+	};
+
+Sizzle.attr = function( elem, name ) {
+	var attr,
+		xml = isXML( elem );
+
+	if ( !xml ) {
+		name = name.toLowerCase();
+	}
+	if ( Expr.attrHandle[ name ] ) {
+		return Expr.attrHandle[ name ]( elem );
+	}
+	if ( assertAttributes || xml ) {
+		return elem.getAttribute( name );
+	}
+	attr = elem.getAttributeNode( name );
+	return attr ?
+		typeof elem[ name ] === "boolean" ?
+			elem[ name ] ? name : null :
+			attr.specified ? attr.value : null :
+		null;
+};
+
+Expr = Sizzle.selectors = {
 
 	// Can be adjusted by the user
 	cacheLength: 50,
 
+	createPseudo: markFunction,
+
 	match: matchExpr,
 
-	attrHandle: {},
+	order: new RegExp( "ID|TAG" +
+		(assertUsableName ? "|NAME" : "") +
+		(assertUsableClassName ? "|CLASS" : "")
+	),
 
-	createPseudo: markFunction,
+	// IE6/7 return a modified href
+	attrHandle: assertHrefNotNormalized ?
+		{} :
+		{
+			"href": function( elem ) {
+				return elem.getAttribute( "href", 2 );
+			},
+			"type": function( elem ) {
+				return elem.getAttribute("type");
+			}
+		},
 
 	find: {
 		"ID": assertGetIdNotName ?
@@ -315,7 +436,19 @@ var Expr = Sizzle.selectors = {
 					return tmp;
 				}
 				return results;
+			},
+
+		"NAME": function( tag, context ) {
+			if ( typeof context.getElementsByName !== strundefined ) {
+				return context.getElementsByName( name );
 			}
+		},
+
+		"CLASS": function( className, context, xml ) {
+			if ( typeof context.getElementsByClassName !== strundefined && !xml ) {
+				return context.getElementsByClassName( className );
+			}
+		}
 	},
 
 	relative: {
@@ -421,9 +554,9 @@ var Expr = Sizzle.selectors = {
 		},
 
 		"CLASS": function( className ) {
-			var pattern = classCache.c[ className ];
+			var pattern = classCache[ expando ][ className ];
 			if ( !pattern ) {
-				pattern = classCache.s( className, new RegExp("(^|" + whitespace + ")" + className + "(" + whitespace + "|$)") );
+				pattern = classCache( className, new RegExp("(^|" + whitespace + ")" + className + "(" + whitespace + "|$)") );
 			}
 			return function( elem ) {
 				return pattern.test( elem.className || (typeof elem.getAttribute !== strundefined && elem.getAttribute("class")) || "" );
@@ -546,10 +679,10 @@ var Expr = Sizzle.selectors = {
 				Sizzle.error( "unsupported pseudo: " + pseudo );
 			}
 
-			// The user may set fn.sizzleFilter (or use createPseudo)
-			// to indicate that arguments are needed to create
-			// the filter function just as Sizzle does
-			if ( !fn.sizzleFilter ) {
+			// The user may use createPseudo to indicate that
+			// arguments are needed to create the filter function
+			// just as Sizzle does
+			if ( !fn[ expando ] ) {
 				if ( fn.length > 1 ) {
 					args = [ pseudo, pseudo, "", argument ];
 					return function( elem ) {
@@ -646,14 +779,14 @@ var Expr = Sizzle.selectors = {
 		},
 
 		// Input types
-		"radio": createInputFunction("radio"),
-		"checkbox": createInputFunction("checkbox"),
-		"file": createInputFunction("file"),
-		"password": createInputFunction("password"),
-		"image": createInputFunction("image"),
+		"radio": createInputPseudo("radio"),
+		"checkbox": createInputPseudo("checkbox"),
+		"file": createInputPseudo("file"),
+		"password": createInputPseudo("password"),
+		"image": createInputPseudo("image"),
 
-		"submit": createButtonFunction("submit"),
-		"reset": createButtonFunction("reset"),
+		"submit": createButtonPseudo("submit"),
+		"reset": createButtonPseudo("reset"),
 
 		"button": function( elem ) {
 			var name = elem.nodeName.toLowerCase();
@@ -719,165 +852,26 @@ var Expr = Sizzle.selectors = {
 	}
 };
 
-// Deprecated
-Expr.setFilters["nth"] = Expr.setFilters["eq"];
-
-// Back-compat
-Expr.filters = Expr.pseudos;
-
-// IE6/7 return a modified href
-if ( !assertHrefNotNormalized ) {
-	Expr.attrHandle = {
-		"href": function( elem ) {
-			return elem.getAttribute( "href", 2 );
-		},
-		"type": function( elem ) {
-			return elem.getAttribute("type");
-		}
-	};
-}
-
-// Add getElementsByName if usable
-if ( assertUsableName ) {
-	Expr.find["NAME"] = function( name, context ) {
-		if ( typeof context.getElementsByName !== strundefined ) {
-			return context.getElementsByName( name );
-		}
-	};
-}
-
-// Add getElementsByClassName if usable
-if ( assertUsableClassName ) {
-	Expr.find["CLASS"] = function( className, context, xml ) {
-		if ( typeof context.getElementsByClassName !== strundefined && !xml ) {
-			return context.getElementsByClassName( className );
-		}
-	};
-}
-
-// Collect find methods into a regex
-(function() {
-	var key,
-		finds = [];
-	for ( key in Expr.find ) {
-		finds.push( key );
+function siblingCheck( a, b, ret ) {
+	if ( a === b ) {
+		return ret;
 	}
-	Expr.order = new RegExp( finds.join("|") );
-})();
 
-// If slice is not available, provide a backup
-try {
-	slice.call( docElem.childNodes, 0 )[0].nodeType;
-} catch ( e ) {
-	slice = function( i ) {
-		var elem, results = [];
-		for ( ; (elem = this[i]); i++ ) {
-			results.push( elem );
+	var cur = a.nextSibling;
+
+	while ( cur ) {
+		if ( cur === b ) {
+			return -1;
 		}
-		return results;
-	};
+
+		cur = cur.nextSibling;
+	}
+
+	return 1;
 }
 
-var isXML = Sizzle.isXML = function( elem ) {
-	// documentElement is verified for cases where it doesn't yet exist
-	// (such as loading iframes in IE - #4833)
-	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
-	return documentElement ? documentElement.nodeName !== "HTML" : false;
-};
-
-// Element contains another
-var contains = Sizzle.contains = docElem.contains ?
+sortOrder = docElem.compareDocumentPosition ?
 	function( a, b ) {
-		var adown = a.nodeType === 9 ? a.documentElement : a,
-			bup = b && b.parentNode;
-		return a === bup || !!( bup && bup.nodeType === 1 && adown.contains && adown.contains(bup) );
-	} :
-	docElem.compareDocumentPosition ?
-	function( a, b ) {
-		return b && !!( a.compareDocumentPosition( b ) & 16 );
-	} :
-	function( a, b ) {
-		while ( (b = b.parentNode) ) {
-			if ( b === a ) {
-				return true;
-			}
-		}
-		return false;
-	};
-
-/**
- * Utility function for retrieving the text value of an array of DOM nodes
- * @param {Array|Element} elem
- */
-var getText = Sizzle.getText = function( elem ) {
-	var node,
-		ret = "",
-		i = 0,
-		nodeType = elem.nodeType;
-
-	if ( nodeType ) {
-		if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
-			// Use textContent for elements
-			// innerText usage removed for consistency of new lines (see #11153)
-			if ( typeof elem.textContent === "string" ) {
-				return elem.textContent;
-			} else {
-				// Traverse its children
-				for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
-					ret += getText( elem );
-				}
-			}
-		} else if ( nodeType === 3 || nodeType === 4 ) {
-			return elem.nodeValue;
-		}
-		// Do not include comment or processing instruction nodes
-	} else {
-
-		// If no nodeType, this is expected to be an array
-		for ( ; (node = elem[i]); i++ ) {
-			// Do not traverse comment nodes
-			ret += getText( node );
-		}
-	}
-	return ret;
-};
-
-Sizzle.attr = function( elem, name ) {
-	var attr,
-		xml = isXML( elem );
-
-	if ( !xml ) {
-		name = name.toLowerCase();
-	}
-	if ( Expr.attrHandle[ name ] ) {
-		return Expr.attrHandle[ name ]( elem );
-	}
-	if ( assertAttributes || xml ) {
-		return elem.getAttribute( name );
-	}
-	attr = elem.getAttributeNode( name );
-	return attr ?
-		typeof elem[ name ] === "boolean" ?
-			elem[ name ] ? name : null :
-			attr.specified ? attr.value : null :
-		null;
-};
-
-Sizzle.error = function( msg ) {
-	throw new Error( "Syntax error, unrecognized expression: " + msg );
-};
-
-// Check if the JavaScript engine is using some sort of
-// optimization where it does not always call our comparision
-// function. If that is the case, discard the hasDuplicate value.
-//   Thus far that includes Google Chrome.
-[0, 0].sort(function() {
-	return (baseHasDuplicate = 0);
-});
-
-
-if ( docElem.compareDocumentPosition ) {
-	sortOrder = function( a, b ) {
 		if ( a === b ) {
 			hasDuplicate = true;
 			return 0;
@@ -887,10 +881,8 @@ if ( docElem.compareDocumentPosition ) {
 			a.compareDocumentPosition :
 			a.compareDocumentPosition(b) & 4
 		) ? -1 : 1;
-	};
-
-} else {
-	sortOrder = function( a, b ) {
+	} :
+	function( a, b ) {
 		// The nodes are identical, we can exit early
 		if ( a === b ) {
 			hasDuplicate = true;
@@ -950,44 +942,32 @@ if ( docElem.compareDocumentPosition ) {
 			siblingCheck( ap[i], b, 1 );
 	};
 
-	siblingCheck = function( a, b, ret ) {
-		if ( a === b ) {
-			return ret;
-		}
-
-		var cur = a.nextSibling;
-
-		while ( cur ) {
-			if ( cur === b ) {
-				return -1;
-			}
-
-			cur = cur.nextSibling;
-		}
-
-		return 1;
-	};
-}
+// Always assume the presence of duplicates if sort doesn't
+// pass them to our comparison function (as in Google Chrome).
+[0, 0].sort( sortOrder );
+baseHasDuplicate = !hasDuplicate;
 
 // Document sorting and removing duplicates
 Sizzle.uniqueSort = function( results ) {
 	var elem,
 		i = 1;
 
-	if ( sortOrder ) {
-		hasDuplicate = baseHasDuplicate;
-		results.sort( sortOrder );
+	hasDuplicate = baseHasDuplicate;
+	results.sort( sortOrder );
 
-		if ( hasDuplicate ) {
-			for ( ; (elem = results[i]); i++ ) {
-				if ( elem === results[ i - 1 ] ) {
-					results.splice( i--, 1 );
-				}
+	if ( hasDuplicate ) {
+		for ( ; (elem = results[i]); i++ ) {
+			if ( elem === results[ i - 1 ] ) {
+				results.splice( i--, 1 );
 			}
 		}
 	}
 
 	return results;
+};
+
+Sizzle.error = function( msg ) {
+	throw new Error( "Syntax error, unrecognized expression: " + msg );
 };
 
 function tokenize( selector, context, xml ) {
@@ -997,7 +977,7 @@ function tokenize( selector, context, xml ) {
 		checkContext = !xml && context !== document,
 		// Token cache should maintain spaces
 		key = ( checkContext ? "<s>" : "" ) + selector.replace( rtrim, "$1<s>" ),
-		cached = tokenCache.c[ key ];
+		cached = tokenCache[ expando ][ key ];
 
 	if ( cached ) {
 		return slice.call( cached, 0 );
@@ -1068,7 +1048,7 @@ function tokenize( selector, context, xml ) {
 	}
 
 	// Cache the tokens
-	return slice.call( tokenCache.s(key, groups), 0 );
+	return slice.call( tokenCache(key, groups), 0 );
 }
 
 function addCombinator( matcher, combinator, context ) {
@@ -1152,9 +1132,9 @@ function matcherFromGroupMatchers( matchers ) {
 	};
 }
 
-var compile = Sizzle.compile = function( selector, context, xml ) {
+compile = Sizzle.compile = function( selector, context, xml ) {
 	var group, i, len,
-		cached = compilerCache.c[ selector ];
+		cached = compilerCache[ expando ][ selector ];
 
 	// Return a cached group function if already generated (context dependent)
 	if ( cached && cached.context === context ) {
@@ -1168,7 +1148,7 @@ var compile = Sizzle.compile = function( selector, context, xml ) {
 	}
 
 	// Cache the compiled function
-	cached = compilerCache.s( selector, matcherFromGroupMatchers(group) );
+	cached = compilerCache( selector, matcherFromGroupMatchers(group) );
 	cached.context = context;
 	cached.runs = cached.dirruns = 0;
 	return cached;
@@ -1269,14 +1249,6 @@ function handlePOS( selector, context, results, seed, groups ) {
 	// Do not sort if this is a single filter
 	return len === 1 ? results : Sizzle.uniqueSort( results );
 }
-
-Sizzle.matches = function( expr, elements ) {
-	return Sizzle( expr, null, null, elements );
-};
-
-Sizzle.matchesSelector = function( elem, expr ) {
-	return Sizzle( expr, null, null, [ elem ] ).length > 0;
-};
 
 function select( selector, context, results, seed, xml ) {
 	// Remove excessive whitespace
@@ -1509,6 +1481,12 @@ if ( document.querySelectorAll ) {
 		}
 	})();
 }
+
+// Deprecated
+Expr.setFilters["nth"] = Expr.setFilters["eq"];
+
+// Back-compat
+Expr.filters = Expr.pseudos;
 
 // EXPOSE
 if ( typeof define === "function" && define.amd ) {
