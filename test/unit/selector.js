@@ -561,7 +561,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 37 );
+	expect( 38 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -649,6 +649,12 @@ test("pseudo - misc", function() {
 	t( "Multi-positional", "#ap:gt(0), #ap:lt(1)", ["ap"] );
 	t( "Multi-pseudo with leading nonexistent id", "#nonexistent:has(*), #ap:has(*)", ["ap"] );
 	t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:lt(1)", ["ap"] );
+
+	Sizzle.selectors.pseudos.icontains = function( elem, i, match ) {
+		return Sizzle.getText( elem ).toLowerCase().indexOf( (match[3] || "").toLowerCase() ) > -1;
+	};
+	t( "Backwards-compatible custom pseudos", "a:icontains(THIS BLOG ENTRY)", ["simon1"] );
+	delete Sizzle.selectors.pseudos.icontains;
 });
 
 

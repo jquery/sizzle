@@ -539,16 +539,23 @@ var Expr = Sizzle.selectors = {
 			// pseudo-class names are case-insensitive
 			// http://www.w3.org/TR/selectors/#pseudo-classes
 			// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
-			var fn = Expr.pseudos[ pseudo ] || Expr.pseudos[ pseudo.toLowerCase() ];
+			var args,
+				fn = Expr.pseudos[ pseudo ] || Expr.pseudos[ pseudo.toLowerCase() ];
 
 			if ( !fn ) {
 				Sizzle.error( "unsupported pseudo: " + pseudo );
 			}
 
-			// The user may set fn.sizzleFilter to indicate
-			// that arguments are needed to create the filter function
-			// just as Sizzle does
+			// The user may set fn.sizzleFilter (or use createPseudo)
+			// to indicate that arguments are needed to create
+			// the filter function just as Sizzle does
 			if ( !fn.sizzleFilter ) {
+				if ( fn.length > 1 ) {
+					args = [ pseudo, pseudo, "", argument ];
+					return function( elem ) {
+						return fn( elem, 0, args );
+					};
+				}
 				return fn;
 			}
 
@@ -1075,14 +1082,14 @@ function addCombinator( matcher, combinator, context ) {
 		};
 	}
 	return combinator.first ?
-		function( elem, context ) {
+		function( elem ) {
 			while ( (elem = elem[ dir ]) ) {
 				if ( elem.nodeType === 1 ) {
-					return matcher( elem, context ) && elem;
+					return matcher( elem ) && elem;
 				}
 			}
 		} :
-		function( elem, context ) {
+		function( elem ) {
 			var cache,
 				dirkey = doneName + "." + dirruns,
 				cachedkey = dirkey + "." + cachedruns;
@@ -1096,7 +1103,7 @@ function addCombinator( matcher, combinator, context ) {
 						}
 					} else {
 						elem[ expando ] = cachedkey;
-						if ( matcher( elem, context ) ) {
+						if ( matcher( elem ) ) {
 							elem.sizset = true;
 							return elem;
 						}
@@ -1109,9 +1116,9 @@ function addCombinator( matcher, combinator, context ) {
 
 function addMatcher( higher, deeper ) {
 	return higher ?
-		function( elem, context ) {
-			var result = deeper( elem, context );
-			return result && higher( result === true ? elem : result, context );
+		function( elem ) {
+			var result = deeper( elem );
+			return result && higher( result === true ? elem : result );
 		} :
 		deeper;
 }
@@ -1133,11 +1140,11 @@ function matcherFromTokens( tokens, context, xml ) {
 }
 
 function matcherFromGroupMatchers( matchers ) {
-	return function( elem, context ) {
+	return function( elem ) {
 		var matcher,
 			j = 0;
 		for ( ; (matcher = matchers[j]); j++ ) {
-			if ( matcher(elem, context) ) {
+			if ( matcher(elem) ) {
 				return true;
 			}
 		}
@@ -1343,7 +1350,7 @@ function select( selector, context, results, seed, xml ) {
 
 		for ( i = 0; (elem = elements[i]); i++ ) {
 			cachedruns = matcher.runs++;
-			if ( matcher(elem, context) ) {
+			if ( matcher(elem) ) {
 				results.push( elem );
 			}
 		}
