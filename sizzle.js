@@ -1155,7 +1155,7 @@ var compile = Sizzle.compile = function( selector, context, xml ) {
 	}
 
 	// Generate a function of recursive functions that can be used to check each element
-	group = tokenize( selector, context, xml ).slice( 0 );
+	group = tokenize( selector, context, xml );
 	for ( i = 0, len = group.length; i < len; i++ ) {
 		group[i] = matcherFromTokens(group[i], context, xml);
 	}
@@ -1432,7 +1432,7 @@ if ( document.querySelectorAll ) {
 						context.setAttribute( "id", nid );
 					}
 
-					groups = tokenize(selector, context, xml).slice( 0 );
+					groups = tokenize(selector, context, xml);
 					// Trailing space is unnecessary
 					// There is always a context check
 					nid = "[id='" + nid + "']";
