@@ -761,3 +761,9 @@ test("pseudo - form", function() {
 
 	extraTexts.remove();
 });
+
+test("caching", function() {
+	expect( 1 );
+	Sizzle( ":not(code)", document.getElementById("ap") );
+	deepEqual( Sizzle( ":not(code)", document.getElementById("foo") ), q("sndp", "en", "yahoo", "sap", "anchor2", "simon"), "Reusing selector with new context" );
+});

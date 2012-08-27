@@ -1125,8 +1125,7 @@ function matcherFromTokens( tokens, context, xml ) {
 		if ( Expr.relative[ token.part ] ) {
 			matcher = addCombinator( matcher, Expr.relative[ token.part ], context );
 		} else {
-			token.captures.push( context, xml );
-			matcher = addMatcher( matcher, Expr.filter[ token.part ].apply( null, token.captures ) );
+			matcher = addMatcher( matcher, Expr.filter[ token.part ].apply( null, token.captures.concat( context, xml ) ) );
 		}
 	}
 
@@ -1147,7 +1146,7 @@ function matcherFromGroupMatchers( matchers ) {
 }
 
 var compile = Sizzle.compile = function( selector, context, xml ) {
-	var tokens, group, i, len,
+	var group, i, len,
 		cached = compilerCache.c[ selector ];
 
 	// Return a cached group function if already generated (context dependent)
