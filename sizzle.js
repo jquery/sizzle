@@ -68,7 +68,13 @@ var dirruns,
 	operators = "([*^$|!~]?=)",
 	attributes = "\\[" + whitespace + "*(" + characterEncoding + ")" + whitespace +
 		"*(?:" + operators + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\3|(" + identifier + ")|)|)" + whitespace + "*\\]",
-	pseudos = ":(" + characterEncoding + ")(?:\\((?:(['\"])((?:\\\\.|[^\\\\])*?)\\2|([^()[\\]]*|(?:(?:" + attributes + ")|.)*))\\)|)",
+
+	// Prefer arguments not in parens/brackets,
+	//   then attribute selectors and non-pseudos (denoted by :),
+	//   then anything else
+	// These preferences are here to reduce the number of selectors
+	//   needing tokenize in the PSEUDO preFilter
+	pseudos = ":(" + characterEncoding + ")(?:\\((?:(['\"])((?:\\\\.|[^\\\\])*?)\\2|([^()[\\]]*|(?:(?:" + attributes + ")|[^:]|\\\\.)*|.*))\\)|)",
 
 	// For matchExpr.POS and matchExpr.needsContext
 	pos = ":(nth|eq|gt|lt|first|last|even|odd)(?:\\((\\d*)\\)|)(?=[^-]|$)",
@@ -78,10 +84,7 @@ var dirruns,
 
 	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
 	rcombinators = new RegExp( "^" + whitespace + "*([\\x20\\t\\r\\n\\f>+~])" + whitespace + "*" ),
-
-	// For checking pseudo arguments
-	// Parens are only valid if there is a pseudo within a pseudo
-	rpseudoWithArgument = new RegExp( pseudos.replace(/\|\)$/, ")") ),
+	rpseudo = new RegExp( pseudos ),
 
 	// Easily-parseable/retrievable ID or TAG or CLASS selectors
 	rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
@@ -503,23 +506,28 @@ Expr = Sizzle.selectors = {
 			return match;
 		},
 
-		"PSEUDO": function( match ) {
-			var m, endIndex, unquoted;
+		"PSEUDO": function( match, context, xml ) {
+			var unquoted, excess;
 			if ( matchExpr["CHILD"].test( match[0] ) ) {
 				return null;
 			}
 
-			if ( !match[3] ) {
-				unquoted = match[3] = match[4];
-			}
-			if ( (m = rpseudoWithArgument.exec( unquoted )) ) {
-				endIndex = m.index + m[0].length;
-				if ( endIndex !== unquoted.length && unquoted.substring( endIndex, endIndex + 1 ) === ")" ) {
-					match[3] = unquoted.substring( 0, endIndex );
-					match[0] = match[0].replace( unquoted, m[0] );
+			if ( match[3] ) {
+				match[2] = match[3];
+			} else if ( (unquoted = match[4]) ) {
+				// Only check arguments that contain a pseudo
+				if ( rpseudo.test(unquoted) &&
+					// Get excess from tokenize (recursively)
+					(excess = tokenize( unquoted, context, xml, true )) &&
+					// advance to the next closing parenthesis
+					(excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length) ) {
+
+					// excess is a negative index
+					unquoted = unquoted.slice( 0, excess );
+					match[0] = match[0].slice( 0, excess );
 				}
+				match[2] = unquoted;
 			}
-			match[2] = match[3];
 
 			// Return only captures needed by the pseudo filter method (type and argument)
 			return match.slice( 0, 3 );
@@ -970,7 +978,7 @@ Sizzle.error = function( msg ) {
 	throw new Error( "Syntax error, unrecognized expression: " + msg );
 };
 
-function tokenize( selector, context, xml ) {
+function tokenize( selector, context, xml, parseOnly ) {
 	var matched, match, tokens, type,
 		soFar, groups, group, i,
 		preFilters, filters,
@@ -980,7 +988,7 @@ function tokenize( selector, context, xml ) {
 		cached = tokenCache[ expando ][ key ];
 
 	if ( cached ) {
-		return slice.call( cached, 0 );
+		return parseOnly ? 0 : slice.call( cached, 0 );
 	}
 
 	soFar = selector;
@@ -1038,7 +1046,7 @@ function tokenize( selector, context, xml ) {
 		}
 
 		if ( !matched ) {
-			Sizzle.error( selector );
+			break;
 		}
 	}
 
@@ -1047,8 +1055,15 @@ function tokenize( selector, context, xml ) {
 		tokens.selector = group;
 	}
 
-	// Cache the tokens
-	return slice.call( tokenCache(key, groups), 0 );
+	// Return the length of the invalid excess
+	// if we're just parsing
+	// Otherwise, throw an error or return tokens
+	return parseOnly ?
+		soFar.length :
+		soFar ?
+			Sizzle.error( selector ) :
+			// Cache the tokens
+			slice.call( tokenCache(key, groups), 0 );
 }
 
 function addCombinator( matcher, combinator, context ) {

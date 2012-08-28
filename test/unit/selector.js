@@ -659,7 +659,7 @@ test("pseudo - misc", function() {
 
 
 test("pseudo - :not", function() {
-	expect( 30 );
+	expect( 33 );
 
 	t( "Not", "a.blog:not(.link)", ["mark"] );
 	t( ":not() with :first", "#foo p:not(:first) .link", ["simon"] );
@@ -696,7 +696,10 @@ test("pseudo - :not", function() {
 	t( ":not() Multiple Class", "#foo a:not(.link)", ["yahoo", "anchor2"] );
 	t( ":not() Multiple Class", "#foo a:not(.blog.link)", ["yahoo", "anchor2"] );
 
-	t( ":not chaining", "#qunit-fixture div[id]:not(:has(div, span)):not(:has(*))", ["divWithNoTabIndex"] );
+	t( ":not chaining (compound)", "#qunit-fixture div[id]:not(:has(div, span)):not(:has(*))", ["divWithNoTabIndex"] );
+	t( ":not chaining (with attribute)", "#qunit-fixture form[id]:not([action='formaction']):not(:button)", ["lengthtest", "name-tests", "testForm"] );
+	t( ":not chaining (colon in attribute)", "#qunit-fixture form[id]:not([action='form:action']):not(:button)", ["form", "lengthtest", "name-tests", "testForm"] );
+	t( ":not chaining (colon in attribute and nested chaining)", "#qunit-fixture form[id]:not([action='form:action']:button):not(:input)", ["form", "lengthtest", "name-tests", "testForm"] );
 	t( ":not chaining", "#form select:not(.select1):contains(Nothing) > option:not(option)", [] );
 });
 
