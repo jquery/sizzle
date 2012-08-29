@@ -1475,7 +1475,7 @@ if ( document.querySelectorAll ) {
 				// Gecko does not error, returns false instead
 				try {
 					matches.call( div, "[test!='']:sizzle" );
-					rbuggyMatches.push( Expr.match.PSEUDO.source, Expr.match.POS.source, "!=" );
+					rbuggyMatches.push( matchExpr["PSEUDO"].source, matchExpr["POS"].source, "!=" );
 				} catch ( e ) {}
 			});
 
