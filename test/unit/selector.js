@@ -399,7 +399,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 59 );
+	expect( 61 );
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
@@ -452,7 +452,7 @@ test("attributes", function() {
 	var opt = document.getElementById("option1a"),
 		match = Sizzle.matchesSelector;
 
-	opt.setAttribute("test", "");
+	opt.setAttribute( "test", "" );
 
 	ok( match( opt, "[id*=option1][type!=checkbox]" ), "Attribute Is Not Equal Matches" );
 	ok( match( opt, "[id*=option1]" ), "Attribute With No Quotes Contains Matches" );
@@ -480,6 +480,11 @@ test("attributes", function() {
 	// var check2 = document.getElementById("check2");
 	// check2.checked = true;
 	// ok( !Sizzle.matches("[checked]", [ check2 ] ), "Dynamic boolean attributes match when they should with Sizzle.matches (#11115)" );
+
+	a.setAttribute( "data-pos", ":first" );
+	ok( match( a, "a[data-pos=\\:first]"), "POS within attribute value is treated as an attribute value" );
+	ok( match( a, "a[data-pos=':first']"), "POS within attribute value is treated as an attribute value" );
+	a.removeAttribute("data-pos");
 
 	// Make sure attribute value quoting works correctly. See: #6093
 	var attrbad = jQuery("<input type=\"hidden\" value=\"2\" name=\"foo.baz\" id=\"attrbad1\"/><input type=\"hidden\" value=\"2\" name=\"foo[baz]\" id=\"attrbad2\"/><input type=\"hidden\" data-attr=\"foo_baz']\" id=\"attrbad3\"/>").appendTo("body");

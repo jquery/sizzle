@@ -1202,8 +1202,10 @@ function handlePOSGroup( selector, posfilter, argument, contexts, seed, not ) {
 	return results.length > 0 ? fn( results, argument, not ) : [];
 }
 
-function handlePOS( selector, context, results, seed, groups ) {
-	var match, not, anchor, ret, elements, currentContexts, part, lastIndex,
+function handlePOS( groups, context, results, seed ) {
+	var group, part, j, groupLen, token, selector,
+		anchor, elements, match, matched,
+		lastIndex, currentContexts, not,
 		i = 0,
 		len = groups.length,
 		rpos = matchExpr["POS"],
@@ -1222,52 +1224,60 @@ function handlePOS( selector, context, results, seed, groups ) {
 		};
 
 	for ( ; i < len; i++ ) {
-		// Reset regex index to 0
-		rpos.exec("");
-		selector = groups[i].selector;
-		ret = [];
-		anchor = 0;
+		group = groups[i];
+		part = "";
 		elements = seed;
-		while ( (match = rpos.exec( selector )) ) {
-			lastIndex = rpos.lastIndex = match.index + match[0].length;
-			if ( lastIndex > anchor ) {
-				part = selector.slice( anchor, match.index );
-				anchor = lastIndex;
-				currentContexts = [ context ];
+		for ( j = 0, groupLen = group.length; j < groupLen; j++ ) {
+			token = group[j];
+			selector = token.string;
+			if ( token.part === "PSEUDO" ) {
+				// Reset regex index to 0
+				rpos.exec("");
+				anchor = 0;
+				while ( (match = rpos.exec( selector )) ) {
+					matched = true;
+					lastIndex = rpos.lastIndex = match.index + match[0].length;
+					if ( lastIndex > anchor ) {
+						part += selector.slice( anchor, match.index );
+						anchor = lastIndex;
+						currentContexts = [ context ];
 
-				if ( rcombinators.test(part) ) {
-					if ( elements ) {
-						currentContexts = elements;
+						if ( rcombinators.test(part) ) {
+							if ( elements ) {
+								currentContexts = elements;
+							}
+							elements = seed;
+						}
+
+						if ( (not = rendsWithNot.test( part )) ) {
+							part = part.slice( 0, -5 ).replace( rcombinators, "$&*" );
+							anchor++;
+						}
+
+						if ( match.length > 1 ) {
+							match[0].replace( rposgroups, setUndefined );
+						}
+						elements = handlePOSGroup( part, match[1], match[2], currentContexts, elements, not );
 					}
-					elements = seed;
+					part = "";
 				}
 
-				if ( (not = rendsWithNot.test( part )) ) {
-					part = part.slice( 0, -5 ).replace( rcombinators, "$&*" );
-					anchor++;
-				}
-
-				if ( match.length > 1 ) {
-					match[0].replace( rposgroups, setUndefined );
-				}
-				elements = handlePOSGroup( part, match[1], match[2], currentContexts, elements, not );
 			}
+
+			if ( !matched ) {
+				part += selector;
+			}
+			matched = false;
 		}
 
-		if ( elements ) {
-			ret = ret.concat( elements );
-
-			if ( (part = selector.slice( anchor )) ) {
-				if ( rcombinators.test(part) ) {
-					multipleContexts( part, ret, results, seed );
-				} else {
-					Sizzle( part, context, results, seed ? seed.concat(elements) : elements );
-				}
+		if ( part ) {
+			if ( rcombinators.test(part) ) {
+				multipleContexts( part, elements || [ context ], results, seed );
 			} else {
-				push.apply( results, ret );
+				Sizzle( part, context, results, seed ? seed.concat(elements) : elements );
 			}
 		} else {
-			Sizzle( selector, context, results, seed );
+			push.apply( results, elements );
 		}
 	}
 
@@ -1285,7 +1295,7 @@ function select( selector, context, results, seed, xml ) {
 
 	// POS handling
 	if ( matchExpr["POS"].test(selector) ) {
-		return handlePOS( selector, context, results, seed, match );
+		return handlePOS( match, context, results, seed );
 	}
 
 	if ( seed ) {
