@@ -1066,7 +1066,7 @@ function tokenize( selector, context, xml, parseOnly ) {
 			slice.call( tokenCache(key, groups), 0 );
 }
 
-function addCombinator( matcher, combinator, context ) {
+function addCombinator( matcher, combinator, context, xml ) {
 	var dir = combinator.dir,
 		doneName = done++;
 
@@ -1084,29 +1084,39 @@ function addCombinator( matcher, combinator, context ) {
 				}
 			}
 		} :
-		function( elem ) {
-			var cache,
-				dirkey = doneName + "." + dirruns,
-				cachedkey = dirkey + "." + cachedruns;
-			while ( (elem = elem[ dir ]) ) {
-				if ( elem.nodeType === 1 ) {
-					if ( (cache = elem[ expando ]) === cachedkey ) {
-						return elem.sizset;
-					} else if ( typeof cache === "string" && cache.indexOf(dirkey) === 0 ) {
-						if ( elem.sizset ) {
-							return elem;
-						}
-					} else {
-						elem[ expando ] = cachedkey;
+		xml ?
+			function( elem ) {
+				while ( (elem = elem[ dir ]) ) {
+					if ( elem.nodeType === 1 ) {
 						if ( matcher( elem ) ) {
-							elem.sizset = true;
 							return elem;
 						}
-						elem.sizset = false;
 					}
 				}
-			}
-		};
+			} :
+			function( elem ) {
+				var cache,
+					dirkey = doneName + "." + dirruns,
+					cachedkey = dirkey + "." + cachedruns;
+				while ( (elem = elem[ dir ]) ) {
+					if ( elem.nodeType === 1 ) {
+						if ( (cache = elem[ expando ]) === cachedkey ) {
+							return elem.sizset;
+						} else if ( typeof cache === "string" && cache.indexOf(dirkey) === 0 ) {
+							if ( elem.sizset ) {
+								return elem;
+							}
+						} else {
+							elem[ expando ] = cachedkey;
+							if ( matcher( elem ) ) {
+								elem.sizset = true;
+								return elem;
+							}
+							elem.sizset = false;
+						}
+					}
+				}
+			};
 }
 
 function addMatcher( higher, deeper ) {
@@ -1125,9 +1135,9 @@ function matcherFromTokens( tokens, context, xml ) {
 
 	for ( ; (token = tokens[i]); i++ ) {
 		if ( Expr.relative[ token.part ] ) {
-			matcher = addCombinator( matcher, Expr.relative[ token.part ], context );
+			matcher = addCombinator( matcher, Expr.relative[ token.part ], context, xml );
 		} else {
-			matcher = addMatcher( matcher, Expr.filter[ token.part ].apply( null, token.captures.concat( context, xml ) ) );
+			matcher = addMatcher( matcher, Expr.filter[ token.part ].apply(null, token.captures.concat( context, xml )) );
 		}
 	}
 

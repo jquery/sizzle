@@ -138,7 +138,7 @@ test("element", function() {
 
 test("XML Document Selectors", function() {
 	var xml = createWithFriesXML();
-	expect( 9 );
+	expect( 10 );
 
 	equal( Sizzle("foo_bar", xml).length, 1, "Element Selector with underscore" );
 	equal( Sizzle(".component", xml).length, 1, "Class selector" );
@@ -148,6 +148,7 @@ test("XML Document Selectors", function() {
 	equal( Sizzle("#seite1", xml).length, 1, "Attribute selector with ID" );
 	equal( Sizzle("component#seite1", xml).length, 1, "Attribute selector with ID" );
 	equal( Sizzle.matches( "#seite1", Sizzle("component", xml) ).length, 1, "Attribute selector filter with ID" );
+	equal( Sizzle("meta property thing", xml).length, 2, "Descendent selector and dir caching" );
 	ok( Sizzle.matchesSelector( xml.lastChild, "soap\\:Envelope" ), "Check for namespaced element" );
 });
 
