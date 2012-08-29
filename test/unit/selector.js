@@ -202,7 +202,7 @@ test("broken", function() {
 });
 
 test("id", function() {
-	expect( 30 );
+	expect( 31 );
 
 	t( "ID Selector", "#body", ["body"] );
 	t( "ID Selector w/ Element", "body#body", ["body"] );
@@ -215,6 +215,7 @@ test("id", function() {
 	t( "Child ID selector using UTF8", "form > #台北", ["台北"] );
 
 	t( "Escaped ID", "#foo\\:bar", ["foo:bar"] );
+	t( "Escaped ID with descendent", "#foo\\:bar span:not(:input)", ["foo_descendent"] );
 	t( "Escaped ID", "#test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
 	t( "Descendant escaped ID", "div #foo\\:bar", ["foo:bar"] );
 	t( "Descendant escaped ID", "div #test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );

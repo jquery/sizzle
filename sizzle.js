@@ -1296,11 +1296,12 @@ function select( selector, context, results, seed, xml ) {
 	} else if ( match.length === 1 ) {
 
 		// Take a shortcut and set the context if the root selector is an ID
-		if ( (tokens = slice.call( match[0], 0 )).length > 2 && Expr.relative[ tokens[1].part ] &&
+		if ( (tokens = slice.call( match[0], 0 )).length > 2 &&
+				(token = tokens[0]).part === "ID" &&
 				contextNodeType === 9 && !xml &&
-				(match = matchExpr["ID"].exec( tokens[0].string )) ) {
+				Expr.relative[ tokens[1].part ] ) {
 
-			context = Expr.find["ID"]( match[1], context, xml )[0];
+			context = Expr.find["ID"]( token.captures[0].replace( rbackslash, "" ), context, xml )[0];
 			if ( !context ) {
 				return results;
 			}
