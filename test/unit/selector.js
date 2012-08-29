@@ -705,7 +705,7 @@ test("pseudo - :not", function() {
 });
 
 test("pseudo - position", function() {
-	expect( 31 );
+	expect( 32 );
 
 	t( "First element", "div:first", ["qunit-testrunner-toolbar"] );
 	t( "First element(case-insensitive)", "div:fiRst", ["qunit-testrunner-toolbar"] );
@@ -715,6 +715,7 @@ test("pseudo - position", function() {
 	t( "Even Elements", "#qunit-fixture p:even", ["firstp","sndp","sap"] );
 	t( "Odd Elements", "#qunit-fixture p:odd", ["ap","en","first"] );
 	t( "Position Equals", "#qunit-fixture p:eq(1)", ["ap"] );
+	t( "Position Equals (negative)", "#qunit-fixture p:eq(-1)", ["first"] );
 	t( "Position Greater Than", "#qunit-fixture p:gt(0)", ["ap","sndp","en","sap","first"] );
 	t( "Position Less Than", "#qunit-fixture p:lt(3)", ["firstp","ap","sndp"] );
 
