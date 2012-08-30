@@ -568,7 +568,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 38 );
+	expect( 39 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -662,11 +662,13 @@ test("pseudo - misc", function() {
 	};
 	t( "Backwards-compatible custom pseudos", "a:icontains(THIS BLOG ENTRY)", ["simon1"] );
 	delete Sizzle.selectors.pseudos.icontains;
+
+	t( "Tokenization stressor", "a[class*=blog]:not(:has(*, :contains(!)), :contains(!)), br:contains(]), p:contains(]), :not(:empty):not(:parent)", ["ap", "mark","yahoo","simon"] );
 });
 
 
 test("pseudo - :not", function() {
-	expect( 33 );
+	expect( 43 );
 
 	t( "Not", "a.blog:not(.link)", ["mark"] );
 	t( ":not() with :first", "#foo p:not(:first) .link", ["simon"] );
@@ -708,6 +710,18 @@ test("pseudo - :not", function() {
 	t( ":not chaining (colon in attribute)", "#qunit-fixture form[id]:not([action='form:action']):not(:button)", ["form", "lengthtest", "name-tests", "testForm"] );
 	t( ":not chaining (colon in attribute and nested chaining)", "#qunit-fixture form[id]:not([action='form:action']:button):not(:input)", ["form", "lengthtest", "name-tests", "testForm"] );
 	t( ":not chaining", "#form select:not(.select1):contains(Nothing) > option:not(option)", [] );
+
+	t( "positional :not()", "#foo p:not(:last)", ["sndp", "en"] );
+	t( "positional :not() prefix", "#foo p:not(:last) a", ["yahoo"] );
+	t( "compound positional :not()", "#foo p:not(:first, :last)", ["en"] );
+	t( "compound positional :not()", "#foo p:not(:first, :even)", ["en"] );
+	t( "compound positional :not()", "#foo p:not(:first, :odd)", ["sap"] );
+	t( "reordered compound positional :not()", "#foo p:not(:odd, :first)", ["sap"] );
+
+	t( "positional :not() with pre-filter", "#foo p:not([id]:first)", ["en", "sap"] );
+	t( "positional :not() with post-filter", "#foo p:not(:first[id])", ["en", "sap"] );
+	t( "positional :not() with pre-filter", "#foo p:not([lang]:first)", ["sndp", "sap"] );
+	t( "positional :not() with post-filter", "#foo p:not(:first[lang])", ["sndp", "en", "sap"] );
 });
 
 test("pseudo - position", function() {
