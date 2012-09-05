@@ -1,0 +1,30 @@
+Authors ordered by first contribution.
+
+John Resig <jeresig@gmail.com>
+Cheah Chu Yeow <chuyeow@gmail.com>
+Andrew Chalkley <andrew@chalkley.org>
+Fabio Buffoni <fabio.buffoni@bitmaster.it>
+Stefan Bauckmeier <stefan@bauckmeier.de>
+Brandon Aaron <brandon.aaron@gmail.com>
+Anton Kovalyov <anton@kovalyov.net>
+Dušan B. Jovanovic <dbjdbj@gmail.com>
+Riccardo De Agostini <rdeago@gmail.com>
+Fabian Jakobs <fabian.jakobs@web.de>
+Karl Swedberg <karl@englishrules.com>
+Jake Archibald <jake.archibald@bbc.co.uk>
+Colin Snover <github.com@zetafleet.com>
+Anton Matzneller <obhvsbypqghgc@gmail.com>
+Dave Methvin <dave.methvin@gmail.com>
+Corey Frang <gnarf@gnarf.net>
+Mathias Bynens <mathias@qiwi.be>
+John Firebaugh <john_firebaugh@us.ibm.com>
+Timmy Willison <timmywillisn@gmail.com>
+Mike Sherov <mike.sherov@gmail.com>
+Rock Hymas <rock@fogcreek.com>
+Yehuda Katz <wycats@gmail.com>
+Jörn Zaefferer <joern.zaefferer@gmail.com>
+Richard Gibson <richard.gibson@gmail.com>
+Vitya Muhachev <vic99999@yandex.ru>
+Henri Wiechers <hwiechers@gmail.com>
+Alan Plum <github@ap.apsq.de>
+Chad Killingsworth <chadkillingsworth@missouristate.edu>
