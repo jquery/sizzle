@@ -3,13 +3,28 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Sizzle Performance Suite</title>
+		<link rel="shortcut icon" href="images/favicon.ico">
 		<link rel="stylesheet" media="screen" href="speed.css">
 	</head>
 	<body>
-		<table>
-			<thead id="perf-table-headers"></thead>
-			<tbody id="perf-table-body"></tbody>
-		</table>
+		<header>
+			<img id="logo" src="images/logo.png" alt="Sizzle">
+			<h4>Sizzle Performance Suite built with <a href="http://benchmarkjs.com">benchmarkjs</a> and <a href="http://requirejs.org">requirejs</a></h4>
+			<ul>
+				<li>Every selector engine gets its own iframe</li>
+				<li>iframes are destroyed and reset after <i>each</i> selector, so no selector can affect another</li>
+				<li>Tests are run against <a href="data/selector.html">this page</a></li>
+			</ul>
+		</header>
+		<article id="main" role="main" class="clear">
+			<table class="table table-bordered">
+				<thead id="perf-table-headers"></thead>
+				<tbody id="perf-table-body"></tbody>
+			</table>
+		</article>
+		<footer>
+			<small>Copyright &copy; 2012 jQuery Foundation</small>
+		</footer>
 		<script src="require.js" data-main="speed"></script>
 	</body>
 </html>

@@ -8,11 +8,39 @@ function( require, Benchmark, document, selectors ) {
 	// Convert selectors to an array
 	selectors = selectors.split("\n");
 
-	var // Test HTML file name in the data folder
+	var // Class manipulation
+		// IE doesn't match non-breaking spaces with \s
+		rtrim = /\S/.test("\xA0") ? (/^[\s\xA0]+|[\s\xA0]+$/g) : /^\s+|\s+$/g,
+		rspaces = /\s+/,
+		ptrim = String.prototype.trim,
+
+		// Test HTML file name in the data folder
 		testHtml = "selector",
 
+		// Construct search parameters object
+		urlParams = (function() {
+			var parts, value,
+				params = {},
+				search = location.search.substring(1).split("&"),
+				i = 0,
+				len = search.length;
+
+			for ( ; i < len; i++ ) {
+				parts = search[i].split("=");
+				value = parts[1];
+				// Cast booleans and treat no value as true
+				params[ decodeURIComponent(parts[0]) ] =
+					value && value !== "true" ?
+						value === "false" ? false :
+						decodeURIComponent( value ) :
+					true;
+			}
+
+			return params;
+		})(),
+
 		// Whether to allow the use of QSA by the selector engines
-		useQSA = false,
+		useQSA = urlParams.qsa || false,
 
 		// Queue for benchmark suites
 		suites = [],
@@ -33,10 +61,10 @@ function( require, Benchmark, document, selectors ) {
 			"sizzle":         "Sizzle( s )"
 		},
 
-		// Just cause I'm lazy
 		numEngines = (function() {
 			var engine,
 				count = 0;
+
 			for ( engine in engines ) {
 				if ( engines.hasOwnProperty(engine) ) {
 					count++;
@@ -49,6 +77,80 @@ function( require, Benchmark, document, selectors ) {
 
 	// Expose iframeCallbacks
 	window.iframeCallbacks = {};
+
+
+	/**
+	 * Trim leading and trailing whitespace
+	 *
+	 * @param {String} str The string to trim
+	 */
+	var trim = ptrim ?
+		function( str ) {
+			return ptrim.call( str );
+		} :
+		function( str ) {
+			return str.replace( rtrim, "" );
+		};
+
+	/**
+	 * Returns whether the element has the given class
+	 *
+	 * @param {Element} elem The element to check
+	 * @param {String} classStr The className property is scanned for this class
+	 */
+	function hasClass( elem, classStr ) {
+		return elem && classStr &&
+			(" " + elem.className + " ").indexOf( " " + classStr + " " ) > -1;
+	}
+
+	/**
+	 * Adds the given class to the element if it does not exist
+	 *
+	 * @param {Element} elem The element on which to add the class
+	 * @param {String} classStr The class to add
+	 */
+	function addClass( elem, classStr ) {
+		classStr = classStr.split( rspaces );
+		var c,
+			cls = " " + elem.className + " ",
+			i = 0,
+			len = classStr.length;
+		for ( ; i < len; ++i ) {
+			c = classStr[ i ];
+			if ( c && cls.indexOf(" " + c + " ") < 0 ) {
+				cls += c + " ";
+			}
+		}
+		elem.className = trim( cls );
+	}
+
+	/**
+	 * Removes a given class on the element
+	 *
+	 * @param {Element} elem The element from which to remove the class
+	 * @param {String} classStr The class to remove
+	 */
+	function removeClass( elem, classStr ) {
+		var cls, len, i;
+
+		if ( classStr !== undefined ) {
+			classStr = classStr.split( rspaces );
+			cls = " " + elem.className + " ";
+			i = 0;
+			len = classStr.length;
+			for ( ; i < len; ++i ) {
+				cls = cls.replace(" " + classStr[ i ] + " ", " ");
+			}
+			cls = trim( cls );
+		} else {
+			// Remove all classes
+			cls = "";
+		}
+
+		if ( elem.className !== cls ) {
+			elem.className = cls;
+		}
+	}
 
 	/**
 	 * Add random number to the url to stop caching
@@ -184,37 +286,43 @@ function( require, Benchmark, document, selectors ) {
 
 	Benchmark.options.async = true;
 	Benchmark.options.onError = function( error ) {
-		debugger;
 		console.error( error );
 	};
 
 	/* Benchmark Suite Options
 	---------------------------------------------------------------------- */
 	Benchmark.Suite.options.onStart = function() {
-		console.log( this.name + ":" );
+		var selectorElem = document.getElementById("selector" + selectorIndex);
+		addClass( selectorElem, "pending" );
 	};
 	Benchmark.Suite.options.onCycle = function( event ) {
-		console.log( event.target );
+		var tableBody = document.getElementById("perf-table-body"),
+			tds = tableBody.getElementsByTagName("td");
+
+		tds[ event.target.id + selectorIndex ].innerHTML = Benchmark.formatNumber( event.target.hz.toFixed(2) );
 	};
 	Benchmark.Suite.options.onComplete = function() {
-		var formatNumber = Benchmark.formatNumber,
+		var i, len,
+			selectorElem = document.getElementById("selector" + selectorIndex),
+			tableBody = document.getElementById("perf-table-body"),
+			tds = tableBody.getElementsByTagName("td"),
 			fastest = this.filter("fastest"),
-			fastestHz = getHz(fastest[0]),
-			slowest = this.filter("slowest"),
-			slowestHz = getHz(slowest[0]),
-			i = 0,
-			len = iframes[ this.name ].length;
+			slowest = this.filter("slowest");
 
-		var percent = ( (fastestHz / slowestHz) - 1 ) * 100;
+		removeClass( selectorElem, "pending" );
 
-		console.log(
-			fastest[0].name + " is " +
-			formatNumber( percent < 1 ? percent.toFixed(2) : Math.round(percent) ) +
-			"% faster."
-		);
+		// Highlight fastest green
+		for ( i = 0, len = fastest.length; i < len; i++ ) {
+			addClass( tds[ fastest[i].id + selectorIndex ], "green" );
+		}
+
+		// Highlight slowest red
+		for ( i = 0, len = slowest.length; i < len; i++ ) {
+			addClass( tds[ slowest[i].id + selectorIndex ], "red" );
+		}
 
 		// Remove all added iframes for this suite
-		for ( ; i < len; i++ ) {
+		for ( i = 0, len = iframes[ this.name ].length; i < len; i++ ) {
 			document.body.removeChild( iframes[ this.name ].pop() );
 		}
 		delete iframes[ this.name ];
@@ -231,7 +339,35 @@ function( require, Benchmark, document, selectors ) {
 		}
 	};
 
-	// GOOOOO
+	/**
+	 * Adds all of the necessary headers and rows
+	 *   for all selector engines
+	 */
+	function buildTable() {
+		var engine,
+			i = 0,
+			len = selectors.length,
+			headers = "<th class='small selector'>selectors</th>",
+			emptyColumns = "",
+			rows = "";
+
+		// Build out headers
+		for ( engine in engines ) {
+			headers += "<th class='text-right'>" + engine + "</th>";
+			emptyColumns += "<td class='text-right'>&nbsp;</td>";
+		}
+
+		// Build out initial rows
+		for ( ; i < len; i++ ) {
+			rows += "<tr><td id='selector" + i + "' class='small selector'><span>" + selectors[i] + "</span></td>" + emptyColumns + "</tr>";
+		}
+
+		document.getElementById("perf-table-headers").innerHTML = headers;
+		document.getElementById("perf-table-body").innerHTML = rows;
+	}
+
+	// Kick it off
+	buildTable();
 	testSelector( selectors[selectorIndex] );
 
 });
