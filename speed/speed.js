@@ -191,7 +191,10 @@ function( require, Benchmark, document, selectors ) {
 	 * @returns {Element} Returns the iframe
 	 */
 	function createIframe( engine, suite, callbackIndex ) {
-		var src = url( "./data/" + testHtml + ".html?engine=" + engine + "&suite=" + suite + "&callback=" + callbackIndex + "&qsa=" + useQSA ),
+		var src = url( "./data/" + testHtml + ".html?engine=" + encodeURIComponent( engine ) +
+				"&suite=" + encodeURIComponent( suite ) +
+				"&callback=" + callbackIndex +
+				"&qsa=" + useQSA ),
 			iframe = document.createElement("iframe");
 		iframe.setAttribute( "src", src );
 		iframe.style.cssText = "width: 500px; height: 500px; position: absolute; top: -600px; left: -600px; visibility: hidden;";
@@ -285,6 +288,8 @@ function( require, Benchmark, document, selectors ) {
 	---------------------------------------------------------------------- */
 
 	Benchmark.options.async = true;
+	Benchmark.options.maxTime = 0.5;
+	Benchmark.options.minSamples = 10;
 	Benchmark.options.onError = function( error ) {
 		console.error( error );
 	};
@@ -336,6 +341,8 @@ function( require, Benchmark, document, selectors ) {
 
 		if ( ++selectorIndex < selectors.length ) {
 			testSelector( selectors[selectorIndex] );
+		} else {
+			addClass( document.body, "complete" );
 		}
 	};
 

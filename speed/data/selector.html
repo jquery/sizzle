@@ -3315,7 +3315,9 @@
 		})();
 	</script>
 	<script>
-		if ( suite != null && callback != null ) {
+		// Using OR here to throw an error if one is present but not the other
+		// Does not throw an error if someone is just looking at this page
+		if ( suite != null || callback != null ) {
 			window.parent.iframeCallbacks[ suite ][ callback ].call( window, document );
 		}
 	</script>

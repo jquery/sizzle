@@ -126,6 +126,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 /* ==|== Performance suite styles ======================================== */
 
 body { padding: 40px; font: 14px/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif; }
+body.complete { background: rgb(230, 255, 230);  }
 small, .small { font-size: 0.85em; }
 
 a { color: #730E00; }
