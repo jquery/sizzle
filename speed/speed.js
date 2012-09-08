@@ -107,6 +107,7 @@ function( require, Benchmark, document, selectors ) {
 	/**
 	 * Trim leading and trailing whitespace
 	 *
+	 * @private
 	 * @param {String} str The string to trim
 	 */
 	var trim = ptrim ?
@@ -120,6 +121,7 @@ function( require, Benchmark, document, selectors ) {
 	/**
 	 * A shortcut for getElementById
 	 *
+	 * @private
 	 * @param {String} id The ID with which to query the DOM
 	 */
 	function get( id ) {
@@ -129,6 +131,7 @@ function( require, Benchmark, document, selectors ) {
 	/**
 	 * Returns whether the element has the given class
 	 *
+	 * @private
 	 * @param {Element} elem The element to check
 	 * @param {String} classStr The className property is scanned for this class
 	 */
@@ -140,6 +143,7 @@ function( require, Benchmark, document, selectors ) {
 	/**
 	 * Adds the given class to the element if it does not exist
 	 *
+	 * @private
 	 * @param {Element} elem The element on which to add the class
 	 * @param {String} classStr The class to add
 	 */
@@ -161,6 +165,7 @@ function( require, Benchmark, document, selectors ) {
 	/**
 	 * Removes a given class on the element
 	 *
+	 * @private
 	 * @param {Element} elem The element from which to remove the class
 	 * @param {String} classStr The class to remove
 	 */
@@ -219,6 +224,7 @@ function( require, Benchmark, document, selectors ) {
 	 * Determines the common number of elements found by the engines.
 	 *   If there are only 2 engines, this will just return the first one.
 	 *
+	 * @private
 	 * @param {String} selector The selector for which to check returned elements
 	 */
 	function getCommonReturn( selector ) {
@@ -227,8 +233,11 @@ function( require, Benchmark, document, selectors ) {
 			counts = {};
 
 		for ( engine in returned ) {
-			count = returned[ engine ][ selector ].length;
-			counts[ count ] = (counts[ count ] || 0) + 1;
+			count = returned[ engine ][ selector ];
+			if ( count ) {
+				count = count.length;
+				counts[ count ] = (counts[ count ] || 0) + 1;
+			}
 		}
 
 		for ( count in counts ) {
@@ -239,6 +248,36 @@ function( require, Benchmark, document, selectors ) {
 		}
 
 		return +common;
+	}
+
+	/**
+	 * Adds all of the necessary headers and rows
+	 *   for all selector engines
+	 *
+	 * @private
+	 */
+	function buildTable() {
+		var engine,
+			i = 0,
+			len = selectors.length,
+			headers = "<th class='small selector'>selectors</th>",
+			emptyColumns = "",
+			rows = "";
+
+		// Build out headers
+		for ( engine in engines ) {
+			headers += "<th class='text-right'>" + engine + "</th>";
+			emptyColumns += "<td class='text-right' data-engine='" + engine + "'>&nbsp;</td>";
+		}
+
+		// Build out initial rows
+		for ( ; i < len; i++ ) {
+			rows += "<tr><td id='selector" + i + "' class='small selector'><span>" + selectors[i] + "</span></td>" + emptyColumns + "</tr>";
+		}
+		rows += "<tr><td id='results' class='bold'>Total (more is better)</td>" + emptyColumns + "</tr>";
+
+		get("perf-table-headers").innerHTML = headers;
+		get("perf-table-body").innerHTML = rows;
 	}
 
 	/**
@@ -344,25 +383,31 @@ function( require, Benchmark, document, selectors ) {
 		}
 	}
 
-	/* Benchmark Options
-	---------------------------------------------------------------------- */
-
-	Benchmark.options.async = true;
-	Benchmark.options.maxTime = maxTime;
-	Benchmark.options.minSamples = minSamples;
-	Benchmark.options.onError = function( event ) {
+	/**
+	 * Adds the bench to the list of failures to indicate
+	 *   failture on cycle. Aborts and returns false.
+	 *
+	 * @param {Object} event Benchmark.Event instance
+	 */
+	function onError( event ) {
 		errors[ this.id ] = true;
 		this.abort();
 		return false;
-	};
+	}
 
-	/* Benchmark Suite Options
-	---------------------------------------------------------------------- */
-	Benchmark.Suite.options.onStart = function() {
+	/**
+	 * Callback for the start of each test
+	 * Adds the `pending` class to the selector column
+	 */
+	function onStart() {
 		var selectorElem = get( "selector" + selectorIndex );
 		addClass( selectorElem, "pending" );
-	};
-	Benchmark.Suite.options.onCycle = function( event ) {
+	}
+
+	/**
+	 * Adds the Hz result or "FAILURE" to the corresponding column for the engine
+	 */
+	function onCycle( event ) {
 		var i = selectorIndex * (numEngines + 1) + 1,
 			len = i + numEngines,
 			tableBody = get("perf-table-body"),
@@ -383,14 +428,25 @@ function( require, Benchmark, document, selectors ) {
 				tds[i].appendChild( textNode );
 				if ( hasError ) {
 					addClass( tds[i], "black" );
-					delete errors[ bench.id ];
 				}
 				break;
 			}
 		}
-	};
-	Benchmark.Suite.options.onComplete = function() {
-		var fastestHz, slowestHz, elem, attr, j, jlen, td,
+	}
+
+	/**
+	 * Called after each test
+	 *   - Removes the `pending` class from the row
+	 *   - Adds the totals to the `scores` object
+	 *   - Highlights the corresponding row appropriately
+	 *   - Removes all iframes and their callbacks from memory
+	 *   - Calls the next test OR finishes up by:
+	 *     * adding the `complete` class to body
+	 *     * adding the totals to the table
+	 *     * determining the fastest overall and slowest overall
+	 */
+	function onComplete() {
+		var fastestHz, slowestHz, elem, attr, j, jlen, td, ret,
 			i = selectorIndex * (numEngines + 1) + 1,
 			// Determine different elements returned
 			selector = selectors[ selectorIndex ],
@@ -406,7 +462,10 @@ function( require, Benchmark, document, selectors ) {
 
 		// Add up the scores
 		this.forEach(function( bench ) {
-			if ( !bench.events.error ) {
+			if ( errors[ bench.id ] ) {
+				// No need to store this error anymore
+				delete errors[ bench.id ];
+			} else {
 				scores[ bench.name ] += getHz( bench );
 			}
 		});
@@ -415,7 +474,8 @@ function( require, Benchmark, document, selectors ) {
 		for ( ; i < len; i++ ) {
 			td = tds[i];
 			attr = td.getAttribute("data-engine");
-			if ( returned[ attr ][ selector ].length !== common ) {
+			ret = returned[ attr ][ selector ];
+			if ( ret && ret.length !== common ) {
 				addClass( td, "yellow" );
 				continue;
 			}
@@ -476,7 +536,7 @@ function( require, Benchmark, document, selectors ) {
 			get("header").appendChild( elem );
 
 			// Add totals to table
-			while( (elem = tds[ ++selectorIndex]) ) {
+			while( (elem = tds[ selectorIndex++ ]) ) {
 				elem.appendChild(
 					document.createTextNode(
 						scores[ elem.getAttribute("data-engine") ]
@@ -484,35 +544,21 @@ function( require, Benchmark, document, selectors ) {
 				);
 			}
 		}
-	};
-
-	/**
-	 * Adds all of the necessary headers and rows
-	 *   for all selector engines
-	 */
-	function buildTable() {
-		var engine,
-			i = 0,
-			len = selectors.length,
-			headers = "<th class='small selector'>selectors</th>",
-			emptyColumns = "",
-			rows = "";
-
-		// Build out headers
-		for ( engine in engines ) {
-			headers += "<th class='text-right'>" + engine + "</th>";
-			emptyColumns += "<td class='text-right' data-engine='" + engine + "'>&nbsp;</td>";
-		}
-
-		// Build out initial rows
-		for ( ; i < len; i++ ) {
-			rows += "<tr><td id='selector" + i + "' class='small selector'><span>" + selectors[i] + "</span></td>" + emptyColumns + "</tr>";
-		}
-		rows += "<tr><td id='results' class='bold'>Total (more is better)</td>" + emptyColumns + "</tr>";
-
-		get("perf-table-headers").innerHTML = headers;
-		get("perf-table-body").innerHTML = rows;
 	}
+
+	/* Benchmark Options
+	---------------------------------------------------------------------- */
+
+	Benchmark.options.async = true;
+	Benchmark.options.maxTime = maxTime;
+	Benchmark.options.minSamples = minSamples;
+	Benchmark.options.onError = onError;
+
+	/* Benchmark Suite Options
+	---------------------------------------------------------------------- */
+	Benchmark.Suite.options.onStart = onStart;
+	Benchmark.Suite.options.onCycle = onCycle;
+	Benchmark.Suite.options.onComplete = onComplete;
 
 	// Kick it off
 	buildTable();
