@@ -46,7 +46,7 @@ function( require, Benchmark, document, selectors ) {
 
 		// Benchmark options
 		maxTime = 0.5,
-		minSamples = 1,
+		minSamples = 3,
 
 		// Queue for benchmark suites
 		suites = [],
@@ -189,6 +189,14 @@ function( require, Benchmark, document, selectors ) {
 		if ( elem.className !== cls ) {
 			elem.className = cls;
 		}
+	}
+
+	/**
+	 * Retrieves the position of the first column
+	 *  of the row that has just been tested
+	 */
+	function firstTestedColumn() {
+		return selectorIndex * (numEngines + 1) + 1;
 	}
 
 	/**
@@ -408,7 +416,7 @@ function( require, Benchmark, document, selectors ) {
 	 * Adds the Hz result or "FAILURE" to the corresponding column for the engine
 	 */
 	function onCycle( event ) {
-		var i = selectorIndex * (numEngines + 1) + 1,
+		var i = firstTestedColumn(),
 			len = i + numEngines,
 			tableBody = get("perf-table-body"),
 			tds = tableBody.getElementsByTagName("td"),
@@ -447,7 +455,7 @@ function( require, Benchmark, document, selectors ) {
 	 */
 	function onComplete() {
 		var fastestHz, slowestHz, elem, attr, j, jlen, td, ret,
-			i = selectorIndex * (numEngines + 1) + 1,
+			i = firstTestedColumn(),
 			// Determine different elements returned
 			selector = selectors[ selectorIndex ],
 			common = getCommonReturn( selector ),
@@ -513,13 +521,11 @@ function( require, Benchmark, document, selectors ) {
 			slowest = fastest = undefined;
 			fastestHz = 0;
 			slowestHz = Infinity;
-			selectorIndex = selectorIndex * numEngines + 2;
 			for ( i in scores ) {
 				if ( scores[i] > fastestHz ) {
 					fastestHz = scores[i];
 					fastest = i;
-				}
-				if ( scores[i] < slowestHz ) {
+				} else if ( scores[i] < slowestHz ) {
 					slowestHz = scores[i];
 					slowest = i;
 				}
@@ -536,11 +542,17 @@ function( require, Benchmark, document, selectors ) {
 			get("header").appendChild( elem );
 
 			// Add totals to table
-			while( (elem = tds[ selectorIndex++ ]) ) {
+			i = firstTestedColumn();
+			while( (elem = tds[ i++ ]) ) {
+				attr = elem.getAttribute("data-engine");
+				if ( attr === fastest ) {
+					addClass( elem, "green" );
+				} else if ( attr === slowest ) {
+					addClass( elem, "red" );
+				}
+
 				elem.appendChild(
-					document.createTextNode(
-						scores[ elem.getAttribute("data-engine") ]
-					)
+					document.createTextNode( scores[ attr ] )
 				);
 			}
 		}
