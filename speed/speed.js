@@ -417,7 +417,7 @@ function( require, Benchmark, document, selectors ) {
 			textNode = document.createTextNode(
 				hasError ?
 					"FAILED" :
-					Benchmark.formatNumber(getHz( bench ).toFixed( 2 )) + " | " +
+					Benchmark.formatNumber(getHz( bench ).toFixed( 2 )) + "o/s | " +
 						returned[ bench.name ][ selectors[selectorIndex] ].length +
 						" found"
 			);
@@ -524,7 +524,7 @@ function( require, Benchmark, document, selectors ) {
 					slowest = i;
 				}
 				// Format scores for display
-				scores[i] = Benchmark.formatNumber( scores[i].toFixed(2) );
+				scores[i] = Benchmark.formatNumber( scores[i].toFixed(2) ) + "o/s";
 			}
 
 			// Add conclusion to the header
