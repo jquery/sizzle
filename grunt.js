@@ -4,7 +4,7 @@ module.exports = function( grunt ) {
 	// Project configuration.
 	grunt.initConfig({
 		lint: {
-			files: [ "grunt.js", "sizzle.js", "test/unit/*.js" ]
+			files: [ "grunt.js", "sizzle.js", "test/unit/*.js", "speed/speed.js" ]
 		},
 		qunit: {
 			files: [ "test/**/*.html" ]

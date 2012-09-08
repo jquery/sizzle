@@ -102,27 +102,6 @@ table { border-collapse: collapse; border-spacing: 0; }
     to   { transform: translate(0, 0); }
 }
 
-.pending span {
-    display: inline-block; *display: inline;
-    -webkit-animation-name: shake;
-       -moz-animation-name: shake;
-         -o-animation-name: shake;
-        -ms-animation-name: shake;
-            animation-name: shake;
-
-    -webkit-animation-duration: 0.7s;
-       -moz-animation-duration: 0.7s;
-         -o-animation-duration: 0.7s;
-        -ms-animation-duration: 0.7s;
-            animation-duration: 0.7s;
-
-    -webkit-animation-iteration-count: infinite;
-       -moz-animation-iteration-count: infinite;
-         -o-animation-iteration-count: infinite;
-        -ms-animation-iteration-count: infinite;
-            animation-iteration-count: infinite;
-}
-
 /* ==|== Performance suite styles ======================================== */
 
 body { padding: 40px; font: 14px/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif; }
@@ -147,7 +126,7 @@ a:active { color: black; }
 /* ==|== table styles ======================================== */
 .table {
     width: 100%;
-    margin: 2.5em 0;
+    margin: 1.2em 0 3em;
 }
 .table th,
 .table td {
@@ -166,6 +145,9 @@ a:active { color: black; }
     text-shadow: rgba(0, 0, 0, 0.2) 0 1px;
     background: rgb(240, 240, 240);
     font-weight: 600;
+}
+.table td {
+    font-size: 12px;
 }
 .table thead th {
     vertical-align: bottom;
@@ -256,8 +238,32 @@ a:active { color: black; }
 }
 .table tbody tr td.green { background: #19EB4B; }
 .table tbody tr td.red { background: #FF5E5E; }
+.table tbody tr td.black { background: #41464D; color: #F3F1F1; }
+.table tbody tr td.pending { background: hsl(215, 100%, 80%); }
 
 .selector { background: hsl(215, 100%, 95%); }
 
+.pending span {
+    display: inline-block; *display: inline;
+    -webkit-animation-name: shake;
+       -moz-animation-name: shake;
+         -o-animation-name: shake;
+        -ms-animation-name: shake;
+            animation-name: shake;
+
+    -webkit-animation-duration: 0.7s;
+       -moz-animation-duration: 0.7s;
+         -o-animation-duration: 0.7s;
+        -ms-animation-duration: 0.7s;
+            animation-duration: 0.7s;
+
+    -webkit-animation-iteration-count: infinite;
+       -moz-animation-iteration-count: infinite;
+         -o-animation-iteration-count: infinite;
+        -ms-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+}
+
 /* ==|== helper classes ======================================== */
 .clear { clear: both; }
+.bold { font-weight: bold; }

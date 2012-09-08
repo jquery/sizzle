@@ -2,6 +2,8 @@
  * Performance test suite using benchmark.js
  */
 
+/*global console: true*/
+
 define([ "require", "benchmark.js/benchmark", "domReady!", "text!selectors.css", "data/checkJava" ],
 function( require, Benchmark, document, selectors ) {
 
@@ -42,25 +44,52 @@ function( require, Benchmark, document, selectors ) {
 		// Whether to allow the use of QSA by the selector engines
 		useQSA = urlParams.qsa || false,
 
+		// Benchmark options
+		maxTime = 5,
+		minSamples = 20,
+
 		// Queue for benchmark suites
 		suites = [],
 
 		// Keep track of all iframes
 		iframes = {},
 
+		// Keeps track of which benches had errors
+		errors = {},
+
 		// Selector engines
 		engines = {
-			"qsa":            "d.querySelectorAll( s )",
-			"dojo":           "dojo.query( s )",
+			// "qsa":            "d.querySelectorAll( s )",
+			"dojo":           "dojo.query( s, d )",
 			"mootools-slick": "Slick.search( d, s )",
-			"nwmatcher":      "NW.Dom.select( s )",
-			"qwery":          "qwery( s )",
-			"jquery-1.4.4":   "jQuery.find( s )",
-			"jquery-1.7.2":   "jQuery.find( s )",
-			"jquery-1.8.1":   "jQuery.find( s )",
-			"sizzle":         "Sizzle( s )"
+			"nwmatcher":      "NW.Dom.select( s, d )",
+			"qwery":          "qwery( s, d )",
+			"jquery-1.4.4":   "jQuery.find( s, d )",
+			"jquery-1.7.2":   "jQuery.find( s, d )",
+			"sizzle":         "Sizzle( s, d )"
 		},
 
+		// Keeps track of overall scores
+		scores = (function() {
+			var engine,
+				scores = {};
+			for ( engine in engines ) {
+				scores[ engine ] = 0;
+			}
+			return scores;
+		})(),
+
+		// Keeps track of the number of elements returned
+		returned = (function() {
+			var engine,
+				returned = {};
+			for ( engine in engines ) {
+				returned[ engine ] = {};
+			}
+			return returned;
+		})(),
+
+		// Just counts the engines
 		numEngines = (function() {
 			var engine,
 				count = 0;
@@ -78,7 +107,6 @@ function( require, Benchmark, document, selectors ) {
 	// Expose iframeCallbacks
 	window.iframeCallbacks = {};
 
-
 	/**
 	 * Trim leading and trailing whitespace
 	 *
@@ -91,6 +119,15 @@ function( require, Benchmark, document, selectors ) {
 		function( str ) {
 			return str.replace( rtrim, "" );
 		};
+
+	/**
+	 * A shortcut for getElementById
+	 *
+	 * @param {String} id The ID with which to query the DOM
+	 */
+	function get( id ) {
+		return document.getElementById( id );
+	}
 
 	/**
 	 * Returns whether the element has the given class
@@ -225,8 +262,8 @@ function( require, Benchmark, document, selectors ) {
 		function test( document ) {
 			var win = this,
 				select = new Function( "w", "s", "d", "return " + (engine !== "qsa" ? "w." : "") + engines[ engine ] );
-			suite.add( engine + " : " + selector, function() {
-				select( win, selector, document );
+			suite.add( engine, function() {
+				returned[ engine ][ selector ] = select( win, selector, document );
 			});
 			if ( typeof iframeLoaded !== "undefined" ) {
 				iframeLoaded();
@@ -288,42 +325,80 @@ function( require, Benchmark, document, selectors ) {
 	---------------------------------------------------------------------- */
 
 	Benchmark.options.async = true;
-	Benchmark.options.maxTime = 0.5;
-	Benchmark.options.minSamples = 10;
-	Benchmark.options.onError = function( error ) {
-		console.error( error );
+	Benchmark.options.maxTime = maxTime;
+	Benchmark.options.minSamples = minSamples;
+	Benchmark.options.onError = function( event ) {
+		errors[ this.id ] = true;
+		this.abort();
+		return false;
 	};
 
 	/* Benchmark Suite Options
 	---------------------------------------------------------------------- */
 	Benchmark.Suite.options.onStart = function() {
-		var selectorElem = document.getElementById("selector" + selectorIndex);
+		var selectorElem = get( "selector" + selectorIndex );
 		addClass( selectorElem, "pending" );
 	};
 	Benchmark.Suite.options.onCycle = function( event ) {
-		var tableBody = document.getElementById("perf-table-body"),
-			tds = tableBody.getElementsByTagName("td");
+		var i = selectorIndex * (numEngines + 1) + 1,
+			len = i + numEngines,
+			tableBody = get("perf-table-body"),
+			tds = tableBody.getElementsByTagName("td"),
+			bench = event.target,
+			hasError = errors[ bench.id ],
+			textNode = document.createTextNode(
+				hasError ?
+					"FAILED" :
+					Benchmark.formatNumber(getHz( bench ).toFixed( 2 )) + " | " +
+						returned[ bench.name ][ selectors[selectorIndex] ].length +
+						" found"
+			);
 
-		tds[ event.target.id + selectorIndex ].innerHTML = Benchmark.formatNumber( event.target.hz.toFixed(2) );
+		// Add the result to the row
+		for ( ; i < len; i++ ) {
+			if ( tds[i].getAttribute("data-engine") === bench.name ) {
+				tds[i].appendChild( textNode );
+				if ( hasError ) {
+					addClass( tds[i], "black" );
+					delete errors[ bench.id ];
+				}
+				break;
+			}
+		}
 	};
 	Benchmark.Suite.options.onComplete = function() {
-		var i, len,
-			selectorElem = document.getElementById("selector" + selectorIndex),
-			tableBody = document.getElementById("perf-table-body"),
+		var fastestHz, slowestHz, elem, attr, j, jlen, td,
+			i = selectorIndex * (numEngines + 1) + 1,
+			len = i + numEngines,
+			selectorElem = get( "selector" + selectorIndex ),
+			tableBody = get("perf-table-body"),
 			tds = tableBody.getElementsByTagName("td"),
 			fastest = this.filter("fastest"),
 			slowest = this.filter("slowest");
 
 		removeClass( selectorElem, "pending" );
 
-		// Highlight fastest green
-		for ( i = 0, len = fastest.length; i < len; i++ ) {
-			addClass( tds[ fastest[i].id + selectorIndex ], "green" );
-		}
+		// Add up the scores
+		this.forEach(function( bench ) {
+			if ( !bench.events.error ) {
+				scores[ bench.name ] += getHz( bench );
+			}
+		});
 
-		// Highlight slowest red
-		for ( i = 0, len = slowest.length; i < len; i++ ) {
-			addClass( tds[ slowest[i].id + selectorIndex ], "red" );
+		// Highlight fastest green and slowest red
+		for ( ; i < len; i++ ) {
+			td = tds[i];
+			attr = td.getAttribute("data-engine");
+			for ( j = 0, jlen = fastest.length; j < jlen; j++ ) {
+				if ( fastest[j].name === attr ) {
+					addClass( td, "green" );
+				}
+			}
+			for ( j = 0, jlen = slowest.length; j < jlen; j++ ) {
+				if ( slowest[j].name === attr ) {
+					addClass( td, "red" );
+				}
+			}
 		}
 
 		// Remove all added iframes for this suite
@@ -343,6 +418,41 @@ function( require, Benchmark, document, selectors ) {
 			testSelector( selectors[selectorIndex] );
 		} else {
 			addClass( document.body, "complete" );
+
+			// Get the fastest and slowest
+			slowest = fastest = undefined;
+			fastestHz = 0;
+			slowestHz = Infinity;
+			selectorIndex = selectorIndex * numEngines + 2;
+			for ( i in scores ) {
+				if ( scores[i] > fastestHz ) {
+					fastestHz = scores[i];
+					fastest = i;
+				}
+				if ( scores[i] < slowestHz ) {
+					slowestHz = scores[i];
+					slowest = i;
+				}
+				// Format scores for display
+				scores[i] = Benchmark.formatNumber( scores[i].toFixed(2) );
+			}
+
+			// Add conclusion to the header
+			elem = document.createElement("h3");
+			elem.innerHTML = "The fastest is <i>" + fastest + " (" +
+				scores[ fastest ] + ")</i>. " +
+				"The slowest is <i>" + slowest + " (" +
+				scores[ slowest ] + ")</i>.";
+			get("header").appendChild( elem );
+
+			// Add totals to table
+			while( (elem = tds[ ++selectorIndex]) ) {
+				elem.appendChild(
+					document.createTextNode(
+						scores[ elem.getAttribute("data-engine") ]
+					)
+				);
+			}
 		}
 	};
 
@@ -361,16 +471,17 @@ function( require, Benchmark, document, selectors ) {
 		// Build out headers
 		for ( engine in engines ) {
 			headers += "<th class='text-right'>" + engine + "</th>";
-			emptyColumns += "<td class='text-right'>&nbsp;</td>";
+			emptyColumns += "<td class='text-right' data-engine='" + engine + "'>&nbsp;</td>";
 		}
 
 		// Build out initial rows
 		for ( ; i < len; i++ ) {
 			rows += "<tr><td id='selector" + i + "' class='small selector'><span>" + selectors[i] + "</span></td>" + emptyColumns + "</tr>";
 		}
+		rows += "<tr><td id='results' class='bold'>Total (more is better)</td>" + emptyColumns + "</tr>";
 
-		document.getElementById("perf-table-headers").innerHTML = headers;
-		document.getElementById("perf-table-body").innerHTML = rows;
+		get("perf-table-headers").innerHTML = headers;
+		get("perf-table-body").innerHTML = rows;
 	}
 
 	// Kick it off

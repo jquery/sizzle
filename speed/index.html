@@ -7,7 +7,7 @@
 		<link rel="stylesheet" media="screen" href="speed.css">
 	</head>
 	<body>
-		<header>
+		<header id="header">
 			<img id="logo" src="images/logo.png" alt="Sizzle">
 			<h4>Sizzle Performance Suite built with <a href="http://benchmarkjs.com">benchmarkjs</a> and <a href="http://requirejs.org">requirejs</a></h4>
 			<ul>
@@ -21,6 +21,23 @@
 			<table class="table table-bordered">
 				<thead id="perf-table-headers"></thead>
 				<tbody id="perf-table-body"></tbody>
+			</table>
+			<h3>Legend</h3>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>faster</th>
+						<th>slower</th>
+						<th>exception thrown</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="green">&nbsp;</td>
+						<td class="red">&nbsp;</td>
+						<td class="black">&nbsp;</td>
+					</tr>
+				</tbody>
 			</table>
 		</article>
 		<footer>
