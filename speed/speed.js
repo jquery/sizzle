@@ -45,8 +45,8 @@ function( require, Benchmark, document, selectors ) {
 		useQSA = urlParams.qsa || false,
 
 		// Benchmark options
-		maxTime = 5,
-		minSamples = 20,
+		maxTime = 0.5,
+		minSamples = 1,
 
 		// Queue for benchmark suites
 		suites = [],
