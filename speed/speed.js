@@ -60,13 +60,12 @@ function( require, Benchmark, document, selectors ) {
 		// Selector engines
 		engines = {
 			// "qsa":            "d.querySelectorAll( s )",
+			"jquery-1.7.2":   "jQuery.find( s, d )",
+			"sizzle":         "Sizzle( s, d )",
 			"dojo":           "dojo.query( s, d )",
 			"mootools-slick": "Slick.search( d, s )",
 			"nwmatcher":      "NW.Dom.select( s, d )",
-			"qwery":          "qwery( s, d )",
-			"jquery-1.4.4":   "jQuery.find( s, d )",
-			"jquery-1.7.2":   "jQuery.find( s, d )",
-			"sizzle":         "Sizzle( s, d )"
+			"qwery":          "qwery( s, d )"
 		},
 
 		// Keeps track of overall scores
@@ -95,9 +94,7 @@ function( require, Benchmark, document, selectors ) {
 				count = 0;
 
 			for ( engine in engines ) {
-				if ( engines.hasOwnProperty(engine) ) {
-					count++;
-				}
+				count++;
 			}
 			return count;
 		})(),
@@ -216,6 +213,32 @@ function( require, Benchmark, document, selectors ) {
 	 */
 	function getHz( bench ) {
 		return 1 / ( bench.stats.mean + bench.stats.moe );
+	}
+
+	/**
+	 * Determines the common number of elements found by the engines.
+	 *   If there are only 2 engines, this will just return the first one.
+	 *
+	 * @param {String} selector The selector for which to check returned elements
+	 */
+	function getCommonReturn( selector ) {
+		var engine, count, common,
+			max = 0,
+			counts = {};
+
+		for ( engine in returned ) {
+			count = returned[ engine ][ selector ].length;
+			counts[ count ] = (counts[ count ] || 0) + 1;
+		}
+
+		for ( count in counts ) {
+			if ( counts[ count ] > max ) {
+				max = counts[ count ];
+				common = count;
+			}
+		}
+
+		return +common;
 	}
 
 	/**
@@ -369,6 +392,9 @@ function( require, Benchmark, document, selectors ) {
 	Benchmark.Suite.options.onComplete = function() {
 		var fastestHz, slowestHz, elem, attr, j, jlen, td,
 			i = selectorIndex * (numEngines + 1) + 1,
+			// Determine different elements returned
+			selector = selectors[ selectorIndex ],
+			common = getCommonReturn( selector ),
 			len = i + numEngines,
 			selectorElem = get( "selector" + selectorIndex ),
 			tableBody = get("perf-table-body"),
@@ -385,10 +411,14 @@ function( require, Benchmark, document, selectors ) {
 			}
 		});
 
-		// Highlight fastest green and slowest red
+		// Highlight different returned yellow, fastest green, and slowest red
 		for ( ; i < len; i++ ) {
 			td = tds[i];
 			attr = td.getAttribute("data-engine");
+			if ( returned[ attr ][ selector ].length !== common ) {
+				addClass( td, "yellow" );
+				continue;
+			}
 			for ( j = 0, jlen = fastest.length; j < jlen; j++ ) {
 				if ( fastest[j].name === attr ) {
 					addClass( td, "green" );
