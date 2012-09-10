@@ -1,3 +1,47 @@
+.note
+#title
+h1#title
+div #title
+div.example
+ul .tocline2
+.title
+.toc
+.toc .tocline2
+.tocline2, .tocline3, .tocline4
+div.example, div.note
+body
+div
+body div
+div p
+div > p
+div + p
+div ~ p
+div[class^=exa][class$=mple]
+div p a
+div, p, a
+ul.toc li.tocline2
+ul.toc > li.tocline2
+h1#title + div > p
+h1[id]:contains(Selectors)
+a[href][lang][class]
+div[class]
+div[class=example]
+div[class^=exa]
+div[class$=mple]
+div[class*=e]
+div[class|=dialog]
+div[class!=made_up]
+div[class~=example]
+div:not(.example)
+p:contains(selectors)
+p:nth-child(even)
+p:nth-child(2n)
+p:nth-child(odd)
+p:nth-child(2n+1)
+p:nth-child(n)
+p:only-child
+p:last-child
+p:first-child
 *
 A
 [foo]
@@ -29,11 +73,6 @@ A
 :disabled
 :enabled
 :checked
-::first-line
-::first-letter
-::before
-::after
-::selection
 .warning
 #myid
 #myid
@@ -72,11 +111,6 @@ A
 :not(:disabled)
 :not(:enabled)
 :not(:checked)
-:not(::first-line)
-:not(::first-letter)
-:not(::before)
-:not(::after)
-:not(::selection)
 :not(.warning)
 :not(#myid)
 li,p 
@@ -138,16 +172,6 @@ html *:root
 .red address address:last-of-type 
 .red p:only-child div.testText > div > p 
 .red .t1 :only-of-type 
-p:first-line 
-p:first-letter 
-p:first-letter p:before 
-p::first-letter 
-p::first-letter  p::before 
-p::selection 
-p::before 
-p:before 
-p::after 
-p:after 
 .white .red div.t1 p 
 .white .green div.t1 p 
 .white .red div > p.test 
@@ -225,50 +249,15 @@ p   foo & address, p
 foo & address, p   p 
 foo & address, p   p 
 p   [*=test] 
-p   [*|*=test] 
-::selection   :selection 
 p   p:subject
 p   p   *   p > *   p + *   p ~ * 
-:canvas   :viewport   :window   :menu   :table   :select   ::canvas   ::viewport   ::window   ::menu   ::table   ::select 
 td > div   td > div > span 
-.test > *   .test > div > ::selection   .test > div > :nth-child(even)::selection   .test > div > :empty::selection   .test > div *::selection 
-   .test span:first-child::selection 
-   .test span[id=b]::selection 
-   .test #b + * + * 
-   .test span[id=b] ~ ::selection 
-   .test span[id=b] + ::selection 
-   .test :not(#b):last-child::selection 
-   .test ::selection 
-   .test::selection 
-   .test::selection 
    .test strong 
-.control ::selection   .control > div   .control > div > span   .control > div > span.a   .control > div > span.b   .control > div > span.c   .control > div > span.d   .control > div > span.green   .control > div > span.yellow   .control > div > span.blue 
-textarea   textarea:focus   textarea::selection   textarea:focus::selection 
-p   p:hover   p::selection   p:hover::selection 
-p:first-letter   p::first-letter 
-p::first-letter   p:first-letter 
-p:first-line   p::first-line 
-p::first-line   p:first-line 
-span:before   span::before 
-span::before   span:before 
-span:after   span::after 
-span::after   span:after 
 p  .fail 
-tests, tests *  testA[|attribute]  testB[|attribute="fail"]  testC[|attribute~="fail"]  testD[|attribute^="fail"]  testE[|attribute*="fail"]  testF[|attribute$="fail"]  testG[|attribute|="fail"] 
-tests, tests *  testA[|attribute]  testB[|attribute="fail"]  testC[|attribute~="fail"]  testD[|attribute^="fail"]  testE[|attribute*="fail"]  testF[|attribute$="fail"]  testG[|attribute|="fail"] 
-tests, tests *  testA[*|attribute]  testB[*|attribute="pass"]  testC[*|attribute~="pass"]  testD[*|attribute^="pass"]  testE[*|attribute*="pass"]  testF[*|attribute$="pass"]  testG[*|attribute|="pass"] 
-tests, tests *  testA[*|attribute]  testB[*|attribute="pass"]  testC[*|attribute~="pass"]  testD[*|attribute^="pass"]  testE[*|attribute*="pass"]  testF[*|attribute$="pass"]  testG[*|attribute|="pass"] 
-tests, tests *  testA[*|attribute="pass"]  testB[*|attribute="pass"] 
-tests, tests *  testA:not([*|attribute="pass"])  testB:not([*|attribute="pass"]) 
 p  .13 
 p  .\13 
 p  .\31 \33 
-p:selection 
 div  p::first-child 
-div  p:not(:first-line)  p:not(:after) 
-p   span:first-line   span::first-line 
-p   p:first-line   p::first-line 
-p   p:first-letter   p::first-letter 
 .cs  .cs P  .cs .a  .cs .span1 span  .cs .span2  .cs .span2 SPAN  .cs .span2 span  .ci  .ci P  .ci .a  .ci .span1 span  .ci .span2 SPAN 
 p foo\:bar 
 p ..test .foo..quux .bar. 
@@ -280,8 +269,5 @@ p ..test .foo..quux .bar.
 input, span  input:indeterminate, input:indeterminate + span 
 input, span  input:checked, input:checked + span 
 input, span  input:not(:checked), input:not(:checked) + span 
-input, span  input:not(:indeterminate), input:not(:indeterminate) + span 
-input, span  input:indeterminate:checked, input:indeterminate:checked + span 
-input, span  input:not(:indeterminate):not(:checked), input:not(:indeterminate):not(:checked) + span 
 p[example=publicclass]
 p[example="public"]

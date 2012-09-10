@@ -4,6 +4,10 @@ h1#title
 div #title
 div.example
 ul .tocline2
+.title
+.toc
+.toc .tocline2
+.tocline2, .tocline3, .tocline4
 div.example, div.note
 body
 div
