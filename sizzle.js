@@ -1500,7 +1500,7 @@ function select( selector, context, results, seed, xml ) {
 	// Compile and execute a filtering function
 	compile( selector )(
 		elements,
-		!seed && context,
+		context,
 		xml,
 		results,
 		rsibling.test( selector )
