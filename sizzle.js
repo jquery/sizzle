@@ -638,6 +638,7 @@ Expr = Sizzle.selectors = {
 
 					if ( first === 0 ) {
 						return diff === 0;
+
 					} else {
 						return ( diff % first === 0 && diff / first >= 0 );
 					}
@@ -1376,6 +1377,7 @@ if ( document.querySelectorAll ) {
 			// qSa(:focus) reports false when true (Chrome 21),
 			// A support test would require too much code (would include document ready)
 			rbuggyQSA = [":focus"],
+
 			// matchesSelector(:focus) reports false when true (Chrome 21),
 			// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
 			// A support test would require too much code (would include document ready)
