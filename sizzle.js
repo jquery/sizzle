@@ -1069,7 +1069,6 @@ function tokenize( selector, parseOnly ) {
 		if ( !matched || (match = rcomma.exec( soFar )) ) {
 			if ( match ) {
 				soFar = soFar.slice( match[0].length );
-				tokens.selector = tokens.join("");
 			}
 			groups.push( tokens = [] );
 		}
@@ -1082,7 +1081,7 @@ function tokenize( selector, parseOnly ) {
 			soFar = soFar.slice( matched.length );
 
 			// Cast descendant combinators to space
-			matched.part = match[0].replace( rtrim, " " );
+			matched.type = match[0].replace( rtrim, " " );
 		}
 
 		// Filters
@@ -1093,19 +1092,14 @@ function tokenize( selector, parseOnly ) {
 
 				tokens.push( matched = new Token( match.shift() ) );
 				soFar = soFar.slice( matched.length );
-				matched.part = type;
-				matched.captures = match;
+				matched.type = type;
+				matched.matches = match;
 			}
 		}
 
 		if ( !matched ) {
 			break;
 		}
-	}
-
-	// Attach the full group as a selector
-	if ( tokens ) {
-		tokens.selector = tokens.join("");
 	}
 
 	// Return the length of the invalid excess
@@ -1267,11 +1261,10 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 function matcherFromTokens( tokens, context, xml ) {
 	var checkContext, matcher, j,
 		len = tokens.length,
-		token = tokens[0].part,
+		token = tokens[0].type,
 		leadingRelative = Expr.relative[ token ],
 		implicitRelative = leadingRelative || Expr.relative[" "],
 		i = leadingRelative ? 1 : 0,
-		selector = leadingRelative ? token : "",
 
 		// The foundational matcher ensures that elements are reachable from top-level context(s)
 		matchContext = addCombinator( function( elem ) {
@@ -1289,34 +1282,32 @@ function matcherFromTokens( tokens, context, xml ) {
 
 	for ( ; i < len; i++ ) {
 		token = tokens[i];
-		if ( (matcher = Expr.relative[ token.part ]) ) {
+		if ( (matcher = Expr.relative[ token.type ]) ) {
 			matchers = [ addCombinator( elementMatcher( matchers ), matcher ) ];
 		} else {
 			// The concatenated values are (context, xml) for backCompat
-			matcher = Expr.filter[ token.part ].apply( null, token.captures.concat( document, true ) );
+			matcher = Expr.filter[ token.type ].apply( null, token.matches.concat( document, true ) );
 
 			// Return special upon seeing a positional matcher
 			if ( matcher[ expando ] ) {
 				// Find the next relative operator (if any) for proper handling
 				j = ++i;
 				for ( ; j < len; j++ ) {
-					if ( Expr.relative[ tokens[j].part ] ) {
+					if ( Expr.relative[ tokens[j].type ] ) {
 						break;
 					}
 				}
 				return setMatcher(
 					i > 1 && elementMatcher( matchers ),
-					selector.replace( rtrim, "$1" ),
+					i > 1 && tokens.slice( 0, i - 1 ).join("").replace( rtrim, "$1" ),
 					matcher,
-					i < j && matcherFromTokens( slice.call( tokens, i, j ) ),
-					j < len && matcherFromTokens( slice.call( tokens, j ) ),
-					j < len && rsibling.test( tokens[j].part ) && slice.call( tokens, j ).join("")
+					i < j && matcherFromTokens( tokens.slice( i, j ) ),
+					j < len && matcherFromTokens( (tokens = tokens.slice( j )) ),
+					j < len && tokens.join("")
 				);
 			}
 			matchers.push( matcher );
 		}
-
-		selector += token.toString();
 	}
 
 	return elementMatcher( matchers );
@@ -1328,22 +1319,21 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 		superMatcher = function( seed, context, xml, results, expandContext ) {
 			var elem, j, matcher,
 				setMatched = [],
-				i = 0,
+				matchedCount = 0,
+				i = "0",
 				unmatched = seed && [],
 				outermost = expandContext != null,
 				// We must always have either seed elements or context
-				elems = seed || byElement && slice.call( Expr.find["TAG"]( "*", expandContext && context.parentNode || context ), 0 ),
-				len = elems && elems.length,
-				matchedCount = +len;
+				elems = seed || byElement && Expr.find["TAG"]( "*", expandContext && context.parentNode || context );
 
 			if ( outermost ) {
 				dirruns = superMatcher.dirruns++;
 			}
 
 			// Add elements passing elementMatchers directly to results
-			for ( ; i < len; i++ ) {
-				if ( (elem = elems[i]) ) {
-					if ( outermost && byElement ) {
+			for ( ; (elem = elems[i]) != null; i++ ) {
+				if ( byElement && elem ) {
+					if ( outermost ) {
 						cachedruns = superMatcher.runs++;
 					}
 					for ( j = 0; (matcher = elementMatchers[j]); j++ ) {
@@ -1369,7 +1359,8 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 			}
 
 			// Apply set filters to unmatched elements
-			if ( matchedCount !== len ) {
+			matchedCount += i;
+			if ( bySet && i !== matchedCount ) {
 				for ( j = 0; (matcher = setMatchers[j]); j++ ) {
 					matcher( unmatched, setMatched, context, xml );
 				}
@@ -1453,11 +1444,11 @@ function select( selector, context, results, seed, xml ) {
 
 			// Take a shortcut and set the context if the root selector is an ID
 			if ( (tokens = slice.call( match[0], 0 )).length > 2 &&
-					(token = tokens[0]).part === "ID" &&
+					(token = tokens[0]).type === "ID" &&
 					context.nodeType === 9 && !xml &&
-					Expr.relative[ tokens[1].part ] ) {
+					Expr.relative[ tokens[1].type ] ) {
 
-				context = Expr.find["ID"]( token.captures[0].replace( rbackslash, "" ), context, xml )[0];
+				context = Expr.find["ID"]( token.matches[0].replace( rbackslash, "" ), context, xml )[0];
 				if ( !context ) {
 					return results;
 				}
@@ -1470,23 +1461,22 @@ function select( selector, context, results, seed, xml ) {
 				token = tokens[i];
 
 				// Abort if we hit a combinator
-				if ( Expr.relative[ (type = token.part) ] ) {
+				if ( Expr.relative[ (type = token.type) ] ) {
 					break;
 				}
 				if ( (find = Expr.find[ type ]) ) {
 					// Search, expanding context for leading sibling combinators
 					if ( (elements = find(
-						token.captures[0].replace( rbackslash, "" ),
-						rsibling.test( tokens[0].part ) && context.parentNode || context,
+						token.matches[0].replace( rbackslash, "" ),
+						rsibling.test( tokens[0].type ) && context.parentNode || context,
 						xml
 					)) ) {
 
 						// If elements is empty or no tokens remain, we can return early
-						elements = slice.call( elements, 0 );
 						tokens.splice( i, 1 );
 						selector = elements.length && tokens.join("");
 						if ( !selector ) {
-							push.apply( results, elements );
+							push.apply( results, slice.call( elements, 0 ) );
 							return results;
 						}
 
@@ -1597,7 +1587,7 @@ if ( document.querySelectorAll ) {
 
 					nid = "[id='" + nid + "'] ";
 					for ( ; i < len; i++ ) {
-						groups[i] = nid + groups[i].selector;
+						groups[i] = nid + groups[i].join("");
 					}
 					try {
 						push.apply( results, slice.call( newContext.querySelectorAll(
