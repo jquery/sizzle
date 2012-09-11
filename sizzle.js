@@ -1429,8 +1429,8 @@ if ( document.querySelectorAll ) {
 			}
 		});
 
-		// rbuggyMatches always contains :focus, so no need for a length check
-		rbuggyMatches = /* rbuggyQSA.length && */ new RegExp( rbuggyQSA.join("|") );
+		// rbuggyQSA always contains :focus, so no need for a length check
+		rbuggyQSA = /* rbuggyQSA.length && */ new RegExp( rbuggyQSA.join("|") );
 
 		select = function( selector, context, results, seed, xml ) {
 			// Only use querySelectorAll when not filtering,
