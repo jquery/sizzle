@@ -43,7 +43,7 @@ var dirruns,
 
 	// Augment a function for special use by Sizzle
 	markFunction = function( fn, value ) {
-		fn[ expando ] = value || true;
+		fn[ expando ] = value == null || value;
 		return fn;
 	},
 
@@ -1056,7 +1056,7 @@ function tokenize( selector, parseOnly ) {
 		cached = tokenCache[ expando ][ selector ];
 
 	if ( cached ) {
-		return parseOnly ? 0 : slice.call( cached, 0 );
+		return parseOnly ? 0 : cached.slice( 0 );
 	}
 
 	soFar = selector;
@@ -1110,7 +1110,7 @@ function tokenize( selector, parseOnly ) {
 		soFar ?
 			Sizzle.error( selector ) :
 			// Cache the tokens
-			slice.call( tokenCache( selector, groups ), 0 );
+			tokenCache( selector, groups ).slice( 0 );
 }
 
 function addCombinator( matcher, combinator ) {
@@ -1403,7 +1403,7 @@ compile = Sizzle.compile = function( selector ) {
 
 	if ( !cached ) {
 		// Generate a function of recursive functions that can be used to check each element
-		group = tokenize( selector );
+		group = selector[ expando ] || tokenize( selector );
 		i = group.length;
 		while ( i-- ) {
 			cached = matcherFromTokens( group[i] );
@@ -1435,16 +1435,15 @@ function select( selector, context, results, seed, xml ) {
 
 	var i, tokens, token, type, find,
 		match = tokenize( selector ),
-		j = match.length,
-		elements = seed ? slice.call( seed, 0 ) : null;
+		j = match.length;
 
 	if ( !seed ) {
 		// Try to minimize operations if there is only one group
 		if ( match.length === 1 ) {
 
 			// Take a shortcut and set the context if the root selector is an ID
-			if ( (tokens = slice.call( match[0], 0 )).length > 2 &&
-					(token = tokens[0]).type === "ID" &&
+			tokens = match[0] = match[0].slice( 0 );
+			if ( tokens.length > 2 && (token = tokens[0]).type === "ID" &&
 					context.nodeType === 9 && !xml &&
 					Expr.relative[ tokens[1].type ] ) {
 
@@ -1453,7 +1452,7 @@ function select( selector, context, results, seed, xml ) {
 					return results;
 				}
 
-				selector = selector.slice( tokens.shift().toString().length );
+				selector = selector.slice( tokens.shift().length );
 			}
 
 			// Fetch a seed set for right-to-left matching
@@ -1466,17 +1465,17 @@ function select( selector, context, results, seed, xml ) {
 				}
 				if ( (find = Expr.find[ type ]) ) {
 					// Search, expanding context for leading sibling combinators
-					if ( (elements = find(
+					if ( (seed = find(
 						token.matches[0].replace( rbackslash, "" ),
 						rsibling.test( tokens[0].type ) && context.parentNode || context,
 						xml
 					)) ) {
 
-						// If elements is empty or no tokens remain, we can return early
+						// If seed is empty or no tokens remain, we can return early
 						tokens.splice( i, 1 );
-						selector = elements.length && tokens.join("");
+						selector = seed.length && tokens.join("");
 						if ( !selector ) {
-							push.apply( results, slice.call( elements, 0 ) );
+							push.apply( results, slice.call( seed, 0 ) );
 							return results;
 						}
 
@@ -1488,8 +1487,8 @@ function select( selector, context, results, seed, xml ) {
 	}
 
 	// Compile and execute a filtering function
-	compile( selector )(
-		elements,
+	compile( markFunction( new Token( selector ), match ) )(
+		seed,
 		context,
 		xml,
 		results,
