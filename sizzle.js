@@ -1561,36 +1561,38 @@ if ( document.querySelectorAll ) {
 			// when this is not xml,
 			// and when no QSA bugs apply
 			if ( !seed && !xml && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
-				if ( context.nodeType === 9 ) {
-					try {
-						push.apply( results, slice.call(context.querySelectorAll( selector ), 0) );
-						return results;
-					} catch(qsaError) {}
+				var groups, i,
+					old = true,
+					nid = expando,
+					newContext = context,
+					newSelector = context.nodeType === 9 && selector;
+
 				// qSA works strangely on Element-rooted queries
 				// We can work around this by specifying an extra ID on the root
 				// and working up from there (Thanks to Andrew Dupont for the technique)
 				// IE 8 doesn't work on object elements
-				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
-					var i = 0,
-						old = context.getAttribute("id"),
-						nid = old || expando,
-						groups = tokenize( selector ),
-						len = groups.length,
-						newContext = rsibling.test( selector ) && context.parentNode || context;
+				if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
+					groups = tokenize( selector );
 
-					if ( old ) {
-						nid = nid.replace( rescape, "\\$&" );
+					if ( (old = context.getAttribute("id")) ) {
+						nid = old.replace( rescape, "\\$&" );
 					} else {
 						context.setAttribute( "id", nid );
 					}
-
 					nid = "[id='" + nid + "'] ";
-					for ( ; i < len; i++ ) {
+
+					i = groups.length;
+					while ( i-- ) {
 						groups[i] = nid + groups[i].join("");
 					}
+					newContext = rsibling.test( selector ) && context.parentNode || context;
+					newSelector = groups.join(",");
+				}
+
+				if ( newSelector ) {
 					try {
 						push.apply( results, slice.call( newContext.querySelectorAll(
-							groups.join(",")
+							newSelector
 						), 0 ) );
 						return results;
 					} catch(qsaError) {
