@@ -10,7 +10,10 @@ function( require, Benchmark, document, selectors ) {
 	// Convert selectors to an array
 	selectors = selectors.split("\n");
 
-	var // Class manipulation
+	var // Used to indicate whether console profiling is begin run
+		profiling,
+
+		// Class manipulation
 		// IE doesn't match non-breaking spaces with \s
 		rtrim = /\S/.test("\xA0") ? (/^[\s\xA0]+|[\s\xA0]+$/g) : /^\s+|\s+$/g,
 		rspaces = /\s+/,
@@ -188,6 +191,30 @@ function( require, Benchmark, document, selectors ) {
 
 		if ( elem.className !== cls ) {
 			elem.className = cls;
+		}
+	}
+
+	/**
+	 * Runs the console profiler if available
+	 *
+	 * @param {String} name The name of the profile
+	 */
+	function profile( name ) {
+		if ( window.console && typeof console.profile !== "undefined" && !profiling ) {
+			profiling = true;
+			console.profile( name );
+		}
+	}
+
+	/**
+	 * Stops console profiling if available
+	 *
+	 * @param {String} name The name of the profile
+	 */
+	function profileEnd( name ) {
+		if ( profiling ) {
+			profiling = false;
+			console.profileEnd( name );
 		}
 	}
 
@@ -407,7 +434,8 @@ function( require, Benchmark, document, selectors ) {
 	 * Callback for the start of each test
 	 * Adds the `pending` class to the selector column
 	 */
-	function onStart() {
+	function onStart( event ) {
+		profile( selectors[selectorIndex] );
 		var selectorElem = get( "selector" + selectorIndex );
 		addClass( selectorElem, "pending" );
 	}
@@ -454,6 +482,7 @@ function( require, Benchmark, document, selectors ) {
 	 *     * determining the fastest overall and slowest overall
 	 */
 	function onComplete() {
+		profileEnd( selectors[selectorIndex] );
 		var fastestHz, slowestHz, elem, attr, j, jlen, td, ret,
 			i = firstTestedColumn(),
 			// Determine different elements returned
@@ -487,14 +516,14 @@ function( require, Benchmark, document, selectors ) {
 				addClass( td, "yellow" );
 				continue;
 			}
-			for ( j = 0, jlen = fastest.length; j < jlen; j++ ) {
-				if ( fastest[j].name === attr ) {
-					addClass( td, "green" );
-				}
-			}
 			for ( j = 0, jlen = slowest.length; j < jlen; j++ ) {
 				if ( slowest[j].name === attr ) {
 					addClass( td, "red" );
+				}
+			}
+			for ( j = 0, jlen = fastest.length; j < jlen; j++ ) {
+				if ( fastest[j].name === attr ) {
+					addClass( td, "green" );
 				}
 			}
 		}

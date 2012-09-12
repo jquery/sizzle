@@ -236,8 +236,8 @@ a:active { color: black; }
 .table tbody tr .table-hover-background {
     background-color: #f0f6fa;
 }
-.table tbody tr td.green { background: #19EB4B; }
 .table tbody tr td.red { background: #FF5E5E; }
+.table tbody tr td.green { background: #19EB4B; }
 .table tbody tr td.black { background: #41464D; color: #F3F1F1; }
 .table tbody tr td.yellow { background: hsl(60, 108%, 65%); }
 .table tbody tr td.pending { background: hsl(215, 100%, 80%); }
