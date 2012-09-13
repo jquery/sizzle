@@ -399,7 +399,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 61 );
+	expect( 63 );
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
@@ -471,20 +471,21 @@ test("attributes", function() {
 
 	t( "Grouped Form Elements", "input[name='foo[bar]']", ["hidden2"] );
 
-	var a = document.getElementById("groups"),
-		title = "Don't click me";
-	a.title = title;
-	ok( match( a, "a[title=\"Don't click me\"]" ), "Quote within attribute value does not mess up tokenizer" );
+	var input = document.getElementById("text1");
+	input.title = "Don't click me";
+	ok( match( input, "input[title=\"Don't click me\"]" ), "Quote within attribute value does not mess up tokenizer" );
 
 	// Uncomment if the boolHook is removed
 	// var check2 = document.getElementById("check2");
 	// check2.checked = true;
 	// ok( !Sizzle.matches("[checked]", [ check2 ] ), "Dynamic boolean attributes match when they should with Sizzle.matches (#11115)" );
 
-	a.setAttribute( "data-pos", ":first" );
-	ok( match( a, "a[data-pos=\\:first]"), "POS within attribute value is treated as an attribute value" );
-	ok( match( a, "a[data-pos=':first']"), "POS within attribute value is treated as an attribute value" );
-	a.removeAttribute("data-pos");
+	// jQuery #12303
+	input.setAttribute( "data-pos", ":first" );
+	ok( match( input, "input[data-pos=\\:first]"), "POS within attribute value is treated as an attribute value" );
+	ok( match( input, "input[data-pos=':first']"), "POS within attribute value is treated as an attribute value" );
+	ok( match( input, ":input[data-pos=':first']"), "POS within attribute value after pseudo is treated as an attribute value" );
+	input.removeAttribute("data-pos");
 
 	// Make sure attribute value quoting works correctly. See: #6093
 	var attrbad = jQuery("<input type=\"hidden\" value=\"2\" name=\"foo.baz\" id=\"attrbad1\"/><input type=\"hidden\" value=\"2\" name=\"foo[baz]\" id=\"attrbad2\"/><input type=\"hidden\" data-attr=\"foo_baz']\" id=\"attrbad3\"/>").appendTo("body");
@@ -502,6 +503,13 @@ test("attributes", function() {
 
 	// #6428
 	t( "Find escaped attribute value", "#form input[name=foo\\[bar\\]]", ["hidden2"] );
+
+	// jQuery #12523
+	deepEqual(
+		Sizzle( "[title]", null, null, Sizzle("#qunit-fixture a").concat( document.createTextNode("") ) ),
+		q("google"),
+		"Text nodes neither match nor error"
+	);
 
 	// #3279
 	var div = document.createElement("div");
@@ -725,7 +733,7 @@ test("pseudo - :not", function() {
 });
 
 test("pseudo - position", function() {
-	expect( 32 );
+	expect( 33 );
 
 	t( "First element", "div:first", ["qunit-testrunner-toolbar"] );
 	t( "First element(case-insensitive)", "div:fiRst", ["qunit-testrunner-toolbar"] );
@@ -762,6 +770,11 @@ test("pseudo - position", function() {
 	t( "Check sort order with POS and comma", "#qunit-fixture em>em>em>em:first-child,div>em:first", ["siblingfirst", "siblinggreatgrandchild"] );
 
 	t( "Isolated position", ":last", ["fx-tests"] );
+
+	// jQuery #12526
+	var context = jQuery("#qunit-fixture").append("<div id='jquery12526'></div>")[0];
+	deepEqual( Sizzle( ":last", context ), q("jquery12526"), "Post-manipulation positional" );
+	QUnit.reset();
 
 	// Sizzle extension
 	var oldPOS = Sizzle.selectors.match["POS"];

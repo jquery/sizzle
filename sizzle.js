@@ -1332,7 +1332,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 
 			// Add elements passing elementMatchers directly to results
 			for ( ; (elem = elems[i]) != null; i++ ) {
-				if ( byElement && elem ) {
+				if ( byElement && elem && elem.nodeType === 1 ) {
 					if ( outermost ) {
 						cachedruns = superMatcher.runs++;
 					}
