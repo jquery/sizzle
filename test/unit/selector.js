@@ -512,7 +512,7 @@ test("attributes", function() {
 });
 
 test("pseudo - child", function() {
-	expect( 41 );
+	expect( 42 );
 	t( "First Child", "#qunit-fixture p:first-child", ["firstp","sndp"] );
 	t( "First Child (case-insensitive)", "#qunit-fixture p:FIRST-CHILD", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
@@ -528,10 +528,11 @@ test("pseudo - child", function() {
 	t( "Not Nth Child", "#qunit-fixture p:not(:nth-child(1))", ["ap","en","sap","first"] );
 
 	// Verify that the child position isn't being cached improperly
-	jQuery("p:first-child").after("<div></div>");
-	jQuery("p:first-child").before("<div></div>").next().remove();
+	var firstChildren = jQuery("p:first-child").before("<div></div>");
 
-	t( "First Child", "p:first-child", [] );
+	t( "No longer First Child", "p:nth-child(1)", [] );
+	firstChildren.prev().remove();
+	t( "Restored First Child", "p:nth-child(1)", ["firstp","sndp"] );
 
 	QUnit.reset();
 
