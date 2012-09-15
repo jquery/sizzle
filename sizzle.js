@@ -6,8 +6,7 @@
  */
 (function( window, undefined ) {
 
-var dirruns,
-	cachedruns,
+var cachedruns,
 	assertGetIdNotName,
 	Expr,
 	getText,
@@ -25,6 +24,7 @@ var dirruns,
 	Token = String,
 	document = window.document,
 	docElem = document.documentElement,
+	dirruns = 0,
 	done = 0,
 	pop = [].pop,
 	push = [].push,
@@ -1274,7 +1274,7 @@ function matcherFromTokens( tokens, context, xml ) {
 			return indexOf.call( checkContext, elem ) > -1;
 		}, implicitRelative ),
 		matchers = [ function( elem, context, xml ) {
-			return ( !leadingRelative && ( xml || !context || context === document ) ) || (
+			return ( !leadingRelative && ( xml || context === document ) ) || (
 				(checkContext = context).nodeType ?
 					matchContext( elem, context, xml ) :
 					matchAnyContext( elem, context, xml ) );
@@ -1324,16 +1324,15 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 				unmatched = seed && [],
 				outermost = expandContext != null,
 				// We must always have either seed elements or context
-				elems = seed || byElement && Expr.find["TAG"]( "*", expandContext && context.parentNode || context );
-
-			if ( outermost ) {
-				dirruns = superMatcher.dirruns++;
-			}
+				elems = seed || byElement && Expr.find["TAG"]( "*", expandContext && context.parentNode || context ),
+				// Nested matchers should use non-integer dirruns
+				dirrunsUnique = (dirruns += outermost ? 1 : Math.E);
 
 			// Add elements passing elementMatchers directly to results
 			for ( ; (elem = elems[i]) != null; i++ ) {
 				if ( byElement && elem && elem.nodeType === 1 ) {
 					if ( outermost ) {
+						dirruns = dirrunsUnique;
 						cachedruns = superMatcher.runs++;
 					}
 					for ( j = 0; (matcher = elementMatchers[j]); j++ ) {
@@ -1386,10 +1385,13 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 				}
 			}
 
+			// Override manipulation of dirruns by nested matchers
+			dirruns = dirrunsUnique;
+
 			return unmatched;
 		};
 
-	superMatcher.runs = superMatcher.dirruns = 0;
+	superMatcher.runs = 0;
 	return bySet ?
 		markFunction( superMatcher ) :
 		superMatcher;

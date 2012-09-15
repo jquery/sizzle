@@ -576,7 +576,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 39 );
+	expect( 40 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -650,6 +650,12 @@ test("pseudo - misc", function() {
 	ok( !match( input, ":focus" ), ":focus doesn't match" );
 	ok( !match( input, ":active" ), ":active doesn't match" );
 	document.body.removeChild( input );
+
+	deepEqual(
+		Sizzle( "[id='select1'] *:not(:last-child), [id='select2'] *:not(:last-child)", q("qunit-fixture")[0] ),
+		q( "option1a", "option1b", "option1c", "option2a", "option2b", "option2c" ),
+		"caching system tolerates recursive selection"
+	);
 
 	// Tokenization edge cases
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code)", ["ap"] );
