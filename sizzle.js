@@ -15,6 +15,7 @@ var cachedruns,
 	compile,
 	sortOrder,
 	hasDuplicate,
+	outermostContext,
 
 	baseHasDuplicate = true,
 	strundefined = "undefined",
@@ -1261,8 +1262,7 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 function matcherFromTokens( tokens, context, xml ) {
 	var checkContext, matcher, j,
 		len = tokens.length,
-		token = tokens[0].type,
-		leadingRelative = Expr.relative[ token ],
+		leadingRelative = Expr.relative[ tokens[0].type ],
 		implicitRelative = leadingRelative || Expr.relative[" "],
 		i = leadingRelative ? 1 : 0,
 
@@ -1274,19 +1274,18 @@ function matcherFromTokens( tokens, context, xml ) {
 			return indexOf.call( checkContext, elem ) > -1;
 		}, implicitRelative ),
 		matchers = [ function( elem, context, xml ) {
-			return ( !leadingRelative && ( xml || context === document ) ) || (
+			return ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
 				(checkContext = context).nodeType ?
 					matchContext( elem, context, xml ) :
 					matchAnyContext( elem, context, xml ) );
 		} ];
 
 	for ( ; i < len; i++ ) {
-		token = tokens[i];
-		if ( (matcher = Expr.relative[ token.type ]) ) {
+		if ( (matcher = Expr.relative[ tokens[i].type ]) ) {
 			matchers = [ addCombinator( elementMatcher( matchers ), matcher ) ];
 		} else {
 			// The concatenated values are (context, xml) for backCompat
-			matcher = Expr.filter[ token.type ].apply( null, token.matches.concat( document, true ) );
+			matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches.concat( document, true ) );
 
 			// Return special upon seeing a positional matcher
 			if ( matcher[ expando ] ) {
@@ -1328,12 +1327,16 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 				// Nested matchers should use non-integer dirruns
 				dirrunsUnique = (dirruns += outermost ? 1 : Math.E);
 
+			if ( outermost ) {
+				outermostContext = context !== document && context;
+			}
+
 			// Add elements passing elementMatchers directly to results
 			for ( ; (elem = elems[i]) != null; i++ ) {
 				if ( byElement && elem && elem.nodeType === 1 ) {
 					if ( outermost ) {
 						dirruns = dirrunsUnique;
-						cachedruns = superMatcher.runs++;
+						cachedruns = superMatcher.el++;
 					}
 					for ( j = 0; (matcher = elementMatchers[j]); j++ ) {
 						if ( matcher( elem, context, xml ) ) {
@@ -1356,6 +1359,9 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 					}
 				}
 			}
+
+			// Override manipulation of dirruns by nested matchers
+			dirruns = dirrunsUnique;
 
 			// Apply set filters to unmatched elements
 			matchedCount += i;
@@ -1391,7 +1397,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 			return unmatched;
 		};
 
-	superMatcher.runs = 0;
+	superMatcher.el = 0;
 	return bySet ?
 		markFunction( superMatcher ) :
 		superMatcher;
