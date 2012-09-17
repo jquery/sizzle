@@ -754,7 +754,7 @@ Expr = Sizzle.selectors = {
 			return matcher[ expando ] ?
 				markFunction(function( seed, matches, context, xml ) {
 					var elem,
-						unmatched = matcher( seed, context, xml, [] ),
+						unmatched = matcher( seed, null, xml, [] ),
 						i = seed.length;
 
 					// Match elements unmatched by `matcher`
@@ -766,9 +766,21 @@ Expr = Sizzle.selectors = {
 				}) :
 				function( elem, context, xml ) {
 					var results = [];
-					matcher( [ elem ], context, xml, results );
+					matcher( [ elem ], null, xml, results );
 					return results.length === 0;
 				};
+		}),
+
+		"has": markFunction(function( selector ) {
+			return function( elem ) {
+				return Sizzle( selector, elem ).length > 0;
+			};
+		}),
+
+		"contains": markFunction(function( text ) {
+			return function( elem ) {
+				return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
+			};
 		}),
 
 		"enabled": function( elem ) {
@@ -816,18 +828,6 @@ Expr = Sizzle.selectors = {
 			}
 			return true;
 		},
-
-		"contains": markFunction(function( text ) {
-			return function( elem ) {
-				return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
-			};
-		}),
-
-		"has": markFunction(function( selector ) {
-			return function( elem ) {
-				return Sizzle( selector, elem ).length > 0;
-			};
-		}),
 
 		"header": function( elem ) {
 			return rheader.test( elem.nodeName );
@@ -1322,27 +1322,29 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 				i = "0",
 				unmatched = seed && [],
 				outermost = expandContext != null,
+				contextBackup = outermostContext,
 				// We must always have either seed elements or context
 				elems = seed || byElement && Expr.find["TAG"]( "*", expandContext && context.parentNode || context ),
 				// Nested matchers should use non-integer dirruns
-				dirrunsUnique = (dirruns += outermost ? 1 : Math.E);
+				dirrunsUnique = (dirruns += contextBackup == null ? 1 : Math.E);
 
 			if ( outermost ) {
 				outermostContext = context !== document && context;
+				cachedruns = superMatcher.el;
 			}
 
 			// Add elements passing elementMatchers directly to results
 			for ( ; (elem = elems[i]) != null; i++ ) {
 				if ( byElement && elem && elem.nodeType === 1 ) {
-					if ( outermost ) {
-						dirruns = dirrunsUnique;
-						cachedruns = superMatcher.el++;
-					}
 					for ( j = 0; (matcher = elementMatchers[j]); j++ ) {
 						if ( matcher( elem, context, xml ) ) {
 							results.push( elem );
 							break;
 						}
+					}
+					if ( outermost ) {
+						dirruns = dirrunsUnique;
+						cachedruns = ++superMatcher.el;
 					}
 				}
 
@@ -1359,9 +1361,6 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 					}
 				}
 			}
-
-			// Override manipulation of dirruns by nested matchers
-			dirruns = dirrunsUnique;
 
 			// Apply set filters to unmatched elements
 			matchedCount += i;
@@ -1391,8 +1390,11 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 				}
 			}
 
-			// Override manipulation of dirruns by nested matchers
-			dirruns = dirrunsUnique;
+			// Override manipulation of globals by nested matchers
+			if ( outermost ) {
+				dirruns = dirrunsUnique;
+				outermostContext = contextBackup;
+			}
 
 			return unmatched;
 		};
