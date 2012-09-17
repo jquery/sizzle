@@ -576,7 +576,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 40 );
+	expect( 42 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -671,11 +671,18 @@ test("pseudo - misc", function() {
 	t( "Multi-pseudo with leading nonexistent id", "#nonexistent:has(*), #ap:has(*)", ["ap"] );
 	t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:lt(1)", ["ap"] );
 
-	Sizzle.selectors.pseudos.icontains = function( elem, i, match ) {
+	Sizzle.selectors.filters.icontains = function( elem, i, match ) {
 		return Sizzle.getText( elem ).toLowerCase().indexOf( (match[3] || "").toLowerCase() ) > -1;
 	};
+	Sizzle.selectors.setFilters.podium = function( elements, argument ) {
+		var count = argument == null || argument === "" ? 3 : +argument;
+		return elements.slice( 0, count );
+	};
 	t( "Backwards-compatible custom pseudos", "a:icontains(THIS BLOG ENTRY)", ["simon1"] );
-	delete Sizzle.selectors.pseudos.icontains;
+	t( "Backwards-compatible custom setFilters", "#form :PODIUM", ["label-for", "text1", "text2"] );
+	t( "Backwards-compatible custom setFilters with argument", "#form input:Podium(1)", ["text1"] );
+	delete Sizzle.selectors.filters.icontains;
+	delete Sizzle.selectors.setFilters.podium;
 
 	t( "Tokenization stressor", "a[class*=blog]:not(:has(*, :contains(!)), :contains(!)), br:contains(]), p:contains(]), :not(:empty):not(:parent)", ["ap", "mark","yahoo","simon"] );
 });
