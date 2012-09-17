@@ -1196,7 +1196,8 @@ function handlePOSGroup( selector, posfilter, argument, contexts, seed, not ) {
 	}
 
 	if ( selector || !(results = seed) ) {
-		multipleContexts( selector || "*", contexts, (results = []), seed );
+		// Make sure the selector is not a bunch of white spaces. Fixes jQuery #12474
+		multipleContexts( selector.replace( rtrim, "$1" ) || "*", contexts, (results = []), seed );
 	}
 
 	return results.length > 0 ? fn( results, argument, not ) : [];

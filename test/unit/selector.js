@@ -711,13 +711,21 @@ test("pseudo - :not", function() {
 });
 
 test("pseudo - position", function() {
-	expect( 32 );
+	expect( 34 );
 
 	t( "First element", "div:first", ["qunit-testrunner-toolbar"] );
 	t( "First element(case-insensitive)", "div:fiRst", ["qunit-testrunner-toolbar"] );
 	t( "nth Element", "#qunit-fixture p:nth(1)", ["ap"] );
 	t( "First Element", "#qunit-fixture p:first", ["firstp"] );
 	t( "Last Element", "p:last", ["first"] );
+
+	var ret = [], foo = document.getElementById("foo");
+	Sizzle( ":first", foo, ret );
+	Sizzle( ":last", foo, ret );
+
+	equal( ret[0].id, "sndp", "plain :first working on specific context" );
+	equal( ret[1].id, "simon", "plain :last working on specific context" );
+
 	t( "Even Elements", "#qunit-fixture p:even", ["firstp","sndp","sap"] );
 	t( "Odd Elements", "#qunit-fixture p:odd", ["ap","en","first"] );
 	t( "Position Equals", "#qunit-fixture p:eq(1)", ["ap"] );
