@@ -11,6 +11,7 @@ var cachedruns,
 	Expr,
 	getText,
 	isXML,
+	attr,
 	contains,
 	compile,
 	sortOrder,
@@ -381,24 +382,27 @@ contains = Sizzle.contains = docElem.contains ?
 		return false;
 	};
 
-Sizzle.attr = function( elem, name ) {
-	var attr,
-		xml = isXML( elem );
+attr = Sizzle.attr = function( elem, name, xml ) {
+	var val;
 
+	if ( typeof xml === strundefined ) {
+		xml = isXML( elem );
+	}
 	if ( !xml ) {
 		name = name.toLowerCase();
 	}
-	if ( Expr.attrHandle[ name ] ) {
-		return Expr.attrHandle[ name ]( elem );
+
+	if ( (val = Expr.attrHandle[ name ]) ) {
+		return val( elem );
 	}
-	if ( assertAttributes || xml ) {
+	if ( xml || assertAttributes ) {
 		return elem.getAttribute( name );
 	}
-	attr = elem.getAttributeNode( name );
-	return attr ?
+	val = elem.getAttributeNode( name );
+	return val ?
 		typeof elem[ name ] === "boolean" ?
 			elem[ name ] ? name : null :
-			attr.specified ? attr.value : null :
+			val.specified ? val.value : null :
 		null;
 };
 
@@ -602,36 +606,26 @@ Expr = Sizzle.selectors = {
 		},
 
 		"ATTR": function( name, operator, check ) {
-			if ( !operator ) {
-				return function( elem ) {
-					return Sizzle.attr( elem, name ) != null;
-				};
-			}
-
-			return function( elem ) {
-				var result = Sizzle.attr( elem, name ),
-					value = result + "";
+			return function( elem, context, xml ) {
+				var result = attr( elem, name, xml );
 
 				if ( result == null ) {
 					return operator === "!=";
 				}
-
-				switch ( operator ) {
-					case "=":
-						return value === check;
-					case "!=":
-						return value !== check;
-					case "^=":
-						return check && value.indexOf( check ) === 0;
-					case "*=":
-						return check && value.indexOf( check ) > -1;
-					case "$=":
-						return check && value.substr( value.length - check.length ) === check;
-					case "~=":
-						return ( " " + value + " " ).indexOf( check ) > -1;
-					case "|=":
-						return value === check || value.substr( 0, check.length + 1 ) === check + "-";
+				if ( !operator ) {
+					return true;
 				}
+
+				result += "";
+
+				return operator === "=" ? result === check :
+					operator === "!=" ? result !== check :
+					operator === "^=" ? check && result.indexOf( check ) === 0 :
+					operator === "*=" ? check && result.indexOf( check ) > -1 :
+					operator === "$=" ? check && result.substr( result.length - check.length ) === check :
+					operator === "~=" ? ( " " + result + " " ).indexOf( check ) > -1 :
+					operator === "|=" ? result === check || result.substr( 0, check.length + 1 ) === check + "-" :
+					false;
 			};
 		},
 
@@ -750,7 +744,10 @@ Expr = Sizzle.selectors = {
 			// Trim the selector passed to compile
 			// to avoid treating leading and trailing
 			// spaces as combinators
-			var matcher = compile( selector.replace( rtrim, "$1" ) );
+			var input = [],
+				results = [],
+				matcher = compile( selector.replace( rtrim, "$1" ) );
+
 			return matcher[ expando ] ?
 				markFunction(function( seed, matches, context, xml ) {
 					var elem,
@@ -765,9 +762,9 @@ Expr = Sizzle.selectors = {
 					}
 				}) :
 				function( elem, context, xml ) {
-					var results = [];
-					matcher( [ elem ], null, xml, results );
-					return results.length === 0;
+					input[0] = elem;
+					matcher( input, null, xml, results );
+					return !results.pop();
 				};
 		}),
 
