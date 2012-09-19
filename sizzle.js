@@ -381,16 +381,13 @@ contains = Sizzle.contains = docElem.contains ?
 		return false;
 	};
 
-Sizzle.attr = function( elem, name, xml ) {
-	var val;
-
-	if ( typeof xml === strundefined ) {
+Sizzle.attr = function( elem, name ) {
+	var val,
 		xml = isXML( elem );
-	}
+
 	if ( !xml ) {
 		name = name.toLowerCase();
 	}
-
 	if ( (val = Expr.attrHandle[ name ]) ) {
 		return val( elem );
 	}
@@ -605,8 +602,8 @@ Expr = Sizzle.selectors = {
 		},
 
 		"ATTR": function( name, operator, check ) {
-			return function( elem, context, xml ) {
-				var result = Sizzle.attr( elem, name, xml );
+			return function( elem, context ) {
+				var result = Sizzle.attr( elem, name );
 
 				if ( result == null ) {
 					return operator === "!=";
@@ -712,8 +709,7 @@ Expr = Sizzle.selectors = {
 			// arguments are needed to create the filter function
 			// just as Sizzle does
 			if ( fn[ expando ] ) {
-				// Supply (context, xml) for backCompat
-				return fn( argument, document, true );
+				return fn( argument );
 			}
 
 			// But maintain support for old signatures
