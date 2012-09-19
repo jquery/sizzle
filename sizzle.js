@@ -11,7 +11,6 @@ var cachedruns,
 	Expr,
 	getText,
 	isXML,
-	attr,
 	contains,
 	compile,
 	sortOrder,
@@ -221,12 +220,12 @@ function Sizzle( selector, context, results, seed ) {
 	var match, elem, xml, m,
 		nodeType = context.nodeType;
 
-	if ( nodeType !== 1 && nodeType !== 9 ) {
-		return [];
-	}
-
 	if ( !selector || typeof selector !== "string" ) {
 		return results;
+	}
+
+	if ( nodeType !== 1 && nodeType !== 9 ) {
+		return [];
 	}
 
 	xml = isXML( context );
@@ -272,7 +271,7 @@ function Sizzle( selector, context, results, seed ) {
 	}
 
 	// All others
-	return select( selector, context, results, seed, xml );
+	return select( selector.replace( rtrim, "$1" ), context, results, seed, xml );
 }
 
 Sizzle.matches = function( expr, elements ) {
@@ -382,7 +381,7 @@ contains = Sizzle.contains = docElem.contains ?
 		return false;
 	};
 
-attr = Sizzle.attr = function( elem, name, xml ) {
+Sizzle.attr = function( elem, name, xml ) {
 	var val;
 
 	if ( typeof xml === strundefined ) {
@@ -607,7 +606,7 @@ Expr = Sizzle.selectors = {
 
 		"ATTR": function( name, operator, check ) {
 			return function( elem, context, xml ) {
-				var result = attr( elem, name, xml );
+				var result = Sizzle.attr( elem, name, xml );
 
 				if ( result == null ) {
 					return operator === "!=";
@@ -1402,15 +1401,17 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 		superMatcher;
 }
 
-compile = Sizzle.compile = function( selector ) {
-	var group, i,
-		elementMatchers = [],
+compile = Sizzle.compile = function( selector, group /* Internal Use Only */ ) {
+	var i,
 		setMatchers = [],
+		elementMatchers = [],
 		cached = compilerCache[ expando ][ selector ];
 
 	if ( !cached ) {
 		// Generate a function of recursive functions that can be used to check each element
-		group = selector[ expando ] || tokenize( selector );
+		if ( !group ) {
+			group = tokenize( selector );
+		}
 		i = group.length;
 		while ( i-- ) {
 			cached = matcherFromTokens( group[i] );
@@ -1437,9 +1438,6 @@ function multipleContexts( selector, contexts, results, seed ) {
 }
 
 function select( selector, context, results, seed, xml ) {
-	// Remove excessive whitespace
-	selector = selector.replace( rtrim, "$1" );
-
 	var i, tokens, token, type, find,
 		match = tokenize( selector ),
 		j = match.length;
@@ -1494,7 +1492,8 @@ function select( selector, context, results, seed, xml ) {
 	}
 
 	// Compile and execute a filtering function
-	compile( markFunction( new Token( selector ), match ) )(
+	// Provide `match` to avoid retokenization if we modified the selector above
+	compile( selector, match )(
 		seed,
 		context,
 		xml,
