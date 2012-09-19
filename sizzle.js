@@ -382,6 +382,10 @@ contains = Sizzle.contains = docElem.contains ?
 	};
 
 Sizzle.attr = function( elem, name ) {
+	if ( elem.nodeType !== 1 ) {
+		return;
+	}
+
 	var val,
 		xml = isXML( elem );
 
@@ -632,7 +636,7 @@ Expr = Sizzle.selectors = {
 
 				return function( elem ) {
 					var node, diff,
-						childkey = doneName + "." + dirruns + ".",
+						childkey = dirruns + " " + doneName + " ",
 						parent = elem.parentNode,
 						sizset = elem.sizset;
 
@@ -654,11 +658,9 @@ Expr = Sizzle.selectors = {
 						}
 					}
 
+					// Incorporate the offset (or cast to NaN), then check against cycle size
 					diff -= last;
-
-					return first === 0 ?
-						diff === 0 :
-						diff % first === 0 && diff / first >= 0;
+					return diff === first || ( diff % first === 0 && diff / first >= 0 );
 				};
 			}
 
@@ -706,7 +708,8 @@ Expr = Sizzle.selectors = {
 			// arguments are needed to create the filter function
 			// just as Sizzle does
 			if ( fn[ expando ] ) {
-				return fn( argument );
+				// Supply (context, xml) for backCompat
+				return fn( argument, document, true );
 			}
 
 			// But maintain support for old signatures
@@ -1122,7 +1125,7 @@ function addCombinator( matcher, combinator ) {
 			// We can't set arbitrary data on XML nodes, so they don't benefit from dir caching
 			if ( !xml ) {
 				var cache,
-					dirkey = doneName + "." + dirruns + ".",
+					dirkey = dirruns + " " + doneName + " ",
 					cachedkey = dirkey + cachedruns;
 				while ( (elem = elem[ dir ]) ) {
 					if ( elem.nodeType === 1 ) {
@@ -1324,7 +1327,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 
 			// Add elements passing elementMatchers directly to results
 			for ( ; (elem = elems[i]) != null; i++ ) {
-				if ( byElement ) {
+				if ( byElement && elem ) {
 					for ( j = 0; (matcher = elementMatchers[j]); j++ ) {
 						if ( matcher( elem, context, xml ) ) {
 							results.push( elem );
@@ -1358,13 +1361,17 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 					matcher( unmatched, setMatched, context, xml );
 				}
 
-				// If a seed was provided, reintegrate element matches to eliminate the need for sorting
-				if ( seed && matchedCount > 0 ) {
-					while ( i-- ) {
-						if ( !unmatched[i] && !setMatched[i] ) {
-							setMatched[i] = pop.call( results );
+				if ( seed ) {
+					// Reintegrate element matches to eliminate the need for sorting
+					if ( matchedCount > 0 ) {
+						while ( i-- ) {
+							if ( !(unmatched[i] || setMatched[i]) ) {
+								setMatched[i] = pop.call( results );
+							}
 						}
 					}
+
+					// Discard index placeholder values to get only actual matches
 					setMatched = condense( setMatched );
 				}
 
