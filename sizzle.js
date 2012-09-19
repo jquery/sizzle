@@ -631,37 +631,34 @@ Expr = Sizzle.selectors = {
 				var doneName = done++;
 
 				return function( elem ) {
-					var parent, diff,
-						count = 0,
-						node = elem;
+					var node, diff,
+						childkey = doneName + "." + dirruns + ".",
+						parent = elem.parentNode,
+						sizset = elem.sizset;
 
 					if ( first === 1 && last === 0 ) {
 						return true;
 					}
 
-					parent = elem.parentNode;
-
-					if ( parent && (parent[ expando ] !== doneName || !elem.sizset) ) {
+					if ( typeof sizset === "string" && sizset.indexOf( childkey ) === 0 ) {
+						diff = sizset.substr( childkey.length );
+					} else if ( parent ) {
+						diff = 0;
 						for ( node = parent.firstChild; node; node = node.nextSibling ) {
 							if ( node.nodeType === 1 ) {
-								node.sizset = ++count;
-								if ( node === elem ) {
+								node.sizset = childkey + (++diff);
+								if ( elem === node ) {
 									break;
 								}
 							}
 						}
-
-						parent[ expando ] = doneName;
 					}
 
-					diff = elem.sizset - last;
+					diff -= last;
 
-					if ( first === 0 ) {
-						return diff === 0;
-
-					} else {
-						return ( diff % first === 0 && diff / first >= 0 );
-					}
+					return first === 0 ?
+						diff === 0 :
+						diff % first === 0 && diff / first >= 0;
 				};
 			}
 
@@ -1125,8 +1122,8 @@ function addCombinator( matcher, combinator ) {
 			// We can't set arbitrary data on XML nodes, so they don't benefit from dir caching
 			if ( !xml ) {
 				var cache,
-					dirkey = doneName + "." + dirruns,
-					cachedkey = dirkey + "." + cachedruns;
+					dirkey = doneName + "." + dirruns + ".",
+					cachedkey = dirkey + cachedruns;
 				while ( (elem = elem[ dir ]) ) {
 					if ( elem.nodeType === 1 ) {
 						if ( (cache = elem[ expando ]) === cachedkey ) {
