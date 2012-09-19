@@ -636,7 +636,7 @@ Expr = Sizzle.selectors = {
 
 				return function( elem ) {
 					var node, diff,
-						childkey = doneName + "." + dirruns + ".",
+						childkey = dirruns + " " + doneName + " ",
 						parent = elem.parentNode,
 						sizset = elem.sizset;
 
@@ -1127,7 +1127,7 @@ function addCombinator( matcher, combinator ) {
 			// We can't set arbitrary data on XML nodes, so they don't benefit from dir caching
 			if ( !xml ) {
 				var cache,
-					dirkey = doneName + "." + dirruns + ".",
+					dirkey = dirruns + " " + doneName + " ",
 					cachedkey = dirkey + cachedruns;
 				while ( (elem = elem[ dir ]) ) {
 					if ( elem.nodeType === 1 ) {
