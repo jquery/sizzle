@@ -1363,13 +1363,17 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 					matcher( unmatched, setMatched, context, xml );
 				}
 
-				// If a seed was provided, reintegrate element matches to eliminate the need for sorting
-				if ( seed && matchedCount > 0 ) {
-					while ( i-- ) {
-						if ( !unmatched[i] && !setMatched[i] ) {
-							setMatched[i] = pop.call( results );
+				if ( seed ) {
+					// Reintegrate element matches to eliminate the need for sorting
+					if ( matchedCount > 0 ) {
+						while ( i-- ) {
+							if ( !(unmatched[i] || setMatched[i]) ) {
+								setMatched[i] = pop.call( results );
+							}
 						}
 					}
+
+					// Discard index placeholder values to get only actual matches
 					setMatched = condense( setMatched );
 				}
 
