@@ -382,6 +382,10 @@ contains = Sizzle.contains = docElem.contains ?
 	};
 
 Sizzle.attr = function( elem, name ) {
+	if ( elem.nodeType !== 1 ) {
+		return;
+	}
+
 	var val,
 		xml = isXML( elem );
 
@@ -706,7 +710,8 @@ Expr = Sizzle.selectors = {
 			// arguments are needed to create the filter function
 			// just as Sizzle does
 			if ( fn[ expando ] ) {
-				return fn( argument );
+				// Supply (context, xml) for backCompat
+				return fn( argument, document, true );
 			}
 
 			// But maintain support for old signatures
@@ -1324,7 +1329,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 
 			// Add elements passing elementMatchers directly to results
 			for ( ; (elem = elems[i]) != null; i++ ) {
-				if ( byElement ) {
+				if ( byElement && elem ) {
 					for ( j = 0; (matcher = elementMatchers[j]); j++ ) {
 						if ( matcher( elem, context, xml ) ) {
 							results.push( elem );

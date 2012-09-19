@@ -508,7 +508,7 @@ test("attributes", function() {
 	deepEqual(
 		Sizzle( "[title]", null, null, Sizzle("#qunit-fixture a").concat( document.createTextNode("") ) ),
 		q("google"),
-		"Text nodes neither match nor error"
+		"Text nodes fail attribute tests without exception"
 	);
 
 	// #3279
