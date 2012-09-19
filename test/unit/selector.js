@@ -399,7 +399,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 61 );
+	expect( 63 );
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
@@ -471,20 +471,21 @@ test("attributes", function() {
 
 	t( "Grouped Form Elements", "input[name='foo[bar]']", ["hidden2"] );
 
-	var a = document.getElementById("groups"),
-		title = "Don't click me";
-	a.title = title;
-	ok( match( a, "a[title=\"Don't click me\"]" ), "Quote within attribute value does not mess up tokenizer" );
+	var input = document.getElementById("text1");
+	input.title = "Don't click me";
+	ok( match( input, "input[title=\"Don't click me\"]" ), "Quote within attribute value does not mess up tokenizer" );
 
 	// Uncomment if the boolHook is removed
 	// var check2 = document.getElementById("check2");
 	// check2.checked = true;
 	// ok( !Sizzle.matches("[checked]", [ check2 ] ), "Dynamic boolean attributes match when they should with Sizzle.matches (#11115)" );
 
-	a.setAttribute( "data-pos", ":first" );
-	ok( match( a, "a[data-pos=\\:first]"), "POS within attribute value is treated as an attribute value" );
-	ok( match( a, "a[data-pos=':first']"), "POS within attribute value is treated as an attribute value" );
-	a.removeAttribute("data-pos");
+	// jQuery #12303
+	input.setAttribute( "data-pos", ":first" );
+	ok( match( input, "input[data-pos=\\:first]"), "POS within attribute value is treated as an attribute value" );
+	ok( match( input, "input[data-pos=':first']"), "POS within attribute value is treated as an attribute value" );
+	ok( match( input, ":input[data-pos=':first']"), "POS within attribute value after pseudo is treated as an attribute value" );
+	input.removeAttribute("data-pos");
 
 	// Make sure attribute value quoting works correctly. See: #6093
 	var attrbad = jQuery("<input type=\"hidden\" value=\"2\" name=\"foo.baz\" id=\"attrbad1\"/><input type=\"hidden\" value=\"2\" name=\"foo[baz]\" id=\"attrbad2\"/><input type=\"hidden\" data-attr=\"foo_baz']\" id=\"attrbad3\"/>").appendTo("body");
@@ -502,6 +503,13 @@ test("attributes", function() {
 
 	// #6428
 	t( "Find escaped attribute value", "#form input[name=foo\\[bar\\]]", ["hidden2"] );
+
+	// jQuery #12523
+	deepEqual(
+		Sizzle( "[title]", null, null, Sizzle("#qunit-fixture a").concat( document.createTextNode("") ) ),
+		q("google"),
+		"Text nodes neither match nor error"
+	);
 
 	// #3279
 	var div = document.createElement("div");
@@ -568,7 +576,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 38 );
+	expect( 42 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -643,6 +651,12 @@ test("pseudo - misc", function() {
 	ok( !match( input, ":active" ), ":active doesn't match" );
 	document.body.removeChild( input );
 
+	deepEqual(
+		Sizzle( "[id='select1'] *:not(:last-child), [id='select2'] *:not(:last-child)", q("qunit-fixture")[0] ),
+		q( "option1a", "option1b", "option1c", "option2a", "option2b", "option2c" ),
+		"caching system tolerates recursive selection"
+	);
+
 	// Tokenization edge cases
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code)", ["ap"] );
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code):contains(This link)", ["ap"] );
@@ -657,16 +671,25 @@ test("pseudo - misc", function() {
 	t( "Multi-pseudo with leading nonexistent id", "#nonexistent:has(*), #ap:has(*)", ["ap"] );
 	t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:lt(1)", ["ap"] );
 
-	Sizzle.selectors.pseudos.icontains = function( elem, i, match ) {
+	Sizzle.selectors.filters.icontains = function( elem, i, match ) {
 		return Sizzle.getText( elem ).toLowerCase().indexOf( (match[3] || "").toLowerCase() ) > -1;
 	};
+	Sizzle.selectors.setFilters.podium = function( elements, argument ) {
+		var count = argument == null || argument === "" ? 3 : +argument;
+		return elements.slice( 0, count );
+	};
 	t( "Backwards-compatible custom pseudos", "a:icontains(THIS BLOG ENTRY)", ["simon1"] );
-	delete Sizzle.selectors.pseudos.icontains;
+	t( "Backwards-compatible custom setFilters", "#form :PODIUM", ["label-for", "text1", "text2"] );
+	t( "Backwards-compatible custom setFilters with argument", "#form input:Podium(1)", ["text1"] );
+	delete Sizzle.selectors.filters.icontains;
+	delete Sizzle.selectors.setFilters.podium;
+
+	t( "Tokenization stressor", "a[class*=blog]:not(:has(*, :contains(!)), :contains(!)), br:contains(]), p:contains(]), :not(:empty):not(:parent)", ["ap", "mark","yahoo","simon"] );
 });
 
 
 test("pseudo - :not", function() {
-	expect( 33 );
+	expect( 43 );
 
 	t( "Not", "a.blog:not(.link)", ["mark"] );
 	t( ":not() with :first", "#foo p:not(:first) .link", ["simon"] );
@@ -708,10 +731,22 @@ test("pseudo - :not", function() {
 	t( ":not chaining (colon in attribute)", "#qunit-fixture form[id]:not([action='form:action']):not(:button)", ["form", "lengthtest", "name-tests", "testForm"] );
 	t( ":not chaining (colon in attribute and nested chaining)", "#qunit-fixture form[id]:not([action='form:action']:button):not(:input)", ["form", "lengthtest", "name-tests", "testForm"] );
 	t( ":not chaining", "#form select:not(.select1):contains(Nothing) > option:not(option)", [] );
+
+	t( "positional :not()", "#foo p:not(:last)", ["sndp", "en"] );
+	t( "positional :not() prefix", "#foo p:not(:last) a", ["yahoo"] );
+	t( "compound positional :not()", "#foo p:not(:first, :last)", ["en"] );
+	t( "compound positional :not()", "#foo p:not(:first, :even)", ["en"] );
+	t( "compound positional :not()", "#foo p:not(:first, :odd)", ["sap"] );
+	t( "reordered compound positional :not()", "#foo p:not(:odd, :first)", ["sap"] );
+
+	t( "positional :not() with pre-filter", "#foo p:not([id]:first)", ["en", "sap"] );
+	t( "positional :not() with post-filter", "#foo p:not(:first[id])", ["en", "sap"] );
+	t( "positional :not() with pre-filter", "#foo p:not([lang]:first)", ["sndp", "sap"] );
+	t( "positional :not() with post-filter", "#foo p:not(:first[lang])", ["sndp", "en", "sap"] );
 });
 
 test("pseudo - position", function() {
-	expect( 32 );
+	expect( 33 );
 
 	t( "First element", "div:first", ["qunit-testrunner-toolbar"] );
 	t( "First element(case-insensitive)", "div:fiRst", ["qunit-testrunner-toolbar"] );
@@ -748,6 +783,11 @@ test("pseudo - position", function() {
 	t( "Check sort order with POS and comma", "#qunit-fixture em>em>em>em:first-child,div>em:first", ["siblingfirst", "siblinggreatgrandchild"] );
 
 	t( "Isolated position", ":last", ["fx-tests"] );
+
+	// jQuery #12526
+	var context = jQuery("#qunit-fixture").append("<div id='jquery12526'></div>")[0];
+	deepEqual( Sizzle( ":last", context ), q("jquery12526"), "Post-manipulation positional" );
+	QUnit.reset();
 
 	// Sizzle extension
 	var oldPOS = Sizzle.selectors.match["POS"];
