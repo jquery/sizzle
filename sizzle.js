@@ -658,11 +658,9 @@ Expr = Sizzle.selectors = {
 						}
 					}
 
+					// Incorporate the offset (or cast to NaN), then check against cycle size
 					diff -= last;
-
-					return first === 0 ?
-						diff === 0 :
-						diff % first === 0 && diff / first >= 0;
+					return diff === first || ( diff % first === 0 && diff / first >= 0 );
 				};
 			}
 
