@@ -134,7 +134,7 @@ test("element", function() {
 	deepEqual(
 		Sizzle( "p:contains(bar)", iframeDoc ),
 		[ iframeDoc.getElementById("foo") ],
-		"other document as context"
+		"Other document as context"
 	);
 
 	var html = "";
