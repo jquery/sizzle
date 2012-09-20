@@ -70,7 +70,7 @@ module("selector", { teardown: moduleTeardown });
 */
 
 test("element", function() {
-	expect( 35 );
+	expect( 36 );
 
 	equal( Sizzle("").length, 0, "Empty selector returns an empty array" );
 	equal( Sizzle(" ").length, 0, "Empty selector returns an empty array" );
@@ -125,6 +125,17 @@ test("element", function() {
 	deepEqual( Sizzle("div em", siblingTest), [], "Element-rooted QSA does not select based on document context" );
 	deepEqual( Sizzle("div em, div em, div em:not(div em)", siblingTest), [], "Element-rooted QSA does not select based on document context" );
 	deepEqual( Sizzle("div em, em\\,", siblingTest), [], "Escaped commas do not get treated with an id in element-rooted QSA" );
+
+	var iframe = document.getElementById("iframe"),
+		iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+	iframeDoc.open();
+	iframeDoc.write("<body><p id='foo'>bar</p></body>");
+	iframeDoc.close();
+	deepEqual(
+		Sizzle( "p:contains(bar)", iframeDoc ),
+		[ iframeDoc.getElementById("foo") ],
+		"Other document as context"
+	);
 
 	var html = "";
 	for ( i = 0; i < 100; i++ ) {

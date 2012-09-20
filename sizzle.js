@@ -1080,21 +1080,22 @@ function tokenize( selector, parseOnly ) {
 			tokenCache( selector, groups ).slice( 0 );
 }
 
-function addCombinator( matcher, combinator ) {
+function addCombinator( matcher, combinator, base ) {
 	var dir = combinator.dir,
+		checkNonElements = base && combinator.dir === "parentNode",
 		doneName = done++;
 
 	return combinator.first ?
-		// Check against closest ancestor element
+		// Check against closest ancestor/preceding element
 		function( elem, context, xml ) {
 			while ( (elem = elem[ dir ]) ) {
-				if ( elem.nodeType === 1 ) {
+				if ( checkNonElements || elem.nodeType === 1  ) {
 					return matcher( elem, context, xml );
 				}
 			}
 		} :
 
-		// Check against all containing elements
+		// Check against all ancestor/preceding elements
 		function( elem, context, xml ) {
 			// We can't set arbitrary data on XML nodes, so they don't benefit from dir caching
 			if ( !xml ) {
@@ -1102,7 +1103,7 @@ function addCombinator( matcher, combinator ) {
 					dirkey = dirruns + " " + doneName + " ",
 					cachedkey = dirkey + cachedruns;
 				while ( (elem = elem[ dir ]) ) {
-					if ( elem.nodeType === 1 ) {
+					if ( checkNonElements || elem.nodeType === 1 ) {
 						if ( (cache = elem[ expando ]) === cachedkey ) {
 							return elem.sizset;
 						} else if ( typeof cache === "string" && cache.indexOf(dirkey) === 0 ) {
@@ -1121,7 +1122,7 @@ function addCombinator( matcher, combinator ) {
 				}
 			} else {
 				while ( (elem = elem[ dir ]) ) {
-					if ( elem.nodeType === 1 ) {
+					if ( checkNonElements || elem.nodeType === 1 ) {
 						if ( matcher( elem, context, xml ) ) {
 							return elem;
 						}
@@ -1246,7 +1247,7 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 	});
 }
 
-function matcherFromTokens( tokens, context, xml ) {
+function matcherFromTokens( tokens ) {
 	var checkContext, matcher, j,
 		len = tokens.length,
 		leadingRelative = Expr.relative[ tokens[0].type ],
@@ -1256,10 +1257,10 @@ function matcherFromTokens( tokens, context, xml ) {
 		// The foundational matcher ensures that elements are reachable from top-level context(s)
 		matchContext = addCombinator( function( elem ) {
 			return elem === checkContext;
-		}, implicitRelative ),
+		}, implicitRelative, true ),
 		matchAnyContext = addCombinator( function( elem ) {
 			return indexOf.call( checkContext, elem ) > -1;
-		}, implicitRelative ),
+		}, implicitRelative, true ),
 		matchers = [ function( elem, context, xml ) {
 			return ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
 				(checkContext = context).nodeType ?
@@ -1272,7 +1273,7 @@ function matcherFromTokens( tokens, context, xml ) {
 			matchers = [ addCombinator( elementMatcher( matchers ), matcher ) ];
 		} else {
 			// The concatenated values are (context, xml) for backCompat
-			matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches.concat( document, true ) );
+			matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches );
 
 			// Return special upon seeing a positional matcher
 			if ( matcher[ expando ] ) {
