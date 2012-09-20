@@ -10,6 +10,8 @@ var cachedruns,
 	assertGetIdNotName,
 	Expr,
 	getText,
+	isXMLElem,
+	isXMLValue,
 	isXML,
 	contains,
 	compile,
@@ -355,6 +357,10 @@ getText = Sizzle.getText = function( elem ) {
 };
 
 isXML = Sizzle.isXML = function( elem ) {
+	if ( elem === isXMLElem ) {
+		return isXMLValue;
+	}
+
 	// documentElement is verified for cases where it doesn't yet exist
 	// (such as loading iframes in IE - #4833)
 	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
@@ -602,7 +608,9 @@ Expr = Sizzle.selectors = {
 		},
 
 		"ATTR": function( name, operator, check ) {
-			return function( elem, context ) {
+			return function( elem, context, xml ) {
+				isXMLElem = elem;
+				isXMLValue = xml;
 				var result = Sizzle.attr( elem, name );
 
 				if ( result == null ) {
