@@ -628,25 +628,19 @@ Expr = Sizzle.selectors = {
 		"CHILD": function( type, argument, first, last ) {
 
 			if ( type === "nth" ) {
-				var doneName = done++;
-
 				return function( elem ) {
 					var node, diff,
-						childkey = dirruns + " " + doneName + " ",
-						parent = elem.parentNode,
-						sizset = elem.sizset;
+						parent = elem.parentNode;
 
 					if ( first === 1 && last === 0 ) {
 						return true;
 					}
 
-					if ( typeof sizset === "string" && sizset.indexOf( childkey ) === 0 ) {
-						diff = sizset.substr( childkey.length );
-					} else if ( parent ) {
+					if ( parent ) {
 						diff = 0;
 						for ( node = parent.firstChild; node; node = node.nextSibling ) {
 							if ( node.nodeType === 1 ) {
-								node.sizset = childkey + (++diff);
+								diff++;
 								if ( elem === node ) {
 									break;
 								}
