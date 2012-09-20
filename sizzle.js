@@ -1018,27 +1018,6 @@ Sizzle.error = function( msg ) {
 	throw new Error( "Syntax error, unrecognized expression: " + msg );
 };
 
-function condense( unmatched, map, filter, context, xml ) {
-	var elem,
-		newUnmatched = [],
-		i = 0,
-		len = unmatched.length,
-		mapped = map != null;
-
-	for ( ; i < len; i++ ) {
-		if ( (elem = unmatched[i]) ) {
-			if ( !filter || filter( elem, context, xml ) ) {
-				newUnmatched.push( elem );
-				if ( mapped ) {
-					map.push( i );
-				}
-			}
-		}
-	}
-
-	return newUnmatched;
-}
-
 function tokenize( selector, parseOnly ) {
 	var matched, match, tokens, type, soFar, groups, preFilters,
 		cached = tokenCache[ expando ][ selector ];
@@ -1164,6 +1143,27 @@ function elementMatcher( matchers ) {
 			return true;
 		} :
 		matchers[0];
+}
+
+function condense( unmatched, map, filter, context, xml ) {
+	var elem,
+		newUnmatched = [],
+		i = 0,
+		len = unmatched.length,
+		mapped = map != null;
+
+	for ( ; i < len; i++ ) {
+		if ( (elem = unmatched[i]) ) {
+			if ( !filter || filter( elem, context, xml ) ) {
+				newUnmatched.push( elem );
+				if ( mapped ) {
+					map.push( i );
+				}
+			}
+		}
+	}
+
+	return newUnmatched;
 }
 
 function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postSelector ) {
@@ -1322,7 +1322,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 
 			// Add elements passing elementMatchers directly to results
 			for ( ; (elem = elems[i]) != null; i++ ) {
-				if ( byElement ) {
+				if ( byElement && elem ) {
 					for ( j = 0; (matcher = elementMatchers[j]); j++ ) {
 						if ( matcher( elem, context, xml ) ) {
 							results.push( elem );
