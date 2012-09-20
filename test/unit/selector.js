@@ -399,7 +399,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 63 );
+	expect( 62 );
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
@@ -503,13 +503,6 @@ test("attributes", function() {
 
 	// #6428
 	t( "Find escaped attribute value", "#form input[name=foo\\[bar\\]]", ["hidden2"] );
-
-	// jQuery #12523
-	deepEqual(
-		Sizzle( "[title]", null, null, Sizzle("#qunit-fixture a").concat( document.createTextNode("") ) ),
-		q("google"),
-		"Text nodes neither match nor error"
-	);
 
 	// #3279
 	var div = document.createElement("div");

@@ -354,7 +354,7 @@ getText = Sizzle.getText = function( elem ) {
 	return ret;
 };
 
-isXML = Sizzle.isXML = function isXML( elem ) {
+isXML = Sizzle.isXML = function( elem ) {
 	// documentElement is verified for cases where it doesn't yet exist
 	// (such as loading iframes in IE - #4833)
 	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
@@ -632,7 +632,7 @@ Expr = Sizzle.selectors = {
 
 				return function( elem ) {
 					var node, diff,
-						childkey = doneName + "." + dirruns + ".",
+						childkey = dirruns + " " + doneName + " ",
 						parent = elem.parentNode,
 						sizset = elem.sizset;
 
@@ -654,11 +654,9 @@ Expr = Sizzle.selectors = {
 						}
 					}
 
+					// Incorporate the offset (or cast to NaN), then check against cycle size
 					diff -= last;
-
-					return first === 0 ?
-						diff === 0 :
-						diff % first === 0 && diff / first >= 0;
+					return diff === first || ( diff % first === 0 && diff / first >= 0 );
 				};
 			}
 
@@ -1122,7 +1120,7 @@ function addCombinator( matcher, combinator ) {
 			// We can't set arbitrary data on XML nodes, so they don't benefit from dir caching
 			if ( !xml ) {
 				var cache,
-					dirkey = doneName + "." + dirruns + ".",
+					dirkey = dirruns + " " + doneName + " ",
 					cachedkey = dirkey + cachedruns;
 				while ( (elem = elem[ dir ]) ) {
 					if ( elem.nodeType === 1 ) {
@@ -1358,13 +1356,17 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 					matcher( unmatched, setMatched, context, xml );
 				}
 
-				// If a seed was provided, reintegrate element matches to eliminate the need for sorting
-				if ( seed && matchedCount > 0 ) {
-					while ( i-- ) {
-						if ( !unmatched[i] && !setMatched[i] ) {
-							setMatched[i] = pop.call( results );
+				if ( seed ) {
+					// Reintegrate element matches to eliminate the need for sorting
+					if ( matchedCount > 0 ) {
+						while ( i-- ) {
+							if ( !(unmatched[i] || setMatched[i]) ) {
+								setMatched[i] = pop.call( results );
+							}
 						}
 					}
+
+					// Discard index placeholder values to get only actual matches
 					setMatched = condense( setMatched );
 				}
 
