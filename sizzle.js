@@ -609,9 +609,9 @@ Expr = Sizzle.selectors = {
 
 		"ATTR": function( name, operator, check ) {
 			return function( elem, context, xml ) {
-				isXMLElem = elem;
+				var result;
 				isXMLValue = xml;
-				var result = Sizzle.attr( elem, name );
+				result = Sizzle.attr( (isXMLElem = elem), name );
 
 				if ( result == null ) {
 					return operator === "!=";
