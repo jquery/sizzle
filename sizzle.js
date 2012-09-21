@@ -852,11 +852,11 @@ Expr = Sizzle.selectors = {
 		},
 
 		// Positional types
-		"first": createPositionalPseudo(function( matchIndexes, length, argument ) {
+		"first": createPositionalPseudo(function() {
 			return [ 0 ];
 		}),
 
-		"last": createPositionalPseudo(function( matchIndexes, length, argument ) {
+		"last": createPositionalPseudo(function( matchIndexes, length ) {
 			return [ length - 1 ];
 		}),
 
@@ -864,14 +864,14 @@ Expr = Sizzle.selectors = {
 			return [ argument < 0 ? argument + length : argument ];
 		}),
 
-		"even": createPositionalPseudo(function( matchIndexes, length, argument ) {
+		"even": createPositionalPseudo(function( matchIndexes, length ) {
 			for ( var i = 0; i < length; i += 2 ) {
 				matchIndexes.push( i );
 			}
 			return matchIndexes;
 		}),
 
-		"odd": createPositionalPseudo(function( matchIndexes, length, argument ) {
+		"odd": createPositionalPseudo(function( matchIndexes, length ) {
 			for ( var i = 1; i < length; i += 2 ) {
 				matchIndexes.push( i );
 			}
@@ -1048,8 +1048,7 @@ function tokenize( selector, parseOnly ) {
 		// Filters
 		for ( type in Expr.filter ) {
 			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
-				// The last two arguments here are (context, xml) for backCompat
-				(match = preFilters[ type ]( match, document, true ))) ) {
+				(match = preFilters[ type ]( match ))) ) {
 
 				tokens.push( matched = new Token( match.shift() ) );
 				soFar = soFar.slice( matched.length );
@@ -1266,7 +1265,6 @@ function matcherFromTokens( tokens ) {
 		if ( (matcher = Expr.relative[ tokens[i].type ]) ) {
 			matchers = [ addCombinator( elementMatcher( matchers ), matcher ) ];
 		} else {
-			// The concatenated values are (context, xml) for backCompat
 			matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches );
 
 			// Return special upon seeing a positional matcher
