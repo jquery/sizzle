@@ -146,7 +146,7 @@ test("element", function() {
 	ok( !!Sizzle("body>div div div").length, "No stack or performance problems with large amounts of descendents" );
 	html.remove();
 
-	html = q("qunit-fixture")[0].appendChild( document.createElement("toString") ).id = "toString";
+	q("qunit-fixture")[0].appendChild( document.createElement("toString") ).id = "toString";
 	t( "Element name matches Object.prototype property", "toString#toString", ["toString"] );
 });
 
