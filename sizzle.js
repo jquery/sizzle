@@ -592,6 +592,7 @@ Expr = Sizzle.selectors = {
 		},
 
 		"CLASS": function( className ) {
+			// Use cache keys that don't collide with prototype properties (jQuery #12606)
 			var pattern = classCache[ expando ][ className + " " ];
 
 			return pattern ||
@@ -1014,6 +1015,7 @@ Sizzle.error = function( msg ) {
 
 function tokenize( selector, parseOnly ) {
 	var matched, match, tokens, type, soFar, groups, preFilters,
+		// Use cache keys that don't collide with prototype properties (jQuery #12606)
 		cached = tokenCache[ expando ][ selector + " " ];
 
 	if ( cached ) {
@@ -1395,6 +1397,7 @@ compile = Sizzle.compile = function( selector, group /* Internal Use Only */ ) {
 	var i,
 		setMatchers = [],
 		elementMatchers = [],
+		// Use cache keys that don't collide with prototype properties (jQuery #12606)
 		cached = compilerCache[ expando ][ selector + " " ];
 
 	if ( !cached ) {
