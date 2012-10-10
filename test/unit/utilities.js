@@ -71,10 +71,10 @@ test("Sizzle.uniqueSort", function() {
 		objEmpty = new Arrayish(),
 		arr1 = [ el1 ],
 		obj1 = new Arrayish( el1 ),
-		arr2 = [ el1, el2 ],
-		obj2 = new Arrayish( el1, el2 ),
-		arrDup = [ el1, el1 ],
-		objDup = new Arrayish( el1, el1 );
+		arr2 = [ el2, el1 ],
+		obj2 = new Arrayish( el2, el1 ),
+		arrDup = [ el1, el2, el2, el1 ],
+		objDup = new Arrayish( el1, el2, el2, el1 );
 
 	deepEqual( Sizzle.uniqueSort( arrEmpty ).slice( 0 ), [], "Empty array" );
 	deepEqual( Sizzle.uniqueSort( objEmpty ).slice( 0 ), [], "Empty quasi-array" );
@@ -82,6 +82,6 @@ test("Sizzle.uniqueSort", function() {
 	deepEqual( Sizzle.uniqueSort( obj1 ).slice( 0 ), [ el1 ], "Single-element quasi-array" );
 	deepEqual( Sizzle.uniqueSort( arr2 ).slice( 0 ), [ el1, el2 ], "No-duplicates array" );
 	deepEqual( Sizzle.uniqueSort( obj2 ).slice( 0 ), [ el1, el2 ], "No-duplicates quasi-array" );
-	deepEqual( Sizzle.uniqueSort( arrDup ).slice( 0 ), [ el1 ], "Duplicates array" );
-	deepEqual( Sizzle.uniqueSort( objDup ).slice( 0 ), [ el1 ], "Duplicates quasi-array" );
+	deepEqual( Sizzle.uniqueSort( arrDup ).slice( 0 ), [ el1, el2 ], "Duplicates array" );
+	deepEqual( Sizzle.uniqueSort( objDup ).slice( 0 ), [ el1, el2 ], "Duplicates quasi-array" );
 });
