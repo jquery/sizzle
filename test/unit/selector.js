@@ -752,7 +752,7 @@ test("pseudo - :not", function() {
 });
 
 test("pseudo - position", function() {
-	expect( 33 );
+	expect( 34 );
 
 	t( "First element", "div:first", ["qunit-testrunner-toolbar"] );
 	t( "First element(case-insensitive)", "div:fiRst", ["qunit-testrunner-toolbar"] );
@@ -789,6 +789,8 @@ test("pseudo - position", function() {
 	t( "Check sort order with POS and comma", "#qunit-fixture em>em>em>em:first-child,div>em:first", ["siblingfirst", "siblinggreatgrandchild"] );
 
 	t( "Isolated position", ":last", ["fx-tests"] );
+
+	deepEqual( Sizzle( "[lang=en]:last + p", null, [], q("sndp", "en", "sap") ), q("sap"), "Seeded pos with trailing relative" );
 
 	// jQuery #12526
 	var context = jQuery("#qunit-fixture").append("<div id='jquery12526'></div>")[0];
