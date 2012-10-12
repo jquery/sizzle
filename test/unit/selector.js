@@ -790,7 +790,7 @@ test("pseudo - position", function() {
 
 	t( "Isolated position", ":last", ["fx-tests"] );
 
-	deepEqual( Sizzle( "[lang=en]:last + p", null, [], q("sndp", "en", "sap") ), q("sap"), "Seeded pos with trailing relative" );
+	deepEqual( Sizzle( "*:lt(2) + *", null, [], Sizzle("#qunit-fixture > p") ), q("ap"), "Seeded pos with trailing relative" );
 
 	// jQuery #12526
 	var context = jQuery("#qunit-fixture").append("<div id='jquery12526'></div>")[0];
