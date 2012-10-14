@@ -22,7 +22,7 @@
 	moduleTeardown: true
 */
 
-module("selector", { teardown: moduleTeardown });
+module("utilities", { teardown: moduleTeardown });
 
 test("Sizzle.contains", function() {
 	expect( 16 );
