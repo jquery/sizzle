@@ -70,7 +70,7 @@ module("selector", { teardown: moduleTeardown });
 */
 
 test("element", function() {
-	expect( 36 );
+	expect( 37 );
 
 	equal( Sizzle("").length, 0, "Empty selector returns an empty array" );
 	equal( Sizzle(" ").length, 0, "Empty selector returns an empty array" );
@@ -145,6 +145,10 @@ test("element", function() {
 	ok( !!Sizzle("body div div div").length, "No stack or performance problems with large amounts of descendents" );
 	ok( !!Sizzle("body>div div div").length, "No stack or performance problems with large amounts of descendents" );
 	html.remove();
+
+	// Real use case would be using .watch in browsers with window.watch (see Issue #157)
+	q("qunit-fixture")[0].appendChild( document.createElement("toString") ).id = "toString";
+	t( "Element name matches Object.prototype property", "toString#toString", ["toString"] );
 });
 
 test("XML Document Selectors", function() {
@@ -266,7 +270,7 @@ test("id", function() {
 });
 
 test("class", function() {
-	expect( 24 );
+	expect( 25 );
 
 	t( "Class Selector", ".blog", ["mark","simon"] );
 	t( "Class Selector", ".GROUPS", ["groups"] );
@@ -283,8 +287,8 @@ test("class", function() {
 
 	t( "Escaped Class", ".foo\\:bar", ["foo:bar"] );
 	t( "Escaped Class", ".test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
-	t( "Descendant scaped Class", "div .foo\\:bar", ["foo:bar"] );
-	t( "Descendant scaped Class", "div .test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
+	t( "Descendant escaped Class", "div .foo\\:bar", ["foo:bar"] );
+	t( "Descendant escaped Class", "div .test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
 	t( "Child escaped Class", "form > .foo\\:bar", ["foo:bar"] );
 	t( "Child escaped Class", "form > .test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
 
@@ -303,6 +307,9 @@ test("class", function() {
 	ok( Sizzle.matchesSelector( div.firstChild, ".null div"), "caching system respects DOM changes" );
 	ok( !Sizzle.matchesSelector( document, ".foo" ), "testing class on document doesn't error" );
 	ok( !Sizzle.matchesSelector( window, ".foo" ), "testing class on window doesn't error" );
+
+	div.lastChild.className += " hasOwnProperty toString";
+	deepEqual( Sizzle(".e.hasOwnProperty.toString", div), [ div.lastChild ], "Classes match Object.prototype properties" );
 });
 
 test("name", function() {
