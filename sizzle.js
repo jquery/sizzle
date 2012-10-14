@@ -992,7 +992,9 @@ baseHasDuplicate = !hasDuplicate;
 // Document sorting and removing duplicates
 Sizzle.uniqueSort = function( results ) {
 	var elem,
-		i = 1;
+		duplicates = [],
+		i = 1,
+		j = 0;
 
 	hasDuplicate = baseHasDuplicate;
 	results.sort( sortOrder );
@@ -1000,8 +1002,11 @@ Sizzle.uniqueSort = function( results ) {
 	if ( hasDuplicate ) {
 		for ( ; (elem = results[i]); i++ ) {
 			if ( elem === results[ i - 1 ] ) {
-				results.splice( i--, 1 );
+				j = duplicates.push( i );
 			}
+		}
+		while ( j-- ) {
+			results.splice( duplicates[ j ], 1 );
 		}
 	}
 
