@@ -589,7 +589,7 @@ test("pseudo - child", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 42 );
+	expect( 45 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -628,6 +628,24 @@ test("pseudo - misc", function() {
 
 	document.body.removeChild( tmp );
 
+	// Recreate tmp
+	tmp = document.createElement("div");
+	tmp.id = "tmp_input";
+	tmp.innerHTML = "<span>Hello I am focusable.</span>";
+	// Setting tabIndex should make the element focusable
+	// http://dev.w3.org/html5/spec/single-page.html#focus-management
+	document.body.appendChild( tmp );
+	tmp.tabIndex = 0;
+	tmp.focus();
+	t( "tabIndex element focused", ":focus", [ "tmp_input" ] );
+	ok( match( tmp, ":focus" ), ":focus matches tabIndex div" );
+	// Blur tmp
+	tmp.blur();
+	document.body.focus();
+	ok( !match( tmp, ":focus" ), ":focus doesn't match tabIndex div" );
+	document.body.removeChild( tmp );
+
+	// Input focus/active
 	var input = document.createElement("input");
 	input.type = "text";
 	input.id = "focus-input";
@@ -640,10 +658,9 @@ test("pseudo - misc", function() {
 		(document.querySelectorAll && !document.querySelectorAll("input:focus").length) ) {
 		ok( true, "The input was not focused. Skip checking the :focus match." );
 		ok( true, "The input was not focused. Skip checking the :focus match." );
-
 	} else {
 		t( "Element focused", "input:focus", [ "focus-input" ] );
-		ok( match( input, ":focus" ), ":focus Matches" );
+		ok( match( input, ":focus" ), ":focus matches" );
 	}
 
 	// :active selector: this selector does not depend on document focus
@@ -663,6 +680,8 @@ test("pseudo - misc", function() {
 	ok( !match( input, ":focus" ), ":focus doesn't match" );
 	ok( !match( input, ":active" ), ":active doesn't match" );
 	document.body.removeChild( input );
+
+
 
 	deepEqual(
 		Sizzle( "[id='select1'] *:not(:last-child), [id='select2'] *:not(:last-child)", q("qunit-fixture")[0] ),
