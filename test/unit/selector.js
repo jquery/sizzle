@@ -637,8 +637,15 @@ test("pseudo - misc", function() {
 	document.body.appendChild( tmp );
 	tmp.tabIndex = 0;
 	tmp.focus();
-	t( "tabIndex element focused", ":focus", [ "tmp_input" ] );
-	ok( match( tmp, ":focus" ), ":focus matches tabIndex div" );
+	if ( document.activeElement !== tmp || (document.hasFocus && !document.hasFocus()) ||
+		(document.querySelectorAll && !document.querySelectorAll("div:focus").length) ) {
+		ok( true, "The div was not focused. Skip checking the :focus match." );
+		ok( true, "The div was not focused. Skip checking the :focus match." );
+	} else {
+		t( "tabIndex element focused", ":focus", [ "tmp_input" ] );
+		ok( match( tmp, ":focus" ), ":focus matches tabIndex div" );
+	}
+
 	// Blur tmp
 	tmp.blur();
 	document.body.focus();
