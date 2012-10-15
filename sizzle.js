@@ -1519,15 +1519,14 @@ if ( document.querySelectorAll ) {
 			rescape = /'|\\/g,
 			rattributeQuotes = /\=[\x20\t\r\n\f]*([^'"\]]*)[\x20\t\r\n\f]*\]/g,
 
-			// qSa(:focus) reports false when true (Chrome 21),
-			// A support test would require too much code (would include document ready)
-			rbuggyQSA = [":focus"],
-
 			// matchesSelector(:focus) reports false when true (Chrome 21),
 			// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
 			// A support test would require too much code (would include document ready)
-			// just skip matchesSelector for :active
-			rbuggyMatches = [ ":active", ":focus" ],
+			rbuggyMatches = ":active|:focus",
+
+			// qSA(:focus) reports false when true (Chrome 21),
+			// A support test would require too much code (would include document ready)
+			rbuggyQSA = ":focus",
 			matches = docElem.matchesSelector ||
 				docElem.mozMatchesSelector ||
 				docElem.webkitMatchesSelector ||
@@ -1546,14 +1545,14 @@ if ( document.querySelectorAll ) {
 
 			// IE8 - Some boolean attributes are not treated correctly
 			if ( !div.querySelectorAll("[selected]").length ) {
-				rbuggyQSA.push( "\\[" + whitespace + "*(?:checked|disabled|ismap|multiple|readonly|selected|value)" );
+				rbuggyQSA += "|\\[" + whitespace + "*(?:checked|disabled|ismap|multiple|readonly|selected|value)";
 			}
 
 			// Webkit/Opera - :checked should return selected option elements
 			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 			// IE8 throws error here (do not put tests after this one)
 			if ( !div.querySelectorAll(":checked").length ) {
-				rbuggyQSA.push(":checked");
+				rbuggyQSA += "|:checked";
 			}
 		});
 
@@ -1563,25 +1562,62 @@ if ( document.querySelectorAll ) {
 			// Should not select anything
 			div.innerHTML = "<p test=''></p>";
 			if ( div.querySelectorAll("[test^='']").length ) {
-				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:\"\"|'')" );
+				rbuggyQSA += "|[*^$]=" + whitespace + "*(?:\"\"|'')";
 			}
 
 			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
 			// IE8 throws error here (do not put tests after this one)
 			div.innerHTML = "<input type='hidden'/>";
 			if ( !div.querySelectorAll(":enabled").length ) {
-				rbuggyQSA.push(":enabled", ":disabled");
+				rbuggyQSA += "|:enabled|:disabled";
 			}
 		});
 
-		// rbuggyQSA always contains :focus, so no need for a length check
-		rbuggyQSA = /* rbuggyQSA.length && */ new RegExp( rbuggyQSA.join("|") );
+		if ( matches ) {
+			assert(function( div ) {
+				// Check to see if it's possible to do matchesSelector
+				// on a disconnected node (IE 9)
+				disconnectedMatch = matches.call( div, "div" );
+
+				// This should fail with an exception
+				// Gecko does not error, returns false instead
+				try {
+					matches.call( div, "[test!='']:sizzle" );
+					rbuggyMatches += "|!=|" + pseudos;
+				} catch ( e ) {}
+			});
+
+			rbuggyMatches = new RegExp( rbuggyMatches + "|" + rbuggyQSA );
+
+			Sizzle.matchesSelector = function( elem, expr ) {
+				// Make sure that attribute selectors are quoted
+				expr = expr.replace( rattributeQuotes, "='$1']" );
+
+				if ( !isXML( elem ) && !rbuggyMatches.test( expr ) ) {
+					try {
+						var ret = matches.call( elem, expr );
+
+						// IE 9's matchesSelector returns false on disconnected nodes
+						if ( ret || disconnectedMatch ||
+								// As well, disconnected nodes are said to be in a document
+								// fragment in IE 9
+								elem.document && elem.document.nodeType !== 11 ) {
+							return ret;
+						}
+					} catch(e) {}
+				}
+
+				return Sizzle( expr, null, null, [ elem ] ).length > 0;
+			};
+		}
+
+		rbuggyQSA = new RegExp( rbuggyQSA );
 
 		select = function( selector, context, results, seed, xml ) {
 			// Only use querySelectorAll when not filtering,
 			// when this is not xml,
 			// and when no QSA bugs apply
-			if ( !seed && !xml && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
+			if ( !seed && !xml && !rbuggyQSA.test( selector ) ) {
 				var groups, i,
 					old = true,
 					nid = expando,
@@ -1627,46 +1663,6 @@ if ( document.querySelectorAll ) {
 
 			return oldSelect( selector, context, results, seed, xml );
 		};
-
-		if ( matches ) {
-			assert(function( div ) {
-				// Check to see if it's possible to do matchesSelector
-				// on a disconnected node (IE 9)
-				disconnectedMatch = matches.call( div, "div" );
-
-				// This should fail with an exception
-				// Gecko does not error, returns false instead
-				try {
-					matches.call( div, "[test!='']:sizzle" );
-					rbuggyMatches.push( "!=", pseudos );
-				} catch ( e ) {}
-			});
-
-			// rbuggyMatches always contains :active and :focus, so no need for a length check
-			rbuggyMatches = /* rbuggyMatches.length && */ new RegExp( rbuggyMatches.join("|") );
-
-			Sizzle.matchesSelector = function( elem, expr ) {
-				// Make sure that attribute selectors are quoted
-				expr = expr.replace( rattributeQuotes, "='$1']" );
-
-				// rbuggyMatches always contains :active, so no need for an existence check
-				if ( !isXML( elem ) && !rbuggyMatches.test( expr ) && (!rbuggyQSA || !rbuggyQSA.test( expr )) ) {
-					try {
-						var ret = matches.call( elem, expr );
-
-						// IE 9's matchesSelector returns false on disconnected nodes
-						if ( ret || disconnectedMatch ||
-								// As well, disconnected nodes are said to be in a document
-								// fragment in IE 9
-								elem.document && elem.document.nodeType !== 11 ) {
-							return ret;
-						}
-					} catch(e) {}
-				}
-
-				return Sizzle( expr, null, null, [ elem ] ).length > 0;
-			};
-		}
 	})();
 }
 
