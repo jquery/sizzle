@@ -51,12 +51,12 @@ test("Sizzle.contains", function() {
 });
 
 test("Sizzle.uniqueSort", function() {
-	expect( 11 );
+	expect( 10 );
 
-	function Arrayish() {
-		var i = this.length = arguments.length;
+	function Arrayish( arr ) {
+		var i = this.length = arr.length;
 		while ( i-- ) {
-			this[ i ] = arguments[ i ];
+			this[ i ] = arr[ i ];
 		}
 	}
 	Arrayish.prototype = {
@@ -65,30 +65,39 @@ test("Sizzle.uniqueSort", function() {
 		splice: [].splice
 	};
 
-	var el1 = document.body,
-		el2 = document.getElementById("qunit-fixture"),
-		arrEmpty = [],
-		objEmpty = new Arrayish(),
-		arr1 = [ el1 ],
-		obj1 = new Arrayish( el1 ),
-		arr2 = [ el2, el1 ],
-		obj2 = new Arrayish( el2, el1 ),
-		arrDup = [ el1, el2, el2, el1 ],
-		objDup = new Arrayish( el1, el2, el2, el1 );
+	var body = document.body,
+		fixture = document.getElementById("qunit-fixture"),
+		detached1 = document.createElement("p"),
+		detached2 = document.createElement("ul"),
+		detachedChild = detached1.appendChild( document.createElement("a") ),
+		detachedGrandchild = detachedChild.appendChild( document.createElement("b") ),
+		tests = {
+			"Empty": {
+				input: [],
+				expected: []
+			},
+			"Single-element": {
+				input: [ fixture ],
+				expected: [ fixture ]
+			},
+			"No duplicates": {
+				input: [ fixture, body ],
+				expected: [ body, fixture ]
+			},
+			"Duplicates": {
+				input: [ body, fixture, fixture, body ],
+				expected: [ body, fixture ]
+			},
+			"Detached elements": {
+				input: [ detached1, fixture, detached2, document, detachedChild, body, detachedGrandchild ],
+				expected: [ document, body, fixture ],
+				length: 3
+			}
+		};
 
-	deepEqual( Sizzle.uniqueSort( arrEmpty ).slice( 0 ), [], "Empty array" );
-	deepEqual( Sizzle.uniqueSort( objEmpty ).slice( 0 ), [], "Empty quasi-array" );
-	deepEqual( Sizzle.uniqueSort( arr1 ).slice( 0 ), [ el1 ], "Single-element array" );
-	deepEqual( Sizzle.uniqueSort( obj1 ).slice( 0 ), [ el1 ], "Single-element quasi-array" );
-	deepEqual( Sizzle.uniqueSort( arr2 ).slice( 0 ), [ el1, el2 ], "No-duplicates array" );
-	deepEqual( Sizzle.uniqueSort( obj2 ).slice( 0 ), [ el1, el2 ], "No-duplicates quasi-array" );
-	deepEqual( Sizzle.uniqueSort( arrDup ).slice( 0 ), [ el1, el2 ], "Duplicates array" );
-	deepEqual( Sizzle.uniqueSort( objDup ).slice( 0 ), [ el1, el2 ], "Duplicates quasi-array" );
-
-	var disconnectedWithConnected = Sizzle.uniqueSort( [ document.createElement("a"), document.createElement("span") ].concat( Sizzle("#qunit-fixture") ) );
-	equal( disconnectedWithConnected[0].id, "qunit-fixture", "Sorting disconnected elements with connected ones" );
-	disconnectedWithConnected = Sizzle.uniqueSort( Sizzle("#qunit-fixture").concat([ document.createElement("a"), document.createElement("span"),
-		document.createElement("div").appendChild( document.createElement("b") ), document ]) );
-	equal( disconnectedWithConnected[0], document, "Sorting disconnected elements with connected ones" );
-	equal( disconnectedWithConnected[1].id, "qunit-fixture", "Sorting disconnected elements with connected ones" );
+	jQuery.each( tests, function( label, test ) {
+		var length = test.length || test.input.length;
+		deepEqual( Sizzle.uniqueSort( test.input ).slice( 0, length ), test.expected, label + " (array)" );
+		deepEqual( Sizzle.uniqueSort( new Arrayish(test.input) ).slice( 0, length ), test.expected, label + " (quasi-array)" );
+	});
 });

@@ -923,11 +923,11 @@ sortOrder = docElem.compareDocumentPosition ?
 			return 0;
 		}
 
-		return ( !a.compareDocumentPosition || !b.compareDocumentPosition ?
-			a.compareDocumentPosition :
-			( (compare = a.compareDocumentPosition( b )) & 1 && contains( document, a ) ) ||
-				compare & 4
-		) ? -1 : 1;
+		return ( a.compareDocumentPosition && b.compareDocumentPosition ?
+			(compare = a.compareDocumentPosition( b )) & 1 ?
+				a === document || contains( document, a ) :
+				compare & 4 :
+			a.compareDocumentPosition ) ? -1 : 1;
 	} :
 	function( a, b ) {
 		// The nodes are identical, we can exit early
