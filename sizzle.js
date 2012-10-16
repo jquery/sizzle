@@ -917,17 +917,26 @@ function siblingCheck( a, b ) {
 
 sortOrder = docElem.compareDocumentPosition ?
 	function( a, b ) {
-		var compare;
+		var compare, parent;
 		if ( a === b ) {
 			hasDuplicate = true;
 			return 0;
 		}
 
-		return ( a.compareDocumentPosition && b.compareDocumentPosition ?
-			(compare = a.compareDocumentPosition( b )) & 1 ?
-				a === document || contains( document, a ) :
-				compare & 4 :
-			a.compareDocumentPosition ) ? -1 : 1;
+		if ( a.compareDocumentPosition && b.compareDocumentPosition ) {
+			if ( (compare = a.compareDocumentPosition( b )) & 1 || (( parent = a.parentNode ) && parent.nodeType === 11) ) {
+				if ( a === document || contains(document, a) ) {
+					return -1;
+				}
+				if ( b === document || contains(document, b) ) {
+					return 1;
+				}
+				return 0;
+			}
+			return compare & 4 ? -1 : 1;
+		}
+
+		return a.compareDocumentPosition ? -1 : 1;
 	} :
 	function( a, b ) {
 		// The nodes are identical, we can exit early
@@ -948,10 +957,16 @@ sortOrder = docElem.compareDocumentPosition ?
 			cur = aup;
 
 		// If no parents were found then the nodes are disconnected
-		if ( b === document ) {
+		if ( a === document ) {
+			return -1;
+
+		} else if ( b === document ) {
 			return 1;
 
-		} else if ( !bup || a === document ) {
+		} else if ( !aup && !bup ) {
+			return 0;
+
+		} else if ( !bup ) {
 			return -1;
 
 		} else if ( !aup ) {
@@ -981,11 +996,19 @@ sortOrder = docElem.compareDocumentPosition ?
 			i++;
 		}
 
-		return i === 0 ?
-			// Prefer our document
-			(ap[0] === document || contains( document, ap[0] ) ? -1 : 1) :
-				// We ended someplace up the tree so do a sibling check
-				siblingCheck( ap[i], bp[i] );
+		// Prefer our document
+		if ( i === 0 ) {
+			if ( ap[0] === document || contains(document, ap[0]) ) {
+				return -1;
+			}
+			if ( bp[0] === document || contains(document, bp[0]) ) {
+				return 1;
+			}
+			return 0;
+		}
+
+		// We ended someplace up the tree so do a sibling check
+		return siblingCheck( ap[i], bp[i] );
 	};
 
 // Always assume the presence of duplicates if sort doesn't
