@@ -51,7 +51,7 @@ test("Sizzle.contains", function() {
 });
 
 test("Sizzle.uniqueSort", function() {
-	expect( 8 );
+	expect( 11 );
 
 	function Arrayish() {
 		var i = this.length = arguments.length;
@@ -84,4 +84,11 @@ test("Sizzle.uniqueSort", function() {
 	deepEqual( Sizzle.uniqueSort( obj2 ).slice( 0 ), [ el1, el2 ], "No-duplicates quasi-array" );
 	deepEqual( Sizzle.uniqueSort( arrDup ).slice( 0 ), [ el1, el2 ], "Duplicates array" );
 	deepEqual( Sizzle.uniqueSort( objDup ).slice( 0 ), [ el1, el2 ], "Duplicates quasi-array" );
+
+	var disconnectedWithConnected = Sizzle.uniqueSort( [ document.createElement("a"), document.createElement("span") ].concat( Sizzle("#qunit-fixture") ) );
+	equal( disconnectedWithConnected[0].id, "qunit-fixture", "Sorting disconnected elements with connected ones" );
+	disconnectedWithConnected = Sizzle.uniqueSort( Sizzle("#qunit-fixture").concat([ document.createElement("a"), document.createElement("span"),
+		document.createElement("div").appendChild( document.createElement("b") ), document ]) );
+	equal( disconnectedWithConnected[0], document, "Sorting disconnected elements with connected ones" );
+	equal( disconnectedWithConnected[1].id, "qunit-fixture", "Sorting disconnected elements with connected ones" );
 });

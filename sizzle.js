@@ -17,8 +17,11 @@ var cachedruns,
 	hasDuplicate,
 	outermostContext,
 
-	baseHasDuplicate = true,
 	strundefined = "undefined",
+
+	// Used in sorting
+	MAX_NEGATIVE = 1 << 31,
+	baseHasDuplicate = true,
 
 	expando = ( "sizcache" + Math.random() ).replace( ".", "" ),
 
@@ -895,26 +898,26 @@ Expr = Sizzle.selectors = {
 	}
 };
 
-function siblingCheck( a, b, ret ) {
-	if ( a === b ) {
-		return ret;
-	}
+function siblingCheck( a, b ) {
 
-	var cur = a.nextSibling;
+	if ( a && b ) {
+		var cur = a.nextSibling;
 
-	while ( cur ) {
-		if ( cur === b ) {
-			return -1;
+		while ( cur ) {
+			if ( cur === b ) {
+				return -1;
+			}
+
+			cur = cur.nextSibling;
 		}
-
-		cur = cur.nextSibling;
 	}
 
-	return 1;
+	return a ? 1 : -1;
 }
 
 sortOrder = docElem.compareDocumentPosition ?
 	function( a, b ) {
+		var compare;
 		if ( a === b ) {
 			hasDuplicate = true;
 			return 0;
@@ -922,7 +925,8 @@ sortOrder = docElem.compareDocumentPosition ?
 
 		return ( !a.compareDocumentPosition || !b.compareDocumentPosition ?
 			a.compareDocumentPosition :
-			a.compareDocumentPosition(b) & 4
+			( (compare = a.compareDocumentPosition( b )) & 1 && contains( document, a ) ) ||
+				compare & 4
 		) ? -1 : 1;
 	} :
 	function( a, b ) {
@@ -933,26 +937,29 @@ sortOrder = docElem.compareDocumentPosition ?
 
 		// Fallback to using sourceIndex (in IE) if it's available on both nodes
 		} else if ( a.sourceIndex && b.sourceIndex ) {
-			return a.sourceIndex - b.sourceIndex;
+			return ( ~b.sourceIndex || ( MAX_NEGATIVE ) ) - ( contains( document, a ) && ~a.sourceIndex || ( MAX_NEGATIVE ) );
 		}
 
-		var al, bl,
-			ap = [],
-			bp = [],
+		var i = 0,
+			ap = [ a ],
+			bp = [ b ],
 			aup = a.parentNode,
 			bup = b.parentNode,
 			cur = aup;
 
-		// If the nodes are siblings (or identical) we can do a quick check
-		if ( aup === bup ) {
-			return siblingCheck( a, b );
-
 		// If no parents were found then the nodes are disconnected
-		} else if ( !aup ) {
+		if ( b === document ) {
+			return 1;
+
+		} else if ( !bup || a === document ) {
 			return -1;
 
-		} else if ( !bup ) {
+		} else if ( !aup ) {
 			return 1;
+
+		// If the nodes are siblings (or identical) we can do a quick check
+		} else if ( aup === bup ) {
+			return siblingCheck( a, b );
 		}
 
 		// Otherwise they're somewhere else in the tree so we need
@@ -969,20 +976,16 @@ sortOrder = docElem.compareDocumentPosition ?
 			cur = cur.parentNode;
 		}
 
-		al = ap.length;
-		bl = bp.length;
-
-		// Start walking down the tree looking for a discrepancy
-		for ( var i = 0; i < al && i < bl; i++ ) {
-			if ( ap[i] !== bp[i] ) {
-				return siblingCheck( ap[i], bp[i] );
-			}
+		// Walk down the tree looking for a discrepancy
+		while ( ap[i] === bp[i] ) {
+			i++;
 		}
 
-		// We ended someplace up the tree so do a sibling check
-		return i === al ?
-			siblingCheck( a, bp[i], -1 ) :
-			siblingCheck( ap[i], b, 1 );
+		return i === 0 ?
+			// Prefer our document
+			(ap[0] === document || contains( document, ap[0] ) ? -1 : 1) :
+				// We ended someplace up the tree so do a sibling check
+				siblingCheck( ap[i], bp[i] );
 	};
 
 // Always assume the presence of duplicates if sort doesn't
