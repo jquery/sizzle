@@ -108,9 +108,7 @@ var cachedruns,
 	// Easily-parseable/retrievable ID or TAG or CLASS selectors
 	rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
 
-	rnot = /^:not/,
 	rsibling = /[\x20\t\r\n\f]*[+~]/,
-	rendsWithNot = /:not\($/,
 
 	rheader = /h\d/i,
 	rinputs = /input|select|textarea|button/i,
@@ -606,7 +604,7 @@ Expr = Sizzle.selectors = {
 		},
 
 		"ATTR": function( name, operator, check ) {
-			return function( elem, context ) {
+			return function( elem ) {
 				var result = Sizzle.attr( elem, name );
 
 				if ( result == null ) {
@@ -1451,8 +1449,7 @@ function multipleContexts( selector, contexts, results ) {
 
 function select( selector, context, results, seed, xml ) {
 	var i, tokens, token, type, find,
-		match = tokenize( selector ),
-		j = match.length;
+		match = tokenize( selector );
 
 	if ( !seed ) {
 		// Try to minimize operations if there is only one group
