@@ -23,6 +23,7 @@ module.exports = function( grunt ) {
 				curly: true,
 				trailing: true,
 				undef: true,
+				unused: true,
 				smarttabs: true,
 				maxerr: 100,
 				sub: true
