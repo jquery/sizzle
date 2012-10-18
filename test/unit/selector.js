@@ -831,12 +831,9 @@ test("pseudo - position", function() {
 	QUnit.reset();
 
 	// Sizzle extension
-	var oldPOS = Sizzle.selectors.match["POS"];
-	Sizzle.selectors.match["POS"] = new RegExp( oldPOS.source.replace("first", "primary"), "gi" );
 	Sizzle.selectors.setFilters["primary"] = Sizzle.selectors.setFilters["first"];
 	t( "Extend Sizzle's POS selectors to rename first to primary", "div:primary", ["qunit-testrunner-toolbar"] );
 	// Reset
-	Sizzle.selectors.match["POS"] = oldPOS;
 	delete Sizzle.selectors.setFilters["primary"];
 });
 

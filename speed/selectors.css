@@ -18,6 +18,10 @@ div + p
 div ~ p
 div[class^=exa][class$=mple]
 div p a
+div > p > a
+div.example > p > a
+div + p + a
+div ~ p ~ p
 div, p, a
 ul.toc li.tocline2
 ul.toc > li.tocline2
