@@ -587,7 +587,7 @@ test("pseudo - child", function() {
 	t( "Nth-child", "#form select:first option:nth-child(-n+3)", ["option1a", "option1b", "option1c"] );
 	t( "Nth-child", "#form select:first option:nth-child(-1n + 3)", ["option1a", "option1b", "option1c"] );
 
-	deepEqual( Sizzle( ":nth-child(2)", null, null, jQuery("<a></a>").add("#ap") ), q("ap"), "Seeded nth-child" );
+	deepEqual( Sizzle( ":nth-child(n)", null, null, jQuery("<a></a>").add("#ap") ), q("ap"), "Seeded nth-child" );
 });
 
 test("pseudo - misc", function() {
