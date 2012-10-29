@@ -17,13 +17,15 @@ var cachedruns,
 	hasDuplicate,
 	outermostContext,
 
+	nonce = +(new Date()),
 	strundefined = "undefined",
 
 	// Used in sorting
 	MAX_NEGATIVE = 1 << 31,
 	baseHasDuplicate = true,
 
-	expando = ( "sizcache" + Math.random() ).replace( ".", "" ),
+	expando = "sizz" + nonce,
+	expandoData = "_sizz" + nonce,
 
 	Token = String,
 	document = window.document,
@@ -583,8 +585,8 @@ Expr = Sizzle.selectors = {
 			if ( nodeName === "*" ) {
 				return function() { return true; };
 			}
-			nodeName = nodeName.replace( rbackslash, "" ).toLowerCase();
 
+			nodeName = nodeName.replace( rbackslash, "" ).toLowerCase();
 			return function( elem ) {
 				return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
 			};
@@ -625,62 +627,71 @@ Expr = Sizzle.selectors = {
 		},
 
 		"CHILD": function( type, argument, first, last ) {
+			var keyCache = expando + type,
+				elemCache = expandoData + type,
+				nodeCache = elemCache + "i",
+				doneName = done++;
+
 
 			if ( type === "nth" ) {
-				return function( elem ) {
-					var node, diff,
-						parent = elem.parentNode;
+				return last === 0 && first === 1 ?
 
-					if ( first === 1 && last === 0 ) {
-						return true;
-					}
+					// Shortcut for :nth-child(n)
+					function( elem ) {
+						return !!elem.parentNode;
+					} :
 
-					if ( parent ) {
-						diff = 0;
-						for ( node = parent.firstChild; node; node = node.nextSibling ) {
-							if ( node.nodeType === 1 ) {
-								diff++;
-								if ( elem === node ) {
+					function( elem ) {
+						var start, cached, idx, node, diff,
+							childkey = dirruns + " " + doneName,
+							parent = elem.parentNode;
+
+						if ( parent ) {
+
+							// Seek elem from a previously cached index, falling back to parent.firstChild
+							start = [ parent.firstChild ];
+							cached = parent[ keyCache ] === childkey;
+							idx = cached && parent[ nodeCache ];
+							diff = cached && parent[ elemCache ];
+							node = idx && parent.childNodes[ idx ];
+
+							for ( ; (node = ++idx && node.nextSibling || (diff = idx = 0) || start.pop()); ) {
+								if ( node.nodeType === 1 && ++diff && elem === node ) {
+									parent[ keyCache ] = childkey;
+									parent[ nodeCache ] = idx;
+									parent[ elemCache ] = diff;
 									break;
 								}
 							}
-						}
-					}
 
-					// Incorporate the offset (or cast to NaN), then check against cycle size
-					diff -= last;
-					return diff === first || ( diff % first === 0 && diff / first >= 0 );
-				};
+							// Incorporate the offset, then check against cycle size
+							diff -= last;
+							return diff === first || ( diff % first === 0 && diff / first >= 0 );
+						}
+					};
 			}
 
 			return function( elem ) {
 				var node = elem;
 
-				switch ( type ) {
-					case "only":
-					case "first":
-						while ( (node = node.previousSibling) ) {
-							if ( node.nodeType === 1 ) {
-								return false;
-							}
+				if ( type === "only" || type === "first" ) {
+					while ( (node = node.previousSibling) ) {
+						if ( node.nodeType === 1 ) {
+							return false;
 						}
-
-						if ( type === "first" ) {
-							return true;
-						}
-
-						node = elem;
-
-						/* falls through */
-					case "last":
-						while ( (node = node.nextSibling) ) {
-							if ( node.nodeType === 1 ) {
-								return false;
-							}
-						}
-
-						return true;
+					}
 				}
+
+				node = elem;
+				if ( type === "only" || type === "last" ) {
+					while ( (node = node.nextSibling) ) {
+						if ( node.nodeType === 1 ) {
+							return false;
+						}
+					}
+				}
+
+				return true;
 			};
 		},
 
@@ -1104,6 +1115,8 @@ function tokenize( selector, parseOnly ) {
 
 function addCombinator( matcher, combinator, base ) {
 	var dir = combinator.dir,
+		keyCache = expando + dir,
+		dataCache = expandoData + dir,
 		checkNonElements = base && combinator.dir === "parentNode",
 		doneName = done++;
 
@@ -1111,7 +1124,7 @@ function addCombinator( matcher, combinator, base ) {
 		// Check against closest ancestor/preceding element
 		function( elem, context, xml ) {
 			while ( (elem = elem[ dir ]) ) {
-				if ( checkNonElements || elem.nodeType === 1  ) {
+				if ( elem.nodeType === 1 || checkNonElements ) {
 					return matcher( elem, context, xml );
 				}
 			}
@@ -1119,34 +1132,30 @@ function addCombinator( matcher, combinator, base ) {
 
 		// Check against all ancestor/preceding elements
 		function( elem, context, xml ) {
+			var data,
+				dirkey = dirruns + " " + doneName;
+
 			// We can't set arbitrary data on XML nodes, so they don't benefit from dir caching
-			if ( !xml ) {
-				var cache,
-					dirkey = dirruns + " " + doneName + " ",
-					cachedkey = dirkey + cachedruns;
+			if ( xml ) {
 				while ( (elem = elem[ dir ]) ) {
-					if ( checkNonElements || elem.nodeType === 1 ) {
-						if ( (cache = elem[ expando ]) === cachedkey ) {
-							return elem.sizset;
-						} else if ( typeof cache === "string" && cache.indexOf(dirkey) === 0 ) {
-							if ( elem.sizset ) {
-								return elem;
-							}
-						} else {
-							elem[ expando ] = cachedkey;
-							if ( matcher( elem, context, xml ) ) {
-								elem.sizset = true;
-								return elem;
-							}
-							elem.sizset = false;
+					if ( elem.nodeType === 1 || checkNonElements ) {
+						if ( matcher( elem, context, xml ) ) {
+							return true;
 						}
 					}
 				}
 			} else {
 				while ( (elem = elem[ dir ]) ) {
-					if ( checkNonElements || elem.nodeType === 1 ) {
-						if ( matcher( elem, context, xml ) ) {
-							return elem;
+					if ( elem.nodeType === 1 || checkNonElements ) {
+						if ( elem[ keyCache ] === dirkey ) {
+							if ( (data = elem[ dataCache ]) === true || data === cachedruns ) {
+								return data === true;
+							}
+						} else {
+							elem[ keyCache ] = dirkey;
+							if ( (elem[ dataCache ] = matcher( elem, context, xml ) || cachedruns) === true ) {
+								return true;
+							}
 						}
 					}
 				}
