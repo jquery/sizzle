@@ -17,15 +17,13 @@ var cachedruns,
 	hasDuplicate,
 	outermostContext,
 
-	nonce = +(new Date()),
 	strundefined = "undefined",
 
 	// Used in sorting
 	MAX_NEGATIVE = 1 << 31,
 	baseHasDuplicate = true,
 
-	expando = "sizz" + nonce,
-	expandoData = "_sizz" + nonce,
+	expando = "sizzle" + -(new Date()),
 
 	Token = String,
 	document = window.document,
@@ -627,10 +625,7 @@ Expr = Sizzle.selectors = {
 		},
 
 		"CHILD": function( type, argument, first, last ) {
-			var keyCache = expando + type,
-				elemCache = expandoData + type,
-				nodeCache = elemCache + "i",
-				doneName = done++;
+			var doneName = done++;
 
 
 			if ( type === "nth" ) {
@@ -642,7 +637,7 @@ Expr = Sizzle.selectors = {
 					} :
 
 					function( elem ) {
-						var start, cached, idx, node, diff,
+						var start, cache, outerCache, idx, node, diff,
 							childkey = dirruns + " " + doneName,
 							parent = elem.parentNode;
 
@@ -650,16 +645,15 @@ Expr = Sizzle.selectors = {
 
 							// Seek elem from a previously cached index, falling back to parent.firstChild
 							start = [ parent.firstChild ];
-							cached = parent[ keyCache ] === childkey;
-							idx = cached && parent[ nodeCache ];
-							diff = cached && parent[ elemCache ];
+							outerCache = parent[ expando ] || (parent[ expando ] = {});
+							cache = outerCache[ type ] || [];
+							idx = cache[1];
+							diff = cache[2];
 							node = idx && parent.childNodes[ idx ];
 
-							for ( ; (node = ++idx && node.nextSibling || (diff = idx = 0) || start.pop()); ) {
+							for ( ; (node = ++idx && node && node.nextSibling || (diff = idx = 0) || start.pop()); ) {
 								if ( node.nodeType === 1 && ++diff && elem === node ) {
-									parent[ keyCache ] = childkey;
-									parent[ nodeCache ] = idx;
-									parent[ elemCache ] = diff;
+									outerCache[ type ] = [ childkey, idx, diff ];
 									break;
 								}
 							}
@@ -1115,8 +1109,6 @@ function tokenize( selector, parseOnly ) {
 
 function addCombinator( matcher, combinator, base ) {
 	var dir = combinator.dir,
-		keyCache = expando + dir,
-		dataCache = expandoData + dir,
 		checkNonElements = base && combinator.dir === "parentNode",
 		doneName = done++;
 
@@ -1132,7 +1124,7 @@ function addCombinator( matcher, combinator, base ) {
 
 		// Check against all ancestor/preceding elements
 		function( elem, context, xml ) {
-			var data,
+			var data, cache, outerCache,
 				dirkey = dirruns + " " + doneName;
 
 			// We can't set arbitrary data on XML nodes, so they don't benefit from dir caching
@@ -1147,13 +1139,15 @@ function addCombinator( matcher, combinator, base ) {
 			} else {
 				while ( (elem = elem[ dir ]) ) {
 					if ( elem.nodeType === 1 || checkNonElements ) {
-						if ( elem[ keyCache ] === dirkey ) {
-							if ( (data = elem[ dataCache ]) === true || data === cachedruns ) {
+						outerCache = elem[ expando ] || (elem[ expando ] = {});
+						if ( (cache = outerCache[ dir ]) && cache[0] === dirkey ) {
+							if ( (data = cache[1]) === true || data === cachedruns ) {
 								return data === true;
 							}
 						} else {
-							elem[ keyCache ] = dirkey;
-							if ( (elem[ dataCache ] = matcher( elem, context, xml ) || cachedruns) === true ) {
+							cache = outerCache[ dir ] = [ dirkey ];
+							cache[1] = matcher( elem, context, xml ) || cachedruns;
+							if ( cache[1] === true ) {
 								return true;
 							}
 						}
