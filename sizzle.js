@@ -1694,6 +1694,8 @@ if ( document.querySelectorAll ) {
 	})();
 }
 
+Sizzle.expando = expando;
+
 // Deprecated
 Expr.pseudos["nth"] = Expr.pseudos["eq"];
 
