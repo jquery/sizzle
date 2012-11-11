@@ -613,10 +613,9 @@ test("pseudo - nth-last-child", function() {
 	t( "Nth-last-child (case-insensitive)", "#form select:first option:NTH-last-child(3)", ["option1b"] );
 	t( "Not nth-last-child", "#qunit-fixture p:not(:nth-last-child(1))", ["firstp", "ap", "sndp", "en", "first"] );
 
-	t( "Nth-last-child(2)", "#form > *:nth-last-child(4)", ["utf8class2"] );
-	t( "Nth-last-child(2)", "#form > :nth-last-child(4)", ["utf8class2"] );
-
 	t( "Nth-last-child(-1)", "#form select:first option:nth-last-child(-1)", [] );
+	t( "Nth-last-child(3)", "#form select:first :nth-last-child(3)", ["option1b"] );
+	t( "Nth-last-child(3)", "#form select:first *:nth-last-child(3)", ["option1b"] );
 	t( "Nth-last-child(3)", "#form select:first option:nth-last-child(3)", ["option1b"] );
 	t( "Nth-last-child(0n+3)", "#form select:first option:nth-last-child(0n+3)", ["option1b"] );
 	t( "Nth-last-child(1n+0)", "#form select:first option:nth-last-child(1n+0)", ["option1a", "option1b", "option1c", "option1d"] );
