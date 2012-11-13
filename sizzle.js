@@ -30,14 +30,14 @@ var cachedruns,
 	docElem = document.documentElement,
 	dirruns = 0,
 	done = 0,
-	siblingDirs = [ "previousSibling", "nextSibling" ],
 
 	// Array methods
-	pop = siblingDirs.pop,
-	push = siblingDirs.push,
-	slice = siblingDirs.slice,
+	arr = [],
+	pop = arr.pop,
+	push = arr.push,
+	slice = arr.slice,
 	// Use a stripped-down indexOf if we can't use a native one
-	indexOf = siblingDirs.indexOf || function( elem ) {
+	indexOf = arr.indexOf || function( elem ) {
 		var i = 0,
 			len = this.length;
 		for ( ; i < len; i++ ) {
@@ -629,28 +629,44 @@ Expr = Sizzle.selectors = {
 		},
 
 		"CHILD": function( type, what, argument, first, last ) {
-			var all = what === "child",
-				len = type === "first" ? 1 : 2;
+			var simple = type.slice( 0, 3 ) !== "nth",
+				forward = type.slice( -4 ) !== "last",
+				ofType = what === "of-type";
 
-			return (
+			return first === 1 && last === 0 ?
+
 				// Shortcut for :nth-*(n)
-				last === 0 && first === 1 ? function( elem ) {
+				function( elem ) {
 					return !!elem.parentNode;
 				} :
 
-				// :nth(-last)?-(child|of-type)(...)
-				type.slice( 0, 3 ) === "nth" ? function( elem, context, xml ) {
+				function( elem, context, xml ) {
 					var outerCache, node, diff, nodeIndex, start,
+						dir = simple !== forward ? "nextSibling" : "previousSibling",
 						parent = elem.parentNode,
-						dir = siblingDirs[ type === "nth" ? 1 : 0 ],
 						name = elem.nodeName.toLowerCase(),
 						cache = !xml;
 
 					if ( parent ) {
-						start = [ type === "nth" ? parent.firstChild : parent.lastChild ];
+
+						// :(first|last|only)-(child|of-type)
+						if ( simple ) {
+							while ( dir ) {
+								node = elem;
+								while ( (node = node[ dir ]) ) {
+									if ( ofType ? node.nodeName.toLowerCase() === name : node.nodeType === 1 ) {
+										return false;
+									}
+								}
+								start = dir = type === "only" && !start && "nextSibling";
+							}
+							return true;
+						}
+
+						start = [ forward ? parent.firstChild : parent.lastChild ];
 
 						// non-xml :nth-child(...) stores cache data on `parent`
-						if ( cache && all && type === "nth" ) {
+						if ( cache && forward && !ofType ) {
 							// Seek `elem` from a previously-cached index
 							outerCache = parent[ expando ] || (parent[ expando ] = {});
 							cache = outerCache[ type ] || [];
@@ -671,7 +687,7 @@ Expr = Sizzle.selectors = {
 							}
 
 						// :nth-last-child(...) or xml :nth-child(...)
-						} else if ( all ) {
+						} else if ( !ofType ) {
 							// Use previously-cached element index if available
 							if ( cache && (cache = (elem[ expando ] || (elem[ expando ] = {}))[ type ]) && cache[0] === dirruns ) {
 								diff = cache[1];
@@ -711,46 +727,7 @@ Expr = Sizzle.selectors = {
 						diff -= last;
 						return diff === first || ( diff % first === 0 && diff / first >= 0 );
 					}
-				} :
-
-				// :(first|last|only)-child
-				all ? function( elem ) {
-					var dir,
-						i = type === "last" ? 1 : 0,
-						node = elem;
-
-					for ( ; i < len; i++ ) {
-						node = elem;
-						dir = siblingDirs[i];
-						while ( (node = node[ dir ]) ) {
-							// Fail upon finding an unexpected element sibling
-							if ( node.nodeType === 1 ) {
-								return false;
-							}
-						}
-					}
-					return true;
-				} :
-
-				// :(first|last|only)-of-type
-				function( elem ) {
-					var dir,
-						i = type === "last" ? 1 : 0,
-						node = elem,
-						name = node.nodeName.toLowerCase();
-
-					for ( ; i < len; i++ ) {
-						node = elem;
-						dir = siblingDirs[i];
-						while ( (node = node[ dir ]) ) {
-							if ( node.nodeName.toLowerCase() === name ) {
-								return false;
-							}
-						}
-					}
-					return true;
-				}
-			);
+				};
 		},
 
 		"PSEUDO": function( pseudo, argument ) {
