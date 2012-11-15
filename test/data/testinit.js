@@ -4,11 +4,16 @@ var jQuery = this.jQuery || "jQuery", // For testing .noConflict()
 	original$ = $;
 
 (function() {
-	// Nullify querySelector all if noqsa=true is in the params
-	// Isolates the Sizzle API
-	QUnit.config.urlConfig.push( "noqsa" );
-	if ( QUnit.urlParams.noqsa ) {
+	// Config parameter to force basic code paths
+	QUnit.config.urlConfig.push({
+		id: "basic",
+		label: "Bypass optimizations",
+		tooltip: "Force use of the most basic code by disabling native querySelectorAll; contains; compareDocumentPosition"
+	});
+	if ( QUnit.urlParams.basic ) {
 		document.querySelectorAll = null;
+		document.documentElement.contains = null;
+		document.documentElement.compareDocumentPosition = null;
 	}
 })();
 

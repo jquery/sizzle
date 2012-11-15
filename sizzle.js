@@ -372,9 +372,11 @@ contains = Sizzle.contains = docElem.contains ?
 		return b && !!( a.compareDocumentPosition( b ) & 16 );
 	} :
 	function( a, b ) {
-		while ( (b = b.parentNode) ) {
-			if ( b === a ) {
-				return true;
+		if ( b ) {
+			while ( (b = b.parentNode) ) {
+				if ( b === a ) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -393,12 +395,9 @@ Sizzle.attr = function( elem, name ) {
 	if ( xml || assertAttributes ) {
 		return elem.getAttribute( name );
 	}
-	val = elem.getAttributeNode( name );
-	return val ?
-		typeof elem[ name ] === "boolean" ?
-			elem[ name ] ? name : null :
-			val.specified ? val.value : null :
-		null;
+	return ( (val = elem.getAttributeNode( name )) || elem.getAttribute( name ) ) && elem[ name ] === true ?
+		name :
+		val && val.specified ? val.value : null;
 };
 
 Expr = Sizzle.selectors = {
@@ -1575,7 +1574,7 @@ if ( document.querySelectorAll ) {
 
 			// Webkit/Opera - :checked should return selected option elements
 			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
-			// IE8 throws error here (do not put tests after this one)
+			// IE8 throws error here and will not see later tests
 			if ( !div.querySelectorAll(":checked").length ) {
 				rbuggyQSA.push(":checked");
 			}
@@ -1591,15 +1590,18 @@ if ( document.querySelectorAll ) {
 			}
 
 			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
-			// IE8 throws error here (do not put tests after this one)
+			// IE8 throws error here and will not see later tests
 			div.innerHTML = "<input type='hidden'/>";
 			if ( !div.querySelectorAll(":enabled").length ) {
-				rbuggyQSA.push(":enabled", ":disabled");
+				rbuggyQSA.push( ":enabled", ":disabled" );
 			}
+
+			// Opera 10-11 does not throw on post-comma invalid pseudos
+			div.querySelectorAll("*,:x");
+			rbuggyQSA.push(",.*:");
 		});
 
-		// rbuggyQSA always contains :focus, so no need for a length check
-		rbuggyQSA = /* rbuggyQSA.length && */ new RegExp( rbuggyQSA.join("|") );
+		rbuggyQSA = new RegExp( rbuggyQSA.join("|") );
 
 		select = function( selector, context, results, seed, xml ) {
 			// Only use querySelectorAll when not filtering,
@@ -1660,14 +1662,11 @@ if ( document.querySelectorAll ) {
 
 				// This should fail with an exception
 				// Gecko does not error, returns false instead
-				try {
-					matches.call( div, "[test!='']:sizzle" );
-					rbuggyMatches.push( "!=", pseudos );
-				} catch ( e ) {}
+				matches.call( div, "[test!='']:x" );
+				rbuggyMatches.push( "!=", pseudos );
 			});
 
-			// rbuggyMatches always contains :active and :focus, so no need for a length check
-			rbuggyMatches = /* rbuggyMatches.length && */ new RegExp( rbuggyMatches.join("|") );
+			rbuggyMatches = new RegExp( rbuggyMatches.join("|") );
 
 			Sizzle.matchesSelector = function( elem, expr ) {
 				// Make sure that attribute selectors are quoted

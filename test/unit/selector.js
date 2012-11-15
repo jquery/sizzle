@@ -172,7 +172,7 @@ test("broken", function() {
 
 	function broken( name, selector ) {
 		raises(function() {
-			Sizzle( selector );
+			Sizzle.call( null, selector );
 		}, function( e ) {
 			return e.message.indexOf("Syntax error") >= 0;
 		}, name + ": " + selector );
