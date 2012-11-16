@@ -326,30 +326,28 @@ getText = Sizzle.getText = function( elem ) {
 		i = 0,
 		nodeType = elem.nodeType;
 
-	if ( nodeType ) {
-		if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
-			// Use textContent for elements
-			// innerText usage removed for consistency of new lines (see #11153)
-			if ( typeof elem.textContent === "string" ) {
-				return elem.textContent;
-			} else {
-				// Traverse its children
-				for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
-					ret += getText( elem );
-				}
-			}
-		} else if ( nodeType === 3 || nodeType === 4 ) {
-			return elem.nodeValue;
-		}
-		// Do not include comment or processing instruction nodes
-	} else {
-
+	if ( !nodeType ) {
 		// If no nodeType, this is expected to be an array
 		for ( ; (node = elem[i]); i++ ) {
 			// Do not traverse comment nodes
 			ret += getText( node );
 		}
+	} else if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
+		// Use textContent for elements
+		// innerText usage removed for consistency of new lines (see #11153)
+		if ( typeof elem.textContent === "string" ) {
+			return elem.textContent;
+		} else {
+			// Traverse its children
+			for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
+				ret += getText( elem );
+			}
+		}
+	} else if ( nodeType === 3 || nodeType === 4 ) {
+		return elem.nodeValue;
 	}
+	// Do not include comment or processing instruction nodes
+
 	return ret;
 };
 
@@ -450,14 +448,13 @@ Expr = Sizzle.selectors = {
 				}
 			} :
 			function( tag, context ) {
-				var results = context.getElementsByTagName( tag );
+				var elem,
+					tmp = [],
+					i = 0,
+					results = context.getElementsByTagName( tag );
 
 				// Filter out possible comments
 				if ( tag === "*" ) {
-					var elem,
-						tmp = [],
-						i = 0;
-
 					for ( ; (elem = results[i]); i++ ) {
 						if ( elem.nodeType === 1 ) {
 							tmp.push( elem );
@@ -565,16 +562,16 @@ Expr = Sizzle.selectors = {
 	filter: {
 		"ID": assertGetIdNotName ?
 			function( id ) {
-				id = id.replace( rbackslash, "" );
+				var attrId = id.replace( rbackslash, "" );
 				return function( elem ) {
-					return elem.getAttribute("id") === id;
+					return elem.getAttribute("id") === attrId;
 				};
 			} :
 			function( id ) {
-				id = id.replace( rbackslash, "" );
+				var attrId = id.replace( rbackslash, "" );
 				return function( elem ) {
 					var node = typeof elem.getAttributeNode !== strundefined && elem.getAttributeNode("id");
-					return node && node.value === id;
+					return node && node.value === attrId;
 				};
 			},
 
@@ -802,13 +799,11 @@ Expr = Sizzle.selectors = {
 			//   not comment, processing instructions, or others
 			// Thanks to Diego Perini for the nodeName shortcut
 			//   Greater than "@" means alpha characters (specifically not starting with "#" or "?")
-			var nodeType;
-			elem = elem.firstChild;
-			while ( elem ) {
-				if ( elem.nodeName > "@" || (nodeType = elem.nodeType) === 3 || nodeType === 4 ) {
+			var node;
+			for ( node = elem.firstChild; node; node = node.nextSibling ) {
+				if ( node.nodeName > "@" || node.nodeType === 3 || node.nodeType === 4 ) {
 					return false;
 				}
-				elem = elem.nextSibling;
 			}
 			return true;
 		},
@@ -818,12 +813,12 @@ Expr = Sizzle.selectors = {
 		},
 
 		"text": function( elem ) {
-			var type, attr;
+			var attr;
 			// IE6 and 7 will map elem.type to 'text' for new HTML5 types (search, etc)
 			// use getAttribute instead to test this case
 			return elem.nodeName.toLowerCase() === "input" &&
-				(type = elem.type) === "text" &&
-				( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === type );
+				elem.type === "text" &&
+				( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === elem.type );
 		},
 
 		// Input types
@@ -868,28 +863,32 @@ Expr = Sizzle.selectors = {
 		}),
 
 		"even": createPositionalPseudo(function( matchIndexes, length ) {
-			for ( var i = 0; i < length; i += 2 ) {
+			var i = 0;
+			for ( ; i < length; i += 2 ) {
 				matchIndexes.push( i );
 			}
 			return matchIndexes;
 		}),
 
 		"odd": createPositionalPseudo(function( matchIndexes, length ) {
-			for ( var i = 1; i < length; i += 2 ) {
+			var i = 1;
+			for ( ; i < length; i += 2 ) {
 				matchIndexes.push( i );
 			}
 			return matchIndexes;
 		}),
 
 		"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-			for ( var i = argument < 0 ? argument + length : argument; --i >= 0; ) {
+			var i = argument < 0 ? argument + length : argument;
+			for ( ; --i >= 0; ) {
 				matchIndexes.push( i );
 			}
 			return matchIndexes;
 		}),
 
 		"gt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-			for ( var i = argument < 0 ? argument + length : argument; ++i < length; ) {
+			var i = argument < 0 ? argument + length : argument;
+			for ( ; ++i < length; ) {
 				matchIndexes.push( i );
 			}
 			return matchIndexes;
@@ -898,16 +897,11 @@ Expr = Sizzle.selectors = {
 };
 
 function siblingCheck( a, b ) {
+	var cur = a && b && a.nextSibling;
 
-	if ( a && b ) {
-		var cur = a.nextSibling;
-
-		while ( cur ) {
-			if ( cur === b ) {
-				return -1;
-			}
-
-			cur = cur.nextSibling;
+	for ( ; cur; cur = cur.nextSibling ) {
+		if ( cur === b ) {
+			return -1;
 		}
 	}
 
@@ -916,18 +910,19 @@ function siblingCheck( a, b ) {
 
 sortOrder = docElem.compareDocumentPosition ?
 	function( a, b ) {
-		var compare, parent;
+		var compare;
+
 		if ( a === b ) {
 			hasDuplicate = true;
 			return 0;
 		}
 
-		if ( a.compareDocumentPosition && b.compareDocumentPosition ) {
-			if ( (compare = a.compareDocumentPosition( b )) & 1 || (( parent = a.parentNode ) && parent.nodeType === 11) ) {
-				if ( a === document || contains(document, a) ) {
+		if ( (compare = b.compareDocumentPosition && a.compareDocumentPosition && a.compareDocumentPosition( b )) ) {
+			if ( compare & 1 || a.parentNode && a.parentNode.nodeType === 11 ) {
+				if ( a === document || contains( document, a ) ) {
 					return -1;
 				}
-				if ( b === document || contains(document, b) ) {
+				if ( b === document || contains( document, b ) ) {
 					return 1;
 				}
 				return 0;
@@ -938,6 +933,13 @@ sortOrder = docElem.compareDocumentPosition ?
 		return a.compareDocumentPosition ? -1 : 1;
 	} :
 	function( a, b ) {
+		var cur,
+			i = 0,
+			aup = a.parentNode,
+			bup = b.parentNode,
+			ap = [ a ],
+			bp = [ b ];
+
 		// The nodes are identical, we can exit early
 		if ( a === b ) {
 			hasDuplicate = true;
@@ -945,49 +947,29 @@ sortOrder = docElem.compareDocumentPosition ?
 
 		// Fallback to using sourceIndex (in IE) if it's available on both nodes
 		} else if ( a.sourceIndex && b.sourceIndex ) {
-			return ( ~b.sourceIndex || ( MAX_NEGATIVE ) ) - ( contains( document, a ) && ~a.sourceIndex || ( MAX_NEGATIVE ) );
-		}
+			return ( ~b.sourceIndex || MAX_NEGATIVE ) - ( contains( document, a ) && ~a.sourceIndex || MAX_NEGATIVE );
 
-		var i = 0,
-			ap = [ a ],
-			bp = [ b ],
-			aup = a.parentNode,
-			bup = b.parentNode,
-			cur = aup;
+		// Parentless nodes are either documents or disconnected
+		} else if ( !aup || !bup ) {
+			return a === document ? -1 :
+				b === document ? 1 :
+				aup ? -1 :
+				bup ? 1 :
+				0;
 
-		// If no parents were found then the nodes are disconnected
-		if ( a === document ) {
-			return -1;
-
-		} else if ( b === document ) {
-			return 1;
-
-		} else if ( !aup && !bup ) {
-			return 0;
-
-		} else if ( !bup ) {
-			return -1;
-
-		} else if ( !aup ) {
-			return 1;
-
-		// If the nodes are siblings (or identical) we can do a quick check
+		// If the nodes are siblings, we can do a quick check
 		} else if ( aup === bup ) {
 			return siblingCheck( a, b );
 		}
 
-		// Otherwise they're somewhere else in the tree so we need
-		// to build up a full list of the parentNodes for comparison
-		while ( cur ) {
+		// Otherwise we need full lists of their ancestors for comparison
+		cur = a;
+		while ( (cur = cur.parentNode) ) {
 			ap.unshift( cur );
-			cur = cur.parentNode;
 		}
-
-		cur = bup;
-
-		while ( cur ) {
+		cur = b;
+		while ( (cur = cur.parentNode) ) {
 			bp.unshift( cur );
-			cur = cur.parentNode;
 		}
 
 		// Walk down the tree looking for a discrepancy
@@ -995,19 +977,14 @@ sortOrder = docElem.compareDocumentPosition ?
 			i++;
 		}
 
-		// Prefer our document
-		if ( i === 0 ) {
-			if ( ap[0] === document || contains(document, ap[0]) ) {
-				return -1;
-			}
-			if ( bp[0] === document || contains(document, bp[0]) ) {
-				return 1;
-			}
-			return 0;
-		}
+		return i ?
+			// Do a sibling check if the nodes have a common ancestor
+			siblingCheck( ap[i], bp[i] ) :
 
-		// We ended someplace up the tree so do a sibling check
-		return siblingCheck( ap[i], bp[i] );
+			// Otherwise nodes in our document sort first
+			ap[i] === document ? -1 :
+			bp[i] === document ? 1 :
+			0;
 	};
 
 // Always assume the presence of duplicates if sort doesn't
