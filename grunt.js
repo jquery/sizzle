@@ -21,6 +21,7 @@ module.exports = function( grunt ) {
 				eqnull: true,
 				expr: true,
 				curly: true,
+				regexdash: true,
 				trailing: true,
 				undef: true,
 				unused: true,
