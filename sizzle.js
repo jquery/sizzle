@@ -363,15 +363,15 @@ isXML = Sizzle.isXML = function( elem ) {
 };
 
 // Element contains another
-contains = Sizzle.contains = docElem.contains ?
+contains = Sizzle.contains = docElem.contains || docElem.compareDocumentPosition ?
 	function( a, b ) {
 		var adown = a.nodeType === 9 ? a.documentElement : a,
 			bup = b && b.parentNode;
-		return a === bup || !!( bup && bup.nodeType === 1 && adown.contains && adown.contains(bup) );
-	} :
-	docElem.compareDocumentPosition ?
-	function( a, b ) {
-		return b && !!( a.compareDocumentPosition( b ) & 16 );
+		return a === bup || !!( bup && bup.nodeType === 1 && (
+			adown.contains ?
+				adown.contains( bup ) :
+				a.compareDocumentPosition( bup ) & 16
+		));
 	} :
 	function( a, b ) {
 		if ( b ) {
