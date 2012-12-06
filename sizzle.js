@@ -370,7 +370,7 @@ contains = Sizzle.contains = docElem.contains || docElem.compareDocumentPosition
 		return a === bup || !!( bup && bup.nodeType === 1 && (
 			adown.contains ?
 				adown.contains( bup ) :
-				a.compareDocumentPosition( bup ) & 16
+				a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
 		));
 	} :
 	function( a, b ) {
