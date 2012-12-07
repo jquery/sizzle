@@ -28,3 +28,4 @@ Vitya Muhachev <vic99999@yandex.ru>
 Henri Wiechers <hwiechers@gmail.com>
 Alan Plum <github@ap.apsq.de>
 Chad Killingsworth <chadkillingsworth@missouristate.edu>
+Markus Staab <markus.staab@redaxo.de>
