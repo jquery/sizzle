@@ -1078,22 +1078,26 @@ function tokenize( selector, parseOnly ) {
 
 		// Combinators
 		if ( (match = rcombinators.exec( soFar )) ) {
-			tokens.push( matched = new Token( match.shift() ) );
+			matched = match.shift();
+			tokens.push( {
+				val: matched,
+				// Cast descendant combinators to space
+				type: match[0].replace( rtrim, " " )
+			} );
 			soFar = soFar.slice( matched.length );
-
-			// Cast descendant combinators to space
-			matched.type = match[0].replace( rtrim, " " );
 		}
 
 		// Filters
 		for ( type in Expr.filter ) {
 			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
 				(match = preFilters[ type ]( match ))) ) {
-
-				tokens.push( matched = new Token( match.shift() ) );
+				matched = match.shift();
+				tokens.push( {
+					val: matched,
+					type: type,
+					matches: match
+				});
 				soFar = soFar.slice( matched.length );
-				matched.type = type;
-				matched.matches = match;
 			}
 		}
 
@@ -1111,6 +1115,14 @@ function tokenize( selector, parseOnly ) {
 			Sizzle.error( selector ) :
 			// Cache the tokens
 			tokenCache( selector, groups ).slice( 0 );
+}
+
+function toSelector(tokens) {
+	var i, l = tokens.length, selector = "";
+	for ( i = 0; i < l; i++ ) {
+		selector += tokens[i].val;
+	}
+	return selector;
 }
 
 function addCombinator( matcher, combinator, base ) {
@@ -1329,11 +1341,11 @@ function matcherFromTokens( tokens ) {
 				}
 				return setMatcher(
 					i > 1 && elementMatcher( matchers ),
-					i > 1 && tokens.slice( 0, i - 1 ).join("").replace( rtrim, "$1" ),
+					i > 1 && toSelector(tokens.slice( 0, i - 1 )).replace( rtrim, "$1" ),
 					matcher,
 					i < j && matcherFromTokens( tokens.slice( i, j ) ),
 					j < len && matcherFromTokens( (tokens = tokens.slice( j )) ),
-					j < len && tokens.join("")
+					j < len && toSelector(tokens)
 				);
 			}
 			matchers.push( matcher );
@@ -1518,7 +1530,7 @@ function select( selector, context, results, seed, xml ) {
 
 						// If seed is empty or no tokens remain, we can return early
 						tokens.splice( i, 1 );
-						selector = seed.length && tokens.join("");
+						selector = seed.length && toSelector(tokens);
 						if ( !selector ) {
 							push.apply( results, slice.call( seed, 0 ) );
 							return results;
