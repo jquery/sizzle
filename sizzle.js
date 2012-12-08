@@ -25,7 +25,6 @@ var cachedruns,
 	MAX_NEGATIVE = 1 << 31,
 	baseHasDuplicate = true,
 
-	Token = String,
 	document = window.document,
 	docElem = document.documentElement,
 	dirruns = 0,
