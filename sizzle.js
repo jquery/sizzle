@@ -1116,9 +1116,11 @@ function tokenize( selector, parseOnly ) {
 			tokenCache( selector, groups ).slice( 0 );
 }
 
-function toSelector(tokens) {
-	var i, l = tokens.length, selector = "";
-	for ( i = 0; i < l; i++ ) {
+function toSelector( tokens ) {
+	var i = 0,
+		len = tokens.length,
+		selector = "";
+	for ( ; i < len; i++ ) {
 		selector += tokens[i].val;
 	}
 	return selector;
@@ -1340,11 +1342,11 @@ function matcherFromTokens( tokens ) {
 				}
 				return setMatcher(
 					i > 1 && elementMatcher( matchers ),
-					i > 1 && toSelector(tokens.slice( 0, i - 1 )).replace( rtrim, "$1" ),
+					i > 1 && toSelector( tokens.slice( 0, i - 1 ) ).replace( rtrim, "$1" ),
 					matcher,
 					i < j && matcherFromTokens( tokens.slice( i, j ) ),
 					j < len && matcherFromTokens( (tokens = tokens.slice( j )) ),
-					j < len && toSelector(tokens)
+					j < len && toSelector( tokens )
 				);
 			}
 			matchers.push( matcher );
@@ -1508,7 +1510,7 @@ function select( selector, context, results, seed, xml ) {
 					return results;
 				}
 
-				selector = selector.slice( tokens.shift().length );
+				selector = selector.slice( tokens.shift().val.length );
 			}
 
 			// Fetch a seed set for right-to-left matching
@@ -1529,7 +1531,7 @@ function select( selector, context, results, seed, xml ) {
 
 						// If seed is empty or no tokens remain, we can return early
 						tokens.splice( i, 1 );
-						selector = seed.length && toSelector(tokens);
+						selector = seed.length && toSelector( tokens );
 						if ( !selector ) {
 							push.apply( results, slice.call( seed, 0 ) );
 							return results;
@@ -1648,7 +1650,7 @@ if ( document.querySelectorAll ) {
 
 					i = groups.length;
 					while ( i-- ) {
-						groups[i] = nid + groups[i].join("");
+						groups[i] = nid + toSelector( groups[i] );
 					}
 					newContext = rsibling.test( selector ) && context.parentNode || context;
 					newSelector = groups.join(",");
