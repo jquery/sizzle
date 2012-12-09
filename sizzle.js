@@ -1095,7 +1095,7 @@ function tokenize( selector, parseOnly ) {
 					val: matched,
 					type: type,
 					matches: match
-				});
+				} );
 				soFar = soFar.slice( matched.length );
 			}
 		}
