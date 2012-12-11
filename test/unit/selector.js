@@ -101,8 +101,8 @@ test("element", function() {
 	t( "Trailing line feed", "#qunit-fixture p\n", ["firstp","ap","sndp","en","sap","first"] );
 	t( "Trailing form feed", "#qunit-fixture p\f", ["firstp","ap","sndp","en","sap","first"] );
 
-	t( "Parent Element", "#qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
-	t( "Parent Element (non-space descendant combinator)", "#qunit-fixture\tp", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Parent Element", "dl ol", ["empty", "listWithTabIndex"] );
+	t( "Parent Element (non-space descendant combinator)", "dl\tol", ["empty", "listWithTabIndex"] );
 	var obj1 = document.getElementById("object1");
 	equal( Sizzle("param", obj1).length, 2, "Object/param as context" );
 
@@ -901,7 +901,7 @@ test("pseudo - position", function() {
 
 	t( "Check sort order with POS and comma", "#qunit-fixture em>em>em>em:first-child,div>em:first", ["siblingfirst", "siblinggreatgrandchild"] );
 
-	t( "Isolated position", ":last", ["fx-tests"] );
+	t( "Isolated position", ":last", ["last"] );
 
 	deepEqual( Sizzle( "*:lt(2) + *", null, [], Sizzle("#qunit-fixture > p") ), q("ap"), "Seeded pos with trailing relative" );
 
