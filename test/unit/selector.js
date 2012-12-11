@@ -101,8 +101,8 @@ test("element", function() {
 	t( "Trailing line feed", "#qunit-fixture p\n", ["firstp","ap","sndp","en","sap","first"] );
 	t( "Trailing form feed", "#qunit-fixture p\f", ["firstp","ap","sndp","en","sap","first"] );
 
-	t( "Parent Element", "div p", ["firstp","ap","sndp","en","sap","first"] );
-	t( "Parent Element (non-space descendant combinator)", "div\tp", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Parent Element", "#qunit-fixture p", ["firstp","ap","sndp","en","sap","first"] );
+	t( "Parent Element (non-space descendant combinator)", "#qunit-fixture\tp", ["firstp","ap","sndp","en","sap","first"] );
 	var obj1 = document.getElementById("object1");
 	equal( Sizzle("param", obj1).length, 2, "Object/param as context" );
 
@@ -268,7 +268,7 @@ test("id", function() {
 	deepEqual( Sizzle("div#form", document.body), [], "ID selector within the context of another element" );
 
 	t( "Underscore ID", "#types_all", ["types_all"] );
-	t( "Dash ID", "#fx-queue", ["fx-queue"] );
+	t( "Dash ID", "#qunit-fixture", ["qunit-fixture"] );
 
 	t( "ID with weird characters in it", "#name\\+value", ["name+value"] );
 });
@@ -323,8 +323,8 @@ test("name", function() {
 	t( "Name selector with single quotes", "input[name='action']", ["text1"] );
 	t( "Name selector with double quotes", 'input[name="action"]', ["text1"] );
 
-	t( "Name selector non-input", "[name=test]", ["length", "fx-queue"] );
-	t( "Name selector non-input", "[name=div]", ["fadein"] );
+	t( "Name selector non-input", "[name=example]", ["name-is-example"] );
+	t( "Name selector non-input", "[name=div]", ["name-is-div"] );
 	t( "Name selector non-input", "*[name=iframe]", ["iframe"] );
 
 	t( "Name selector for grouped input", "input[name='types[]']", ["types_all", "types_anime", "types_movie"] );
@@ -381,7 +381,7 @@ test("child and adjacent", function() {
 	t( "Adjacent", "p[lang=en] + p", ["sap"] );
 	t( "Adjacent", "a.GROUPS + code + a", ["mark"] );
 	t( "Comma, Child, and Adjacent", "#qunit-fixture a + a, code > a", ["groups","anchor1","anchor2"] );
-	t( "Element Preceded By", "#qunit-fixture p ~ div", ["foo", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
+	t( "Element Preceded By", "#qunit-fixture p ~ div", ["foo", "nothiddendiv", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
 	t( "Element Preceded By", "#first ~ div", ["moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
 	t( "Element Preceded By", "#groups ~ a", ["mark"] );
 	t( "Element Preceded By", "#length ~ input", ["idTest"] );
@@ -652,7 +652,7 @@ test("pseudo - nth-of-type", function() {
 	t( "Nth-of-type(even)", "#ap :nth-of-type(even)", ["groups"] );
 	t( "Nth-of-type(2n+1)", "#ap :nth-of-type(2n+1)", ["google", "code1", "anchor1", "mark"] );
 	t( "Nth-of-type(odd)", "#ap :nth-of-type(odd)", ["google", "code1", "anchor1", "mark"] );
-	t( "Nth-of-type(-n+2)", "#qunit-fixture > :nth-of-type(-n+2)", ["firstp", "ap", "foo", "name+value", "firstUL", "empty", "form", "floatTest", "iframe", "lengthtest", "table", "moretests"] );
+	t( "Nth-of-type(-n+2)", "#qunit-fixture > :nth-of-type(-n+2)", ["firstp", "ap", "foo", "nothiddendiv", "name+value", "firstUL", "empty", "form", "floatTest", "iframe", "lengthtest", "table"] );
 });
 
 test("pseudo - nth-last-of-type", function() {
@@ -845,7 +845,7 @@ test("pseudo - :not", function() {
 	t( ":not() Multiple Class", "#foo a:not(.link)", ["yahoo", "anchor2"] );
 	t( ":not() Multiple Class", "#foo a:not(.blog.link)", ["yahoo", "anchor2"] );
 
-	t( ":not chaining (compound)", "#qunit-fixture div[id]:not(:has(div, span)):not(:has(*))", ["divWithNoTabIndex"] );
+	t( ":not chaining (compound)", "#qunit-fixture div[id]:not(:has(div, span)):not(:has(*))", ["nothiddendivchild", "divWithNoTabIndex"] );
 	t( ":not chaining (with attribute)", "#qunit-fixture form[id]:not([action$='formaction']):not(:button)", ["lengthtest", "name-tests", "testForm"] );
 	t( ":not chaining (colon in attribute)", "#qunit-fixture form[id]:not([action='form:action']):not(:button)", ["form", "lengthtest", "name-tests", "testForm"] );
 	t( ":not chaining (colon in attribute and nested chaining)", "#qunit-fixture form[id]:not([action='form:action']:button):not(:input)", ["form", "lengthtest", "name-tests", "testForm"] );
@@ -867,8 +867,8 @@ test("pseudo - :not", function() {
 test("pseudo - position", function() {
 	expect( 34 );
 
-	t( "First element", "div:first", ["qunit-testrunner-toolbar"] );
-	t( "First element(case-insensitive)", "div:fiRst", ["qunit-testrunner-toolbar"] );
+	t( "First element", "div:first", ["qunit"] );
+	t( "First element(case-insensitive)", "div:fiRst", ["qunit"] );
 	t( "nth Element", "#qunit-fixture p:nth(1)", ["ap"] );
 	t( "First Element", "#qunit-fixture p:first", ["firstp"] );
 	t( "Last Element", "p:last", ["first"] );
@@ -889,11 +889,11 @@ test("pseudo - position", function() {
 	t( "Check position filtering", "div.nothiddendiv:last", ["nothiddendiv"] );
 	t( "Check position filtering", "div.nothiddendiv:not(:lt(0))", ["nothiddendiv"] );
 
-	t( "Check element position", "div div:eq(0)", ["nothiddendivchild"] );
-	t( "Check element position", "div div:eq(5)", ["t2037"] );
-	t( "Check element position", "div div:eq(29)", ["slideup"] );
-	t( "Check element position", "div div:first", ["nothiddendivchild"] );
-	t( "Check element position", "div > div:first", ["nothiddendivchild"] );
+	t( "Check element position", "#qunit-fixture div div:eq(0)", ["nothiddendivchild"] );
+	t( "Check element position", "#select1 option:eq(3)", ["option1d"] );
+	t( "Check element position", "#qunit-fixture div div:eq(10)", ["names-group"] );
+	t( "Check element position", "#qunit-fixture div div:first", ["nothiddendivchild"] );
+	t( "Check element position", "#qunit-fixture div > div:first", ["nothiddendivchild"] );
 	t( "Check element position", "#dl div:first div:first", ["foo"] );
 	t( "Check element position", "#dl div:first > div:first", ["foo"] );
 	t( "Check element position", "div#nothiddendiv:first > div:first", ["nothiddendivchild"] );
@@ -912,7 +912,7 @@ test("pseudo - position", function() {
 
 	// Sizzle extension
 	Sizzle.selectors.setFilters["primary"] = Sizzle.selectors.setFilters["first"];
-	t( "Extend Sizzle's POS selectors to rename first to primary", "div:primary", ["qunit-testrunner-toolbar"] );
+	t( "Extend Sizzle's POS selectors to rename first to primary", "div:primary", ["qunit"] );
 	// Reset
 	delete Sizzle.selectors.setFilters["primary"];
 });

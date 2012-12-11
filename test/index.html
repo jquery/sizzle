@@ -13,16 +13,9 @@
 </head>
 
 <body id="body">
-	<h1 id="qunit-header">Sizzle Test Suite</h1>
-	<h2 id="qunit-banner"></h2>
-	<div id="qunit-testrunner-toolbar"></div>
-	<h2 id="qunit-userAgent"></h2>
-	<ol id="qunit-tests"></ol>
+	<div id="qunit"></div>
 
 	<!-- Test HTML -->
-	<div id="nothiddendiv" style="height:1px;background:white;" class="nothiddendiv">
-		<div id="nothiddendivchild"></div>
-	</div>
 	<dl id="dl" style="position:absolute;top:-32767px;left:-32767px;width:1px">
 	<div id="qunit-fixture">
 		<p id="firstp">See <a id="simon1" href="http://simon.incutio.com/archive/2003/03/25/#getElementsBySelector" rel="bookmark">this blog entry</a> for more information.</p>
@@ -38,6 +31,9 @@
 			<p lang="en" id="en">This is a normal link: <a id="yahoo" href="http://www.yahoo.com/" class="blogTest">Yahoo</a></p>
 			<p id="sap">This link has <code><a href="#2" id="anchor2">class="blog"</a></code>: <a href="http://simon.incutio.com/" class="blog link" id="simon">Simon Willison's Weblog</a></p>
 
+		</div>
+		<div id="nothiddendiv" style="height:1px;background:white;" class="nothiddendiv">
+			<div id="nothiddendivchild"></div>
 		</div>
 		<span id="name+value"></span>
 		<p id="first">Try them out:</p>
@@ -191,6 +187,10 @@ Z</textarea>
 				<input type="hidden" id="el12087" data-comma="0,1"/>
 			</div>
 			<div id="no-clone-exception"><object><embed></embed></object></div>
+			<div id="names-group">
+					<span id="name-is-example" name="example"></span>
+					<span id="name-is-div" name="div"></span>
+			</div>
 		</div>
 
 		<div id="tabindex-tests">
@@ -230,8 +230,8 @@ Z</textarea>
 	</div>
 	</dl>
 	<div id="fx-test-group" style="position:absolute;width:1px;height:1px;overflow:hidden;">
-		<div id="fx-queue" name="test">
-			<div id="fadein" class='chain test' name='div'>fadeIn<div>fadeIn</div></div>
+		<div id="fx-queue">
+			<div id="fadein" class='chain test'>fadeIn<div>fadeIn</div></div>
 			<div id="fadeout" class='chain test out'>fadeOut<div>fadeOut</div></div>
 
 			<div id="show" class='chain test'>show<div>show</div></div>
