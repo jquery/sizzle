@@ -172,6 +172,10 @@ test("broken", function() {
 
 	function broken( name, selector ) {
 		raises(function() {
+			// Setting context to null here somehow avoids QUnit's window.error handling
+			// making the e & e.message correct
+			// For whatever reason, without this,
+			// Sizzle.error will be called but no error will be seen in oldIE
 			Sizzle.call( null, selector );
 		}, function( e ) {
 			return e.message.indexOf("Syntax error") >= 0;
