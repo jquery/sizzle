@@ -917,7 +917,7 @@ test("pseudo - form", function() {
 	extraTexts.remove();
 });
 
-test("pseudo - 1.9 css3", function() {
+test("pseudo - :target and :root", function() {
 	expect( 2 );
 
 	// Target
@@ -926,13 +926,13 @@ test("pseudo - 1.9 css3", function() {
 		id: "new-link"
 	}).appendTo("#qunit-fixture");
 
-	var oldHref = window.location.hash;
+	var oldHash = window.location.hash;
 	window.location.hash = "new-link";
 
 	t( ":target", ":target", ["new-link"] );
 
 	$link.remove();
-	window.location.hash = oldHref;
+	window.location.hash = oldHash;
 
 	// Root
 	equal( Sizzle(":root")[0], document.documentElement, ":root selector" );

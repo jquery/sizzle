@@ -469,7 +469,7 @@ setDocument = Sizzle.setDocument = function( doc ) {
 	};
 
 	// QSA and matchesSelector support
-	matches = support.matches = docElem.matchesSelector ||
+	matches = docElem.matchesSelector ||
 		docElem.mozMatchesSelector ||
 		docElem.webkitMatchesSelector ||
 		docElem.oMatchesSelector ||
@@ -1184,12 +1184,11 @@ Expr = Sizzle.selectors = {
 		},
 
 		"focus": function( elem ) {
-			var doc = elem.ownerDocument;
-			return elem === doc.activeElement && (!doc.hasFocus || doc.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
+			return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
 		},
 
 		"active": function( elem ) {
-			return elem === elem.ownerDocument.activeElement;
+			return elem === document.activeElement;
 		},
 
 		// Positional types
