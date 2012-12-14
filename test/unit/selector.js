@@ -649,7 +649,7 @@ test("pseudo - nth-last-of-type", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 45 );
+	expect( 43 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -730,13 +730,6 @@ test("pseudo - misc", function() {
 		ok( match( input, ":focus" ), ":focus matches" );
 	}
 
-	// :active selector: this selector does not depend on document focus
-	if ( document.activeElement === input ) {
-		ok( match( input, ":active" ), ":active Matches" );
-	} else {
-		ok( true, "The input did not become active. Skip checking the :active match." );
-	}
-
 	input.blur();
 
 	// When IE is out of focus, blur does not work. Force it here.
@@ -745,7 +738,6 @@ test("pseudo - misc", function() {
 	}
 
 	ok( !match( input, ":focus" ), ":focus doesn't match" );
-	ok( !match( input, ":active" ), ":active doesn't match" );
 	document.body.removeChild( input );
 
 

@@ -529,9 +529,7 @@ setDocument = Sizzle.setDocument = function( doc ) {
 	rbuggyQSA = new RegExp( rbuggyQSA.join("|") );
 
 	// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
-	// A support test would require too much code (would include document ready)
-	// just skip matchesSelector for :active
-	rbuggyMatches = [ ":active" ];
+	rbuggyMatches = [];
 
 	if ( (support.matchesSelector = isNative( matches )) ) {
 		assert(function( div ) {
@@ -673,8 +671,8 @@ Sizzle.matchesSelector = function( elem, expr ) {
 	// Make sure that attribute selectors are quoted
 	expr = expr.replace( rattributeQuotes, "='$1']" );
 
-	// rbuggyMatches always contains :active, so no need for an existence check
-	if ( support.matchesSelector && !documentIsXML && !rbuggyMatches.test(expr) && !rbuggyQSA.test(expr) ) {
+	// rbuggyQSA always contains :focus, so no need for an existence check
+	if ( support.matchesSelector && !documentIsXML && (!rbuggyMatches || !rbuggyMatches.test(expr)) && !rbuggyQSA.test(expr) ) {
 		try {
 			var ret = matches.call( elem, expr );
 
@@ -1185,10 +1183,6 @@ Expr = Sizzle.selectors = {
 
 		"focus": function( elem ) {
 			return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
-		},
-
-		"active": function( elem ) {
-			return elem === document.activeElement;
 		},
 
 		// Positional types
