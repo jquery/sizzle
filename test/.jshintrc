@@ -36,6 +36,7 @@
 		"strictEqual",
 		"notStrictEqual",
 		"raises",
+		"fireNative",
 		"moduleTeardown"
 	]
 }

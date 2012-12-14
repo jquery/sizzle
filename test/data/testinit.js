@@ -1,4 +1,5 @@
-var jQuery = this.jQuery || "jQuery", // For testing .noConflict()
+var fireNative,
+	jQuery = this.jQuery || "jQuery", // For testing .noConflict()
 	$ = this.$ || "$",
 	originaljQuery = jQuery,
 	original$ = $;
@@ -95,5 +96,15 @@ var createWithFriesXML = function() {
 	return jQuery.parseXML(string);
 };
 
+fireNative = document.createEvent ?
+	function( node, type ) {
+		var event = document.createEvent('HTMLEvents');
+		event.initEvent( type, true, true );
+		node.dispatchEvent( event );
+	} :
+	function( node, type ) {
+		var event = document.createEventObject();
+		node.fireEvent( 'on' + type, event );
+	};
 
 function moduleTeardown(){}

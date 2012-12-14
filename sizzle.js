@@ -1155,6 +1155,15 @@ Expr = Sizzle.selectors = {
 				( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === elem.type );
 		},
 
+		"target": function( elem ) {
+			var hash = (window.location || {}).hash;
+			return hash && hash.slice( 1 ) === elem.id;
+		},
+
+		"root": function( elem ) {
+			return elem === docElem;
+		},
+
 		// Input types
 		"radio": createInputPseudo("radio"),
 		"checkbox": createInputPseudo("checkbox"),

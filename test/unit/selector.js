@@ -917,6 +917,27 @@ test("pseudo - form", function() {
 	extraTexts.remove();
 });
 
+test("pseudo - 1.9 css3", function() {
+	expect( 2 );
+
+	// Target
+	var $link = jQuery("<a/>").attr({
+		href: "#",
+		id: "new-link"
+	}).appendTo("#qunit-fixture");
+
+	var oldHref = window.location.hash;
+	window.location.hash = "new-link";
+
+	t( ":target", ":target", ["new-link"] );
+
+	$link.remove();
+	window.location.hash = oldHref;
+
+	// Root
+	equal( Sizzle(":root")[0], document.documentElement, ":root selector" );
+});
+
 test("caching", function() {
 	expect( 1 );
 	Sizzle( ":not(code)", document.getElementById("ap") );
