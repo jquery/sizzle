@@ -1,39 +1,50 @@
-/*global module: true*/
 module.exports = function( grunt ) {
+
+	"use strict";
+
+	// readOptionalJSON
+	// by Ben Alman
+	// https://gist.github.com/2876125
+	function readOptionalJSON( filepath ) {
+		var data = {};
+		try {
+			data = grunt.file.readJSON( filepath );
+			grunt.verbose.write( "Reading " + filepath + "..." ).ok();
+		} catch(e) {}
+		return data;
+	}
 
 	// Project configuration.
 	grunt.initConfig({
 		lint: {
-			files: [ "grunt.js", "sizzle.js", "test/unit/*.js", "speed/speed.js" ]
+			src: [ "grunt.js", "sizzle.js" ],
+			speed: "speed/speed.js",
+			tests: "test/unit/*.js"
 		},
 		qunit: {
 			files: [ "test/**/*.html" ]
 		},
 		watch: {
-			files: "<config:lint.files>",
+			files: [ "<config:lint.src>", "<config:lint.speed>", "<config:lint.tests>" ],
 			tasks: "default"
 		},
-		jshint: {
-			options: {
-				evil: true,
-				browser: true,
-				wsh: true,
-				eqnull: true,
-				expr: true,
-				curly: true,
-				regexdash: true,
-				trailing: true,
-				undef: true,
-				unused: true,
-				smarttabs: true,
-				maxerr: 100,
-				sub: true
-			},
-			globals: {
-				jQuery: true,
-				define: true
+		jshint: (function() {
+			function jshintrc( path ) {
+				return readOptionalJSON( (path || "") + ".jshintrc" ) || {};
 			}
-		}
+
+			return {
+				src: {
+					options: jshintrc()
+				},
+				speed: {
+					options: jshintrc("speed/")
+				},
+				tests: {
+					options: jshintrc("test/")
+				}
+			};
+		})()
 	});
 
 	// Default task.

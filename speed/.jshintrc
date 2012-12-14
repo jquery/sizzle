@@ -1,0 +1,20 @@
+{
+	"evil": true,
+	"browser": true,
+	"wsh": true,
+	"eqnull": true,
+	"expr": true,
+	"curly": true,
+	"regexdash": true,
+	"trailing": true,
+	"undef": true,
+	"unused": true,
+	"smarttabs": true,
+	"maxerr": 100,
+	"sub": true,
+
+	"predef": [
+		"console",
+		"define"
+	]
+}

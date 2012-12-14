@@ -2,8 +2,6 @@
  * Performance test suite using benchmark.js
  */
 
-/*global console: true*/
-
 define([ "require", "benchmark.js/benchmark", "domReady!", "text!selectors.css", "data/checkJava" ],
 function( require, Benchmark, document, selectors ) {
 

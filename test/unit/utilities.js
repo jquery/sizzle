@@ -1,27 +1,3 @@
-/*global
-	QUnit: true,
-	q: true,
-	t: true,
-	url: true,
-	createWithFriesXML: true,
-	Sizzle: true,
-	module: true,
-	test: true,
-	asyncTest: true,
-	expect: true,
-	stop: true,
-	start: true,
-	ok: true,
-	equal: true,
-	notEqual: true,
-	deepEqual: true,
-	notDeepEqual: true,
-	strictEqual: true,
-	notStrictEqual: true,
-	raises: true,
-	moduleTeardown: true
-*/
-
 module("utilities", { teardown: moduleTeardown });
 
 test("Sizzle.contains", function() {

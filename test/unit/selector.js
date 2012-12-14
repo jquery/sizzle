@@ -1,27 +1,3 @@
-/*global
-	QUnit: true,
-	q: true,
-	t: true,
-	url: true,
-	createWithFriesXML: true,
-	Sizzle: true,
-	module: true,
-	test: true,
-	asyncTest: true,
-	expect: true,
-	stop: true,
-	start: true,
-	ok: true,
-	equal: true,
-	notEqual: true,
-	deepEqual: true,
-	notDeepEqual: true,
-	strictEqual: true,
-	notStrictEqual: true,
-	raises: true,
-	moduleTeardown: true
-*/
-
 module("selector", { teardown: moduleTeardown });
 
 // #### NOTE: ####
@@ -216,7 +192,7 @@ test("broken", function() {
 	broken( "Only-last-child", ":only-last-child" );
 
 	// Make sure attribute value quoting works correctly. See: #6093
-	var attrbad = jQuery('<input type="hidden" value="2" name="foo.baz" id="attrbad1"/><input type="hidden" value="2" name="foo[baz]" id="attrbad2"/>').appendTo("body");
+	var attrbad = jQuery("<input type=\"hidden\" value=\"2\" name=\"foo.baz\" id=\"attrbad1\"/><input type=\"hidden\" value=\"2\" name=\"foo[baz]\" id=\"attrbad2\"/>").appendTo("body");
 
 	broken( "Attribute not escaped", "input[name=foo.baz]", [] );
 	// Shouldn't be matching those inner brackets
@@ -258,7 +234,7 @@ test("id", function() {
 	t( "All Children of ID with no children", "#firstUL > *", [] );
 
 	var a = jQuery("<div><a name=\"tName1\">tName1 A</a><a name=\"tName2\">tName2 A</a><div id=\"tName1\">tName1 Div</div></div>").appendTo("#qunit-fixture");
-	equal( Sizzle("#tName1")[0].id, 'tName1', "ID selector with same value for a name attribute" );
+	equal( Sizzle("#tName1")[0].id, "tName1", "ID selector with same value for a name attribute" );
 	equal( Sizzle("#tName2").length, 0, "ID selector non-existing but name attribute on an A tag" );
 	a.remove();
 
@@ -325,7 +301,7 @@ test("name", function() {
 
 	t( "Name selector", "input[name=action]", ["text1"] );
 	t( "Name selector with single quotes", "input[name='action']", ["text1"] );
-	t( "Name selector with double quotes", 'input[name="action"]', ["text1"] );
+	t( "Name selector with double quotes", "input[name=\"action\"]", ["text1"] );
 
 	t( "Name selector non-input", "[name=example]", ["name-is-example"] );
 	t( "Name selector non-input", "[name=div]", ["name-is-div"] );
@@ -358,12 +334,12 @@ test("name", function() {
 test("multiple", function() {
 	expect(6);
 
-	t( "Comma Support", "h2, #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
-	t( "Comma Support", "h2 , #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
-	t( "Comma Support", "h2 , #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
-	t( "Comma Support", "h2,#qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
-	t( "Comma Support", "h2,#qunit-fixture p ", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
-	t( "Comma Support", "h2\t,\r#qunit-fixture p\n", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"]);
+	t( "Comma Support", "h2, #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"] );
+	t( "Comma Support", "h2 , #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"] );
+	t( "Comma Support", "h2 , #qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"] );
+	t( "Comma Support", "h2,#qunit-fixture p", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"] );
+	t( "Comma Support", "h2,#qunit-fixture p ", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"] );
+	t( "Comma Support", "h2\t,\r#qunit-fixture p\n", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"] );
 });
 
 test("child and adjacent", function() {
@@ -461,9 +437,9 @@ test("attributes", function() {
 	t( "Attribute containing []", "input[name*='foo[bar]']", ["hidden2"] );
 
 	deepEqual( Sizzle( "input[data-comma='0,1']" ), [ document.getElementById("el12087") ], "Without context, single-quoted attribute containing ','" );
-	deepEqual( Sizzle( 'input[data-comma="0,1"]' ), [ document.getElementById("el12087") ], "Without context, double-quoted attribute containing ','" );
+	deepEqual( Sizzle( "input[data-comma=\"0,1\"]" ), [ document.getElementById("el12087") ], "Without context, double-quoted attribute containing ','" );
 	deepEqual( Sizzle( "input[data-comma='0,1']", document.getElementById("t12087") ), [ document.getElementById("el12087") ], "With context, single-quoted attribute containing ','" );
-	deepEqual( Sizzle( 'input[data-comma="0,1"]', document.getElementById("t12087") ), [ document.getElementById("el12087") ], "With context, double-quoted attribute containing ','" );
+	deepEqual( Sizzle( "input[data-comma=\"0,1\"]", document.getElementById("t12087") ), [ document.getElementById("el12087") ], "With context, double-quoted attribute containing ','" );
 
 	t( "Multiple Attribute Equals", "#form input[type='radio'], #form input[type='hidden']", ["radio1", "radio2", "hidden1"] );
 	t( "Multiple Attribute Equals", "#form input[type='radio'], #form input[type=\"hidden\"]", ["radio1", "radio2", "hidden1"] );

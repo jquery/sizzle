@@ -1,0 +1,41 @@
+{
+	"curly": true,
+	"expr": true,
+	"quotmark": "double",
+	"trailing": true,
+	"undef": true,
+	"maxerr": 100,
+
+	"eqnull": true,
+	"evil": true,
+	"smarttabs": true,
+	"sub": true,
+
+	"browser": true,
+	"wsh": true,
+
+	"predef": [
+		"QUnit",
+		"jQuery",
+		"q",
+		"t",
+		"url",
+		"createWithFriesXML",
+		"Sizzle",
+		"module",
+		"test",
+		"asyncTest",
+		"expect",
+		"stop",
+		"start",
+		"ok",
+		"equal",
+		"notEqual",
+		"deepEqual",
+		"notDeepEqual",
+		"strictEqual",
+		"notStrictEqual",
+		"raises",
+		"moduleTeardown"
+	]
+}
