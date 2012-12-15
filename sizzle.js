@@ -183,16 +183,20 @@ try {
 	};
 }
 
-function Sizzle( selector, context_, results, seed ) {
+function Sizzle( selector, context, results, seed ) {
+
+	if ( !document || (context && context.ownerDocument || context) !== document ) {
+		setDocument( context || null );
+	}
+
+	context = context || document;
+	results = results || [];
+
 	var match, elem, m,
 		// QSA vars
 		i, groups, old, nid, newContext, newSelector,
 		// always setDocument so context is defined when we check its nodeType
-		curDoc = setDocument( context_ ),
-		context = context_ || curDoc,
 		nodeType = context.nodeType;
-
-	results = results || [];
 
 	if ( !selector || typeof selector !== "string" ) {
 		return results;
@@ -305,6 +309,8 @@ isXML = Sizzle.isXML = function( elem ) {
 
 /**
  * Sets document-related variables once based on the current document
+ * @param {Element|Object} [doc] An element or document object to use to set the document
+ * @returns {Object} Returns the current document
  */
 setDocument = Sizzle.setDocument = function( doc ) {
 	doc = doc && doc.ownerDocument || doc || window.document;
