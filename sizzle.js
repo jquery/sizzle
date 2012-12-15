@@ -599,6 +599,7 @@ setDocument = Sizzle.setDocument = function( doc ) {
 	} :
 	function( a, b ) {
 		var cur,
+			preferredDoc = window.document,
 			i = 0,
 			aup = a.parentNode,
 			bup = b.parentNode,
@@ -612,7 +613,7 @@ setDocument = Sizzle.setDocument = function( doc ) {
 
 		// Fallback to using sourceIndex (in IE) if it's available on both nodes
 		} else if ( a.sourceIndex && b.sourceIndex ) {
-			return ( ~b.sourceIndex || MAX_NEGATIVE ) - ( contains( doc, a ) && ~a.sourceIndex || MAX_NEGATIVE );
+			return ( ~b.sourceIndex || MAX_NEGATIVE ) - ( contains( preferredDoc, a ) && ~a.sourceIndex || MAX_NEGATIVE );
 
 		// Parentless nodes are either documents or disconnected
 		} else if ( !aup || !bup ) {
