@@ -188,7 +188,7 @@ function Sizzle( selector, context, results, seed ) {
 		// QSA vars
 		i, groups, old, nid, newContext, newSelector;
 
-	if ( !document || (context && ( (context.ownerDocument || context) !== document )) ) {
+	if ( context && (( context.ownerDocument || context ) !== document) ) {
 		setDocument( context );
 	}
 
@@ -662,7 +662,7 @@ Sizzle.matches = function( expr, elements ) {
 
 Sizzle.matchesSelector = function( elem, expr ) {
 	// Set document vars if needed
-	if ( document !== (elem && elem.ownerDocument || elem) ) {
+	if ( elem && (( elem.ownerDocument || elem ) !== document) ) {
 		setDocument( elem );
 	}
 
@@ -689,7 +689,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 
 Sizzle.contains = function( context, elem ) {
 	// Set document vars if needed
-	if ( document !== (context && context.ownerDocument || context) ) {
+	if ( context && (( context.ownerDocument || context ) !== document) ) {
 		setDocument( context );
 	}
 	return contains( context, elem );
@@ -699,7 +699,7 @@ Sizzle.attr = function( elem, name ) {
 	var val;
 
 	// Set document vars if needed
-	if ( document !== (elem && elem.ownerDocument || elem) ) {
+	if ( elem && (( elem.ownerDocument || elem ) !== document) ) {
 		setDocument( elem );
 	}
 
