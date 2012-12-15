@@ -185,7 +185,7 @@ try {
 
 function Sizzle( selector, context, results, seed ) {
 
-	if ( !document || (context && context.ownerDocument || context) !== document ) {
+	if ( !document || (context && ( context.ownerDocument || context ) !== document) ) {
 		setDocument( context );
 	}
 
@@ -195,7 +195,6 @@ function Sizzle( selector, context, results, seed ) {
 	var match, elem, m,
 		// QSA vars
 		i, groups, old, nid, newContext, newSelector,
-		// always setDocument so context is defined when we check its nodeType
 		nodeType = context.nodeType;
 
 	if ( !selector || typeof selector !== "string" ) {
@@ -660,7 +659,7 @@ setDocument = Sizzle.setDocument = function( doc ) {
 };
 
 Sizzle.matches = function( expr, elements ) {
-	return Sizzle( expr, document, null, elements );
+	return Sizzle( expr, window.document, null, elements );
 };
 
 Sizzle.matchesSelector = function( elem, expr ) {
