@@ -186,7 +186,7 @@ try {
 function Sizzle( selector, context, results, seed ) {
 
 	if ( !document || (context && context.ownerDocument || context) !== document ) {
-		setDocument( context || null );
+		setDocument( context );
 	}
 
 	context = context || document;
