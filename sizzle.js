@@ -184,24 +184,22 @@ try {
 }
 
 function Sizzle( selector, context, results, seed ) {
+	var match, elem, m, nodeType,
+		// QSA vars
+		i, groups, old, nid, newContext, newSelector;
 
-	if ( !document || (context && ( context.ownerDocument || context ) !== document) ) {
+	if ( !document || (context && ( (context.ownerDocument || context) !== document )) ) {
 		setDocument( context );
 	}
 
 	context = context || document;
 	results = results || [];
 
-	var match, elem, m,
-		// QSA vars
-		i, groups, old, nid, newContext, newSelector,
-		nodeType = context.nodeType;
-
 	if ( !selector || typeof selector !== "string" ) {
 		return results;
 	}
 
-	if ( nodeType !== 1 && nodeType !== 9 ) {
+	if ( (nodeType = context.nodeType) !== 1 && nodeType !== 9 ) {
 		return [];
 	}
 
@@ -1775,6 +1773,9 @@ Expr.pseudos["nth"] = Expr.pseudos["eq"];
 function setFilters() {}
 Expr.filters = setFilters.prototype = Expr.pseudos;
 Expr.setFilters = new setFilters();
+
+// Initialize with the default document
+setDocument();
 
 // EXPOSE
 if ( typeof define === "function" && define.amd ) {
