@@ -309,12 +309,10 @@ isXML = Sizzle.isXML = function( elem ) {
 setDocument = Sizzle.setDocument = function( doc ) {
 	doc = doc && doc.ownerDocument || doc || window.document;
 
-	// If no document is available, return
-	if ( !doc || doc.nodeType !== 9 || document === doc ) {
+	// If no document and documentElement is available, return
+	if ( !doc || doc.nodeType !== 9 || !doc.documentElement || document === doc ) {
 		return;
 	}
-
-	var nativeContains;
 
 	// Set our document
 	document = doc;
@@ -469,11 +467,6 @@ setDocument = Sizzle.setDocument = function( doc ) {
 	};
 
 	// QSA and matchesSelector support
-	matches = docElem.matchesSelector ||
-		docElem.mozMatchesSelector ||
-		docElem.webkitMatchesSelector ||
-		docElem.oMatchesSelector ||
-		docElem.msMatchesSelector;
 
 	// qSa(:focus) reports false when true (Chrome 21),
 	// no need to also add to buggyMatches since matches checks buggyQSA
@@ -531,7 +524,14 @@ setDocument = Sizzle.setDocument = function( doc ) {
 	// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
 	rbuggyMatches = [];
 
+	matches = docElem.matchesSelector ||
+		docElem.mozMatchesSelector ||
+		docElem.webkitMatchesSelector ||
+		docElem.oMatchesSelector ||
+		docElem.msMatchesSelector;
+
 	if ( (support.matchesSelector = isNative( matches )) ) {
+
 		assert(function( div ) {
 			// Check to see if it's possible to do matchesSelector
 			// on a disconnected node (IE 9)
@@ -547,27 +547,25 @@ setDocument = Sizzle.setDocument = function( doc ) {
 	rbuggyMatches = new RegExp( rbuggyMatches.join("|") );
 
 	// Element contains another
-	nativeContains = isNative( docElem.contains );
-	contains = nativeContains && isNative( doc.contains ) ?
-		// Regular contains
+	// Purposefully does not implement inclusive descendent
+	// As in, an element does not contain itself
+	contains = isNative(docElem.contains) || docElem.compareDocumentPosition ?
 		function( a, b ) {
-			return a.contains( b );
-		} : nativeContains ?
-		// IE8 contains
-		function( a, b ) {
-			return a === b || (a === doc ? doc.documentElement : a).contains( b );
-		} : doc.compareDocumentPosition ?
-		// compareDocumentPosition
-		function( a, b ) {
-			return a === b || !!(a.compareDocumentPosition( b ) & 16);
+			var adown = a.nodeType === 9 ? a.documentElement : a,
+				bup = b && b.parentNode;
+			return a === bup || !!( bup && bup.nodeType === 1 && (
+				adown.contains ?
+					adown.contains( bup ) :
+					a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
+			));
 		} :
-		// Fallback
 		function( a, b ) {
-			while ( b ) {
-				if ( b === a ) {
-					return true;
+			if ( b ) {
+				while ( (b = b.parentNode) ) {
+					if ( b === a ) {
+						return true;
+					}
 				}
-				b = b.parentNode;
 			}
 			return false;
 		};
@@ -575,7 +573,9 @@ setDocument = Sizzle.setDocument = function( doc ) {
 	// Document order sorting
 	sortOrder = docElem.compareDocumentPosition ?
 	function( a, b ) {
-		var compare;
+		var compare,
+			// preferred document for disconnected nodes is always our document
+			preferredDoc = window.document;
 
 		if ( a === b ) {
 			hasDuplicate = true;
@@ -584,10 +584,10 @@ setDocument = Sizzle.setDocument = function( doc ) {
 
 		if ( (compare = b.compareDocumentPosition && a.compareDocumentPosition && a.compareDocumentPosition( b )) ) {
 			if ( compare & 1 || a.parentNode && a.parentNode.nodeType === 11 ) {
-				if ( a === doc || contains( doc, a ) ) {
+				if ( a === doc || contains( preferredDoc, a ) ) {
 					return -1;
 				}
-				if ( b === doc || contains( doc, b ) ) {
+				if ( b === doc || contains( preferredDoc, b ) ) {
 					return 1;
 				}
 				return 0;
@@ -697,6 +697,67 @@ Sizzle.contains = function( context, elem ) {
 	return contains( context, elem );
 };
 
+Sizzle.attr = function( elem, name ) {
+	var val;
+
+	// Set document vars if needed
+	if ( document !== (elem && elem.ownerDocument || elem) ) {
+		setDocument( elem );
+	}
+	if ( !documentIsXML ) {
+		name = name.toLowerCase();
+	}
+	if ( (val = Expr.attrHandle[ name ]) ) {
+		return val( elem );
+	}
+	if ( documentIsXML || support.attributes ) {
+		return elem.getAttribute( name );
+	}
+	return ( (val = elem.getAttributeNode( name )) || elem.getAttribute( name ) ) && elem[ name ] === true ?
+		name :
+		val && val.specified ? val.value : null;
+};
+
+Sizzle.error = function( msg ) {
+	throw new Error( "Syntax error, unrecognized expression: " + msg );
+};
+
+// Document sorting and removing duplicates
+Sizzle.uniqueSort = function( results ) {
+	var elem,
+		duplicates = [],
+		i = 1,
+		j = 0;
+
+	hasDuplicate = support.baseHasDuplicate;
+	results.sort( sortOrder );
+
+	if ( hasDuplicate ) {
+		for ( ; (elem = results[i]); i++ ) {
+			if ( elem === results[ i - 1 ] ) {
+				j = duplicates.push( i );
+			}
+		}
+		while ( j-- ) {
+			results.splice( duplicates[ j ], 1 );
+		}
+	}
+
+	return results;
+};
+
+function siblingCheck( a, b ) {
+	var cur = a && b && a.nextSibling;
+
+	for ( ; cur; cur = cur.nextSibling ) {
+		if ( cur === b ) {
+			return -1;
+		}
+	}
+
+	return a ? 1 : -1;
+}
+
 // Returns a function to use in pseudos for input types
 function createInputPseudo( type ) {
 	return function( elem ) {
@@ -765,27 +826,6 @@ getText = Sizzle.getText = function( elem ) {
 	// Do not include comment or processing instruction nodes
 
 	return ret;
-};
-
-Sizzle.attr = function( elem, name ) {
-	var val;
-
-	// Set document vars if needed
-	if ( document !== (elem && elem.ownerDocument || elem) ) {
-		setDocument( elem );
-	}
-	if ( !documentIsXML ) {
-		name = name.toLowerCase();
-	}
-	if ( (val = Expr.attrHandle[ name ]) ) {
-		return val( elem );
-	}
-	if ( documentIsXML || support.attributes ) {
-		return elem.getAttribute( name );
-	}
-	return ( (val = elem.getAttributeNode( name )) || elem.getAttribute( name ) ) && elem[ name ] === true ?
-		name :
-		val && val.specified ? val.value : null;
 };
 
 Expr = Sizzle.selectors = {
@@ -1230,46 +1270,6 @@ Expr = Sizzle.selectors = {
 			return matchIndexes;
 		})
 	}
-};
-
-function siblingCheck( a, b ) {
-	var cur = a && b && a.nextSibling;
-
-	for ( ; cur; cur = cur.nextSibling ) {
-		if ( cur === b ) {
-			return -1;
-		}
-	}
-
-	return a ? 1 : -1;
-}
-
-// Document sorting and removing duplicates
-Sizzle.uniqueSort = function( results ) {
-	var elem,
-		duplicates = [],
-		i = 1,
-		j = 0;
-
-	hasDuplicate = support.baseHasDuplicate;
-	results.sort( sortOrder );
-
-	if ( hasDuplicate ) {
-		for ( ; (elem = results[i]); i++ ) {
-			if ( elem === results[ i - 1 ] ) {
-				j = duplicates.push( i );
-			}
-		}
-		while ( j-- ) {
-			results.splice( duplicates[ j ], 1 );
-		}
-	}
-
-	return results;
-};
-
-Sizzle.error = function( msg ) {
-	throw new Error( "Syntax error, unrecognized expression: " + msg );
 };
 
 function tokenize( selector, parseOnly ) {
