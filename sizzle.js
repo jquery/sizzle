@@ -6,7 +6,8 @@
  */
 (function( window, undefined ) {
 
-var cachedruns,
+var i,
+	cachedruns,
 	Expr,
 	getText,
 	isXML,
@@ -25,17 +26,18 @@ var cachedruns,
 	contains,
 	sortOrder,
 
-	support = {},
 	expando = "sizzle" + -(new Date()),
 
 	strundefined = typeof undefined,
 
 	// Used in sorting
 	MAX_NEGATIVE = 1 << 31,
+	preferredDoc = window.document,
 
 	Token = String,
 	dirruns = 0,
 	done = 0,
+	support = {},
 
 	// Array methods
 	arr = [],
@@ -119,9 +121,9 @@ var cachedruns,
 	rheader = /h\d/i,
 	rinputs = /input|select|textarea|button/i,
 
-	rbackslash = /\\(?!\\)/g,
-
 	rnative = /\{\s*\[native code\]\s*\}/,
+
+	rbackslash = /\\(?!\\)/g,
 
 	rescape = /'|\\/g,
 	rattributeQuotes = /\=[\x20\t\r\n\f]*([^'"\]]*)[\x20\t\r\n\f]*\]/g,
@@ -147,7 +149,7 @@ var cachedruns,
 	 * @param {Function} fn The function to test for native support
 	 */
 	isNative = function( fn ) {
-		return rnative.test( "" + fn );
+		return rnative.test( fn + "" );
 	},
 
 	/**
@@ -181,13 +183,16 @@ try {
 	};
 }
 
-function Sizzle( selector, context, results, seed ) {
-	results = results || [];
-	context = context || document;
+function Sizzle( selector, context_, results, seed ) {
 	var match, elem, m,
 		// QSA vars
-		groups, i, old, nid, newContext, newSelector,
+		i, groups, old, nid, newContext, newSelector,
+		// always setDocument so context is defined when we check its nodeType
+		curDoc = setDocument( context_ ),
+		context = context_ || curDoc,
 		nodeType = context.nodeType;
+
+	results = results || [];
 
 	if ( !selector || typeof selector !== "string" ) {
 		return results;
@@ -195,11 +200,6 @@ function Sizzle( selector, context, results, seed ) {
 
 	if ( nodeType !== 1 && nodeType !== 9 ) {
 		return [];
-	}
-
-	// Set document vars if needed
-	if ( document !== (context && context.ownerDocument || context) ) {
-		setDocument( context );
 	}
 
 	if ( !documentIsXML && !seed ) {
@@ -311,7 +311,7 @@ setDocument = Sizzle.setDocument = function( doc ) {
 
 	// If no document and documentElement is available, return
 	if ( !doc || doc.nodeType !== 9 || !doc.documentElement || document === doc ) {
-		return;
+		return document;
 	}
 
 	// Set our document
@@ -325,13 +325,6 @@ setDocument = Sizzle.setDocument = function( doc ) {
 	support.tagNameNoComments = assert(function( div ) {
 		div.appendChild( doc.createComment("") );
 		return !div.getElementsByTagName("*").length;
-	});
-
-	// Check if getAttribute returns normalized href attributes
-	support.hrefNotNormalized = assert(function( div ) {
-		div.innerHTML = "<a href='#'></a>";
-		return div.firstChild && typeof div.firstChild.getAttribute !== strundefined &&
-			div.firstChild.getAttribute("href") === "#";
 	});
 
 	// Check if attributes should be retrieved by attribute nodes
@@ -377,8 +370,12 @@ setDocument = Sizzle.setDocument = function( doc ) {
 		return pass;
 	});
 
-	// IE6/7 return a modified href
-	Expr.attrHandle = support.hrefNotNormalized ?
+	// IE6/7 return modified attributes
+	Expr.attrHandle = assert(function( div ) {
+		div.innerHTML = "<a href='#'></a>";
+		return div.firstChild && typeof div.firstChild.getAttribute !== strundefined &&
+			div.firstChild.getAttribute("href") === "#";
+	}) ?
 		{} :
 		{
 			"href": function( elem ) {
@@ -468,6 +465,9 @@ setDocument = Sizzle.setDocument = function( doc ) {
 
 	// QSA and matchesSelector support
 
+	// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
+	rbuggyMatches = [];
+
 	// qSa(:focus) reports false when true (Chrome 21),
 	// no need to also add to buggyMatches since matches checks buggyQSA
 	// A support test would require too much code (would include document ready)
@@ -519,18 +519,11 @@ setDocument = Sizzle.setDocument = function( doc ) {
 		});
 	}
 
-	rbuggyQSA = new RegExp( rbuggyQSA.join("|") );
-
-	// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
-	rbuggyMatches = [];
-
-	matches = docElem.matchesSelector ||
+	if ( (support.matchesSelector = isNative( (matches = docElem.matchesSelector ||
 		docElem.mozMatchesSelector ||
 		docElem.webkitMatchesSelector ||
 		docElem.oMatchesSelector ||
-		docElem.msMatchesSelector;
-
-	if ( (support.matchesSelector = isNative( matches )) ) {
+		docElem.msMatchesSelector) )) ) {
 
 		assert(function( div ) {
 			// Check to see if it's possible to do matchesSelector
@@ -544,6 +537,7 @@ setDocument = Sizzle.setDocument = function( doc ) {
 		});
 	}
 
+	rbuggyQSA = new RegExp( rbuggyQSA.join("|") );
 	rbuggyMatches = new RegExp( rbuggyMatches.join("|") );
 
 	// Element contains another
@@ -573,9 +567,7 @@ setDocument = Sizzle.setDocument = function( doc ) {
 	// Document order sorting
 	sortOrder = docElem.compareDocumentPosition ?
 	function( a, b ) {
-		var compare,
-			// preferred document for disconnected nodes is always our document
-			preferredDoc = window.document;
+		var compare;
 
 		if ( a === b ) {
 			hasDuplicate = true;
@@ -599,7 +591,6 @@ setDocument = Sizzle.setDocument = function( doc ) {
 	} :
 	function( a, b ) {
 		var cur,
-			preferredDoc = window.document,
 			i = 0,
 			aup = a.parentNode,
 			bup = b.parentNode,
@@ -655,8 +646,11 @@ setDocument = Sizzle.setDocument = function( doc ) {
 
 	// Always assume the presence of duplicates if sort doesn't
 	// pass them to our comparison function (as in Google Chrome).
+	hasDuplicate = false;
 	[0, 0].sort( sortOrder );
-	support.baseHasDuplicate = !hasDuplicate;
+	support.detectDuplicates = hasDuplicate;
+
+	return document;
 };
 
 Sizzle.matches = function( expr, elements ) {
@@ -705,6 +699,7 @@ Sizzle.attr = function( elem, name ) {
 	if ( document !== (elem && elem.ownerDocument || elem) ) {
 		setDocument( elem );
 	}
+
 	if ( !documentIsXML ) {
 		name = name.toLowerCase();
 	}
@@ -730,7 +725,8 @@ Sizzle.uniqueSort = function( results ) {
 		i = 1,
 		j = 0;
 
-	hasDuplicate = support.baseHasDuplicate;
+	// Unless we *know* we can detect duplicates, assume their presence
+	hasDuplicate = !support.detectDuplicates;
 	results.sort( sortOrder );
 
 	if ( hasDuplicate ) {
@@ -1097,6 +1093,7 @@ Expr = Sizzle.selectors = {
 	},
 
 	pseudos: {
+		// Potentially complex pseudos
 		"not": markFunction(function( selector ) {
 			// Trim the selector passed to compile
 			// to avoid treating leading and trailing
@@ -1137,6 +1134,21 @@ Expr = Sizzle.selectors = {
 			};
 		}),
 
+		// Miscellaneous
+		"target": function( elem ) {
+			var hash = window.location && window.location.hash;
+			return hash && hash.slice( 1 ) === elem.id;
+		},
+
+		"root": function( elem ) {
+			return elem === docElem;
+		},
+
+		"focus": function( elem ) {
+			return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
+		},
+
+		// Boolean properties
 		"enabled": function( elem ) {
 			return elem.disabled === false;
 		},
@@ -1162,27 +1174,37 @@ Expr = Sizzle.selectors = {
 			return elem.selected === true;
 		},
 
-		"parent": function( elem ) {
-			return !Expr.pseudos["empty"]( elem );
-		},
-
+		// Contents
 		"empty": function( elem ) {
 			// http://www.w3.org/TR/selectors/#empty-pseudo
 			// :empty is only affected by element nodes and content nodes(including text(3), cdata(4)),
 			//   not comment, processing instructions, or others
 			// Thanks to Diego Perini for the nodeName shortcut
 			//   Greater than "@" means alpha characters (specifically not starting with "#" or "?")
-			var node;
-			for ( node = elem.firstChild; node; node = node.nextSibling ) {
-				if ( node.nodeName > "@" || node.nodeType === 3 || node.nodeType === 4 ) {
+			for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
+				if ( elem.nodeName > "@" || elem.nodeType === 3 || elem.nodeType === 4 ) {
 					return false;
 				}
 			}
 			return true;
 		},
 
+		"parent": function( elem ) {
+			return !Expr.pseudos["empty"]( elem );
+		},
+
+		// Element/input types
 		"header": function( elem ) {
 			return rheader.test( elem.nodeName );
+		},
+
+		"input": function( elem ) {
+			return rinputs.test( elem.nodeName );
+		},
+
+		"button": function( elem ) {
+			var name = elem.nodeName.toLowerCase();
+			return name === "input" && elem.type === "button" || name === "button";
 		},
 
 		"text": function( elem ) {
@@ -1194,39 +1216,7 @@ Expr = Sizzle.selectors = {
 				( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === elem.type );
 		},
 
-		"target": function( elem ) {
-			var hash = (window.location || {}).hash;
-			return hash && hash.slice( 1 ) === elem.id;
-		},
-
-		"root": function( elem ) {
-			return elem === docElem;
-		},
-
-		// Input types
-		"radio": createInputPseudo("radio"),
-		"checkbox": createInputPseudo("checkbox"),
-		"file": createInputPseudo("file"),
-		"password": createInputPseudo("password"),
-		"image": createInputPseudo("image"),
-
-		"submit": createButtonPseudo("submit"),
-		"reset": createButtonPseudo("reset"),
-
-		"button": function( elem ) {
-			var name = elem.nodeName.toLowerCase();
-			return name === "input" && elem.type === "button" || name === "button";
-		},
-
-		"input": function( elem ) {
-			return rinputs.test( elem.nodeName );
-		},
-
-		"focus": function( elem ) {
-			return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
-		},
-
-		// Positional types
+		// Position-in-collection
 		"first": createPositionalPseudo(function() {
 			return [ 0 ];
 		}),
@@ -1272,6 +1262,14 @@ Expr = Sizzle.selectors = {
 		})
 	}
 };
+
+// Add button/input type pseudos
+for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
+	Expr.pseudos[ i ] = createInputPseudo( i );
+}
+for ( i in { submit: true, reset: true } ) {
+	Expr.pseudos[ i ] = createButtonPseudo( i );
+}
 
 function tokenize( selector, parseOnly ) {
 	var matched, match, tokens, type,

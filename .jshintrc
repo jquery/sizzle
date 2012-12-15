@@ -4,6 +4,7 @@
 	"newcap": false,
 	"quotmark": "double",
 	"regexdash": true,
+	"smarttabs": true,
 	"trailing": true,
 	"undef": true,
 	"unused": true,
