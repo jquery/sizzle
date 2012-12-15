@@ -639,8 +639,8 @@ setDocument = Sizzle.setDocument = function( doc ) {
 			siblingCheck( ap[i], bp[i] ) :
 
 			// Otherwise nodes in our document sort first
-			ap[i] === doc ? -1 :
-			bp[i] === doc ? 1 :
+			ap[i] === preferredDoc ? -1 :
+			bp[i] === preferredDoc ? 1 :
 			0;
 	};
 
