@@ -1147,18 +1147,13 @@ Expr = Sizzle.selectors = {
 		// http://www.w3.org/TR/selectors/#lang-pseudo
 		"lang": markFunction( function( lang ) {
 			// lang value must be a valid identifider
-			if ( !ridentifier.test(lang) ) {
-				Sizzle.error( "Invalid :lang value" + lang );
+			if ( !ridentifier.test(lang || "") ) {
+				Sizzle.error( "unsupported lang: " + lang );
 			}
-			lang = (lang || "").toLowerCase();
-			var docLang = (docElem.lang || "").toLowerCase();
-			var prefix = (lang.substr( 0, 2 ) + "-").toLowerCase();
+			var rlang = new RegExp( "^" + lang + "(?:-|$)", "i" );
 			return function( elem, context ) {
-				var elemLang;
 				do {
-					elemLang = (elem.lang || "").toLowerCase();
-					if ( (elemLang === "" && docLang === lang) ||
-						(elemLang && ( elemLang === lang || elemLang.substr(0, 3) === prefix )) ) {
+					if ( rlang.test(elem.lang) ) {
 						return true;
 					}
 				} while ( (elem = elem.parentNode) && elem !== context );

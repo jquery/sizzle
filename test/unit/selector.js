@@ -931,7 +931,10 @@ test("pseudo - :target and :root", function() {
 });
 
 test("pseudo - :lang", function() {
-	expect( 16 );
+	expect( 21 );
+
+	var previousLang = document.documentElement.lang;
+	document.documentElement.lang = "en";
 
 	var $fixture = jQuery("#qunit-fixture").attr( "lang", "fr" ),
 		xml = createWithFriesXML(),
@@ -941,6 +944,7 @@ test("pseudo - :lang", function() {
 		t( ":lang => " + id, "#" + id + ":lang(fr)", [id] );
 		t( "case-insensitive :lang => " + id, "#" + id + ":lang(FR)", [id] );
 		t( "case-insensitive :lang => " + id, "#" + id + ":lang(Fr)", [id] );
+		t( "prefix check :lang => " + id, "#" + id + ":lang(french)", [] );
 	}
 
 	testLang("qunit-fixture");
@@ -958,6 +962,7 @@ test("pseudo - :lang", function() {
 	ok( foobar, "foo_bar exists" );
 	ok( Sizzle.matchesSelector(foobar, ":lang(fr)"), "XML :lang(fr)" );
 	ok( Sizzle.matchesSelector(foobar, ":lang(fR)"), "XML case-insensitive :lang(fR)" );
+	ok( !Sizzle.matchesSelector(foobar, ":lang(french)"), "XML prefix check" );
 
 	raises(function() {
 		Sizzle.call( null, ":lang(*%fr)" );
@@ -967,6 +972,7 @@ test("pseudo - :lang", function() {
 
 	// Cleanup
 	$fixture.removeAttr("lang");
+	document.documentElement.lang = previousLang;
 });
 
 test("caching", function() {
