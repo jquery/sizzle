@@ -931,14 +931,14 @@ test("pseudo - :target and :root", function() {
 });
 
 test("pseudo - :lang", function() {
-	expect( 21 );
+	expect( 24 );
 
 	var previousLang = document.documentElement.lang;
 	document.documentElement.lang = "en";
 
 	var $fixture = jQuery("#qunit-fixture").attr( "lang", "fr" ),
 		xml = createWithFriesXML(),
-		foobar = Sizzle("foo_bar")[0];
+		foobar = Sizzle("foo_bar", xml)[0];
 
 	function testLang( id ) {
 		t( ":lang => " + id, "#" + id + ":lang(fr)", [id] );
@@ -956,6 +956,11 @@ test("pseudo - :lang", function() {
 
 	testLang("qunit-fixture");
 	testLang("firstUL");
+
+	ok( !Sizzle.matchesSelector($fixture[0], ":lang(en)"), "Fixture does not match documentElement lang" );
+	ok( !Sizzle.matchesSelector($fixture[0], ":lang(fr\\b)"), "Escape backslashes when creating the lang regex" );
+	$fixture.attr("lang", "fr\\b");
+	t( ":lang => escaped backslash", "#qunit-fixture:lang(fr\\\\b)", ["qunit-fixture"] );
 
 	// XML
 	jQuery("#seite1", xml).attr("xml:lang", "fr");

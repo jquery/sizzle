@@ -125,6 +125,7 @@ var i,
 	rnative = /\{\s*\[native code\]\s*\}/,
 
 	rbackslash = /\\(?!\\)/g,
+	rsingleBackslash = /([^\\])(\\(?!\\))/g,
 
 	rescape = /'|\\/g,
 	rattributeQuotes = /\=[\x20\t\r\n\f]*([^'"\]]*)[\x20\t\r\n\f]*\]/g,
@@ -1150,13 +1151,15 @@ Expr = Sizzle.selectors = {
 			if ( !ridentifier.test(lang || "") ) {
 				Sizzle.error( "unsupported lang: " + lang );
 			}
-			var rlang = new RegExp( "^" + lang + "(?:-|$)", "i" );
-			return function( elem, context ) {
+			var rlang = new RegExp( "^" + lang.replace(rsingleBackslash, "$1\\$2") + "(?:-|$)", "i" );
+			return function( elem, context, xml ) {
+				var elemLang;
 				do {
-					if ( rlang.test(elem.lang) ) {
-						return true;
-					}
-				} while ( (elem = elem.parentNode) && elem !== context );
+					elemLang = xml && elem.getAttribute("xml:lang") || elem.getAttribute("lang");
+				} while ( (elem = elem.parentNode) && elem !== context && !elemLang );
+				if ( rlang.test(elemLang) ) {
+					return true;
+				}
 				return false;
 			};
 		}),
