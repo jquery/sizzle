@@ -190,7 +190,7 @@ function Sizzle( selector, context, results, seed ) {
 		// QSA vars
 		i, groups, old, nid, newContext, newSelector;
 
-	if ( context && (( context.ownerDocument || context ) !== document) ) {
+	if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
 		setDocument( context );
 	}
 
@@ -311,11 +311,11 @@ isXML = Sizzle.isXML = function( elem ) {
  * @param {Element|Object} [doc] An element or document object to use to set the document
  * @returns {Object} Returns the current document
  */
-setDocument = Sizzle.setDocument = function( doc ) {
-	doc = doc && doc.ownerDocument || doc || window.document;
+setDocument = Sizzle.setDocument = function( node ) {
+	var doc = node ? node.ownerDocument || node : preferredDoc;
 
 	// If no document and documentElement is available, return
-	if ( !doc || doc.nodeType !== 9 || !doc.documentElement || document === doc ) {
+	if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
 		return document;
 	}
 
@@ -659,12 +659,12 @@ setDocument = Sizzle.setDocument = function( doc ) {
 };
 
 Sizzle.matches = function( expr, elements ) {
-	return Sizzle( expr, window.document, null, elements );
+	return Sizzle( expr, null, null, elements );
 };
 
 Sizzle.matchesSelector = function( elem, expr ) {
 	// Set document vars if needed
-	if ( elem && (( elem.ownerDocument || elem ) !== document) ) {
+	if ( ( elem.ownerDocument || elem ) !== document ) {
 		setDocument( elem );
 	}
 
@@ -691,7 +691,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 
 Sizzle.contains = function( context, elem ) {
 	// Set document vars if needed
-	if ( context && (( context.ownerDocument || context ) !== document) ) {
+	if ( ( context.ownerDocument || context ) !== document ) {
 		setDocument( context );
 	}
 	return contains( context, elem );
@@ -701,7 +701,7 @@ Sizzle.attr = function( elem, name ) {
 	var val;
 
 	// Set document vars if needed
-	if ( elem && (( elem.ownerDocument || elem ) !== document) ) {
+	if ( ( elem.ownerDocument || elem ) !== document ) {
 		setDocument( elem );
 	}
 
