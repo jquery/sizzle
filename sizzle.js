@@ -124,11 +124,23 @@ var i,
 
 	rnative = /\{\s*\[native code\]\s*\}/,
 
-	rbackslash = /\\(?!\\)/g,
-	rsingleBackslash = /([^\\])(\\(?!\\))/g,
-
 	rescape = /'|\\/g,
 	rattributeQuotes = /\=[\x20\t\r\n\f]*([^'"\]]*)[\x20\t\r\n\f]*\]/g,
+
+	// Decode CSS escapes (backslash+character and backslash+hex_codepoint)
+	// http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
+	runescape = /\\([\da-fA-F]{1,6}[\x20\t\r\n\f]?|.)/g,
+	funescape = function( _, escaped ) {
+		var high = "0x" + escaped - 0x10000;
+		// NaN means non-codepoint
+		return high !== high ?
+			escaped :
+			// BMP codepoint
+			high < 0 ?
+				String.fromCharCode( high + 0x10000 ) :
+				// Supplemental Plane codepoint (surrogate pair)
+				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
+	},
 
 	matchExpr = {
 		"ID": new RegExp( "^#(" + characterEncoding + ")" ),
@@ -402,7 +414,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			}
 		};
 		Expr.filter["ID"] = function( id ) {
-			var attrId = id.replace( rbackslash, "" );
+			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
 				return elem.getAttribute("id") === attrId;
 			};
@@ -420,7 +432,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			}
 		};
 		Expr.filter["ID"] =  function( id ) {
-			var attrId = id.replace( rbackslash, "" );
+			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
 				var node = typeof elem.getAttributeNode !== strundefined && elem.getAttributeNode("id");
 				return node && node.value === attrId;
@@ -850,10 +862,10 @@ Expr = Sizzle.selectors = {
 
 	preFilter: {
 		"ATTR": function( match ) {
-			match[1] = match[1].replace( rbackslash, "" );
+			match[1] = match[1].replace( runescape, funescape );
 
 			// Move the given value to match[3] whether quoted or unquoted
-			match[3] = ( match[4] || match[5] || "" ).replace( rbackslash, "" );
+			match[3] = ( match[4] || match[5] || "" ).replace( runescape, funescape );
 
 			if ( match[2] === "~=" ) {
 				match[3] = " " + match[3] + " ";
@@ -930,7 +942,7 @@ Expr = Sizzle.selectors = {
 				return function() { return true; };
 			}
 
-			nodeName = nodeName.replace( rbackslash, "" ).toLowerCase();
+			nodeName = nodeName.replace( runescape, funescape ).toLowerCase();
 			return function( elem ) {
 				return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
 			};
@@ -1151,15 +1163,18 @@ Expr = Sizzle.selectors = {
 			if ( !ridentifier.test(lang || "") ) {
 				Sizzle.error( "unsupported lang: " + lang );
 			}
-			var rlang = new RegExp( "^" + lang.replace(rsingleBackslash, "$1\\$2") + "(?:-|$)", "i" );
-			return function( elem, context, xml ) {
+			lang = lang.replace( runescape, funescape ).toLowerCase();
+			return function( elem ) {
 				var elemLang;
 				do {
-					elemLang = xml && elem.getAttribute("xml:lang") || elem.getAttribute("lang");
-				} while ( (elem = elem.parentNode) && elem !== context && !elemLang );
-				if ( rlang.test(elemLang) ) {
-					return true;
-				}
+					if ( (elemLang = documentIsXML ?
+						elem.getAttribute("xml:lang") || elem.getAttribute("lang") :
+						elem.lang) ) {
+
+						elemLang = elemLang.toLowerCase();
+						return elemLang === lang || elemLang.indexOf( lang + "-" ) === 0;
+					}
+				} while ( (elem = elem.parentNode) && elem.nodeType === 1 );
 				return false;
 			};
 		}),
@@ -1743,7 +1758,7 @@ function select( selector, context, results, seed ) {
 					context.nodeType === 9 && !documentIsXML &&
 					Expr.relative[ tokens[1].type ] ) {
 
-				context = Expr.find["ID"]( token.matches[0].replace( rbackslash, "" ), context )[0];
+				context = Expr.find["ID"]( token.matches[0].replace( runescape, funescape ), context )[0];
 				if ( !context ) {
 					return results;
 				}
@@ -1762,7 +1777,7 @@ function select( selector, context, results, seed ) {
 				if ( (find = Expr.find[ type ]) ) {
 					// Search, expanding context for leading sibling combinators
 					if ( (seed = find(
-						token.matches[0].replace( rbackslash, "" ),
+						token.matches[0].replace( runescape, funescape ),
 						rsibling.test( tokens[0].type ) && context.parentNode || context
 					)) ) {
 
