@@ -146,17 +146,18 @@ test("XML Document Selectors", function() {
 test("broken", function() {
 	expect( 26 );
 
-	function broken( name, selector ) {
-		raises(function() {
-			// Setting context to null here somehow avoids QUnit's window.error handling
-			// making the e & e.message correct
-			// For whatever reason, without this,
-			// Sizzle.error will be called but no error will be seen in oldIE
-			Sizzle.call( null, selector );
-		}, function( e ) {
-			return e.message.indexOf("Syntax error") >= 0;
-		}, name + ": " + selector );
-	}
+	var attrbad,
+		broken = function( name, selector ) {
+			raises(function() {
+				// Setting context to null here somehow avoids QUnit's window.error handling
+				// making the e & e.message correct
+				// For whatever reason, without this,
+				// Sizzle.error will be called but no error will be seen in oldIE
+				Sizzle.call( null, selector );
+			}, function( e ) {
+				return e.message.indexOf("Syntax error") >= 0;
+			}, name + ": " + selector );
+		};
 
 	broken( "Broken Selector", "[" );
 	broken( "Broken Selector", "(" );
@@ -192,13 +193,11 @@ test("broken", function() {
 	broken( "Only-last-child", ":only-last-child" );
 
 	// Make sure attribute value quoting works correctly. See: #6093
-	var attrbad = jQuery("<input type=\"hidden\" value=\"2\" name=\"foo.baz\" id=\"attrbad1\"/><input type=\"hidden\" value=\"2\" name=\"foo[baz]\" id=\"attrbad2\"/>").appendTo("body");
+	attrbad = jQuery("<input type='hidden' value='2' name='foo.baz' id='attrbad1'/><input type='hidden' value='2' name='foo[baz]' id='attrbad2'/>").appendTo("#qunit-fixture");
 
 	broken( "Attribute not escaped", "input[name=foo.baz]", [] );
 	// Shouldn't be matching those inner brackets
 	broken( "Attribute not escaped", "input[name=foo[baz]]", [] );
-
-	attrbad.remove();
 });
 
 test("id", function() {
@@ -402,7 +401,9 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 62 );
+	expect( 70 );
+
+	var opt, input, attrbad, div;
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
@@ -452,17 +453,15 @@ test("attributes", function() {
 	t( "Attribute Contains", "a[href *= 'google']", ["google","groups"] );
 	t( "Attribute Is Not Equal", "#ap a[hreflang!='en']", ["google","groups","anchor1"] );
 
-	var opt = document.getElementById("option1a"),
-		match = Sizzle.matchesSelector;
-
+	opt = document.getElementById("option1a");
 	opt.setAttribute( "test", "" );
 
-	ok( match( opt, "[id*=option1][type!=checkbox]" ), "Attribute Is Not Equal Matches" );
-	ok( match( opt, "[id*=option1]" ), "Attribute With No Quotes Contains Matches" );
-	ok( match( opt, "[test=]" ), "Attribute With No Quotes No Content Matches" );
-	ok( !match( opt, "[test^='']" ), "Attribute with empty string value does not match startsWith selector (^=)" );
-	ok( match( opt, "[id=option1a]" ), "Attribute With No Quotes Equals Matches" );
-	ok( match( document.getElementById("simon1"), "a[href*=#]" ), "Attribute With No Quotes Href Contains Matches" );
+	ok( Sizzle.matchesSelector( opt, "[id*=option1][type!=checkbox]" ), "Attribute Is Not Equal Matches" );
+	ok( Sizzle.matchesSelector( opt, "[id*=option1]" ), "Attribute With No Quotes Contains Matches" );
+	ok( Sizzle.matchesSelector( opt, "[test=]" ), "Attribute With No Quotes No Content Matches" );
+	ok( !Sizzle.matchesSelector( opt, "[test^='']" ), "Attribute with empty string value does not match startsWith selector (^=)" );
+	ok( Sizzle.matchesSelector( opt, "[id=option1a]" ), "Attribute With No Quotes Equals Matches" );
+	ok( Sizzle.matchesSelector( document.getElementById("simon1"), "a[href*=#]" ), "Attribute With No Quotes Href Contains Matches" );
 
 	t( "Empty values", "#select1 option[value='']", ["option1a"] );
 	t( "Empty values", "#select1 option[value!='']", ["option1b","option1c","option1d"] );
@@ -474,9 +473,10 @@ test("attributes", function() {
 
 	t( "Grouped Form Elements", "input[name='foo[bar]']", ["hidden2"] );
 
-	var input = document.getElementById("text1");
+	input = document.getElementById("text1");
 	input.title = "Don't click me";
-	ok( match( input, "input[title=\"Don't click me\"]" ), "Quote within attribute value does not mess up tokenizer" );
+
+	ok( Sizzle.matchesSelector( input, "input[title=\"Don't click me\"]" ), "Quote within attribute value does not mess up tokenizer" );
 
 	// Uncomment if the boolHook is removed
 	// var check2 = document.getElementById("check2");
@@ -485,34 +485,49 @@ test("attributes", function() {
 
 	// jQuery #12303
 	input.setAttribute( "data-pos", ":first" );
-	ok( match( input, "input[data-pos=\\:first]"), "POS within attribute value is treated as an attribute value" );
-	ok( match( input, "input[data-pos=':first']"), "POS within attribute value is treated as an attribute value" );
-	ok( match( input, ":input[data-pos=':first']"), "POS within attribute value after pseudo is treated as an attribute value" );
+	ok( Sizzle.matchesSelector( input, "input[data-pos=\\:first]"), "POS within attribute value is treated as an attribute value" );
+	ok( Sizzle.matchesSelector( input, "input[data-pos=':first']"), "POS within attribute value is treated as an attribute value" );
+	ok( Sizzle.matchesSelector( input, ":input[data-pos=':first']"), "POS within attribute value after pseudo is treated as an attribute value" );
 	input.removeAttribute("data-pos");
 
-	// Make sure attribute value quoting works correctly. See: #6093
-	var attrbad = jQuery("<input type=\"hidden\" value=\"2\" name=\"foo.baz\" id=\"attrbad1\"/><input type=\"hidden\" value=\"2\" name=\"foo[baz]\" id=\"attrbad2\"/><input type=\"hidden\" data-attr=\"foo_baz']\" id=\"attrbad3\"/>").appendTo("body");
+	// Make sure attribute value quoting works correctly. See jQuery #6093; #6428
+	attrbad = jQuery(
+		"<input type='hidden' id='attrbad_dot' value='2' name='foo.baz'/>" +
+		"<input type='hidden' id='attrbad_brackets' value='2' name='foo[baz]'/>" +
+		"<input type='hidden' id='attrbad_injection' data-attr='foo_baz&#39;]'/>" +
+		"<input type='hidden' id='attrbad_quote' data-attr='&#39;'/>" +
+		"<input type='hidden' id='attrbad_backslash' data-attr='&#92;'/>" +
+		"<input type='hidden' id='attrbad_backslash_quote' data-attr='&#92;&#39;'/>" +
+		"<input type='hidden' id='attrbad_backslash_backslash' data-attr='&#92;&#92;'/>" +
+		"<input type='hidden' id='attrbad_unicode' data-attr='&#x4e00;'/>"
+	).appendTo("#qunit-fixture");
 
-	t( "Underscores are valid unquoted", "input[id=types_all]", ["types_all"] );
+	t( "Underscores don't need escaping", "input[id=types_all]", ["types_all"] );
 
-	t( "Find escaped attribute value", "input[name=foo\\.baz]", ["attrbad1"] );
-	t( "Find escaped attribute value", "input[name=foo\\[baz\\]]", ["attrbad2"] );
-	t( "Find escaped attribute value", "input[data-attr='foo_baz\\']']", ["attrbad3"] );
+	t( "Escaped dot", "input[name=foo\\.baz]", ["attrbad_dot"] );
+	t( "Escaped brackets", "input[name=foo\\[baz\\]]", ["attrbad_brackets"] );
+	t( "Escaped quote + right bracket", "input[data-attr='foo_baz\\']']", ["attrbad_injection"] );
+
+	t( "Quoted quote", "input[data-attr='\\'']", ["attrbad_quote"] );
+	t( "Quoted backslash", "input[data-attr='\\\\']", ["attrbad_backslash"] );
+	t( "Quoted backslash quote", "input[data-attr='\\\\\\'']", ["attrbad_backslash_quote"] );
+	t( "Quoted backslash backslash", "input[data-attr='\\\\\\\\']", ["attrbad_backslash_backslash"] );
+
+	t( "Quoted backslash backslash (numeric escape)", "input[data-attr='\\5C\\\\']", ["attrbad_backslash_backslash"] );
+	t( "Quoted backslash backslash (numeric escape with trailing space)", "input[data-attr='\\5C \\\\']", ["attrbad_backslash_backslash"] );
+	t( "Quoted backslash backslash (numeric escape with trailing tab)", "input[data-attr='\\5C\t\\\\']", ["attrbad_backslash_backslash"] );
+	t( "Long numeric escape (BMP)", "input[data-attr='\\04e00']", ["attrbad_unicode"] );
+	document.getElementById("attrbad_unicode").setAttribute( "data-attr", "\uD834\uDF06A" );
+	t( "Long numeric escape (non-BMP)", "input[data-attr='\\01D306A']", ["attrbad_unicode"] );
 
 	t( "input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"] );
 	t( "input[type=search]", "#form input[type=search]", ["search"] );
 
-	attrbad.remove();
-
-	// #6428
-	t( "Find escaped attribute value", "#form input[name=foo\\[bar\\]]", ["hidden2"] );
-
 	// #3279
-	var div = document.createElement("div");
+	div = document.createElement("div");
 	div.innerHTML = "<div id='foo' xml:test='something'></div>";
 
 	deepEqual( Sizzle( "[xml\\:test]", div ), [ div.firstChild ], "Finding by attribute with escaped characters." );
-	div = null;
 });
 
 test("pseudo - (parent|empty)", function() {
@@ -659,9 +674,8 @@ test("pseudo - misc", function() {
 
 	ok( Sizzle("#qunit-fixture :not(:has(:has(*)))").length, "All not grandparents" );
 
-	var select = document.getElementById("select1"),
-		match = Sizzle.matchesSelector;
-	ok( match( select, ":has(option)" ), "Has Option Matches" );
+	var select = document.getElementById("select1");
+	ok( Sizzle.matchesSelector( select, ":has(option)" ), "Has Option Matches" );
 
 	t( "Text Contains", "a:contains(Google)", ["google","groups"] );
 	t( "Text Contains", "a:contains(Google Groups)", ["groups"] );
@@ -677,13 +691,15 @@ test("pseudo - misc", function() {
 	document.body.appendChild( tmp );
 
 	jQuery.each( [ "button", "submit", "reset" ], function( i, type ) {
-		jQuery( tmp ).append(
-			"<input id='input_T' type='T'/><button id='button_T' type='T'>test</button>".replace(/T/g, type) );
+		var els = jQuery(
+			"<input id='input_%' type='%'/><button id='button_%' type='%'>test</button>"
+			.replace( /%/g, type )
+		).appendTo( tmp );
 
 		t( "Input Buttons :" + type, "#tmp_input :" + type, [ "input_" + type, "button_" + type ] );
 
-		ok( match( Sizzle("#input_" + type)[0], ":" + type ), "Input Matches :" + type );
-		ok( match( Sizzle("#button_" + type)[0], ":" + type ), "Button Matches :" + type );
+		ok( Sizzle.matchesSelector( els[0], ":" + type ), "Input Matches :" + type );
+		ok( Sizzle.matchesSelector( els[1], ":" + type ), "Button Matches :" + type );
 	});
 
 	document.body.removeChild( tmp );
@@ -703,13 +719,13 @@ test("pseudo - misc", function() {
 		ok( true, "The div was not focused. Skip checking the :focus match." );
 	} else {
 		t( "tabIndex element focused", ":focus", [ "tmp_input" ] );
-		ok( match( tmp, ":focus" ), ":focus matches tabIndex div" );
+		ok( Sizzle.matchesSelector( tmp, ":focus" ), ":focus matches tabIndex div" );
 	}
 
 	// Blur tmp
 	tmp.blur();
 	document.body.focus();
-	ok( !match( tmp, ":focus" ), ":focus doesn't match tabIndex div" );
+	ok( !Sizzle.matchesSelector( tmp, ":focus" ), ":focus doesn't match tabIndex div" );
 	document.body.removeChild( tmp );
 
 	// Input focus/active
@@ -727,7 +743,7 @@ test("pseudo - misc", function() {
 		ok( true, "The input was not focused. Skip checking the :focus match." );
 	} else {
 		t( "Element focused", "input:focus", [ "focus-input" ] );
-		ok( match( input, ":focus" ), ":focus matches" );
+		ok( Sizzle.matchesSelector( input, ":focus" ), ":focus matches" );
 	}
 
 	input.blur();
@@ -737,7 +753,7 @@ test("pseudo - misc", function() {
 		document.body.focus();
 	}
 
-	ok( !match( input, ":focus" ), ":focus doesn't match" );
+	ok( !Sizzle.matchesSelector( input, ":focus" ), ":focus doesn't match" );
 	document.body.removeChild( input );
 
 
