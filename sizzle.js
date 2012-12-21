@@ -26,18 +26,20 @@ var i,
 	contains,
 	sortOrder,
 
+	// Instance-specific data
 	expando = "sizzle" + -(new Date()),
-
-	strundefined = typeof undefined,
-
-	// Used in sorting
-	MAX_NEGATIVE = 1 << 31,
 	preferredDoc = window.document,
-
-	Token = String,
+	support = {},
 	dirruns = 0,
 	done = 0,
-	support = {},
+	classCache = createCache(),
+	tokenCache = createCache(),
+	compilerCache = createCache(),
+
+	// General-purpose constants
+	Token = String,
+	strundefined = typeof undefined,
+	MAX_NEGATIVE = 1 << 31,
 
 	// Array methods
 	arr = [],
@@ -56,32 +58,8 @@ var i,
 		return -1;
 	},
 
-	// Augment a function for special use by Sizzle
-	markFunction = function( fn, value ) {
-		fn[ expando ] = value == null || value;
-		return fn;
-	},
 
-	createCache = function() {
-		var cache = {},
-			keys = [];
-
-		return markFunction(function( key, value ) {
-			// Only keep the most recent entries
-			if ( keys.push( key ) > Expr.cacheLength ) {
-				delete cache[ keys.shift() ];
-			}
-
-			// Retrieve with (key + " ") to avoid collision with native Object.prototype properties (see Issue #157)
-			return (cache[ key + " " ] = value);
-		}, cache );
-	},
-
-	classCache = createCache(),
-	tokenCache = createCache(),
-	compilerCache = createCache(),
-
-	// Regex
+	// Regular expressions
 
 	// Whitespace characters http://www.w3.org/TR/css3-selectors/#whitespace
 	whitespace = "[\\x20\\t\\r\\n\\f]",
@@ -89,7 +67,7 @@ var i,
 	characterEncoding = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",
 
 	// Loosely modeled on CSS identifier characters
-	// An unquoted value should be a CSS identifier (http://www.w3.org/TR/css3-selectors/#attribute-selectors)
+	// An unquoted value should be a CSS identifier http://www.w3.org/TR/css3-selectors/#attribute-selectors
 	// Proper syntax: http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
 	identifier = characterEncoding.replace( "w", "w#" ),
 
@@ -114,34 +92,6 @@ var i,
 	rpseudo = new RegExp( pseudos ),
 	ridentifier = new RegExp( "^" + identifier + "$" ),
 
-	// Easily-parseable/retrievable ID or TAG or CLASS selectors
-	rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
-
-	rsibling = /[\x20\t\r\n\f]*[+~]/,
-
-	rheader = /h\d/i,
-	rinputs = /input|select|textarea|button/i,
-
-	rnative = /\{\s*\[native code\]\s*\}/,
-
-	rescape = /'|\\/g,
-	rattributeQuotes = /\=[\x20\t\r\n\f]*([^'"\]]*)[\x20\t\r\n\f]*\]/g,
-
-	// Decode CSS escapes (backslash+character and backslash+hex_codepoint)
-	// http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
-	runescape = /\\([\da-fA-F]{1,6}[\x20\t\r\n\f]?|.)/g,
-	funescape = function( _, escaped ) {
-		var high = "0x" + escaped - 0x10000;
-		// NaN means non-codepoint
-		return high !== high ?
-			escaped :
-			// BMP codepoint
-			high < 0 ?
-				String.fromCharCode( high + 0x10000 ) :
-				// Supplemental Plane codepoint (surrogate pair)
-				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
-	},
-
 	matchExpr = {
 		"ID": new RegExp( "^#(" + characterEncoding + ")" ),
 		"CLASS": new RegExp( "^\\.(" + characterEncoding + ")" ),
@@ -158,29 +108,31 @@ var i,
 			whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
 	},
 
-	/**
-	 * For feature detection
-	 * @param {Function} fn The function to test for native support
-	 */
-	isNative = function( fn ) {
-		return rnative.test( fn + "" );
-	},
+	rsibling = /[\x20\t\r\n\f]*[+~]/,
 
-	/**
-	 * Support testing using an element
-	 * @param {Function} fn Passed the created div and expects a boolean result
-	 */
-	assert = function( fn ) {
-		var div = document.createElement("div");
+	rnative = /\{\s*\[native code\]\s*\}/,
 
-		try {
-			return fn( div );
-		} catch (e) {
-			return false;
-		} finally {
-			// release memory in IE
-			div = null;
-		}
+	// Easily-parseable/retrievable ID or TAG or CLASS selectors
+	rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
+
+	rinputs = /^(?:input|select|textarea|button)$/i,
+	rheader = /^h\d$/i,
+
+	rescape = /'|\\/g,
+	rattributeQuotes = /\=[\x20\t\r\n\f]*([^'"\]]*)[\x20\t\r\n\f]*\]/g,
+
+	// CSS escapes http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
+	runescape = /\\([\da-fA-F]{1,6}[\x20\t\r\n\f]?|.)/g,
+	funescape = function( _, escaped ) {
+		var high = "0x" + escaped - 0x10000;
+		// NaN means non-codepoint
+		return high !== high ?
+			escaped :
+			// BMP codepoint
+			high < 0 ?
+				String.fromCharCode( high + 0x10000 ) :
+				// Supplemental Plane codepoint (surrogate pair)
+				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
 	};
 
 // Use a stripped-down slice if we can't use a native one
@@ -195,6 +147,60 @@ try {
 		}
 		return results;
 	};
+}
+
+/**
+ * For feature detection
+ * @param {Function} fn The function to test for native support
+ */
+function isNative( fn ) {
+	return rnative.test( fn + "" );
+}
+
+/**
+ * Create key-value caches of limited size
+ * @returns {Function(string, Object)} Returns the Object data after storing it on itself with
+ *	property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
+ *	deleting the oldest entry
+ */
+function createCache() {
+	var cache,
+		keys = [];
+
+	return (cache = function( key, value ) {
+		// Use (key + " ") to avoid collision with native prototype properties (see Issue #157)
+		if ( keys.push( key += " " ) > Expr.cacheLength ) {
+			// Only keep the most recent entries
+			delete cache[ keys.shift() ];
+		}
+		return (cache[ key ] = value);
+	});
+}
+
+/**
+ * Mark a function for special use by Sizzle
+ * @param {Function} fn The function to mark
+ */
+function markFunction( fn ) {
+	fn[ expando ] = true;
+	return fn;
+}
+
+/**
+ * Support testing using an element
+ * @param {Function} fn Passed the created div and expects a boolean result
+ */
+function assert( fn ) {
+	var div = document.createElement("div");
+
+	try {
+		return fn( div );
+	} catch (e) {
+		return false;
+	} finally {
+		// release memory in IE
+		div = null;
+	}
 }
 
 function Sizzle( selector, context, results, seed ) {
@@ -949,7 +955,7 @@ Expr = Sizzle.selectors = {
 		},
 
 		"CLASS": function( className ) {
-			var pattern = classCache[ expando ][ className + " " ];
+			var pattern = classCache[ className + " " ];
 
 			return pattern ||
 				(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
@@ -1319,7 +1325,7 @@ for ( i in { submit: true, reset: true } ) {
 function tokenize( selector, parseOnly ) {
 	var matched, match, tokens, type,
 		soFar, groups, preFilters,
-		cached = tokenCache[ expando ][ selector + " " ];
+		cached = tokenCache[ selector + " " ];
 
 	if ( cached ) {
 		return parseOnly ? 0 : cached.slice( 0 );
@@ -1712,7 +1718,7 @@ compile = Sizzle.compile = function( selector, group /* Internal Use Only */ ) {
 	var i,
 		setMatchers = [],
 		elementMatchers = [],
-		cached = compilerCache[ expando ][ selector + " " ];
+		cached = compilerCache[ selector + " " ];
 
 	if ( !cached ) {
 		// Generate a function of recursive functions that can be used to check each element
