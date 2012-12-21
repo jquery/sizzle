@@ -947,53 +947,102 @@ test("pseudo - :target and :root", function() {
 });
 
 test("pseudo - :lang", function() {
-	expect( 24 );
+	expect( 105 );
 
-	var previousLang = document.documentElement.lang;
-	document.documentElement.lang = "en";
-
-	var $fixture = jQuery("#qunit-fixture").attr( "lang", "fr" ),
+	var docElem = document.documentElement,
+		docXmlLang = docElem.getAttribute("xml:lang"),
+		docLang = docElem.lang,
+		foo = document.getElementById("foo"),
+		anchor = document.getElementById("anchor2"),
 		xml = createWithFriesXML(),
-		foobar = Sizzle("foo_bar", xml)[0];
+		testLang = function( text, elem, container, lang, extra ) {
+			var message,
+				full = lang + "-" + extra;
 
-	function testLang( id ) {
-		t( ":lang => " + id, "#" + id + ":lang(fr)", [id] );
-		t( "case-insensitive :lang => " + id, "#" + id + ":lang(FR)", [id] );
-		t( "case-insensitive :lang => " + id, "#" + id + ":lang(Fr)", [id] );
-		t( "prefix check :lang => " + id, "#" + id + ":lang(french)", [] );
-	}
+			message = "lang=" + lang + " " + text;
+			container.setAttribute( container.ownerDocument.documentElement.nodeName === "HTML" ? "lang" : "xml:lang", lang );
+			assertMatch( message, elem, ":lang(" + lang + ")" );
+			assertMatch( message, elem, ":lang(" + mixCase(lang) + ")" );
+			assertNoMatch( message, elem, ":lang(" + full + ")" );
+			assertNoMatch( message, elem, ":lang(" + mixCase(full) + ")" );
+			assertNoMatch( message, elem, ":lang(" + lang + "-)" );
+			assertNoMatch( message, elem, ":lang(" + full + "-)" );
+			assertNoMatch( message, elem, ":lang(" + lang + "glish)" );
+			assertNoMatch( message, elem, ":lang(" + full + "glish)" );
 
-	testLang("qunit-fixture");
-	testLang("firstUL");
+			message = "lang=" + full + " " + text;
+			container.setAttribute( container.ownerDocument.documentElement.nodeName === "HTML" ? "lang" : "xml:lang", full );
+			assertMatch( message, elem, ":lang(" + lang + ")" );
+			assertMatch( message, elem, ":lang(" + mixCase(lang) + ")" );
+			assertMatch( message, elem, ":lang(" + full + ")" );
+			assertMatch( message, elem, ":lang(" + mixCase(full) + ")" );
+			assertNoMatch( message, elem, ":lang(" + lang + "-)" );
+			assertNoMatch( message, elem, ":lang(" + full + "-)" );
+			assertNoMatch( message, elem, ":lang(" + lang + "glish)" );
+			assertNoMatch( message, elem, ":lang(" + full + "glish)" );
+		},
+		mixCase = function( str ) {
+			var ret = str.split(""),
+				i = ret.length;
+			while ( i-- ) {
+				if ( i & 1 ) {
+					ret[i] = ret[i].toUpperCase();
+				}
+			}
+			return ret.join("");
+		},
+		assertMatch = function( text, elem, selector ) {
+			ok( Sizzle.matchesSelector( elem, selector ), text + " match " + selector );
+		},
+		assertNoMatch = function( text, elem, selector ) {
+			ok( !Sizzle.matchesSelector( elem, selector ), text + " fail " + selector );
+		};
 
-	// Should also match fr + "-"
-	// http://www.w3.org/TR/selectors/#lang-pseudo
-	$fixture.attr("lang", "fr-be");
+	// Prefixing and inheritance
+	ok( Sizzle.matchesSelector( docElem, ":lang(" + docElem.lang + ")" ), "starting :lang" );
+	testLang( "document", anchor, docElem, "en", "us" );
+	testLang( "grandparent", anchor, anchor.parentNode.parentNode, "yue", "hk" );
+	ok( !Sizzle.matchesSelector( anchor, ":lang(en), :lang(en-us)" ),
+		":lang does not look above an ancestor with specified lang" );
+	testLang( "self", anchor, anchor, "es", "419" );
+	ok( !Sizzle.matchesSelector( anchor, ":lang(en), :lang(en-us), :lang(yue), :lang(yue-hk)" ),
+		":lang does not look above self with specified lang" );
 
-	testLang("qunit-fixture");
-	testLang("firstUL");
+	// Searching by language tag
+	anchor.parentNode.parentNode.lang = "arab";
+	anchor.parentNode.lang = anchor.parentNode.id = "ara-sa";
+	anchor.lang = "ara";
+	deepEqual( Sizzle( ":lang(ara)", foo ), [ anchor.parentNode, anchor ], "Find by :lang" );
 
-	ok( !Sizzle.matchesSelector($fixture[0], ":lang(en)"), "Fixture does not match documentElement lang" );
-	ok( !Sizzle.matchesSelector($fixture[0], ":lang(fr\\b)"), "Escape backslashes when creating the lang regex" );
-	$fixture.attr("lang", "fr\\b");
-	t( ":lang => escaped backslash", "#qunit-fixture:lang(fr\\\\b)", ["qunit-fixture"] );
-
-	// XML
-	jQuery("#seite1", xml).attr("xml:lang", "fr");
-	ok( foobar, "foo_bar exists" );
-	ok( Sizzle.matchesSelector(foobar, ":lang(fr)"), "XML :lang(fr)" );
-	ok( Sizzle.matchesSelector(foobar, ":lang(fR)"), "XML case-insensitive :lang(fR)" );
-	ok( !Sizzle.matchesSelector(foobar, ":lang(french)"), "XML prefix check" );
-
+	// Selector validity
+	anchor.parentNode.lang = "ara";
+	anchor.lang = "ara\\b";
+	deepEqual( Sizzle( ":lang(ara\\b)", foo ), [], ":lang respects backslashes" );
+	deepEqual( Sizzle( ":lang(ara\\\\b)", foo ), [ anchor ], ":lang respects escaped backslashes" );
 	raises(function() {
-		Sizzle.call( null, ":lang(*%fr)" );
+		Sizzle.call( null, "dl:lang(c++)" );
 	}, function( e ) {
 		return e.message.indexOf("Syntax error") >= 0;
-	}, "lang value must be a valid javascript identifier" );
+	}, ":lang value must be a valid identifier" );
+
+	// XML
+	foo = jQuery( "response", xml )[0];
+	anchor = jQuery( "#seite1", xml )[0];
+	testLang( "XML document", anchor, xml.documentElement, "en", "us" );
+	testLang( "XML grandparent", anchor, foo, "yue", "hk" );
+	ok( !Sizzle.matchesSelector( anchor, ":lang(en), :lang(en-us)" ),
+		"XML :lang does not look above an ancestor with specified lang" );
+	testLang( "XML self", anchor, anchor, "es", "419" );
+	ok( !Sizzle.matchesSelector( anchor, ":lang(en), :lang(en-us), :lang(yue), :lang(yue-hk)" ),
+		"XML :lang does not look above self with specified lang" );
 
 	// Cleanup
-	$fixture.removeAttr("lang");
-	document.documentElement.lang = previousLang;
+	if ( docXmlLang == null ) {
+		docElem.removeAttribute("xml:lang");
+	} else {
+		docElem.setAttribute( "xml:lang", docXmlLang );
+	}
+	docElem.lang = docLang;
 });
 
 test("caching", function() {
