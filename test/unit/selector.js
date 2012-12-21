@@ -401,7 +401,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 70 );
+	expect( 69 );
 
 	var opt, input, attrbad, div;
 
@@ -518,7 +518,8 @@ test("attributes", function() {
 	t( "Quoted backslash backslash (numeric escape with trailing tab)", "input[data-attr='\\5C\t\\\\']", ["attrbad_backslash_backslash"] );
 	t( "Long numeric escape (BMP)", "input[data-attr='\\04e00']", ["attrbad_unicode"] );
 	document.getElementById("attrbad_unicode").setAttribute( "data-attr", "\uD834\uDF06A" );
-	t( "Long numeric escape (non-BMP)", "input[data-attr='\\01D306A']", ["attrbad_unicode"] );
+	// It was too much code to fix Safari 5.x Supplemental Plane crashes (see ba5f09fa404379a87370ec905ffa47f8ac40aaa3)
+	// t( "Long numeric escape (non-BMP)", "input[data-attr='\\01D306A']", ["attrbad_unicode"] );
 
 	t( "input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"] );
 	t( "input[type=search]", "#form input[type=search]", ["search"] );

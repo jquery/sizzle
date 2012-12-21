@@ -524,14 +524,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 			// Opera 10-12/IE8 - ^= $= *= and empty values
 			// Should not select anything
-			div.innerHTML = "<input type='hidden' i='' s='\uD800\uDC00'/>";
+			div.innerHTML = "<input type='hidden' i=''/>";
 			if ( div.querySelectorAll("[i^='']").length ) {
 				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:\"\"|'')" );
-			}
-
-			// Safari 5 mishandles Supplemental Plane escapes
-			if ( !div.querySelectorAll("[s='\\10000']").length ) {
-				rbuggyQSA.push("\\\\[\\da-fA-F]{5}");
 			}
 
 			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
