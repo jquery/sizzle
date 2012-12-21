@@ -522,16 +522,20 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 		assert(function( div ) {
 
-			// Opera 10-12/IE9 - ^= $= *= and empty values
+			// Opera 10-12/IE8 - ^= $= *= and empty values
 			// Should not select anything
-			div.innerHTML = "<p test=''></p>";
-			if ( div.querySelectorAll("[test^='']").length ) {
+			div.innerHTML = "<input type='hidden' i='' s='\uD800\uDC00'/>";
+			if ( div.querySelectorAll("[i^='']").length ) {
 				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:\"\"|'')" );
+			}
+
+			// Safari 5 mishandles Supplemental Plane escapes
+			if ( !div.querySelectorAll("[s='\\10000']").length ) {
+				rbuggyQSA.push("\\\\[\\da-fA-F]{5}");
 			}
 
 			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
 			// IE8 throws error here and will not see later tests
-			div.innerHTML = "<input type='hidden'/>";
 			if ( !div.querySelectorAll(":enabled").length ) {
 				rbuggyQSA.push( ":enabled", ":disabled" );
 			}
@@ -555,7 +559,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 			// This should fail with an exception
 			// Gecko does not error, returns false instead
-			matches.call( div, "[test!='']:x" );
+			matches.call( div, "[s!='']:x" );
 			rbuggyMatches.push( "!=", pseudos );
 		});
 	}
