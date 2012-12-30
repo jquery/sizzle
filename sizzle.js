@@ -1827,7 +1827,7 @@ setDocument();
 // EXPOSE
 if ( typeof define === "function" && define.amd ) {
 	define(function() { return Sizzle; });
-else if ( typeof module === "function" ) {
+} else if ( typeof module === "function" ) {
   module.exports = Sizzle;
 } else {
 	window.Sizzle = Sizzle;
