@@ -1835,7 +1835,7 @@ if ( typeof define === "function" && define.amd ) {
 		exports = module.exports = Sizzle;
 	}
 	// But always support CommonJS module 1.1.1 spec (`exports` cannot be a function)
-	exports.Cookies = Sizzle;
+	exports.Sizzle = Sizzle;
 } else {
 	window.Sizzle = Sizzle;
 }
