@@ -667,13 +667,8 @@ test("pseudo - nth-last-of-type", function() {
 test("pseudo - has", function() {
 	expect( 3 );
 
-	var fixture = document.getElementById("qunit-fixture");
-
 	t( "Basic test", "p:has(a)", ["firstp","ap","en","sap"] );
 	t( "Basic test (irrelevant whitespace)", "p:has( a )", ["firstp","ap","en","sap"] );
-
-	fixture.insertBefore( document.createElement("form"), fixture.firstChild ).action = "#";
-	fixture.firstChild.appendChild( document.createElement("select") );
 	t( "Nested with overlapping candidates", "#qunit-fixture div:has(div:has(div:not([id])))", [ "moretests", "t2037" ] );
 });
 
