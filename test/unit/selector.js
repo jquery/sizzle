@@ -664,13 +664,24 @@ test("pseudo - nth-last-of-type", function() {
 	t( "Nth-last-of-type(-n+2)", "#qunit-fixture > :nth-last-of-type(-n+2)", ["ap", "name+value", "first", "firstUL", "empty", "floatTest", "iframe", "table", "name-tests", "testForm", "liveHandlerOrder", "siblingTest"] );
 });
 
+test("pseudo - has", function() {
+	expect( 3 );
+
+	var fixture = document.getElementById("qunit-fixture");
+
+	t( "Basic test", "p:has(a)", ["firstp","ap","en","sap"] );
+	t( "Basic test (irrelevant whitespace)", "p:has( a )", ["firstp","ap","en","sap"] );
+
+	fixture.insertBefore( document.createElement("form"), fixture.firstChild ).action = "#";
+	fixture.firstChild.appendChild( document.createElement("select") );
+	t( "Nested with overlapping candidates", "#qunit-fixture div:has(div:has(div:not([id])))", [ "moretests", "t2037" ] );
+});
+
 test("pseudo - misc", function() {
-	expect( 43 );
+	expect( 41 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
-	t( "Has Children - :has()", "p:has(a)", ["firstp","ap","en","sap"] );
-	t( "Has Children - :has()", "p:has( a )", ["firstp","ap","en","sap"] );
 	t( "Multiple matches with the same context (cache check)", "#form select:has(option:first-child:contains('o'))", ["select1", "select2", "select3", "select4"] );
 
 	ok( Sizzle("#qunit-fixture :not(:has(:has(*)))").length, "All not grandparents" );
