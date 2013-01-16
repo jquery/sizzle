@@ -141,7 +141,7 @@ try {
 	slice = function( i ) {
 		var elem,
 			results = [];
-		for ( ; (elem = this[i]); i++ ) {
+		while ( (elem = this[i++]) ) {
 			results.push( elem );
 		}
 		return results;
@@ -460,7 +460,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 			// Filter out possible comments
 			if ( tag === "*" ) {
-				for ( ; (elem = results[i]); i++ ) {
+				while ( (elem = results[i++]) ) {
 					if ( elem.nodeType === 1 ) {
 						tmp.push( elem );
 					}
@@ -765,11 +765,13 @@ Sizzle.uniqueSort = function( results ) {
 };
 
 function siblingCheck( a, b ) {
-	var cur = a && b && a.nextSibling;
+	var cur = b && a;
 
-	for ( ; cur; cur = cur.nextSibling ) {
-		if ( cur === b ) {
-			return -1;
+	if ( cur ) {
+		while ( (cur = cur.nextSibling) ) {
+			if ( cur === b ) {
+				return -1;
+			}
 		}
 	}
 
@@ -1399,7 +1401,7 @@ function toSelector( tokens ) {
 
 function addCombinator( matcher, combinator, base ) {
 	var dir = combinator.dir,
-		checkNonElements = base && combinator.dir === "parentNode",
+		checkNonElements = base && dir === "parentNode",
 		doneName = done++;
 
 	return combinator.first ?
@@ -1651,9 +1653,11 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 			}
 
 			// Add elements passing elementMatchers directly to results
+			// Keep `i` a string if there are no elements so `matchedCount` will be "00" below
 			for ( ; (elem = elems[i]) != null; i++ ) {
 				if ( byElement && elem ) {
-					for ( j = 0; (matcher = elementMatchers[j]); j++ ) {
+					j = 0;
+					while ( (matcher = elementMatchers[j++]) ) {
 						if ( matcher( elem, context, xml ) ) {
 							results.push( elem );
 							break;
@@ -1680,10 +1684,11 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 			}
 
 			// Apply set filters to unmatched elements
-			// `i` starts as a string, so matchedCount would equal "00" if there are no elements
+			// `i` starts as a string, so  if there are no elements
 			matchedCount += i;
 			if ( bySet && i !== matchedCount ) {
-				for ( j = 0; (matcher = setMatchers[j]); j++ ) {
+				j = 0;
+				while ( (matcher = setMatchers[j++]) ) {
 					matcher( unmatched, setMatched, context, xml );
 				}
 
@@ -1785,7 +1790,8 @@ function select( selector, context, results, seed ) {
 			}
 
 			// Fetch a seed set for right-to-left matching
-			for ( i = matchExpr["needsContext"].test( selector ) ? -1 : tokens.length - 1; i >= 0; i-- ) {
+			i = matchExpr["needsContext"].test( selector ) ? 0 : tokens.length;
+			while ( i-- ) {
 				token = tokens[i];
 
 				// Abort if we hit a combinator
