@@ -1684,7 +1684,6 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 			}
 
 			// Apply set filters to unmatched elements
-			// `i` starts as a string, so  if there are no elements
 			matchedCount += i;
 			if ( bySet && i !== matchedCount ) {
 				j = 0;
