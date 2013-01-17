@@ -981,9 +981,9 @@ Expr = Sizzle.selectors = {
 					operator === "!=" ? result !== check :
 					operator === "^=" ? check && result.indexOf( check ) === 0 :
 					operator === "*=" ? check && result.indexOf( check ) > -1 :
-					operator === "$=" ? check && result.substr( result.length - check.length ) === check :
+					operator === "$=" ? check && result.slice( -check.length ) === check :
 					operator === "~=" ? ( " " + result + " " ).indexOf( check ) > -1 :
-					operator === "|=" ? result === check || result.substr( 0, check.length + 1 ) === check + "-" :
+					operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
 					false;
 			};
 		},
