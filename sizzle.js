@@ -109,7 +109,7 @@ var i,
 
 	rsibling = /[\x20\t\r\n\f]*[+~]/,
 
-	rnative = /\{\s*\[native code\]\s*\}/,
+	rnative = /^[^{]+\{\s*\[native code/,
 
 	// Easily-parseable/retrievable ID or TAG or CLASS selectors
 	rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
