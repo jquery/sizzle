@@ -1843,11 +1843,21 @@ Expr.setFilters = new setFilters();
 setDocument();
 
 // EXPOSE
+
+// AMD support
 if ( typeof define === "function" && define.amd ) {
 	define(function() { return Sizzle; });
+} else if (typeof exports !== 'undefined') {
+	// Support Node.js specific `module.exports` (which can be a function)
+	if (typeof module != 'undefined' && module.exports) {
+		exports = module.exports = Sizzle;
+	}
+	// But always support CommonJS module 1.1.1 spec (`exports` cannot be a function)
+	exports.Sizzle = Sizzle;
 } else {
 	window.Sizzle = Sizzle;
 }
+
 // EXPOSE
 
 })( window );
