@@ -136,7 +136,7 @@ var i,
 
 // Use a stripped-down slice if we can't use a native one
 try {
-	slice.call( docElem.childNodes, 0 )[0].nodeType;
+	slice.call( preferredDoc.documentElement.childNodes, 0 )[0].nodeType;
 } catch ( e ) {
 	slice = function( i ) {
 		var elem,
