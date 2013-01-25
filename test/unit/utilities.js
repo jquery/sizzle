@@ -44,7 +44,7 @@ if ( jQuery("<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='1' wi
 }
 
 test("Sizzle.uniqueSort", function() {
-	expect( 10 );
+	expect( 12 );
 
 	function Arrayish( arr ) {
 		var i = this.length = arr.length;
@@ -58,35 +58,55 @@ test("Sizzle.uniqueSort", function() {
 		splice: [].splice
 	};
 
-	var body = document.body,
+	var i, tests,
+		body = document.body,
 		fixture = document.getElementById("qunit-fixture"),
 		detached1 = document.createElement("p"),
 		detached2 = document.createElement("ul"),
 		detachedChild = detached1.appendChild( document.createElement("a") ),
-		detachedGrandchild = detachedChild.appendChild( document.createElement("b") ),
-		tests = {
-			"Empty": {
-				input: [],
-				expected: []
-			},
-			"Single-element": {
-				input: [ fixture ],
-				expected: [ fixture ]
-			},
-			"No duplicates": {
-				input: [ fixture, body ],
-				expected: [ body, fixture ]
-			},
-			"Duplicates": {
-				input: [ body, fixture, fixture, body ],
-				expected: [ body, fixture ]
-			},
-			"Detached elements": {
-				input: [ detached1, fixture, detached2, document, detachedChild, body, detachedGrandchild ],
-				expected: [ document, body, fixture ],
-				length: 3
-			}
-		};
+		detachedGrandchild = detachedChild.appendChild( document.createElement("b") );
+
+	for ( i = 0; i < 4; i++ ) {
+		detached2.appendChild( document.createElement("li") ).id = "i" + i;
+	}
+
+	tests = {
+		"Empty": {
+			input: [],
+			expected: []
+		},
+		"Single-element": {
+			input: [ fixture ],
+			expected: [ fixture ]
+		},
+		"No duplicates": {
+			input: [ fixture, body ],
+			expected: [ body, fixture ]
+		},
+		"Duplicates": {
+			input: [ body, fixture, fixture, body ],
+			expected: [ body, fixture ]
+		},
+		"Detached elements": {
+			input: [
+				detached2.childNodes[0],
+				detached2.childNodes[1],
+				detached2.childNodes[2],
+				detached2.childNodes[3]
+			],
+			expected: [
+				detached2.childNodes[0],
+				detached2.childNodes[1],
+				detached2.childNodes[2],
+				detached2.childNodes[3]
+			]
+		},
+		"Attached/detached mixture": {
+			input: [ detached1, fixture, detached2, document, detachedChild, body, detachedGrandchild ],
+			expected: [ document, body, fixture ],
+			length: 3
+		}
+	};
 
 	jQuery.each( tests, function( label, test ) {
 		var length = test.length || test.input.length;
