@@ -760,6 +760,12 @@ Sizzle.uniqueSort = function( results ) {
 	return results;
 };
 
+/**
+ * Checks document order of two siblings
+ * @param {Element} a
+ * @param {Element} b
+ * @returns Returns -1 if a precedes b, 1 if a follows b
+ */
 function siblingCheck( a, b ) {
 	var cur = b && a,
 		diff = cur && ( ~b.sourceIndex || MAX_NEGATIVE ) - ( ~a.sourceIndex || MAX_NEGATIVE );
