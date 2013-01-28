@@ -559,7 +559,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	}
 
 	rbuggyQSA = new RegExp( rbuggyQSA.join("|") );
-	rbuggyMatches = new RegExp( rbuggyMatches.join("|") );
+	rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join("|") );
 
 	// Element contains another
 	// Purposefully does not implement inclusive descendent
