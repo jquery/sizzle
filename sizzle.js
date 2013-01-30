@@ -12,8 +12,10 @@ var i,
 	getText,
 	isXML,
 	compile,
-	hasDuplicate,
 	outermostContext,
+	hasDuplicate,
+	sortInput,
+	sortInputOriginal,
 
 	// Local document vars
 	setDocument,
@@ -588,26 +590,45 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Document order sorting
 	sortOrder = docElem.compareDocumentPosition ?
 	function( a, b ) {
-		var compare;
-
+		// Short-circuit on node equality
 		if ( a === b ) {
 			hasDuplicate = true;
 			return 0;
 		}
 
-		if ( (compare = b.compareDocumentPosition && a.compareDocumentPosition && a.compareDocumentPosition( b )) ) {
-			if ( compare & 1 || a.parentNode && a.parentNode.nodeType === 11 ) {
+		var compare = b.compareDocumentPosition && a.compareDocumentPosition &&
+			a.compareDocumentPosition( b );
+
+		if ( compare ) {
+			// Detect disconnected nodes
+			if ( compare & 1 ||
+				// Support: Opera, Firefox
+				// Results can't be trusted for document fragment children
+				a.parentNode && a.parentNode.nodeType === 11 ||
+				// Support: Webkit
+				// Detached nodes confoundingly follow *each other*
+				compare === b.compareDocumentPosition( a ) ) {
+
+				// Prioritize our document
 				if ( a === doc || contains( preferredDoc, a ) ) {
 					return -1;
 				}
 				if ( b === doc || contains( preferredDoc, b ) ) {
 					return 1;
 				}
-				return 0;
+
+				// Maintain relative order if neither node is in our document (jQuery #13331)
+				if ( sortInputOriginal ) {
+					sortInput = slice.call( sortInput, 0 );
+					sortInputOriginal = false;
+				}
+				return indexOf.call( sortInput, a ) - indexOf.call( sortInput, b );
 			}
+
 			return compare & 4 ? -1 : 1;
 		}
 
+		// Not directly comparable; sort on existence of the method
 		return a.compareDocumentPosition ? -1 : 1;
 	} :
 	function( a, b ) {
@@ -618,7 +639,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			ap = [ a ],
 			bp = [ b ];
 
-		// Exit early if the nodes are identical
+		// Short-circuit on node equality
 		if ( a === b ) {
 			hasDuplicate = true;
 			return 0;
@@ -744,6 +765,7 @@ Sizzle.uniqueSort = function( results ) {
 
 	// Unless we *know* we can detect duplicates, assume their presence
 	hasDuplicate = !support.detectDuplicates;
+	sortInput = sortInputOriginal = results;
 	results.sort( sortOrder );
 
 	if ( hasDuplicate ) {
