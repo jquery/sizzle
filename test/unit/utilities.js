@@ -44,7 +44,7 @@ if ( jQuery("<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='1' wi
 }
 
 test("Sizzle.uniqueSort", function() {
-	expect( 12 );
+	expect( 14 );
 
 	function Arrayish( arr ) {
 		var i = this.length = arr.length;
@@ -59,6 +59,7 @@ test("Sizzle.uniqueSort", function() {
 	};
 
 	var i, tests,
+		detached = [],
 		body = document.body,
 		fixture = document.getElementById("qunit-fixture"),
 		detached1 = document.createElement("p"),
@@ -66,8 +67,10 @@ test("Sizzle.uniqueSort", function() {
 		detachedChild = detached1.appendChild( document.createElement("a") ),
 		detachedGrandchild = detachedChild.appendChild( document.createElement("b") );
 
-	for ( i = 0; i < 4; i++ ) {
-		detached2.appendChild( document.createElement("li") ).id = "i" + i;
+	for ( i = 0; i < 12; i++ ) {
+		detached.push( document.createElement("li") );
+		detached[i].id = "detached" + i;
+		detached2.appendChild( document.createElement("li") ).id = "detachedChild" + i;
 	}
 
 	tests = {
@@ -87,7 +90,11 @@ test("Sizzle.uniqueSort", function() {
 			input: [ body, fixture, fixture, body ],
 			expected: [ body, fixture ]
 		},
-		"Detached elements": {
+		"Detached": {
+			input: detached.slice( 0 ),
+			expected: detached.slice( 0 )
+		},
+		"Detached children": {
 			input: [
 				detached2.childNodes[0],
 				detached2.childNodes[1],
