@@ -12,7 +12,6 @@ var i,
 	getText,
 	isXML,
 	compile,
-	hasDuplicate,
 	outermostContext,
 
 	// Local document vars
@@ -25,6 +24,8 @@ var i,
 	matches,
 	contains,
 	sortOrder,
+	hasDuplicate,
+	sortInput,
 
 	// Instance-specific data
 	expando = "sizzle" + -(new Date()),
@@ -392,6 +393,16 @@ setDocument = Sizzle.setDocument = function( node ) {
 		return pass;
 	});
 
+	// Support: Webkit
+	// Detached nodes confoundingly follow *each other*
+	support.sortDetached = assert(function( div1 ) {
+		return assert(function( div2 ) {
+			return div1.compareDocumentPosition &&
+			// Should return 1, but Webkit returns 4 (following)
+			!!(div1.compareDocumentPosition( div2 ) & 1);
+		});
+	});
+
 	// IE6/7 return modified attributes
 	Expr.attrHandle = assert(function( div ) {
 		div.innerHTML = "<a href='#'></a>";
@@ -588,26 +599,42 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Document order sorting
 	sortOrder = docElem.compareDocumentPosition ?
 	function( a, b ) {
-		var compare;
 
+		// Flag for duplicate removal
 		if ( a === b ) {
 			hasDuplicate = true;
 			return 0;
 		}
 
-		if ( (compare = b.compareDocumentPosition && a.compareDocumentPosition && a.compareDocumentPosition( b )) ) {
-			if ( compare & 1 || a.parentNode && a.parentNode.nodeType === 11 ) {
-				if ( a === doc || contains( preferredDoc, a ) ) {
+		var compare = b.compareDocumentPosition && a.compareDocumentPosition && a.compareDocumentPosition( b );
+
+		if ( compare ) {
+			// Disconnected nodes
+			if ( compare & 1 ||
+				// Support: Opera, Firefox
+				// Results can't be trusted for document fragment children
+				a.parentNode && a.parentNode.nodeType === 11 ||
+				// Support: Webkit
+				(sortInput && b.compareDocumentPosition( a ) === compare) ) {
+
+				// Choose the first element that is related to our preferred document
+				if ( a === doc || contains(preferredDoc, a) ) {
 					return -1;
 				}
-				if ( b === doc || contains( preferredDoc, b ) ) {
+				if ( b === doc || contains(preferredDoc, b) ) {
 					return 1;
 				}
-				return 0;
+
+				// Maintain original order
+				return sortInput ?
+					( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
+					0;
 			}
+
 			return compare & 4 ? -1 : 1;
 		}
 
+		// Not directly comparable, sort on existence of method
 		return a.compareDocumentPosition ? -1 : 1;
 	} :
 	function( a, b ) {
@@ -744,6 +771,8 @@ Sizzle.uniqueSort = function( results ) {
 
 	// Unless we *know* we can detect duplicates, assume their presence
 	hasDuplicate = !support.detectDuplicates;
+	// Save the original sort order if necessary
+	sortInput = !support.sortDetached && results.slice( 0 );
 	results.sort( sortOrder );
 
 	if ( hasDuplicate ) {
