@@ -1,6 +1,6 @@
 {
   "name": "sizzle",
-  "version": "1.8.1",
+  "version": "1.9.2-rc1",
   "main": "./sizzle.js",
   "dependencies": {}
 }
