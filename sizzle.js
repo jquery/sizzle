@@ -376,7 +376,11 @@ setDocument = Sizzle.setDocument = function( node ) {
 	support.getByName = assert(function( div ) {
 		// Inject content
 		div.id = expando + 0;
-		div.innerHTML = "<a name='" + expando + "'></a><div name='" + expando + "'></div>";
+		// Windows 8 Native Apps consider the `name` attr 'unsafe' when
+		// passed to innerHTML with a string of arbitrary markup
+		// http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx
+		div.appendChild( document.createElement("a") ).name = expando;
+		div.appendChild( document.createElement("div") ).name = expando;
 		docElem.insertBefore( div, docElem.firstChild );
 
 		// Test
