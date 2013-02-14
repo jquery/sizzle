@@ -376,9 +376,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 	support.getByName = assert(function( div ) {
 		// Inject content
 		div.id = expando + 0;
-		div.innerHTML = "<a></a><div></div>";
-		div.getElementsByTagName("a")[0].setAttribute("name", expando);
-		div.getElementsByTagName("div")[0].setAttribute("name", expando);
+		div.innerHTML = "";
+		div.appendChild( document.createElement("a") ).name = expando;
+		div.appendChild( document.createElement("div") ).name = expando;
 		docElem.insertBefore( div, docElem.firstChild );
 
 		// Test
