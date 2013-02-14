@@ -377,8 +377,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 		// Inject content
 		div.id = expando + 0;
 		div.innerHTML = "";
-		// In some environments, .innerHTML cannot be passed arbitrary HTML that
-		// includes dynamic (or 'unsafe') elements and attributes like `name`.
+		// Windows 8 Native Apps consider the `name` attr 'unsafe' when
+		// passed to innerHTML with a string of arbitrary markup
+		// http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx
 		div.appendChild( document.createElement("a") ).name = expando;
 		div.appendChild( document.createElement("div") ).name = expando;
 		docElem.insertBefore( div, docElem.firstChild );
