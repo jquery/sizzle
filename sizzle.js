@@ -135,18 +135,29 @@ var i,
 				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
 	};
 
-// Use a stripped-down slice if we can't use a native one
+// Optimize for push.apply( _, slice.call(<NodeList>, 0) )
 try {
-	slice.call( preferredDoc.documentElement.childNodes, 0 )[0].nodeType;
+	push.apply(
+		(arr = slice.call( preferredDoc.childNodes )),
+		preferredDoc.childNodes
+	);
+
+	// Slice is trivial if apply accepts NodeLists
+	slice = identity;
 } catch ( e ) {
-	slice = function( i ) {
-		var elem,
-			results = [];
-		while ( (elem = this[i++]) ) {
-			results.push( elem );
-		}
-		return results;
-	};
+	// Make sure slice accepts NodeLists
+	if ( !arr.length ) {
+		slice = function( i ) {
+			var results = [];
+			while ( (results[i] = this[i++]) ) {}
+			results.pop();
+			return results;
+		};
+	}
+}
+
+function identity() {
+	return this;
 }
 
 /**
@@ -1876,9 +1887,8 @@ function select( selector, context, results, seed ) {
 Expr.pseudos["nth"] = Expr.pseudos["eq"];
 
 // Easy API for creating new setFilters
-function setFilters() {}
-Expr.filters = setFilters.prototype = Expr.pseudos;
-Expr.setFilters = new setFilters();
+identity.prototype = Expr.filters = Expr.pseudos;
+Expr.setFilters = new identity();
 
 // Initialize with the default document
 setDocument();
