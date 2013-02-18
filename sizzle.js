@@ -371,8 +371,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 		return div.getElementsByClassName("e").length === 2;
 	});
 
-	// Check if getElementById returns elements by name
 	// Check if getElementsByName privileges form controls or returns elements by ID
+	// If so, assume (for broader support) that getElementById returns elements by name
 	support.getByName = assert(function( div ) {
 		// Inject content
 		div.id = expando + 0;
@@ -380,8 +380,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 		// Assigning innerHTML with "name" attributes throws uncatchable exceptions
 		// http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx
 		div.appendChild( document.createElement("a") ).setAttribute( "name", expando );
-		div.appendChild( document.createElement("div") ).setAttribute( "name", expando );
-		docElem.insertBefore( div, docElem.firstChild );
+		div.appendChild( document.createElement("i") ).setAttribute( "name", expando );
+		docElem.appendChild( div );
 
 		// Test
 		var pass = doc.getElementsByName &&
@@ -389,7 +389,6 @@ setDocument = Sizzle.setDocument = function( node ) {
 			doc.getElementsByName( expando ).length === 2 +
 			// buggy browsers will return more than the correct 0
 			doc.getElementsByName( expando + 0 ).length;
-		support.getIdNotName = !doc.getElementById( expando );
 
 		// Cleanup
 		docElem.removeChild( div );
@@ -424,7 +423,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		};
 
 	// ID find and filter
-	if ( support.getIdNotName ) {
+	if ( support.getByName ) {
 		Expr.find["ID"] = function( id, context ) {
 			if ( typeof context.getElementById !== strundefined && !documentIsXML ) {
 				var m = context.getElementById( id );
