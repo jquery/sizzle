@@ -527,7 +527,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		// Regex strategy adopted from Diego Perini
 		assert(function( div ) {
 			// Select is set to empty string on purpose
-			// This is to test IE's treatment of not explictly
+			// This is to test IE's treatment of not explicitly
 			// setting a boolean content attribute,
 			// since its presence should be enough
 			// http://bugs.jquery.com/ticket/12359
@@ -1219,7 +1219,7 @@ Expr = Sizzle.selectors = {
 		// The identifier C does not have to be a valid language name."
 		// http://www.w3.org/TR/selectors/#lang-pseudo
 		"lang": markFunction( function( lang ) {
-			// lang value must be a valid identifider
+			// lang value must be a valid identifier
 			if ( !ridentifier.test(lang || "") ) {
 				Sizzle.error( "unsupported lang: " + lang );
 			}
