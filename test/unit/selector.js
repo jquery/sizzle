@@ -201,7 +201,7 @@ test("broken", function() {
 });
 
 test("id", function() {
-	expect( 31 );
+	expect( 32 );
 
 	t( "ID Selector", "#body", ["body"] );
 	t( "ID Selector w/ Element", "body#body", ["body"] );
@@ -232,9 +232,14 @@ test("id", function() {
 	t( "All Children of ID", "#foo > *", ["sndp", "en", "sap"] );
 	t( "All Children of ID with no children", "#firstUL > *", [] );
 
-	var a = jQuery("<div><a name=\"tName1\">tName1 A</a><a name=\"tName2\">tName2 A</a><div id=\"tName1\">tName1 Div</div></div>").appendTo("#qunit-fixture");
+	var a = jQuery("<div>" +
+		"<a name='tName1'>tName1 <code>A</code></a>" +
+		"<a name='tName2'>tName2 <code>A</code></a>" +
+		"<div id='tName1'>tName1 <code>DIV</code></div>" +
+	"</div>").appendTo("#qunit-fixture");
 	equal( Sizzle("#tName1")[0].id, "tName1", "ID selector with same value for a name attribute" );
-	equal( Sizzle("#tName2").length, 0, "ID selector non-existing but name attribute on an A tag" );
+	deepEqual( Sizzle("#tName2"), [], "ID selector non-existing but name attribute on an A tag" );
+	deepEqual( Sizzle("#tName2 code"), [], "Leading ID selector non-existing but name attribute on an A tag" );
 	a.remove();
 
 	a = jQuery("<a id='backslash\\foo'></a>").appendTo("#qunit-fixture");
