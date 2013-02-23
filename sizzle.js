@@ -142,6 +142,9 @@ try {
 		(arr = slice.call( preferredDoc.childNodes )),
 		preferredDoc.childNodes
 	);
+	// Support: Android
+	// Detect silently failing push.apply
+	arr[ preferredDoc.childNodes.length ].nodeType;
 } catch ( e ) {
 	push = { apply: arr.length ?
 
