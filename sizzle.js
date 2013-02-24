@@ -142,7 +142,7 @@ try {
 		(arr = slice.call( preferredDoc.childNodes )),
 		preferredDoc.childNodes
 	);
-	// Support: Android
+	// Support: Android<4.0
 	// Detect silently failing push.apply
 	arr[ preferredDoc.childNodes.length ].nodeType;
 } catch ( e ) {
@@ -412,7 +412,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		return pass;
 	});
 
-	// Support: Webkit
+	// Support: Webkit<537.32
 	// Detached nodes confoundingly follow *each other*
 	support.sortDetached = assert(function( div1 ) {
 		return assert(function( div2 ) {
@@ -630,10 +630,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		if ( compare ) {
 			// Disconnected nodes
 			if ( compare & 1 ||
-				// Support: Opera, Firefox
-				// Results can't be trusted for document fragment children
-				a.parentNode && a.parentNode.nodeType === 11 ||
-				// Support: Webkit
+				// Support: Webkit<537.32
 				(sortInput && b.compareDocumentPosition( a ) === compare) ) {
 
 				// Choose the first element that is related to our preferred document
