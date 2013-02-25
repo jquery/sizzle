@@ -210,7 +210,7 @@ function assert( fn ) {
 	var div = document.createElement("div");
 
 	try {
-		return fn( div );
+		return !!fn( div );
 	} catch (e) {
 		return false;
 	} finally {
@@ -415,11 +415,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Support: Webkit<537.32
 	// Detached nodes confoundingly follow *each other*
 	support.sortDetached = assert(function( div1 ) {
-		return assert(function( div2 ) {
-			return div1.compareDocumentPosition &&
+		return div1.compareDocumentPosition &&
 			// Should return 1, but Webkit returns 4 (following)
-			!!(div1.compareDocumentPosition( div2 ) & 1);
-		});
+			(div1.compareDocumentPosition( document.createElement("div") ) & 1);
 	});
 
 	// IE6/7 return modified attributes
