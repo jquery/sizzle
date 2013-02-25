@@ -13,6 +13,8 @@ var i,
 	isXML,
 	compile,
 	outermostContext,
+	recompare,
+	sortInput,
 
 	// Local document vars
 	setDocument,
@@ -23,9 +25,6 @@ var i,
 	rbuggyMatches,
 	matches,
 	contains,
-	sortOrder,
-	hasDuplicate,
-	sortInput,
 
 	// Instance-specific data
 	expando = "sizzle" + -(new Date()),
@@ -36,6 +35,8 @@ var i,
 	classCache = createCache(),
 	tokenCache = createCache(),
 	compilerCache = createCache(),
+	hasDuplicate = false,
+	sortOrder = function() { return 0; },
 
 	// General-purpose constants
 	strundefined = typeof undefined,
@@ -628,8 +629,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		if ( compare ) {
 			// Disconnected nodes
 			if ( compare & 1 ||
-				// Support: Webkit<537.32
-				(sortInput && b.compareDocumentPosition( a ) === compare) ) {
+				(recompare && b.compareDocumentPosition( a ) === compare) ) {
 
 				// Choose the first element that is related to our preferred document
 				if ( a === doc || contains(preferredDoc, a) ) {
@@ -701,12 +701,6 @@ setDocument = Sizzle.setDocument = function( node ) {
 			bp[i] === preferredDoc ? 1 :
 			0;
 	};
-
-	// Always assume the presence of duplicates if sort doesn't
-	// pass them to our comparison function (as in Google Chrome).
-	hasDuplicate = false;
-	[0, 0].sort( sortOrder );
-	support.detectDuplicates = hasDuplicate;
 
 	return document;
 };
@@ -785,8 +779,9 @@ Sizzle.uniqueSort = function( results ) {
 
 	// Unless we *know* we can detect duplicates, assume their presence
 	hasDuplicate = !support.detectDuplicates;
-	// Save the original sort order if necessary
-	sortInput = !support.sortDetached && results.slice( 0 );
+	// Compensate for sort limitations
+	recompare = !support.sortDetached;
+	sortInput = !support.sortStable && results.slice( 0 );
 	results.sort( sortOrder );
 
 	if ( hasDuplicate ) {
@@ -1891,8 +1886,16 @@ function setFilters() {}
 setFilters.prototype = Expr.filters = Expr.pseudos;
 Expr.setFilters = new setFilters();
 
+// Check sort stability
+support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
+
 // Initialize with the default document
 setDocument();
+
+// Always assume the presence of duplicates if sort doesn't
+// pass them to our comparison function (as in Google Chrome).
+[0, 0].sort( sortOrder );
+support.detectDuplicates = hasDuplicate;
 
 // EXPOSE
 if ( typeof define === "function" && define.amd ) {
