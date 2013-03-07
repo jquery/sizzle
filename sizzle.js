@@ -552,7 +552,12 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 			// Opera 10-12/IE8 - ^= $= *= and empty values
 			// Should not select anything
-			div.innerHTML = "<input type='hidden' i=''/>";
+			var input = document.createElement("input");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("i", "");
+
+			div.appendChild(input);
+
 			if ( div.querySelectorAll("[i^='']").length ) {
 				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:\"\"|'')" );
 			}
