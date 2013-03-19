@@ -68,6 +68,9 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks("grunt-compare-size");
 	grunt.loadNpmTasks("grunt-git-authors");
 
-	// Default task.
+	// Default task
 	grunt.registerTask( "default", [ "jshint", "uglify", "qunit", "compare_size" ] );
+
+	// Task aliases
+	grunt.registerTask( "lint", ["jshint"] );
 };
