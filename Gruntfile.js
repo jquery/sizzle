@@ -51,10 +51,10 @@ module.exports = function( grunt ) {
 		},
 		watch: {
 			files: [
-				"<config:jshint.source.src>",
-				"<config:jshint.grunt.src>",
-				"<config:jshint.speed.src>",
-				"<config:jshint.tests.src>"
+				"<%= jshint.source.src %>",
+				"<%= jshint.grunt.src %>",
+				"<%= jshint.speed.src %>",
+				"<%= jshint.tests.src %>"
 			],
 			tasks: "default"
 		}
