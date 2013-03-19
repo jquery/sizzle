@@ -406,7 +406,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 69 );
+	expect( 70 );
 
 	var opt, input, attrbad, div;
 
@@ -528,6 +528,7 @@ test("attributes", function() {
 
 	t( "input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"] );
 	t( "input[type=search]", "#form input[type=search]", ["search"] );
+	t( "input[type=range]", "#form input[type=range]", ["range"] );
 
 	// #3279
 	div = document.createElement("div");
@@ -918,12 +919,13 @@ test("pseudo - position", function() {
 });
 
 test("pseudo - form", function() {
-	expect( 10 );
+	expect( 11 );
 
 	var extraTexts = jQuery("<input id=\"impliedText\"/><input id=\"capitalText\" type=\"TEXT\">").appendTo("#form");
 
-	t( "Form element :input", "#form :input", ["text1", "text2", "radio1", "radio2", "check1", "check2", "hidden1", "hidden2", "name", "search", "button", "area1", "select1", "select2", "select3", "select4", "select5", "impliedText", "capitalText"] );
+	t( "Form element :input", "#form :input", ["text1", "text2", "radio1", "radio2", "check1", "check2", "hidden1", "hidden2", "name", "search", "range", "button", "area1", "select1", "select2", "select3", "select4", "select5", "impliedText", "capitalText"] );
 	t( "Form element :radio", "#form :radio", ["radio1", "radio2"] );
+	t( "Form element :range", "#form :range", ["range"] );
 	t( "Form element :checkbox", "#form :checkbox", ["check1", "check2"] );
 	t( "Form element :text", "#form :text", ["text1", "text2", "hidden2", "name", "impliedText", "capitalText"] );
 	t( "Form element :radio:checked", "#form :radio:checked", ["radio2"] );
