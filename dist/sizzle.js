@@ -1,5 +1,5 @@
 /*!
- * Sizzle CSS Selector Engine @VERSION @DATE
+ * Sizzle CSS Selector Engine 1.9.2pre 2013-3-19
  * Copyright 2013 jQuery Foundation and other contributors
  * Released under the MIT license
  * http://sizzlejs.com/

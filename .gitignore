@@ -6,3 +6,4 @@
 .DS_Store
 node_modules
 test/qunit
+dist/.sizecache.json
