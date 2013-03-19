@@ -16,5 +16,5 @@ Testing Sizzle:
  - The actual unit tests are in test/unit/selectors.js and test/unit/utilities.js.
 
 Developing Sizzle with grunt:
- - `grunt` and `grunt lint` will lint sizzle.js and the tests.
+ - `grunt` and `grunt jshint` will lint sizzle.js and the tests.
  - `grunt watch` can be run to re-lint files as you change them
