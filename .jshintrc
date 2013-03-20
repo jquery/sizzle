@@ -23,6 +23,7 @@
 	"predef": [
 		"define",
 		"module",
+		"require",
 		"jQuery"
 	]
 }
