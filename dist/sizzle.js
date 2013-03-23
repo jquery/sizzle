@@ -17,7 +17,6 @@ var i,
 	isXML,
 	compile,
 	outermostContext,
-	recompare,
 	sortInput,
 
 	// Local document vars
@@ -417,11 +416,11 @@ setDocument = Sizzle.setDocument = function( node ) {
 		return pass;
 	});
 
-	// Support: Webkit<537.32
+	// Support: Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
 	// Detached nodes confoundingly follow *each other*
 	support.sortDetached = assert(function( div1 ) {
 		return div1.compareDocumentPosition &&
-			// Should return 1, but Webkit returns 4 (following)
+			// Should return 1, but returns 4 (following)
 			(div1.compareDocumentPosition( document.createElement("div") ) & 1);
 	});
 
@@ -638,7 +637,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		if ( compare ) {
 			// Disconnected nodes
 			if ( compare & 1 ||
-				(recompare && b.compareDocumentPosition( a ) === compare) ) {
+				(!support.sortDetached && b.compareDocumentPosition( a ) === compare) ) {
 
 				// Choose the first element that is related to our preferred document
 				if ( a === doc || contains(preferredDoc, a) ) {
@@ -679,6 +678,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 				b === doc ? 1 :
 				aup ? -1 :
 				bup ? 1 :
+				sortInput ?
+				( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
 				0;
 
 		// If the nodes are siblings, we can do a quick check
@@ -788,8 +789,6 @@ Sizzle.uniqueSort = function( results ) {
 
 	// Unless we *know* we can detect duplicates, assume their presence
 	hasDuplicate = !support.detectDuplicates;
-	// Compensate for sort limitations
-	recompare = !support.sortDetached;
 	sortInput = !support.sortStable && results.slice( 0 );
 	results.sort( sortOrder );
 
