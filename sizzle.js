@@ -518,9 +518,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 		}
 	};
 
-	// QSA and matchesSelector support
+	// QSA and docElem.matches support
 
-	// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
+	// matches(:active) reports false when true (IE9/Opera 11.5)
 	rbuggyMatches = [];
 
 	// qSa(:focus) reports false when true (Chrome 21),
@@ -579,14 +579,14 @@ setDocument = Sizzle.setDocument = function( node ) {
 		});
 	}
 
-	if ( (support.matchesSelector = isNative( (matches = docElem.matchesSelector ||
+	if ( (support.matchesSelector = isNative( (matches = docElem.matches ||
 		docElem.mozMatchesSelector ||
 		docElem.webkitMatchesSelector ||
 		docElem.oMatchesSelector ||
 		docElem.msMatchesSelector) )) ) {
 
 		assert(function( div ) {
-			// Check to see if it's possible to do matchesSelector
+			// Check to see if it's possible to do docElem.matches
 			// on a disconnected node (IE 9)
 			support.disconnectedMatch = matches.call( div, "div" );
 
@@ -733,7 +733,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 		try {
 			var ret = matches.call( elem, expr );
 
-			// IE 9's matchesSelector returns false on disconnected nodes
+			// IE 9's docElem.matches returns false on disconnected nodes
 			if ( ret || support.disconnectedMatch ||
 					// As well, disconnected nodes are said to be in a document
 					// fragment in IE 9
