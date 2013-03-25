@@ -416,7 +416,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		return pass;
 	});
 
-	// Support: Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
+	// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
 	// Detached nodes confoundingly follow *each other*
 	support.sortDetached = assert(function( div1 ) {
 		return div1.compareDocumentPosition &&

@@ -37,7 +37,8 @@ module.exports = function( grunt ) {
 					gz: function( contents ) {
 						return gzip.zip( contents, {} ).length;
 					}
-				}
+				},
+				cache: "dist/.sizecache.json"
 			}
 		},
 		jshint: {
