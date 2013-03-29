@@ -678,7 +678,7 @@ test("pseudo - has", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 41 );
+	expect( 38 );
 
 	t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
 	t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
@@ -790,19 +790,6 @@ test("pseudo - misc", function() {
 	t( "Multi-pseudo with leading nonexistent id", "#nonexistent:has(*), #ap:has(*)", ["ap"] );
 	t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:lt(1)", ["ap"] );
 
-	Sizzle.selectors.filters.icontains = function( elem, i, match ) {
-		return Sizzle.getText( elem ).toLowerCase().indexOf( (match[3] || "").toLowerCase() ) > -1;
-	};
-	Sizzle.selectors.setFilters.podium = function( elements, argument ) {
-		var count = argument == null || argument === "" ? 3 : +argument;
-		return elements.slice( 0, count );
-	};
-	t( "Backwards-compatible custom pseudos", "a:icontains(THIS BLOG ENTRY)", ["simon1"] );
-	t( "Backwards-compatible custom setFilters", "#form :PODIUM", ["label-for", "text1", "text2"] );
-	t( "Backwards-compatible custom setFilters with argument", "#form input:Podium(1)", ["text1"] );
-	delete Sizzle.selectors.filters.icontains;
-	delete Sizzle.selectors.setFilters.podium;
-
 	t( "Tokenization stressor", "a[class*=blog]:not(:has(*, :contains(!)), :contains(!)), br:contains(]), p:contains(]), :not(:empty):not(:parent)", ["ap", "mark","yahoo","simon"] );
 });
 
@@ -865,7 +852,7 @@ test("pseudo - :not", function() {
 });
 
 test("pseudo - position", function() {
-	expect( 34 );
+	expect( 33 );
 
 	t( "First element", "div:first", ["qunit"] );
 	t( "First element(case-insensitive)", "div:fiRst", ["qunit"] );
@@ -908,13 +895,6 @@ test("pseudo - position", function() {
 	// jQuery #12526
 	var context = jQuery("#qunit-fixture").append("<div id='jquery12526'></div>")[0];
 	deepEqual( Sizzle( ":last", context ), q("jquery12526"), "Post-manipulation positional" );
-	QUnit.reset();
-
-	// Sizzle extension
-	Sizzle.selectors.setFilters["primary"] = Sizzle.selectors.setFilters["first"];
-	t( "Extend Sizzle's POS selectors to rename first to primary", "div:primary", ["qunit"] );
-	// Reset
-	delete Sizzle.selectors.setFilters["primary"];
 });
 
 test("pseudo - form", function() {
