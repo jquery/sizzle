@@ -22,6 +22,7 @@ module.exports = function( grunt ) {
 					"dist/sizzle.min.js": [ "dist/sizzle.js" ]
 				},
 				options: {
+					compress: { evaluate: false },
 					banner: "/*! Sizzle v<%= pkg.version %> | (c) 2013 jQuery Foundation, Inc. | jquery.org/license */",
 					sourceMap: "dist/sizzle.min.map",
 					beautify: {
