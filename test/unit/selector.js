@@ -793,12 +793,6 @@ test("pseudo - misc", function() {
 	t( "Tokenization stressor", "a[class*=blog]:not(:has(*, :contains(!)), :contains(!)), br:contains(]), p:contains(]), :not(:empty):not(:parent)", ["ap", "mark","yahoo","simon"] );
 });
 
-testIframe(":focus + iframes (#13378, #13393)", "focus.html", function( frameSizzle, iframeDoc ) {
-	expect( 2 );
-
-	ok( !!iframeDoc, "Document is available" );
-	ok( frameSizzle("#iframe-link:focus"), "Focus selector does not throw an exception" );
-});
 
 test("pseudo - :not", function() {
 	expect( 43 );
