@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-04-04
+ * Date: 2013-04-08
  */
 (function( window, undefined ) {
 
@@ -1249,7 +1249,9 @@ Expr = Sizzle.selectors = {
 		},
 
 		"focus": function( elem ) {
-			return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
+			// Support: IE8/9
+			// Use documentElement here to avoid IE8/9 throwing an error
+			return elem === docElem.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
 		},
 
 		// Boolean properties

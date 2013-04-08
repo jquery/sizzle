@@ -20,10 +20,10 @@
 	"browser": true,
 	"wsh": true,
 
-	"predef": [
-		"define",
-		"module",
-		"require",
-		"jQuery"
-	]
+	"globals": {
+		"define": true,
+		"module": true,
+		"require": true,
+		"jQuery": true
+	}
 }

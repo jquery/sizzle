@@ -93,18 +93,56 @@ var createWithFriesXML = function() {
 		</soap:Body> \
 	</soap:Envelope>';
 
-	return jQuery.parseXML(string);
+	return jQuery.parseXML( string );
 };
 
 fireNative = document.createEvent ?
 	function( node, type ) {
-		var event = document.createEvent('HTMLEvents');
+		var event = document.createEvent("HTMLEvents");
 		event.initEvent( type, true, true );
 		node.dispatchEvent( event );
 	} :
 	function( node, type ) {
 		var event = document.createEventObject();
-		node.fireEvent( 'on' + type, event );
+		node.fireEvent( "on" + type, event );
 	};
 
-function moduleTeardown(){}
+/**
+ * Loads an iframe and expects the iframe to call window.parent.iframeCallback();
+ * @param {String} title The name of the test
+ * @param {String} fileName The name of the file
+ * @param {Function} fn window.iframeCallback
+ */
+function testIframe( title, fileName, fn ) {
+
+	test(title, function() {
+		var iframe;
+
+		stop();
+		window.iframeCallback = function() {
+			var self = this,
+				args = arguments;
+			setTimeout(function() {
+				window.iframeCallback = undefined;
+				iframe.remove();
+				fn.apply( self, args );
+				fn = function() {};
+				start();
+			}, 0 );
+		};
+
+		iframe = jQuery( "<div/>" )
+			.css({
+				width: "500px",
+				height: "500px",
+				position: "absolute",
+				top: "-600px",
+				left: "-600px",
+				visibility: "hidden"
+			})
+			.append( jQuery("<iframe/>").attr("src", url( "data/" + fileName )) )
+			.appendTo( "body" );
+	});
+}
+
+function moduleTeardown() {}
