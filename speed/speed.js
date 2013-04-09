@@ -10,6 +10,7 @@ function( require, Benchmark, document, selectors ) {
 
 	var // Used to indicate whether console profiling is begin run
 		profiling,
+		trim,
 
 		// Class manipulation
 		// IE doesn't match non-breaking spaces with \s
@@ -109,7 +110,7 @@ function( require, Benchmark, document, selectors ) {
 	 * @private
 	 * @param {String} str The string to trim
 	 */
-	var trim = ptrim ?
+	trim = ptrim ?
 		function( str ) {
 			return ptrim.call( str );
 		} :
