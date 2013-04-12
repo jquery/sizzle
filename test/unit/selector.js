@@ -306,13 +306,8 @@ test("class", function() {
 	div.lastChild.className += " hasOwnProperty toString";
 	deepEqual( Sizzle(".e.hasOwnProperty.toString", div), [ div.lastChild ], "Classes match Object.prototype properties" );
 
-	if ( window.SVGElement ) {
-		svgDiv = document.createElement("div");
-		svgDiv.innerHTML = "<svg width='200' height='250' version='1.1' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='30' height='30' stroke='black' fill='red' stroke-width='5' class='foo'></rect></svg>";
-		deepEqual( Sizzle(".foo", svgDiv), [ svgDiv.firstChild.firstChild ], "Finding a class on an SVG rect element." );
-	} else {
-		ok( true, "Current browser does not support SVG. Skipping SVG class selection." );
-	}
+	svgDiv = jQuery("<div><svg width='200' height='250' version='1.1' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='30' height='30' stroke='black' fill='red' stroke-width='5' class='foo'></rect></svg>")[0];
+	deepEqual( Sizzle(".foo", svgDiv), [ svgDiv.firstChild.firstChild ], "Finding a class on an SVG rect element." );
 });
 
 test("name", function() {
