@@ -264,7 +264,7 @@ test("id", function() {
 });
 
 test("class", function() {
-	expect( 25 );
+	expect( 26 );
 
 	t( "Class Selector", ".blog", ["mark","simon"] );
 	t( "Class Selector", ".GROUPS", ["groups"] );
@@ -286,7 +286,8 @@ test("class", function() {
 	t( "Child escaped Class", "form > .foo\\:bar", ["foo:bar"] );
 	t( "Child escaped Class", "form > .test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
 
-	var div = document.createElement("div");
+	var div = document.createElement("div"),
+	    svgDiv;
 	div.innerHTML = "<div class='test e'></div><div class='test'></div>";
 	deepEqual( Sizzle(".e", div), [ div.firstChild ], "Finding a second class." );
 
@@ -304,6 +305,9 @@ test("class", function() {
 
 	div.lastChild.className += " hasOwnProperty toString";
 	deepEqual( Sizzle(".e.hasOwnProperty.toString", div), [ div.lastChild ], "Classes match Object.prototype properties" );
+
+	svgDiv = jQuery("<div><svg width='200' height='250' version='1.1' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='30' height='30' stroke='black' fill='red' stroke-width='5' class='foo'></rect></svg>")[0];
+	deepEqual( Sizzle(".foo", svgDiv), [ svgDiv.firstChild.firstChild ], "Finding a class on an SVG rect element." );
 });
 
 test("name", function() {
