@@ -264,7 +264,7 @@ test("id", function() {
 });
 
 test("class", function() {
-	expect( 25 );
+	expect( 26 );
 
 	t( "Class Selector", ".blog", ["mark","simon"] );
 	t( "Class Selector", ".GROUPS", ["groups"] );
@@ -304,6 +304,14 @@ test("class", function() {
 
 	div.lastChild.className += " hasOwnProperty toString";
 	deepEqual( Sizzle(".e.hasOwnProperty.toString", div), [ div.lastChild ], "Classes match Object.prototype properties" );
+
+	if ( window.SVGElement ) {
+		var svgDiv = document.createElement("div");
+		svgDiv.innerHTML = "<svg width='200' height='250' version='1.1' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='30' height='30' stroke='black' fill='red' stroke-width='5' class='foo'></rect></svg>";
+		deepEqual( Sizzle(".foo", svgDiv), [ svgDiv.firstChild.firstChild ], "Finding a class on an SVG rect element." );
+	} else {
+		ok( true, "Current browser does not support SVG. Skipping SVG class selection." );
+	}
 });
 
 test("name", function() {
