@@ -1018,7 +1018,7 @@ Expr = Sizzle.selectors = {
 			return pattern ||
 				(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
 				classCache( className, function( elem ) {
-					return pattern.test( elem.className || (typeof elem.getAttribute !== strundefined && elem.getAttribute("class")) || "" );
+					return pattern.test( (window["SVGElement"] && elem instanceof window["SVGElement"] && elem.className.animVal) || elem.className || (typeof elem.getAttribute !== strundefined && elem.getAttribute("class")) || "" );
 				});
 		},
 
