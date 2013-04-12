@@ -286,7 +286,8 @@ test("class", function() {
 	t( "Child escaped Class", "form > .foo\\:bar", ["foo:bar"] );
 	t( "Child escaped Class", "form > .test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
 
-	var div = document.createElement("div");
+	var div = document.createElement("div"),
+	    svgDiv;
 	div.innerHTML = "<div class='test e'></div><div class='test'></div>";
 	deepEqual( Sizzle(".e", div), [ div.firstChild ], "Finding a second class." );
 
@@ -306,7 +307,7 @@ test("class", function() {
 	deepEqual( Sizzle(".e.hasOwnProperty.toString", div), [ div.lastChild ], "Classes match Object.prototype properties" );
 
 	if ( window.SVGElement ) {
-		var svgDiv = document.createElement("div");
+		svgDiv = document.createElement("div");
 		svgDiv.innerHTML = "<svg width='200' height='250' version='1.1' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='30' height='30' stroke='black' fill='red' stroke-width='5' class='foo'></rect></svg>";
 		deepEqual( Sizzle(".foo", svgDiv), [ svgDiv.firstChild.firstChild ], "Finding a class on an SVG rect element." );
 	} else {
