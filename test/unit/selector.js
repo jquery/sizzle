@@ -264,7 +264,7 @@ test("id", function() {
 });
 
 test("class", function() {
-	expect( 25 );
+	expect( 26 );
 
 	t( "Class Selector", ".blog", ["mark","simon"] );
 	t( "Class Selector", ".GROUPS", ["groups"] );
@@ -304,6 +304,9 @@ test("class", function() {
 
 	div.lastChild.className += " hasOwnProperty toString";
 	deepEqual( Sizzle(".e.hasOwnProperty.toString", div), [ div.lastChild ], "Classes match Object.prototype properties" );
+
+	div = jQuery("<div><svg width='200' height='250' version='1.1' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='30' height='30' class='foo'></rect></svg></div>")[0];
+	equal( Sizzle(".foo", div).length, 1, "Class selector against SVG" );
 });
 
 test("name", function() {
