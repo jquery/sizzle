@@ -1915,7 +1915,7 @@ support.detectDuplicates = hasDuplicate;
 assert(function( div ) {
 	div.innerHTML = "<a href='#'></a>";
 	if ( div.firstChild.getAttribute("href") !== "#" ) {
-		var attrs = "type|href|src|height|width".split("|"),
+		var attrs = "type|href|height|width".split("|"),
 			i = attrs.length;
 		while ( i-- ) {
 			Expr.attrHandle[ attrs[i] ] = interpolationHandler;

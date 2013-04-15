@@ -419,9 +419,9 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 69 );
+	expect( 70 );
 
-	var opt, input, attrbad, div;
+	var opt, input, attrbad, div, $scripts;
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
@@ -547,6 +547,10 @@ test("attributes", function() {
 	div.innerHTML = "<div id='foo' xml:test='something'></div>";
 
 	deepEqual( Sizzle( "[xml\\:test]", div ), [ div.firstChild ], "Finding by attribute with escaped characters." );
+
+	$scripts = jQuery( jQuery.parseHTML("<script id='test-src' src='jquery.js'></script><script></script><script>(function(){})</script>", true) ).appendTo("#moretests");
+	t( "src attributes retrieved correctly (must be a specified attribute)", "#moretests script[src]", ["test-src"] );
+	$scripts.remove();
 });
 
 test("pseudo - (parent|empty)", function() {
