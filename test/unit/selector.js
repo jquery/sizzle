@@ -541,16 +541,13 @@ test("attributes", function() {
 
 	t( "input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"] );
 	t( "input[type=search]", "#form input[type=search]", ["search"] );
+	t( "script[src] (jQuery #13777)", "#moretests script[src]", ["script-src"] );
 
 	// #3279
 	div = document.createElement("div");
 	div.innerHTML = "<div id='foo' xml:test='something'></div>";
 
 	deepEqual( Sizzle( "[xml\\:test]", div ), [ div.firstChild ], "Finding by attribute with escaped characters." );
-
-	$scripts = jQuery( jQuery.parseHTML("<script id='test-src' src='jquery.js'></script><script></script><script>(function(){})</script>", true) ).appendTo("#moretests");
-	t( "src attributes retrieved correctly (must be a specified attribute)", "#moretests script[src]", ["test-src"] );
-	$scripts.remove();
 });
 
 test("pseudo - (parent|empty)", function() {
