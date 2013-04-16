@@ -219,6 +219,10 @@ function assert( fn ) {
 	} catch (e) {
 		return false;
 	} finally {
+		if ( div.parentNode ) {
+			div.parentNode.removeChild( div );
+		}
+
 		// release memory in IE
 		div = null;
 	}
@@ -405,9 +409,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// so use a roundabout getElementsByName test
 	support.getById = assert(function( div ) {
 		docElem.appendChild( div ).id = expando;
-		var pass = !doc.getElementsByName || !doc.getElementsByName( expando ).length;
-		docElem.removeChild( div );
-		return pass;
+		return !doc.getElementsByName || !doc.getElementsByName( expando ).length;
 	});
 
 	// ID find and filter

@@ -421,7 +421,7 @@ test("child and adjacent", function() {
 test("attributes", function() {
 	expect( 70 );
 
-	var opt, input, attrbad, div, $scripts;
+	var opt, input, attrbad, div;
 
 	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
 	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
