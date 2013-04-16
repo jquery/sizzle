@@ -104,7 +104,6 @@ var i,
 	matchExpr = {
 		"ID": new RegExp( "^#(" + characterEncoding + ")" ),
 		"CLASS": new RegExp( "^\\.(" + characterEncoding + ")" ),
-		"NAME": new RegExp( "^\\[name=['\"]?(" + characterEncoding + ")['\"]?\\]" ),
 		"TAG": new RegExp( "^(" + characterEncoding.replace( "w", "w*" ) + ")" ),
 		"ATTR": new RegExp( "^" + attributes ),
 		"PSEUDO": new RegExp( "^" + pseudos ),
@@ -390,31 +389,6 @@ setDocument = Sizzle.setDocument = function( node ) {
 		return div.getElementsByClassName("i").length === 2;
 	});
 
-	// Check if getElementsByName privileges form controls or returns elements by ID
-	// If so, assume (for broader support) that getElementById returns elements by name
-	support.getByName = assert(function( div ) {
-		// Inject content
-		div.id = expando + 0;
-		// Support: Windows 8 Native Apps
-		// Assigning innerHTML with "name" attributes throws uncatchable exceptions
-		// http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx
-		div.appendChild( document.createElement("a") ).setAttribute( "name", expando );
-		div.appendChild( document.createElement("i") ).setAttribute( "name", expando );
-		docElem.appendChild( div );
-
-		// Test
-		var pass = doc.getElementsByName &&
-			// buggy browsers will return fewer than the correct 2
-			doc.getElementsByName( expando ).length === 2 +
-			// buggy browsers will return more than the correct 0
-			doc.getElementsByName( expando + 0 ).length;
-
-		// Cleanup
-		docElem.removeChild( div );
-
-		return pass;
-	});
-
 	// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
 	// Detached nodes confoundingly follow *each other*
 	support.sortDetached = assert(function( div1 ) {
@@ -422,8 +396,22 @@ setDocument = Sizzle.setDocument = function( node ) {
 		return div1.compareDocumentPosition( document.createElement("div") ) & 1;
 	});
 
+	// Support: IE<10
+	// Check if getElementById returns elements by name
+	// Support: Windows 8 Native Apps
+	// Assigning innerHTML with "name" attributes throws uncatchable exceptions
+	// (http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx)
+	// and the broken getElementById methods don't pick up programatically-set names,
+	// so use a roundabout getElementsByName test
+	support.getById = assert(function( div ) {
+		docElem.appendChild( div ).id = expando;
+		var pass = !doc.getElementsByName || !doc.getElementsByName( expando ).length;
+		docElem.removeChild( div );
+		return pass;
+	});
+
 	// ID find and filter
-	if ( support.getByName ) {
+	if ( support.getById ) {
 		Expr.find["ID"] = function( id, context ) {
 			if ( typeof context.getElementById !== strundefined && documentIsHTML ) {
 				var m = context.getElementById( id );
@@ -484,13 +472,6 @@ setDocument = Sizzle.setDocument = function( node ) {
 			}
 			return results;
 		};
-
-	// Name
-	Expr.find["NAME"] = support.getByName && function( tag, context ) {
-		if ( typeof context.getElementsByName !== strundefined ) {
-			return context.getElementsByName( name );
-		}
-	};
 
 	// Class
 	Expr.find["CLASS"] = support.getElementsByClassName && function( className, context ) {
