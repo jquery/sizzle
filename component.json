@@ -1,6 +1,6 @@
 {
   "name": "sizzle",
-  "version": "1.9.3-pre",
+  "version": "1.9.3",
   "main": "./dist/sizzle.js",
   "dependencies": {}
 }

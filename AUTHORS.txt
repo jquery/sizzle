@@ -2,17 +2,17 @@ Authors ordered by first contribution.
 
 John Resig <jeresig@gmail.com>
 Cheah Chu Yeow <chuyeow@gmail.com>
-Andrew Chalkley <andrew@chalkley.org>
-Fabio Buffoni <fabio.buffoni@bitmaster.it>
-Stefan Bauckmeier <stefan@bauckmeier.de>
+chalkers <andrew@chalkley.org>
+LosTFx <fabio.buffoni@bitmaster.it>
+Stefan Bauckmeier <stefan@stefan-desktop.(none)>
 Brandon Aaron <brandon.aaron@gmail.com>
 Anton Kovalyov <anton@kovalyov.net>
-Dušan B. Jovanovic <dbjdbj@gmail.com>
-Riccardo De Agostini <rdeago@gmail.com>
+DBJDBJ <dbjdbj@gmail.com>
+rdeago <rdeago@gmail.com>
 Fabian Jakobs <fabian.jakobs@web.de>
-Karl Swedberg <karl@englishrules.com>
+Karl Swedberg <kswedberg@gmail.com>
 Jake Archibald <jake.archibald@bbc.co.uk>
-Colin Snover <github.com@zetafleet.com>
+Colin Snover <colin@alpha.zetafleet.com>
 Anton Matzneller <obhvsbypqghgc@gmail.com>
 Dave Methvin <dave.methvin@gmail.com>
 Corey Frang <gnarf@gnarf.net>
@@ -22,10 +22,17 @@ Timmy Willison <timmywillisn@gmail.com>
 Mike Sherov <mike.sherov@gmail.com>
 Rock Hymas <rock@fogcreek.com>
 Yehuda Katz <wycats@gmail.com>
-Jörn Zaefferer <joern.zaefferer@gmail.com>
+JÃ¶rn Zaefferer <joern.zaefferer@gmail.com>
 Richard Gibson <richard.gibson@gmail.com>
-Vitya Muhachev <vic99999@yandex.ru>
+Yaffle <vic99999@yandex.ru>
 Henri Wiechers <hwiechers@gmail.com>
 Alan Plum <github@ap.apsq.de>
 Chad Killingsworth <chadkillingsworth@missouristate.edu>
 Markus Staab <markus.staab@redaxo.de>
+Timo Tijhof <krinklemail@gmail.com>
+Diego Tres <diegotres@gmail.com>
+Jonathan Sampson <jjdsampson@gmail.com>
+Pascal Borreli <pascal@borreli.com>
+Daniel Herman <daniel.c.herman@gmail.com>
+Frederic Junod <frederic.junod@camptocamp.com>
+Mitch Foley <mitch@thefoley.net>

@@ -1,12 +1,12 @@
 /*!
- * Sizzle CSS Selector Engine v1.9.2-pre
+ * Sizzle CSS Selector Engine v1.9.3
  * http://sizzlejs.com/
  *
  * Copyright 2013 jQuery Foundation, Inc. and other contributors
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-04-16
+ * Date: 2013-04-18
  */
 (function( window, undefined ) {
 
@@ -222,6 +222,7 @@ function assert( fn ) {
 		if ( div.parentNode ) {
 			div.parentNode.removeChild( div );
 		}
+
 		// release memory in IE
 		div = null;
 	}
