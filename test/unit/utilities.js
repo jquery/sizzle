@@ -1,5 +1,24 @@
 module("utilities", { teardown: moduleTeardown });
 
+test("Sizzle.attr", function() {
+	expect( 6 );
+
+	var div = document.getElementById("foo");
+
+	strictEqual( Sizzle.attr( div, "id" ), "foo", "id" );
+	strictEqual( Sizzle.attr( div, "nonexistent" ), null, "nonexistent" );
+	strictEqual( Sizzle.attr( div, "constructor" ), null,
+		"Object.prototype property \"constructor\" (negative)" );
+	strictEqual( Sizzle.attr( div, "watch" ), null,
+		"Gecko Object.prototype property \"watch\" (negative)" );
+	div.setAttribute( "constructor", "foo" );
+	div.setAttribute( "watch", "bar" );
+	strictEqual( Sizzle.attr( div, "constructor" ), "foo",
+		"Object.prototype property \"constructor\"" );
+	strictEqual( Sizzle.attr( div, "watch" ), "bar",
+		"Gecko Object.prototype property \"watch\"" );
+});
+
 test("Sizzle.contains", function() {
 	expect( 16 );
 

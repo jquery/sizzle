@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-04-18
+ * Date: 2013-04-22
  */
 (function( window, undefined ) {
 
@@ -45,7 +45,8 @@ var i,
 	strundefined = typeof undefined,
 	MAX_NEGATIVE = 1 << 31,
 
-	// Array methods
+	// Instance methods
+	hasOwn = support.hasOwnProperty,
 	arr = [],
 	pop = arr.pop,
 	push_native = arr.push,
@@ -732,7 +733,10 @@ Sizzle.attr = function( elem, name ) {
 	}
 
 	var fn = Expr.attrHandle[ name.toLowerCase() ],
-		val = fn && fn( elem, name, !documentIsHTML );
+		// Don't get fooled by Object.prototype properties (jQuery #13807)
+		val = fn && ( hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
+			fn( elem, name, !documentIsHTML ) :
+			undefined );
 
 	return val === undefined ?
 		support.attributes || !documentIsHTML ?

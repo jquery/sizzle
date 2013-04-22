@@ -419,7 +419,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 70 );
+	expect( 74 );
 
 	var opt, input, attrbad, div;
 
@@ -548,6 +548,14 @@ test("attributes", function() {
 	div.innerHTML = "<div id='foo' xml:test='something'></div>";
 
 	deepEqual( Sizzle( "[xml\\:test]", div ), [ div.firstChild ], "Finding by attribute with escaped characters." );
+
+	div = document.getElementById("foo");
+	t( "Object.prototype property \"constructor\" (negative)", "[constructor]", [] );
+	t( "Gecko Object.prototype property \"watch\" (negative)", "[watch]", [] );
+	div.setAttribute( "constructor", "foo" );
+	div.setAttribute( "watch", "bar" );
+	t( "Object.prototype property \"constructor\"", "[constructor='foo']", ["foo"] );
+	t( "Gecko Object.prototype property \"watch\"", "[watch='bar']", ["foo"] );
 });
 
 test("pseudo - (parent|empty)", function() {
