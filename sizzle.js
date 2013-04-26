@@ -140,6 +140,53 @@ var i,
 				String.fromCharCode( high + 0x10000 ) :
 				// Supplemental Plane codepoint (surrogate pair)
 				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
+	},
+
+	QSAMap = {
+		":button":"button,input[type=button]",
+		":checkbox":"[type=checkbox]"
+	},
+
+	qsalize = function( selectorsGroupFrom ) {
+		var selectorsGroupTo = "",
+			selectorFromArray = selectorsGroupFrom.split( "," ),
+			selectorFromIndex,
+			workArray,
+			workArrayIndex,
+			tempArray,
+			QSAArray,
+			QSAArrayIndex,
+			QSAMapKey,
+			needProcess;
+
+		for ( selectorFromIndex in selectorFromArray ) {
+			workArray = [selectorFromArray[selectorFromIndex]];
+
+			for ( QSAMapKey in QSAMap ) {
+				needProcess = true;
+				while ( needProcess ) {
+					tempArray = [];
+					needProcess = false;
+					for ( workArrayIndex in workArray ) {
+						if ( workArray[workArrayIndex].match( QSAMapKey ) ) {
+							QSAArray = QSAMap[QSAMapKey].split(",");
+							for ( QSAArrayIndex in QSAArray ) {
+								tempArray.push( workArray[workArrayIndex].replace(QSAMapKey, QSAArray[QSAArrayIndex]) );
+							}
+							needProcess = true;
+						} else {
+							tempArray.push( workArray[workArrayIndex] );
+						}
+					}
+
+					workArray = tempArray;
+				}
+			}
+
+			selectorsGroupTo += workArray.join( "," );
+		}
+
+		return selectorsGroupTo;
 	};
 
 // Optimize for push.apply( _, NodeList )
@@ -321,7 +368,7 @@ function Sizzle( selector, context, results, seed ) {
 			if ( newSelector ) {
 				try {
 					push.apply( results,
-						newContext.querySelectorAll( newSelector )
+						newContext.querySelectorAll( qsalize( newSelector ) )
 					);
 					return results;
 				} catch(qsaError) {
