@@ -694,10 +694,9 @@ Sizzle.matchesSelector = function( elem, expr ) {
 	// Make sure that attribute selectors are quoted
 	expr = expr.replace( rattributeQuotes, "='$1']" );
 
-	// rbuggyQSA always contains :focus, so no need for an existence check
 	if ( support.matchesSelector && documentIsHTML &&
-		(!rbuggyMatches || !rbuggyMatches.test(expr)) &&
-		(!rbuggyQSA     || !rbuggyQSA.test(expr)) ) {
+		( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
+		( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
 
 		try {
 			var ret = matches.call( elem, expr );

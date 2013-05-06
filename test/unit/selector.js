@@ -46,16 +46,17 @@ module("selector", { teardown: moduleTeardown });
 */
 
 test("element", function() {
-	expect( 37 );
+	expect( 38 );
 
 	var form, all, good, i, obj1, lengthtest,
 		siblingTest, iframe, iframeDoc, html;
 
 	equal( Sizzle("").length, 0, "Empty selector returns an empty array" );
-	equal( Sizzle(" ").length, 0, "Empty selector returns an empty array" );
-	equal( Sizzle("\t").length, 0, "Empty selector returns an empty array" );
+	deepEqual( Sizzle("div", document.createTextNode("")), [], "Text element as context fails silently" );
 	form = document.getElementById("form");
 	ok( !Sizzle.matchesSelector( form, "" ), "Empty string passed to matchesSelector does not match" );
+	equal( Sizzle(" ").length, 0, "Empty selector returns an empty array" );
+	equal( Sizzle("\t").length, 0, "Empty selector returns an empty array" );
 
 	ok( Sizzle("*").length >= 30, "Select all" );
 	all = Sizzle("*");
