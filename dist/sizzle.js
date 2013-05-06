@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-04-24
+ * Date: 2013-05-06
  */
 (function( window, undefined ) {
 
@@ -220,10 +220,10 @@ function assert( fn ) {
 	} catch (e) {
 		return false;
 	} finally {
+		// Remove from its parent by default
 		if ( div.parentNode ) {
 			div.parentNode.removeChild( div );
 		}
-
 		// release memory in IE
 		div = null;
 	}
@@ -398,15 +398,12 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Detached nodes confoundingly follow *each other*
 	support.sortDetached = assert(function( div1 ) {
 		// Should return 1, but returns 4 (following)
-		return div1.compareDocumentPosition( document.createElement("div") ) & 1;
+		return div1.compareDocumentPosition( doc.createElement("div") ) & 1;
 	});
 
 	// Support: IE<10
 	// Check if getElementById returns elements by name
-	// Support: Windows 8 Native Apps
-	// Assigning innerHTML with "name" attributes throws uncatchable exceptions
-	// (http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx)
-	// and the broken getElementById methods don't pick up programatically-set names,
+	// The broken getElementById methods don't pick up programatically-set names,
 	// so use a roundabout getElementsByName test
 	support.getById = assert(function( div ) {
 		docElem.appendChild( div ).id = expando;
@@ -527,7 +524,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// Should not select anything
 			// Support: Windows 8 Native Apps
 			// The type attribute is restricted during .innerHTML assignment
-			var input = document.createElement("input");
+			var input = doc.createElement("input");
 			input.setAttribute( "type", "hidden" );
 			div.appendChild( input ).setAttribute( "t", "" );
 
@@ -681,7 +678,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			0;
 	};
 
-	return document;
+	return doc;
 };
 
 Sizzle.matches = function( expr, elements ) {

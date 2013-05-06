@@ -205,7 +205,7 @@ test("broken", function() {
 });
 
 test("id", function() {
-	expect( 32 );
+	expect( 33 );
 
 	var fiddle, a;
 
@@ -238,15 +238,10 @@ test("id", function() {
 	t( "All Children of ID", "#foo > *", ["sndp", "en", "sap"] );
 	t( "All Children of ID with no children", "#firstUL > *", [] );
 
-	a = jQuery("<div>" +
-		"<a name='tName1'>tName1 <code>A</code></a>" +
-		"<a name='tName2'>tName2 <code>A</code></a>" +
-		"<div id='tName1'>tName1 <code>DIV</code></div>" +
-	"</div>").appendTo("#qunit-fixture");
 	equal( Sizzle("#tName1")[0].id, "tName1", "ID selector with same value for a name attribute" );
-	deepEqual( Sizzle("#tName2"), [], "ID selector non-existing but name attribute on an A tag" );
-	deepEqual( Sizzle("#tName2 code"), [], "Leading ID selector non-existing but name attribute on an A tag" );
-	a.remove();
+	t( "ID selector non-existing but name attribute on an A tag",         "#tName2",      [] );
+	t( "Leading ID selector non-existing but name attribute on an A tag", "#tName2 span", [] );
+	t( "Leading ID selector existing, retrieving the child",              "#tName1 span", ["tName1-span"] );
 
 	a = jQuery("<a id='backslash\\foo'></a>").appendTo("#qunit-fixture");
 	t( "ID Selector contains backslash", "#backslash\\\\foo", ["backslash\\foo"] );
@@ -310,9 +305,9 @@ test("class", function() {
 });
 
 test("name", function() {
-	expect( 15 );
+	expect( 13 );
 
-	var form, a;
+	var form;
 
 	t( "Name selector", "input[name=action]", ["text1"] );
 	t( "Name selector with single quotes", "input[name='action']", ["text1"] );
@@ -333,17 +328,9 @@ test("name", function() {
 
 	form.remove();
 
-	a = jQuery("<div><a id=\"tName1ID\" name=\"tName1\">tName1 A</a><a id=\"tName2ID\" name=\"tName2\">tName2 A</a><div id=\"tName1\">tName1 Div</div></div>")
-		.appendTo("#qunit-fixture").children();
-
-	equal( a.length, 3, "Make sure the right number of elements were inserted." );
-	equal( a[1].id, "tName2ID", "Make sure the right number of elements were inserted." );
-
-	equal( Sizzle("[name=tName1]")[0], a[0], "Find elements that have similar IDs" );
-	equal( Sizzle("[name=tName2]")[0], a[1], "Find elements that have similar IDs" );
+	t( "Find elements that have similar IDs", "[name=tName1]", ["tName1ID"] );
+	t( "Find elements that have similar IDs", "[name=tName2]", ["tName2ID"] );
 	t( "Find elements that have similar IDs", "#tName2ID", ["tName2ID"] );
-
-	a.parent().remove();
 });
 
 test("multiple", function() {
@@ -369,15 +356,15 @@ test("child and adjacent", function() {
 	t( "Child w/ Class", "p > a.blog", ["mark","simon"] );
 	t( "All Children", "code > *", ["anchor1","anchor2"] );
 	t( "All Grandchildren", "p > * > *", ["anchor1","anchor2"] );
-	t( "Adjacent", "#qunit-fixture a + a", ["groups"] );
-	t( "Adjacent", "#qunit-fixture a +a", ["groups"] );
-	t( "Adjacent", "#qunit-fixture a+ a", ["groups"] );
-	t( "Adjacent", "#qunit-fixture a+a", ["groups"] );
+	t( "Adjacent", "#qunit-fixture a + a", ["groups", "tName2ID"] );
+	t( "Adjacent", "#qunit-fixture a +a", ["groups", "tName2ID"] );
+	t( "Adjacent", "#qunit-fixture a+ a", ["groups", "tName2ID"] );
+	t( "Adjacent", "#qunit-fixture a+a", ["groups", "tName2ID"] );
 	t( "Adjacent", "p + p", ["ap","en","sap"] );
 	t( "Adjacent", "p#firstp + p", ["ap"] );
 	t( "Adjacent", "p[lang=en] + p", ["sap"] );
 	t( "Adjacent", "a.GROUPS + code + a", ["mark"] );
-	t( "Comma, Child, and Adjacent", "#qunit-fixture a + a, code > a", ["groups","anchor1","anchor2"] );
+	t( "Comma, Child, and Adjacent", "#qunit-fixture a + a, code > a", ["groups","anchor1","anchor2","tName2ID"] );
 	t( "Element Preceded By", "#qunit-fixture p ~ div", ["foo", "nothiddendiv", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
 	t( "Element Preceded By", "#first ~ div", ["moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
 	t( "Element Preceded By", "#groups ~ a", ["mark"] );
