@@ -6,11 +6,12 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-05-06
+ * Date: 2013-05-07
  */
 (function( window, undefined ) {
 
 var i,
+	support,
 	cachedruns,
 	Expr,
 	getText,
@@ -32,7 +33,6 @@ var i,
 	// Instance-specific data
 	expando = "sizzle" + -(new Date()),
 	preferredDoc = window.document,
-	support = {},
 	dirruns = 0,
 	done = 0,
 	classCache = createCache(),
@@ -46,7 +46,7 @@ var i,
 	MAX_NEGATIVE = 1 << 31,
 
 	// Instance methods
-	hasOwn = support.hasOwnProperty,
+	hasOwn = ({}).hasOwnProperty,
 	arr = [],
 	pop = arr.pop,
 	push_native = arr.push,
@@ -338,6 +338,7 @@ function Sizzle( selector, context, results, seed ) {
 	return select( selector.replace( rtrim, "$1" ), context, results, seed );
 }
 
+
 /**
  * Detect xml
  * @param {Element|Object} elem An element or a document
@@ -348,6 +349,9 @@ isXML = Sizzle.isXML = function( elem ) {
 	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
 	return documentElement ? documentElement.nodeName !== "HTML" : false;
 };
+
+// Expose support vars for convenience
+support = Sizzle.support = {};
 
 /**
  * Sets document-related variables once based on the current document
@@ -694,10 +698,9 @@ Sizzle.matchesSelector = function( elem, expr ) {
 	// Make sure that attribute selectors are quoted
 	expr = expr.replace( rattributeQuotes, "='$1']" );
 
-	// rbuggyQSA always contains :focus, so no need for an existence check
 	if ( support.matchesSelector && documentIsHTML &&
-		(!rbuggyMatches || !rbuggyMatches.test(expr)) &&
-		(!rbuggyQSA     || !rbuggyQSA.test(expr)) ) {
+		( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
+		( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
 
 		try {
 			var ret = matches.call( elem, expr );
