@@ -69,7 +69,7 @@ test("backwards-compatible custom pseudos", function() {
 		var count = argument == null || argument === "" ? 3 : +argument;
 		return elements.slice( 0, count );
 	};
-	t( "Custom setFilter", "#form :PODIUM", ["label-for", "text1", "text2"] );
+	t( "Custom setFilter", "form#form :PODIUM", ["label-for", "text1", "text2"] );
 	t( "Custom setFilter with argument", "#form input:Podium(1)", ["text1"] );
 	delete Sizzle.selectors.setFilters.podium;
 });

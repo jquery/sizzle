@@ -206,7 +206,7 @@ test("broken", function() {
 });
 
 test("id", function() {
-	expect( 33 );
+	expect( 34 );
 
 	var fiddle, a;
 
@@ -243,6 +243,7 @@ test("id", function() {
 	t( "ID selector non-existing but name attribute on an A tag",         "#tName2",      [] );
 	t( "Leading ID selector non-existing but name attribute on an A tag", "#tName2 span", [] );
 	t( "Leading ID selector existing, retrieving the child",              "#tName1 span", ["tName1-span"] );
+	equal( Sizzle("div > div #tName1")[0].id, Sizzle("#tName1-span")[0].parentNode.id, "Ending with ID" );
 
 	a = jQuery("<a id='backslash\\foo'></a>").appendTo("#qunit-fixture");
 	t( "ID Selector contains backslash", "#backslash\\\\foo", ["backslash\\foo"] );
