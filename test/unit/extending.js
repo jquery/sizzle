@@ -69,6 +69,8 @@ test("backwards-compatible custom pseudos", function() {
 		var count = argument == null || argument === "" ? 3 : +argument;
 		return elements.slice( 0, count );
 	};
+	// Using TAG as the first token here forces this setMatcher into a fail state
+	// Where the descendent combinator was lost
 	t( "Custom setFilter", "form#form :PODIUM", ["label-for", "text1", "text2"] );
 	t( "Custom setFilter with argument", "#form input:Podium(1)", ["text1"] );
 	delete Sizzle.selectors.setFilters.podium;
