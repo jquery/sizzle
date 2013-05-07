@@ -373,17 +373,55 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Support tests
 	documentIsHTML = !isXML( doc );
 
+	/* Attributes
+	---------------------------------------------------------------------- */
+
+	// Support: IE<8
+	// Verify that getAttribute really returns attributes and not properties (excepting IE8 booleans)
+	if ( !( support.attributes = assert(function( div ) {
+
+		// Support: IE<8
+		// Prevent attribute/property "interpolation"
+		div.innerHTML = "<a href='#'></a>";
+		var attrs = "type|href|height|width".split("|"),
+			i = attrs.length,
+			handler = div.firstChild.getAttribute("href") === "#" ?
+				null :
+				Expr.attrHandle[ attrs[i] ] = interpolationHandler;
+		while ( i-- ) {
+			Expr.attrHandle[ attrs[i] ] = handler;
+		}
+
+		// Support: IE<9
+		// Use getAttributeNode to fetch booleans when getAttribute lies
+		attrs = booleans.split("|");
+		i = attrs.length;
+		handler = div.getAttribute("disabled") == null ?
+			null :
+			boolHandler;
+		while ( i-- ) {
+			Expr.attrHandle[ attrs[i] ] = handler;
+		}
+
+		div.className = "i";
+		return !div.getAttribute("className");
+	}) ) ) {
+		Expr.attrHandle.value = function( elem, name, isXML ) {
+			// Ignore the value *property* on inputs by using defaultValue
+			// Fallback to Sizzle.attr by returning undefined where appropriate
+			if ( !isXML && elem.nodeName.toLowerCase() === "input" ) {
+				return elem.defaultValue;
+			}
+		};
+	}
+
+	/* getElement(s)By*
+	---------------------------------------------------------------------- */
+
 	// Check if getElementsByTagName("*") returns only elements
 	support.getElementsByTagName = assert(function( div ) {
 		div.appendChild( doc.createComment("") );
 		return !div.getElementsByTagName("*").length;
-	});
-
-	// Support: IE<8
-	// Verify that getAttribute really returns attributes and not properties (excepting IE8 booleans)
-	support.attributes = assert(function( div ) {
-		div.className = "i";
-		return !div.getAttribute("className");
 	});
 
 	// Check if getElementsByClassName can be trusted
@@ -396,13 +434,6 @@ setDocument = Sizzle.setDocument = function( node ) {
 		// Support: Opera<10
 		// Catch gEBCN failure to find non-leading classes
 		return div.getElementsByClassName("i").length === 2;
-	});
-
-	// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
-	// Detached nodes confoundingly follow *each other*
-	support.sortDetached = assert(function( div1 ) {
-		// Should return 1, but returns 4 (following)
-		return div1.compareDocumentPosition( doc.createElement("div") ) & 1;
 	});
 
 	// Support: IE<10
@@ -476,6 +507,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 			return context.getElementsByClassName( className );
 		}
 	};
+
+	/* QSA/matchesSelector
+	---------------------------------------------------------------------- */
 
 	// QSA and matchesSelector support
 
@@ -561,6 +595,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 	rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
 	rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join("|") );
 
+	/* Contains
+	---------------------------------------------------------------------- */
+
 	// Element contains another
 	// Purposefully does not implement inclusive descendent
 	// As in, an element does not contain itself
@@ -584,6 +621,16 @@ setDocument = Sizzle.setDocument = function( node ) {
 			}
 			return false;
 		};
+
+	/* Sorting
+	---------------------------------------------------------------------- */
+
+	// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
+	// Detached nodes confoundingly follow *each other*
+	support.sortDetached = assert(function( div1 ) {
+		// Should return 1, but returns 4 (following)
+		return div1.compareDocumentPosition( doc.createElement("div") ) & 1;
+	});
 
 	// Document order sorting
 	sortOrder = docElem.compareDocumentPosition ?
@@ -727,7 +774,7 @@ Sizzle.attr = function( elem, name ) {
 
 	var fn = Expr.attrHandle[ name.toLowerCase() ],
 		// Don't get fooled by Object.prototype properties (jQuery #13807)
-		val = fn && ( hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
+		val = ( fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
 			fn( elem, name, !documentIsHTML ) :
 			undefined );
 
@@ -1897,31 +1944,6 @@ setDocument();
 // Always assume duplicates if they aren't passed to the comparison function
 [0, 0].sort( sortOrder );
 support.detectDuplicates = hasDuplicate;
-
-// Support: IE<8
-// Prevent attribute/property "interpolation"
-assert(function( div ) {
-	div.innerHTML = "<a href='#'></a>";
-	if ( div.firstChild.getAttribute("href") !== "#" ) {
-		var attrs = "type|href|height|width".split("|"),
-			i = attrs.length;
-		while ( i-- ) {
-			Expr.attrHandle[ attrs[i] ] = interpolationHandler;
-		}
-	}
-});
-
-// Support: IE<9
-// Use getAttributeNode to fetch booleans when getAttribute lies
-assert(function( div ) {
-	if ( div.getAttribute("disabled") != null ) {
-		var attrs = booleans.split("|"),
-			i = attrs.length;
-		while ( i-- ) {
-			Expr.attrHandle[ attrs[i] ] = boolHandler;
-		}
-	}
-});
 
 // EXPOSE
 if ( typeof define === "function" && define.amd ) {

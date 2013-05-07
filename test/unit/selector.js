@@ -408,7 +408,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 74 );
+	expect( 75 );
 
 	var opt, input, attrbad, div;
 
@@ -545,6 +545,8 @@ test("attributes", function() {
 	div.setAttribute( "watch", "bar" );
 	t( "Object.prototype property \"constructor\"", "[constructor='foo']", ["foo"] );
 	t( "Gecko Object.prototype property \"watch\"", "[watch='bar']", ["foo"] );
+
+	t( "Value attribute is retrieved correctly", "input[value=Test]", ["text1", "text2"] );
 });
 
 test("pseudo - (parent|empty)", function() {
