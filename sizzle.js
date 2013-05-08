@@ -362,15 +362,14 @@ function addHandle( attrs, handler, test ) {
  * Fetches boolean attributes by node
  * @param {Element} elem
  * @param {String} name
- * @param {Boolean} [isXML]
  */
-function boolHandler( elem, name, isXML ) {
+function boolHandler( elem, name ) {
 	var val;
-	return isXML ?
-		undefined :
-		(val = elem.getAttributeNode( name )) && val.specified ?
+	if ( documentIsHTML ) {
+		return (val = elem.getAttributeNode( name )) && val.specified ?
 			val.value :
 			elem[ name ] === true ? name.toLowerCase() : null;
+	}
 }
 
 /**
@@ -378,25 +377,23 @@ function boolHandler( elem, name, isXML ) {
  * http://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
  * @param {Element} elem
  * @param {String} name
- * @param {Boolean} [isXML]
  */
-function interpolationHandler( elem, name, isXML ) {
+function interpolationHandler( elem, name ) {
 	var val;
-	return isXML ?
-		undefined :
-		(val = elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 ));
+	if ( documentIsHTML ) {
+		return (val = elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 ));
+	}
 }
 
 /**
  * Uses defaultValue to retrieve value in IE6/7
  * @param {Element} elem
  * @param {String} name
- * @param {Boolean} [isXML]
  */
-function valueHandler( elem, name, isXML ) {
+function valueHandler( elem ) {
 	// Ignore the value *property* on inputs by using defaultValue
 	// Fallback to Sizzle.attr by returning undefined where appropriate
-	if ( !isXML && elem.nodeName.toLowerCase() === "input" ) {
+	if ( documentIsHTML && elem.nodeName.toLowerCase() === "input" ) {
 		return elem.defaultValue;
 	}
 }
@@ -1494,15 +1491,6 @@ function tokenize( selector, parseOnly ) {
 			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
 				(match = preFilters[ type ]( match ))) ) {
 				matched = match.shift();
-				// Standalone pseudos should be treated as *:PSEUDO
-				// If the previous token was a combinator, insert an implicit *
-				if ( type === "PSEUDO" && tokens.length && Expr.relative[ tokens[ tokens.length -1 ].type ] ) {
-					tokens.push({
-						value: "*",
-						type: "TAG",
-						matches: [ "*" ]
-					});
-				}
 				tokens.push({
 					value: matched,
 					type: type,
@@ -1754,7 +1742,10 @@ function matcherFromTokens( tokens ) {
 				}
 				return setMatcher(
 					i > 1 && elementMatcher( matchers ),
-					i > 1 && toSelector( tokens.slice( 0, i - 1 ) ).replace( rtrim, "$1" ),
+					i > 1 && toSelector(
+						// If the preceding token was a descendant combinator, insert an implicit any-element `*`
+						tokens.slice( 0, i - 1 ).concat({ value: tokens[ i - 2 ].type === " " ? "*" : "" })
+					).replace( rtrim, "$1" ),
 					matcher,
 					i < j && matcherFromTokens( tokens.slice( i, j ) ),
 					j < len && matcherFromTokens( (tokens = tokens.slice( j )) ),
