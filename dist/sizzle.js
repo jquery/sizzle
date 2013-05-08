@@ -364,12 +364,11 @@ function addHandle( attrs, handler, test ) {
  * @param {String} name
  */
 function boolHandler( elem, name ) {
-	var val;
-	if ( documentIsHTML ) {
-		return (val = elem.getAttributeNode( name )) && val.specified ?
-			val.value :
-			elem[ name ] === true ? name.toLowerCase() : null;
-	}
+	// XML does not need to be checked as this will not be assigned for XML documents
+	var val = elem.getAttributeNode( name );
+	return val.specified ?
+		val.value :
+		elem[ name ] === true ? name.toLowerCase() : null;
 }
 
 /**
@@ -379,10 +378,8 @@ function boolHandler( elem, name ) {
  * @param {String} name
  */
 function interpolationHandler( elem, name ) {
-	var val;
-	if ( documentIsHTML ) {
-		return (val = elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 ));
-	}
+	// XML does not need to be checked as this will not be assigned for XML documents
+	return elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
 }
 
 /**
@@ -393,7 +390,8 @@ function interpolationHandler( elem, name ) {
 function valueHandler( elem ) {
 	// Ignore the value *property* on inputs by using defaultValue
 	// Fallback to Sizzle.attr by returning undefined where appropriate
-	if ( documentIsHTML && elem.nodeName.toLowerCase() === "input" ) {
+	// XML does not need to be checked as this will not be assigned for XML documents
+	if ( elem.nodeName.toLowerCase() === "input" ) {
 		return elem.defaultValue;
 	}
 }
