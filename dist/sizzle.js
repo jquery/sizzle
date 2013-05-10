@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-05-08
+ * Date: 2013-05-10
  */
 (function( window, undefined ) {
 
@@ -1048,7 +1048,7 @@ Expr = Sizzle.selectors = {
 			}
 
 			// Accept quoted arguments as-is
-			if ( match[4] ) {
+			if ( match[4] !== undefined ) {
 				match[2] = match[4];
 
 			// Strip excess characters from unquoted arguments

@@ -691,7 +691,7 @@ test("pseudo - has", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 38 );
+	expect( 39 );
 
 	var select, tmp, input;
 
@@ -704,6 +704,7 @@ test("pseudo - misc", function() {
 	select = document.getElementById("select1");
 	ok( Sizzle.matchesSelector( select, ":has(option)" ), "Has Option Matches" );
 
+	ok( Sizzle("a:contains('')").length, "Empty string contains" );
 	t( "Text Contains", "a:contains(Google)", ["google","groups"] );
 	t( "Text Contains", "a:contains(Google Groups)", ["groups"] );
 
