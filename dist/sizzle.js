@@ -404,7 +404,9 @@ function valueHandler( elem ) {
  */
 function siblingCheck( a, b ) {
 	var cur = b && a,
-		diff = cur && ( ~b.sourceIndex || MAX_NEGATIVE ) - ( ~a.sourceIndex || MAX_NEGATIVE );
+		diff = cur && a.nodeType === 1 && b.nodeType === 1 &&
+			( ~b.sourceIndex || MAX_NEGATIVE ) -
+			( ~a.sourceIndex || MAX_NEGATIVE );
 
 	// Use IE sourceIndex if available on both nodes
 	if ( diff ) {
