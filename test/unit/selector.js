@@ -408,7 +408,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 75 );
+	expect( 76 );
 
 	var opt, input, attrbad, div;
 
@@ -497,8 +497,10 @@ test("attributes", function() {
 	ok( Sizzle.matchesSelector( input, ":input[data-pos=':first']"), "POS within attribute value after pseudo is treated as an attribute value" );
 	input.removeAttribute("data-pos");
 
-	// Make sure attribute value quoting works correctly. See jQuery #6093; #6428
+	// Make sure attribute value quoting works correctly. See jQuery #6093; #6428; #13894
+	// Use seeded results to bypass querySelectorAll optimizations
 	attrbad = jQuery(
+		"<input type='hidden' id='attrbad_space' name='foo bar'/>" +
 		"<input type='hidden' id='attrbad_dot' value='2' name='foo.baz'/>" +
 		"<input type='hidden' id='attrbad_brackets' value='2' name='foo[baz]'/>" +
 		"<input type='hidden' id='attrbad_injection' data-attr='foo_baz&#39;]'/>" +
@@ -507,26 +509,40 @@ test("attributes", function() {
 		"<input type='hidden' id='attrbad_backslash_quote' data-attr='&#92;&#39;'/>" +
 		"<input type='hidden' id='attrbad_backslash_backslash' data-attr='&#92;&#92;'/>" +
 		"<input type='hidden' id='attrbad_unicode' data-attr='&#x4e00;'/>"
-	).appendTo("#qunit-fixture");
+	).appendTo("#qunit-fixture").get();
 
 	t( "Underscores don't need escaping", "input[id=types_all]", ["types_all"] );
 
-	t( "Escaped dot", "input[name=foo\\.baz]", ["attrbad_dot"] );
-	t( "Escaped brackets", "input[name=foo\\[baz\\]]", ["attrbad_brackets"] );
-	t( "Escaped quote + right bracket", "input[data-attr='foo_baz\\']']", ["attrbad_injection"] );
+	deepEqual( Sizzle( "input[name=foo\\ bar]", null, null, attrbad ), q("attrbad_space"),
+		"Escaped space" );
+	deepEqual( Sizzle( "input[name=foo\\.baz]", null, null, attrbad ), q("attrbad_dot"),
+		"Escaped dot" );
+	deepEqual( Sizzle( "input[name=foo\\[baz\\]]", null, null, attrbad ), q("attrbad_brackets"),
+		"Escaped brackets" );
+	deepEqual( Sizzle( "input[data-attr='foo_baz\\']']", null, null, attrbad ), q("attrbad_injection"),
+		"Escaped quote + right bracket" );
 
-	t( "Quoted quote", "input[data-attr='\\'']", ["attrbad_quote"] );
-	t( "Quoted backslash", "input[data-attr='\\\\']", ["attrbad_backslash"] );
-	t( "Quoted backslash quote", "input[data-attr='\\\\\\'']", ["attrbad_backslash_quote"] );
-	t( "Quoted backslash backslash", "input[data-attr='\\\\\\\\']", ["attrbad_backslash_backslash"] );
+	deepEqual( Sizzle( "input[data-attr='\\'']", null, null, attrbad ), q("attrbad_quote"),
+		"Quoted quote" );
+	deepEqual( Sizzle( "input[data-attr='\\\\']", null, null, attrbad ), q("attrbad_backslash"),
+		"Quoted backslash" );
+	deepEqual( Sizzle( "input[data-attr='\\\\\\'']", null, null, attrbad ), q("attrbad_backslash_quote"),
+		"Quoted backslash quote" );
+	deepEqual( Sizzle( "input[data-attr='\\\\\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+		"Quoted backslash backslash" );
 
-	t( "Quoted backslash backslash (numeric escape)", "input[data-attr='\\5C\\\\']", ["attrbad_backslash_backslash"] );
-	t( "Quoted backslash backslash (numeric escape with trailing space)", "input[data-attr='\\5C \\\\']", ["attrbad_backslash_backslash"] );
-	t( "Quoted backslash backslash (numeric escape with trailing tab)", "input[data-attr='\\5C\t\\\\']", ["attrbad_backslash_backslash"] );
-	t( "Long numeric escape (BMP)", "input[data-attr='\\04e00']", ["attrbad_unicode"] );
+	deepEqual( Sizzle( "input[data-attr='\\5C\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+		"Quoted backslash backslash (numeric escape)" );
+	deepEqual( Sizzle( "input[data-attr='\\5C \\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+		"Quoted backslash backslash (numeric escape with trailing space)" );
+	deepEqual( Sizzle( "input[data-attr='\\5C\t\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+		"Quoted backslash backslash (numeric escape with trailing tab)" );
+	deepEqual( Sizzle( "input[data-attr='\\04e00']", null, null, attrbad ), q("attrbad_unicode"),
+		"Long numeric escape (BMP)" );
 	document.getElementById("attrbad_unicode").setAttribute( "data-attr", "\uD834\uDF06A" );
 	// It was too much code to fix Safari 5.x Supplemental Plane crashes (see ba5f09fa404379a87370ec905ffa47f8ac40aaa3)
-	// t( "Long numeric escape (non-BMP)", "input[data-attr='\\01D306A']", ["attrbad_unicode"] );
+	// deepEqual( Sizzle( "input[data-attr='\\01D306A']", null, null, attrbad ), q("attrbad_unicode"),
+	// 	"Long numeric escape (non-BMP)" );
 
 	t( "input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"] );
 	t( "input[type=search]", "#form input[type=search]", ["search"] );
