@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-05-15
+ * Date: 2013-05-26
  */
 (function( window, undefined ) {
 
@@ -501,6 +501,15 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Set our document
 	document = doc;
 	docElem = doc.documentElement;
+
+	// Support: IE>8
+	// If iframe document is assigned to "document" variable and if iframe has been reloaded,
+	// IE will throw "permission denied" error when accessing "document" variable, see jQuery #13936
+	if ( doc.parentWindow && doc.parentWindow.frameElement ) {
+		doc.parentWindow.attachEvent( "onbeforeunload", function() {
+			document = null;
+		});
+	}
 
 	// Support tests
 	documentIsHTML = !isXML( doc );
