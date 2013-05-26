@@ -1075,3 +1075,33 @@ test("caching", function() {
 	Sizzle( ":not(code)", document.getElementById("ap") );
 	deepEqual( Sizzle( ":not(code)", document.getElementById("foo") ), q("sndp", "en", "yahoo", "sap", "anchor2", "simon"), "Reusing selector with new context" );
 });
+
+asyncTest( "Iframe dispatch should not affect Sizzle, see jQuery #13936", 1, function() {
+	var i = 0,
+		thrown = false,
+		iframe = document.getElementById("iframe"),
+		iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+	jQuery( iframe ).on( "load", function() {
+		var doc;
+
+		try {
+			i++;
+			doc = this.contentDocument || this.contentWindow.document;
+			Sizzle( "form", doc ).pop().submit();
+
+		} catch ( e ) {
+			thrown = true;
+		}
+
+		if ( i === 2 ) {
+			jQuery( this ).off("load");
+			ok( !thrown, "Iframe reload should not affect Sizzle, see jQuery #13936" );
+			start();
+		}
+	});
+
+	iframeDoc.open();
+	iframeDoc.write("<body><form></form></body>");
+	iframeDoc.close();
+});

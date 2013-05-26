@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-05-15
+ * Date: 2013-05-27
  */
 (function( window, undefined ) {
 
@@ -491,7 +491,8 @@ support = Sizzle.support = {};
  * @returns {Object} Returns the current document
  */
 setDocument = Sizzle.setDocument = function( node ) {
-	var doc = node ? node.ownerDocument || node : preferredDoc;
+	var doc = node ? node.ownerDocument || node : preferredDoc,
+		parent = doc.parentWindow;
 
 	// If no document and documentElement is available, return
 	if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
@@ -504,6 +505,15 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 	// Support tests
 	documentIsHTML = !isXML( doc );
+
+	// Support: IE>8
+	// If iframe document is assigned to "document" variable and if iframe has been reloaded,
+	// IE will throw "permission denied" error when accessing "document" variable, see jQuery #13936
+	if ( parent && parent.frameElement ) {
+		parent.attachEvent( "onbeforeunload", function() {
+			setDocument();
+		});
+	}
 
 	/* Attributes
 	---------------------------------------------------------------------- */
