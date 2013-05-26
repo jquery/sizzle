@@ -507,7 +507,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// IE will throw "permission denied" error when accessing "document" variable, see jQuery #13936
 	if ( doc.parentWindow && doc.parentWindow.frameElement ) {
 		doc.parentWindow.attachEvent( "onbeforeunload", function() {
-			document = null;
+			setDocument();
 		});
 	}
 
