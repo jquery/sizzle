@@ -1,22 +1,37 @@
 module("utilities", { teardown: moduleTeardown });
 
-test("Sizzle.attr", function() {
-	expect( 6 );
+function testAttr( doc ) {
+	expect( 9 );
 
-	var div = document.getElementById("foo");
+	var el = doc.createElement("input");
+	el.setAttribute( "id", "id" );
+	el.setAttribute( "type", "checkbox" );
+	el.setAttribute( "value", "on" );
+	el.setAttribute( "checked", "checked" );
 
-	strictEqual( Sizzle.attr( div, "id" ), "foo", "id" );
-	strictEqual( Sizzle.attr( div, "nonexistent" ), null, "nonexistent" );
-	strictEqual( Sizzle.attr( div, "constructor" ), null,
+	strictEqual( Sizzle.attr( el, "nonexistent" ), null, "nonexistent" );
+	strictEqual( Sizzle.attr( el, "id" ), "id", "existent" );
+	strictEqual( Sizzle.attr( el, "value" ), "on", "value" );
+	strictEqual( Sizzle.attr( el, "checked" ), "checked", "boolean" );
+	strictEqual( Sizzle.attr( el, "href" ), null, "interpolation risk" );
+	strictEqual( Sizzle.attr( el, "constructor" ), null,
 		"Object.prototype property \"constructor\" (negative)" );
-	strictEqual( Sizzle.attr( div, "watch" ), null,
+	strictEqual( Sizzle.attr( el, "watch" ), null,
 		"Gecko Object.prototype property \"watch\" (negative)" );
-	div.setAttribute( "constructor", "foo" );
-	div.setAttribute( "watch", "bar" );
-	strictEqual( Sizzle.attr( div, "constructor" ), "foo",
+	el.setAttribute( "constructor", "foo" );
+	el.setAttribute( "watch", "bar" );
+	strictEqual( Sizzle.attr( el, "constructor" ), "foo",
 		"Object.prototype property \"constructor\"" );
-	strictEqual( Sizzle.attr( div, "watch" ), "bar",
+	strictEqual( Sizzle.attr( el, "watch" ), "bar",
 		"Gecko Object.prototype property \"watch\"" );
+}
+
+test("Sizzle.attr (HTML)", function() {
+	testAttr( document );
+});
+
+test("Sizzle.attr (XML)", function() {
+	testAttr( jQuery.parseXML("<root/>") );
 });
 
 test("Sizzle.contains", function() {

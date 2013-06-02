@@ -365,12 +365,13 @@ function addHandle( attrs, handler, test ) {
  * @param {Element} elem
  * @param {String} name
  */
-function boolHandler( elem, name ) {
-	// XML does not need to be checked as this will not be assigned for XML documents
-	var val = elem.getAttributeNode( name );
-	return val && val.specified ?
-		val.value :
-		elem[ name ] === true ? name.toLowerCase() : null;
+function boolHandler( elem, name, isXML ) {
+	var val;
+	return isXML ?
+		undefined :
+		(val = elem.getAttributeNode( name )) && val.specified ?
+			val.value :
+			elem[ name ] === true ? name.toLowerCase() : null;
 }
 
 /**
@@ -379,9 +380,11 @@ function boolHandler( elem, name ) {
  * @param {Element} elem
  * @param {String} name
  */
-function interpolationHandler( elem, name ) {
-	// XML does not need to be checked as this will not be assigned for XML documents
-	return elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
+function interpolationHandler( elem, name, isXML ) {
+	var val;
+	return isXML ?
+		undefined :
+		(val = elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 ));
 }
 
 /**
@@ -389,13 +392,13 @@ function interpolationHandler( elem, name ) {
  * @param {Element} elem
  * @param {String} name
  */
-function valueHandler( elem ) {
-	// Ignore the value *property* on inputs by using defaultValue
-	// Fallback to Sizzle.attr by returning undefined where appropriate
-	// XML does not need to be checked as this will not be assigned for XML documents
-	if ( elem.nodeName.toLowerCase() === "input" ) {
-		return elem.defaultValue;
-	}
+function valueHandler( elem, name, isXML ) {
+	var val;
+	return isXML ?
+		undefined :
+		elem.nodeName.toLowerCase() !== "input" ?
+			undefined :
+			(val = elem.defaultValue);
 }
 
 /**
@@ -536,16 +539,12 @@ setDocument = Sizzle.setDocument = function( node ) {
 	});
 
 	// Support: IE<9
-	// Retrieving value should defer to defaultValue
-	support.input = assert(function( div ) {
-		div.innerHTML = "<input>";
+	// Verify that getAttribute is accurate for "value" specifically
+	addHandle( "value", valueHandler, support.attributes && assert(function( div ) {
+		div.innerHTML = "<input/>";
 		div.firstChild.setAttribute( "value", "" );
 		return div.firstChild.getAttribute( "value" ) === "";
-	});
-
-	// IE6/7 still return empty string for value,
-	// but are actually retrieving the property
-	addHandle( "value", valueHandler, support.attributes && support.input );
+	}) );
 
 	/* getElement(s)By*
 	---------------------------------------------------------------------- */
