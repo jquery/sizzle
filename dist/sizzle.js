@@ -1941,9 +1941,9 @@ if ( !assert(function( div ) {
 	return div.firstChild.getAttribute("href") === "#" ;
 }) ) {
 	addHandle( "type|href|height|width", function( elem, name, isXML ) {
-		return isXML ?
-			undefined :
-			elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
+		return isXML ?
+			undefined :
+			elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
 	});
 }
 
@@ -1969,12 +1969,12 @@ if ( !assert(function( div ) {
 	return div.getAttribute("disabled") == null;
 }) ) {
 	addHandle( booleans, function( elem, name, isXML ) {
-		var val;
-		return isXML ?
-			undefined :
-			(val = elem.getAttributeNode( name )) && val.specified ?
-				val.value :
-				elem[ name ] === true ? name.toLowerCase() : null;
+		var val;
+		return isXML ?
+			undefined :
+			(val = elem.getAttributeNode( name )) && val.specified ?
+				val.value :
+				elem[ name ] === true ? name.toLowerCase() : null;
 	});
 }
 
