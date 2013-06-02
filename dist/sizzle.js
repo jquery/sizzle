@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-06-01
+ * Date: 2013-06-02
  */
 (function( window, undefined ) {
 
@@ -39,7 +39,13 @@ var i,
 	tokenCache = createCache(),
 	compilerCache = createCache(),
 	hasDuplicate = false,
-	sortOrder = function() { return 0; },
+	sortOrder = function( a, b ) {
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+		}
+		return 0;
+	},
 
 	// General-purpose constants
 	strundefined = typeof undefined,
@@ -346,59 +352,13 @@ function assert( fn ) {
  * @param {Function} handler The method that will be applied if the test fails
  * @param {Boolean} test The result of a test. If true, null will be set as the handler in leiu of the specified handler
  */
-function addHandle( attrs, handler, test ) {
-	attrs = attrs.split("|");
-	var current,
-		i = attrs.length,
-		setHandle = test ? null : handler;
+function addHandle( attrs, handler ) {
+	var arr = attrs.split("|"),
+		i = attrs.length;
 
 	while ( i-- ) {
-		// Don't override a user's handler
-		if ( !(current = Expr.attrHandle[ attrs[i] ]) || current === handler ) {
-			Expr.attrHandle[ attrs[i] ] = setHandle;
-		}
+		Expr.attrHandle[ arr[i] ] = handler;
 	}
-}
-
-/**
- * Fetches boolean attributes by node
- * @param {Element} elem
- * @param {String} name
- */
-function boolHandler( elem, name, isXML ) {
-	var val;
-	return isXML ?
-		undefined :
-		(val = elem.getAttributeNode( name )) && val.specified ?
-			val.value :
-			elem[ name ] === true ? name.toLowerCase() : null;
-}
-
-/**
- * Fetches attributes without interpolation
- * http://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
- * @param {Element} elem
- * @param {String} name
- */
-function interpolationHandler( elem, name, isXML ) {
-	var val;
-	return isXML ?
-		undefined :
-		(val = elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 ));
-}
-
-/**
- * Uses defaultValue to retrieve value in IE6/7
- * @param {Element} elem
- * @param {String} name
- */
-function valueHandler( elem, name, isXML ) {
-	var val;
-	return isXML ?
-		undefined :
-		elem.nodeName.toLowerCase() !== "input" ?
-			undefined :
-			(val = elem.defaultValue);
 }
 
 /**
@@ -524,27 +484,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Support: IE<8
 	// Verify that getAttribute really returns attributes and not properties (excepting IE8 booleans)
 	support.attributes = assert(function( div ) {
-
-		// Support: IE<8
-		// Prevent attribute/property "interpolation"
-		div.innerHTML = "<a href='#'></a>";
-		addHandle( "type|href|height|width", interpolationHandler, div.firstChild.getAttribute("href") === "#" );
-
-		// Support: IE<9
-		// Use getAttributeNode to fetch booleans when getAttribute lies
-		addHandle( booleans, boolHandler, div.getAttribute("disabled") == null );
-
 		div.className = "i";
 		return !div.getAttribute("className");
 	});
-
-	// Support: IE<9
-	// Verify that getAttribute is accurate for "value" specifically
-	addHandle( "value", valueHandler, support.attributes && assert(function( div ) {
-		div.innerHTML = "<input/>";
-		div.firstChild.setAttribute( "value", "" );
-		return div.firstChild.getAttribute( "value" ) === "";
-	}) );
 
 	/* getElement(s)By*
 	---------------------------------------------------------------------- */
@@ -756,13 +698,6 @@ setDocument = Sizzle.setDocument = function( node ) {
 	/* Sorting
 	---------------------------------------------------------------------- */
 
-	// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
-	// Detached nodes confoundingly follow *each other*
-	support.sortDetached = assert(function( div1 ) {
-		// Should return 1, but returns 4 (following)
-		return div1.compareDocumentPosition( doc.createElement("div") ) & 1;
-	});
-
 	// Document order sorting
 	sortOrder = docElem.compareDocumentPosition ?
 	function( a, b ) {
@@ -905,9 +840,9 @@ Sizzle.attr = function( elem, name ) {
 
 	var fn = Expr.attrHandle[ name.toLowerCase() ],
 		// Don't get fooled by Object.prototype properties (jQuery #13807)
-		val = ( fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
+		val = fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
 			fn( elem, name, !documentIsHTML ) :
-			undefined );
+			undefined;
 
 	return val === undefined ?
 		support.attributes || !documentIsHTML ?
@@ -1984,13 +1919,64 @@ Expr.setFilters = new setFilters();
 // Sort stability
 support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
 
+// Support: Chrome<<14
+// Always assume duplicates if they aren't passed to the comparison function
+support.detectDuplicates = hasDuplicate;
+
 // Initialize against the default document
 setDocument();
 
-// Support: Chrome<<14
-// Always assume duplicates if they aren't passed to the comparison function
-[0, 0].sort( sortOrder );
-support.detectDuplicates = hasDuplicate;
+// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
+// Detached nodes confoundingly follow *each other*
+support.sortDetached = assert(function( div1 ) {
+	// Should return 1, but returns 4 (following)
+	return div1.compareDocumentPosition( document.createElement("div") ) & 1;
+});
+
+// Support: IE<8
+// Prevent attribute/property "interpolation"
+// http://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
+if ( !assert(function( div ) {
+	div.innerHTML = "<a href='#'></a>";
+	return div.firstChild.getAttribute("href") === "#" ;
+}) ) {
+	addHandle( "type|href|height|width", function( elem, name, isXML ) {
+		return isXML ?
+			undefined :
+			elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
+	});
+}
+
+// Support: IE<9
+// Use defaultValue in place of getAttribute("value")
+if ( !support.attributes || !assert(function( div ) {
+	div.innerHTML = "<input/>";
+	div.firstChild.setAttribute( "value", "" );
+	return div.firstChild.getAttribute( "value" ) === "";
+}) ) {
+	addHandle( "value", function( elem, name, isXML ) {
+		return isXML ?
+			undefined :
+			elem.nodeName.toLowerCase() !== "input" ?
+				undefined :
+				elem.defaultValue;
+	});
+}
+
+// Support: IE<9
+// Use getAttributeNode to fetch booleans when getAttribute lies
+if ( !assert(function( div ) {
+	return div.getAttribute("disabled") == null;
+}) ) {
+	addHandle( booleans, function( elem, name, isXML ) {
+		var val;
+		return isXML ?
+			undefined :
+			(val = elem.getAttributeNode( name )) && val.specified ?
+				val.value :
+				elem[ name ] === true ? name.toLowerCase() : null;
+	});
+}
 
 // EXPOSE
 if ( typeof define === "function" && define.amd ) {
