@@ -1387,6 +1387,8 @@ Expr = Sizzle.selectors = {
 	}
 };
 
+Expr.pseudos["nth"] = Expr.pseudos["eq"];
+
 // Add button/input type pseudos
 for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
 	Expr.pseudos[ i ] = createInputPseudo( i );
@@ -1394,6 +1396,11 @@ for ( i in { radio: true, checkbox: true, file: true, password: true, image: tru
 for ( i in { submit: true, reset: true } ) {
 	Expr.pseudos[ i ] = createButtonPseudo( i );
 }
+
+// Easy API for creating new setFilters
+function setFilters() {}
+setFilters.prototype = Expr.filters = Expr.pseudos;
+Expr.setFilters = new setFilters();
 
 function tokenize( selector, parseOnly ) {
 	var matched, match, tokens, type,
@@ -1906,20 +1913,12 @@ function select( selector, context, results, seed ) {
 	return results;
 }
 
-// Deprecated
-Expr.pseudos["nth"] = Expr.pseudos["eq"];
-
-// Easy API for creating new setFilters
-function setFilters() {}
-setFilters.prototype = Expr.filters = Expr.pseudos;
-Expr.setFilters = new setFilters();
-
 // One-time assignments
 
 // Sort stability
 support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
 
-// Support: Chrome<<14
+// Support: Chrome<14
 // Always assume duplicates if they aren't passed to the comparison function
 support.detectDuplicates = hasDuplicate;
 
@@ -1941,9 +1940,9 @@ if ( !assert(function( div ) {
 	return div.firstChild.getAttribute("href") === "#" ;
 }) ) {
 	addHandle( "type|href|height|width", function( elem, name, isXML ) {
-		return isXML ?
-			undefined :
-			elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
+		if ( !isXML ) {
+			return elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
+		}
 	});
 }
 
@@ -1955,11 +1954,9 @@ if ( !support.attributes || !assert(function( div ) {
 	return div.firstChild.getAttribute( "value" ) === "";
 }) ) {
 	addHandle( "value", function( elem, name, isXML ) {
-		return isXML ?
-			undefined :
-			elem.nodeName.toLowerCase() !== "input" ?
-				undefined :
-				elem.defaultValue;
+		if ( !isXML && elem.nodeName.toLowerCase() === "input" ) {
+			return elem.defaultValue;
+		}
 	});
 }
 
@@ -1970,11 +1967,11 @@ if ( !assert(function( div ) {
 }) ) {
 	addHandle( booleans, function( elem, name, isXML ) {
 		var val;
-		return isXML ?
-			undefined :
-			(val = elem.getAttributeNode( name )) && val.specified ?
+		if ( !isXML ) {
+			return (val = elem.getAttributeNode( name )) && val.specified ?
 				val.value :
 				elem[ name ] === true ? name.toLowerCase() : null;
+		}
 	});
 }
 
