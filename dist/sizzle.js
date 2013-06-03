@@ -289,14 +289,6 @@ function Sizzle( selector, context, results, seed ) {
 }
 
 /**
- * For feature detection
- * @param {Function} fn The function to test for native support
- */
-function isNative( fn ) {
-	return rnative.test( fn + "" );
-}
-
-/**
  * Create key-value caches of limited size
  * @returns {Function(string, Object)} Returns the Object data after storing it on itself with
  *	property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
@@ -349,8 +341,7 @@ function assert( fn ) {
 /**
  * Adds the same handler for all of the specified attrs
  * @param {String} attrs Pipe-separated list of attributes
- * @param {Function} handler The method that will be applied if the test fails
- * @param {Boolean} test The result of a test. If true, null will be set as the handler in leiu of the specified handler
+ * @param {Function} handler The method that will be applied
  */
 function addHandle( attrs, handler ) {
 	var arr = attrs.split("|"),
@@ -365,7 +356,7 @@ function addHandle( attrs, handler ) {
  * Checks document order of two siblings
  * @param {Element} a
  * @param {Element} b
- * @returns Returns -1 if a precedes b, 1 if a follows b
+ * @returns {Number} Returns less than 0 if a precedes b, greater than 0 if a follows b
  */
 function siblingCheck( a, b ) {
 	var cur = b && a,
@@ -596,7 +587,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// See http://bugs.jquery.com/ticket/13378
 	rbuggyQSA = [];
 
-	if ( (support.qsa = isNative(doc.querySelectorAll)) ) {
+	if ( (support.qsa = rnative.test( doc.querySelectorAll )) ) {
 		// Build QSA regex
 		// Regex strategy adopted from Diego Perini
 		assert(function( div ) {
@@ -648,7 +639,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		});
 	}
 
-	if ( (support.matchesSelector = isNative( (matches = docElem.webkitMatchesSelector ||
+	if ( (support.matchesSelector = rnative.test( (matches = docElem.webkitMatchesSelector ||
 		docElem.mozMatchesSelector ||
 		docElem.oMatchesSelector ||
 		docElem.msMatchesSelector) )) ) {
@@ -674,7 +665,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Element contains another
 	// Purposefully does not implement inclusive descendent
 	// As in, an element does not contain itself
-	contains = isNative(docElem.contains) || docElem.compareDocumentPosition ?
+	contains = rnative.test( docElem.contains ) || docElem.compareDocumentPosition ?
 		function( a, b ) {
 			var adown = a.nodeType === 9 ? a.documentElement : a,
 				bup = b && b.parentNode;
