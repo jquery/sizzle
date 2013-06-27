@@ -1,6 +1,18 @@
 {
   "name": "sizzle",
-  "version": "1.9.4-pre",
+  "version": "1.10.2-pre",
   "main": "./dist/sizzle.js",
-  "dependencies": {}
+  "dependencies": {},
+  "ignore": [
+    ".*",
+    "node_modules",
+    "package.json",
+    "component.json",
+    "test",
+    "speed",
+    "Makefile"
+    "*.min.*",
+    "*.md",
+    "*.txt"
+  ]
 }
