@@ -36,3 +36,4 @@ Pascal Borreli <pascal@borreli.com>
 Daniel Herman <daniel.c.herman@gmail.com>
 Frederic Junod <frederic.junod@camptocamp.com>
 Mitch Foley <mitch@thefoley.net>
+Dan Burzo <danburzo@gmail.com>
