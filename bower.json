@@ -10,7 +10,7 @@
     "component.json",
     "test",
     "speed",
-    "Makefile"
+    "Makefile",
     "*.min.*",
     "*.md",
     "*.txt"
