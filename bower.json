@@ -5,14 +5,14 @@
   "dependencies": {},
   "ignore": [
     ".*",
-    "node_modules",
     "package.json",
-    "component.json",
+    "bower.json",
     "test",
     "speed",
     "Makefile",
-    "*.min.*",
+    "**/*.min.*",
     "*.md",
-    "*.txt"
+    "*.txt",
+    "sizzle.js"
   ]
 }
