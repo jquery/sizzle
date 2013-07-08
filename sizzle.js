@@ -8,7 +8,7 @@
  *
  * Date: @DATE
  */
-(function( window, undefined ) {
+(function( window ) {
 
 var i,
 	support,
