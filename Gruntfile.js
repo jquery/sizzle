@@ -2,8 +2,8 @@ module.exports = function( grunt ) {
 
 	"use strict";
 
-	var gzip = require("gzip-js");
-	var exec = require("child_process").exec;
+	var gzip = require("gzip-js"),
+		exec = require("child_process").exec;
 
 	// Project configuration.
 	grunt.initConfig({
