@@ -3,18 +3,22 @@ module.exports = function( grunt ) {
 	"use strict";
 
 	var gzip = require("gzip-js");
+	var exec = require("child_process").exec;
 
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON("package.json"),
 		qunit: {
-			files: ["test/index.html"]
+			files: [ "test/index.html" ]
 		},
 		build: {
 			all: {
 				dest: "dist/sizzle.js",
 				src: "sizzle.js"
 			}
+		},
+		version: {
+			files: [ "package.json", "bower.json" ]
 		},
 		uglify: {
 			all: {
@@ -112,11 +116,11 @@ module.exports = function( grunt ) {
 
 	// Process files for distribution
 	grunt.registerTask( "dist", function() {
-		var files = grunt.file.expand( { filter: "isFile" }, "dist/*" );
+		var files = grunt.file.expand( { filter: "isFile" }, "dist/*" ),
+			fs = require("fs");
 
 		files.forEach(function( filename ) {
 			var map,
-				fs = require("fs"),
 				text = fs.readFileSync( filename, "utf8" );
 
 			// Modify map/min so that it points to files in the same folder;
@@ -140,6 +144,68 @@ module.exports = function( grunt ) {
 				fs.writeFileSync( filename, text, "utf-8" );
 			}
 		});
+	});
+
+	// Commit and tag the specified version
+	grunt.registerTask( "tag", function( version ) {
+		var done = this.async();
+		exec( "git tag " + version, done );
+	});
+
+	grunt.registerTask( "commit", function( message ) {
+		var done = this.async();
+		// Always add dist directory
+		exec( "git add dist && git commit -m " + message + "", done );
+	});
+
+	// Commit a new version
+	grunt.registerTask( "version", function( version ) {
+		if ( !/\d\.\d+\.\d+(?:-pre)?/.test(version) ) {
+			grunt.fail.fatal( "Version must follow semver release format: " + version );
+			return;
+		}
+
+		var done = this.async(),
+			files = grunt.config("version.files"),
+			n = files.length,
+			rversion = /("version":\s*")[^"]+/;
+
+		files.forEach(function( filename ) {
+			// Update version in specified files
+			var text = grunt.file.read( filename );
+			text = text.replace( rversion, "$1" + version );
+			grunt.file.write( filename, text );
+			exec( "git add " + filename, function() {
+				// Commit when all files are added
+				if ( !--n ) {
+					grunt.config( "pkg.version", version );
+					grunt.task.run([ "build", "uglify", "dist", "commit:\"Update version to " + version + "\"" ]);
+					done();
+				}
+			});
+		});
+	});
+
+	// Release a version of sizzle
+	grunt.registerTask( "release", function( version, next ) {
+		if ( !/\d\.\d+\.\d+/.test(version) ) {
+			grunt.fail.fatal( "Version should be a release version (x.x.x): " + version );
+			return;
+		}
+		if ( !/\d\.\d+\.\d+-pre/.test(next) ) {
+			grunt.fail.fatal( "Next version should be a -pre version (x.x.x-pre): " + next );
+			return;
+		}
+
+		// Build to dist directories along with a map and tag the release
+		grunt.task.run([
+			// Commit new version
+			"version:" + version,
+			// Tag new version
+			"tag:" + version,
+			// Commit next version
+			"version:" + next
+		]);
 	});
 
 	// Load grunt tasks from NPM packages
