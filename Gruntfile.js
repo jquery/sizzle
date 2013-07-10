@@ -148,14 +148,12 @@ module.exports = function( grunt ) {
 
 	// Commit and tag the specified version
 	grunt.registerTask( "tag", function( version ) {
-		var done = this.async();
-		exec( "git tag " + version, done );
+		exec( "git tag " + version, this.async() );
 	});
 
 	grunt.registerTask( "commit", function( message ) {
-		var done = this.async();
 		// Always add dist directory
-		exec( "git add dist && git commit -m " + message + "", done );
+		exec( "git add dist && git commit -m " + message, this.async() );
 	});
 
 	// Commit a new version
