@@ -72,9 +72,10 @@ The built version of Sizzle will be put in the `dist/` subdirectory, along with 
 Testing
 ----------------------------
 
-- run `make` to pull down QUnit from github, which is the only thing the Makefile does.
-- Open test/index.html in your browser to run the tests.
-- The actual unit tests are in test/unit/selectors.js and test/unit/utilities.js.
+- First, make sure you have [bower](http://bower.io/) installed.
+- Run 'bower install' to install QUnit
+- Open `test/index.html` in the browser or `grunt` or `grunt qunit` on the command line
+- The actual unit tests are in the `test/unit` directory.
 
 Developing with [grunt](http://gruntjs.com)
 ----------------------------

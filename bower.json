@@ -2,7 +2,9 @@
   "name": "sizzle",
   "version": "1.10.3-pre",
   "main": "./dist/sizzle.js",
-  "dependencies": {},
+  "dependencies": {
+    "qunit": "~1.11.0"
+  },
   "ignore": [
     ".*",
     "package.json",
