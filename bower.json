@@ -6,15 +6,15 @@
     "qunit": "~1.11.0"
   },
   "ignore": [
-    ".*",
+    "**/.*",
     "package.json",
     "bower.json",
-    "test",
     "speed",
     "Makefile",
     "**/*.min.*",
     "*.md",
     "*.txt",
-    "sizzle.js"
+    "sizzle.js",
+    "Gruntfile.js"
   ]
 }
