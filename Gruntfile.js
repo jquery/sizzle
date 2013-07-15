@@ -72,12 +72,21 @@ module.exports = function( grunt ) {
 				}
 			}
 		},
+		jsonlint: {
+			pkg: {
+				src: [ "package.json" ]
+			},
+			bower: {
+				src: [ "bower.json" ]
+			}
+		},
 		watch: {
 			files: [
 				"<%= jshint.source.src %>",
 				"<%= jshint.grunt.src %>",
 				"<%= jshint.speed.src %>",
-				"<%= jshint.tests.src %>"
+				"<%= jshint.tests.src %>",
+				"{package,bower}.json"
 			],
 			tasks: "default"
 		}
@@ -213,9 +222,10 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-compare-size");
 	grunt.loadNpmTasks("grunt-git-authors");
+	grunt.loadNpmTasks("grunt-jsonlint");
 
 	// Default task
-	grunt.registerTask( "default", [ "jshint", "build", "uglify", "dist", "qunit", "compare_size" ] );
+	grunt.registerTask( "default", [ "jsonlint", "jshint", "build", "uglify", "dist", "qunit", "compare_size" ] );
 
 	// Task aliases
 	grunt.registerTask( "lint", ["jshint"] );

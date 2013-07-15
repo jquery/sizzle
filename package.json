@@ -31,7 +31,12 @@
 		"grunt-compare-size": "~0.4.0",
 		"grunt-git-authors": "~1.2.0",
 		"gzip-js": "~0.3.2",
-		"testswarm": "1.1.0"
+		"testswarm": "1.1.0",
+		"grunt-jsonlint": "~1.0.0"
 	},
-	"keywords": [ "sizzle", "selector", "jquery" ]
+	"keywords": [
+		"sizzle",
+		"selector",
+		"jquery"
+	]
 }
