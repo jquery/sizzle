@@ -367,8 +367,8 @@ test("child and adjacent", function() {
 	t( "Adjacent", "p[lang=en] + p", ["sap"] );
 	t( "Adjacent", "a.GROUPS + code + a", ["mark"] );
 	t( "Comma, Child, and Adjacent", "#qunit-fixture a + a, code > a", ["groups","anchor1","anchor2","tName2ID"] );
-	t( "Element Preceded By", "#qunit-fixture p ~ div", ["foo", "nothiddendiv", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
-	t( "Element Preceded By", "#first ~ div", ["moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
+	t( "Element Preceded By", "#qunit-fixture p ~ div", ["foo", "nothiddendiv", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest", "subjectTest"] );
+	t( "Element Preceded By", "#first ~ div", ["moretests","tabindex-tests", "liveHandlerOrder", "siblingTest", "subjectTest"] );
 	t( "Element Preceded By", "#groups ~ a", ["mark"] );
 	t( "Element Preceded By", "#length ~ input", ["idTest"] );
 	t( "Element Preceded By", "#siblingfirst ~ em", ["siblingnext", "siblingthird"] );
@@ -638,8 +638,8 @@ test("pseudo - nth-child", function() {
 test("pseudo - nth-last-child", function() {
 	expect( 30 );
 
-	t( "Nth-last-child", "form:nth-last-child(5)", ["testForm"] );
-	t( "Nth-last-child (with whitespace)", "form:nth-last-child( 5 )", ["testForm"] );
+	t( "Nth-last-child", "form:nth-last-child(6)", ["testForm"] );
+	t( "Nth-last-child (with whitespace)", "form:nth-last-child( 6 )", ["testForm"] );
 	t( "Nth-last-child (case-insensitive)", "#form select:first option:NTH-last-child(3)", ["option1b"] );
 	t( "Not nth-last-child", "#qunit-fixture p:not(:nth-last-child(1))", ["firstp", "ap", "sndp", "en", "first"] );
 
@@ -695,7 +695,7 @@ test("pseudo - nth-last-of-type", function() {
 	t( "Nth-last-of-type(even)", "#ap :nth-last-of-type(even)", ["groups"] );
 	t( "Nth-last-of-type(2n+1)", "#ap :nth-last-of-type(2n+1)", ["google", "code1", "anchor1", "mark"] );
 	t( "Nth-last-of-type(odd)", "#ap :nth-last-of-type(odd)", ["google", "code1", "anchor1", "mark"] );
-	t( "Nth-last-of-type(-n+2)", "#qunit-fixture > :nth-last-of-type(-n+2)", ["ap", "name+value", "first", "firstUL", "empty", "floatTest", "iframe", "table", "name-tests", "testForm", "liveHandlerOrder", "siblingTest"] );
+	t( "Nth-last-of-type(-n+2)", "#qunit-fixture > :nth-last-of-type(-n+2)", ["ap", "name+value", "first", "firstUL", "empty", "floatTest", "iframe", "table", "name-tests", "testForm", "siblingTest", "subjectTest"] );
 });
 
 test("pseudo - has", function() {
@@ -1104,4 +1104,17 @@ asyncTest( "Iframe dispatch should not affect Sizzle, see jQuery #13936", 1, fun
 	iframeDoc.open();
 	iframeDoc.write("<body><form></form></body>");
 	iframeDoc.close();
+});
+
+test("css4 selectors", function() {
+	expect( 5 );
+	t( "simple subject selecor 1", "!em #siblinggreatgrandchild", ["siblinggrandchild"] );
+	t( "subject selector", "#siblingTest em !em em em", ["siblingchild"] );
+	t( "subject selector with id", "!#siblinggrandchild em", ["siblinggrandchild"] );
+	t( "subject selector with combinator", "!#siblinggrandchild > em", ["siblinggrandchild"] );
+	t( "return multiple subjects", "#subjectTest !div span", ["subject1", "subject2", "subject3", "subject4"] );
+	// TODO
+	//t( "comma combinator subject selector", "#subjectTest !div span, !#siblingchild em em", ["siblingchild", "subject1", "subject2", "subject3", "subject4"] );
+	// TODO
+	// t( "Multiple subject selectors", "!#subjectTest !div span", ["subject1", "subject2", "subject3", "subject4", "subjectTest"] );
 });
