@@ -1397,7 +1397,8 @@ Expr.setFilters = new setFilters();
 function tokenize( selector, parseOnly ) {
 	var matched, match, tokens, type,
 		soFar, groups, preFilters,
-		cached = tokenCache[ selector + " " ];
+		cached = tokenCache[ selector + " " ],
+		hasSubject = false;
 
 	if ( cached ) {
 		return parseOnly ? 0 : cached.slice( 0 );
@@ -1430,7 +1431,12 @@ function tokenize( selector, parseOnly ) {
 			});
 			soFar = soFar.slice( matched.length );
 		}
-
+		
+		hasSubject = soFar.charAt(0) === "!";
+		if ( hasSubject ) {
+			soFar = soFar.slice( 1 );
+		}
+		
 		// Filters
 		for ( type in Expr.filter ) {
 			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
@@ -1439,9 +1445,11 @@ function tokenize( selector, parseOnly ) {
 				tokens.push({
 					value: matched,
 					type: type,
-					matches: match
+					matches: match,
+					hasSubject : hasSubject // Is this token marked as a subject?
 				});
-				soFar = soFar.slice( matched.length );
+				hasSubject = soFar.charAt(0) === "!";
+				soFar = soFar.slice( +hasSubject + matched.length ); // bool -> int conversion to offset the "!"
 			}
 		}
 
@@ -1466,7 +1474,7 @@ function toSelector( tokens ) {
 		len = tokens.length,
 		selector = "";
 	for ( ; i < len; i++ ) {
-		selector += tokens[i].value;
+		selector += (tokens[i].hasSubject ? "!" : "") + tokens[i].value;
 	}
 	return selector;
 }
@@ -1805,11 +1813,73 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 		superMatcher;
 }
 
-compile = Sizzle.compile = function( selector, group /* Internal Use Only */ ) {
-	var i,
+function getSubjectNodes( superMatcher, allTokens /* Internal Use Only */ ) {
+	/*
+	 * This function wraps superMatcher so that it can peek at the results.
+	 * Algorithm:
+	 * Given the selector "!span a", superMatcher will return all the "a"
+	 * tags that match. To find the subjects, we count how far the subject
+	 * selector is from the final selector, this number is the same as the 
+	 * number of parents needed to traverse from the "a" to the "span"
+	 * 
+	 * TODO: doesn't handle selectors that are separated by commas
+	 * TODO: doesn't handle a selector with multiple subjects
+	 */
+	return function( seed, context, xml, results, expandContext ) {
+		var i, j, k,
+			subjectOffset, parentCount, parentNode,
+			oldResults = [],
+			unmatched = superMatcher( seed, context, xml, results, expandContext );
+		
+		/* Copy the results returned from superMatcher while maintaining
+		 * the reference. 
+		 */
+		oldResults = results.slice(0);
+		while (results.length > 0) {
+			results.shift();
+		}
+		
+		for ( i = 0; i < allTokens.length; i++ ) {
+			subjectOffset = -1;
+			// Find the number of parents needed to traverse the tree
+			for ( j = 0; j < allTokens[i].length; j++) {
+				if ( allTokens[i][j].hasSubject ) {
+					subjectOffset = j;
+					break;
+				}
+			}
+			if ( subjectOffset > -1 ) {
+				parentCount = allTokens[i].length - 1 - subjectOffset;
+				/*
+				 * It seems there is a shortcut that can be taken where seed is
+				 * filled with the parents of the node. 
+				 * TODO: verify this if's condition. What is seed?
+				 */
+				if ( oldResults && seed && seed.length >= parentCount && oldResults.length < seed.length ) {
+					results.push( seed[parentCount - 1] );
+				} else {
+					
+					for ( j = 0; j < oldResults.length; j++ ) {
+						parentNode = oldResults[j];
+						for ( k = 0; k < parentCount - 1; k++ ) {
+							parentNode = parentNode.parentNode;
+						}
+						results.push(parentNode);
+					}
+				}
+			}
+		}
+		//console.log("selector = '%s', oldResults = %o, seed = %o, subjectOffset = %o, results=%o,", toSelector(allTokens[0]), oldResults, seed, subjectOffset, results);
+		return unmatched;
+	};
+}
+
+compile = Sizzle.compile = function( selector, group /* Internal Use Only */, hasSubject /* internal use */, allTokens /* internal use */ ) {
+	var i, j,
 		setMatchers = [],
 		elementMatchers = [],
-		cached = compilerCache[ selector + " " ];
+		cached = compilerCache[ selector + " " ],
+		matcher;
 
 	if ( !cached ) {
 		// Generate a function of recursive functions that can be used to check each element
@@ -1825,9 +1895,22 @@ compile = Sizzle.compile = function( selector, group /* Internal Use Only */ ) {
 				elementMatchers.push( cached );
 			}
 		}
-
+		matcher = matcherFromGroupMatchers( elementMatchers, setMatchers );
+		
+		if ( allTokens ) {
+			for ( i = 0; i < allTokens.length; i++ ) {
+				for ( j = 0; j < allTokens[i].length; j++ ) {
+					if ( allTokens[i][j].hasSubject ) {
+						hasSubject = true;
+						break;
+					}
+				}
+			}
+			matcher = hasSubject ? getSubjectNodes( matcher, allTokens ) : matcher;
+		}
+		
 		// Cache the compiled function
-		cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) );
+		cached = compilerCache( selector,  matcher );
 	}
 	return cached;
 };
@@ -1842,8 +1925,9 @@ function multipleContexts( selector, contexts, results ) {
 }
 
 function select( selector, context, results, seed ) {
-	var i, tokens, token, type, find,
-		match = tokenize( selector );
+	var i, tokens, token, type, find, hasSubject,
+		match = tokenize( selector ),
+		allTokens = match.slice(0); // Keep a copy of all the tokens
 
 	if ( !seed ) {
 		// Try to minimize operations if there is only one group
@@ -1859,7 +1943,12 @@ function select( selector, context, results, seed ) {
 				if ( !context ) {
 					return results;
 				}
-				selector = selector.slice( tokens.shift().value.length );
+				if ( token.hasSubject ) {
+					hasSubject = true;
+					selector = selector.slice( tokens.shift().value.length + 1 );
+				} else {
+					selector = selector.slice( tokens.shift().value.length );
+				}
 			}
 
 			// Fetch a seed set for right-to-left matching
@@ -1895,7 +1984,7 @@ function select( selector, context, results, seed ) {
 
 	// Compile and execute a filtering function
 	// Provide `match` to avoid retokenization if we modified the selector above
-	compile( selector, match )(
+	compile( selector, match, hasSubject, allTokens )(
 		seed,
 		context,
 		!documentIsHTML,
