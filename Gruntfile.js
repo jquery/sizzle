@@ -3,7 +3,9 @@ module.exports = function( grunt ) {
 	"use strict";
 
 	var gzip = require("gzip-js"),
-		exec = require("child_process").exec;
+		exec = require("child_process").exec,
+		fatal = grunt.fail.fatal,
+		rpreversion = /(\d\.\d+\.\d+)-pre/;
 
 	// Project configuration.
 	grunt.initConfig({
@@ -168,7 +170,7 @@ module.exports = function( grunt ) {
 	// Commit a new version
 	grunt.registerTask( "version", function( version ) {
 		if ( !/\d\.\d+\.\d+(?:-pre)?/.test(version) ) {
-			grunt.fail.fatal( "Version must follow semver release format: " + version );
+			fatal( "Version must follow semver release format: " + version );
 			return;
 		}
 
@@ -182,7 +184,12 @@ module.exports = function( grunt ) {
 			var text = grunt.file.read( filename );
 			text = text.replace( rversion, "$1" + version );
 			grunt.file.write( filename, text );
-			exec( "git add " + filename, function() {
+			console.log( filename );
+			exec( "git add " + filename, function( err, stdout, stderr ) {
+				if ( err ) {
+					fatal( err + " " + stderr );
+					return;
+				}
 				// Commit when all files are added
 				if ( !--n ) {
 					grunt.config( "pkg.version", version );
@@ -194,15 +201,19 @@ module.exports = function( grunt ) {
 	});
 
 	// Release a version of sizzle
-	grunt.registerTask( "release", function( version, next ) {
-		if ( !/\d\.\d+\.\d+/.test(version) ) {
-			grunt.fail.fatal( "Version should be a release version (x.x.x): " + version );
+	// Updates a pre version to released
+	// Inserts `next` as the new pre version
+	grunt.registerTask( "release", function( next ) {
+		if ( !rpreversion.test(next) ) {
+			fatal( "Next version should be a -pre version (x.x.x-pre): " + next );
 			return;
 		}
-		if ( !/\d\.\d+\.\d+-pre/.test(next) ) {
-			grunt.fail.fatal( "Next version should be a -pre version (x.x.x-pre): " + next );
+		var version = grunt.config( "pkg.version" );
+		if ( !rpreversion.test(version) ) {
+			fatal( "Existing version is not a pre version: " + version );
 			return;
 		}
+		version = version.replace( rpreversion, "$1" );
 
 		// Build to dist directories along with a map and tag the release
 		grunt.task.run([

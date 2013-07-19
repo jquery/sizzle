@@ -1,6 +1,6 @@
 {
   "name": "sizzle",
-  "version": "1.10.5-pre",
+  "version": "1.10.5",
   "main": "./dist/sizzle.js",
   "devDependencies": {
     "qunit": "~1.11.0"
