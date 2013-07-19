@@ -134,7 +134,7 @@ test("element", function() {
 
 test("XML Document Selectors", function() {
 	var xml = createWithFriesXML();
-	expect( 10 );
+	expect( 11 );
 
 	equal( Sizzle("foo_bar", xml).length, 1, "Element Selector with underscore" );
 	equal( Sizzle(".component", xml).length, 1, "Class selector" );
@@ -146,6 +146,10 @@ test("XML Document Selectors", function() {
 	equal( Sizzle.matches( "#seite1", Sizzle("component", xml) ).length, 1, "Attribute selector filter with ID" );
 	equal( Sizzle("meta property thing", xml).length, 2, "Descendent selector and dir caching" );
 	ok( Sizzle.matchesSelector( xml.lastChild, "soap\\:Envelope" ), "Check for namespaced element" );
+
+	xml = jQuery.parseXML("<?xml version='1.0' encoding='UTF-8'?><root><elem id='1'/></root>");
+	equal( Sizzle( "elem:not(:has(*))", xml ).length, 1,
+		"Non-qSA path correctly handles numeric ids (jQuery #14142)" );
 });
 
 test("broken", function() {
