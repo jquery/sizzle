@@ -13,7 +13,7 @@
     "Makefile",
     "*.md",
     "*.txt",
-    "sizzle.js",
+    "src",
     "Gruntfile.js"
   ]
 }

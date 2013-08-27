@@ -16,7 +16,7 @@ module.exports = function( grunt ) {
 		build: {
 			all: {
 				dest: "dist/sizzle.js",
-				src: "sizzle.js"
+				src: "src/sizzle.js"
 			}
 		},
 		version: {
@@ -50,7 +50,7 @@ module.exports = function( grunt ) {
 		},
 		jshint: {
 			source: {
-				src: [ "sizzle.js" ],
+				src: [ "src/sizzle.js" ],
 				options: {
 					jshintrc: ".jshintrc"
 				}
