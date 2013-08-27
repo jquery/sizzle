@@ -184,7 +184,6 @@ module.exports = function( grunt ) {
 			var text = grunt.file.read( filename );
 			text = text.replace( rversion, "$1" + version );
 			grunt.file.write( filename, text );
-			console.log( filename );
 			exec( "git add " + filename, function( err, stdout, stderr ) {
 				if ( err ) {
 					fatal( err + " " + stderr );

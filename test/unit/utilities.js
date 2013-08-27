@@ -3,11 +3,21 @@ module("utilities", { teardown: moduleTeardown });
 function testAttr( doc ) {
 	expect( 9 );
 
-	var el = doc.createElement("input");
-	el.setAttribute( "id", "id" );
-	el.setAttribute( "type", "checkbox" );
-	el.setAttribute( "value", "on" );
+	var el;
+	if ( doc ) {
+		// XML
+		el = doc.createElement( "input" );
+		el.setAttribute( "type", "checkbox" );
+	} else {
+		// Set checked on creation by creating with a fragment
+		// See http://jsfiddle.net/8sVgA/1/show/light in oldIE
+		el = jQuery( "<input type='checkbox' checked='checked' />" )[0];
+	}
+
+	// Set it again for good measure
 	el.setAttribute( "checked", "checked" );
+	el.setAttribute( "id", "id" );
+	el.setAttribute( "value", "on" );
 
 	strictEqual( Sizzle.attr( el, "nonexistent" ), null, "nonexistent" );
 	strictEqual( Sizzle.attr( el, "id" ), "id", "existent" );
@@ -27,7 +37,7 @@ function testAttr( doc ) {
 }
 
 test("Sizzle.attr (HTML)", function() {
-	testAttr( document );
+	testAttr();
 });
 
 test("Sizzle.attr (XML)", function() {
