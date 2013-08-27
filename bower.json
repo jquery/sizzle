@@ -3,7 +3,7 @@
   "version": "1.10.7-pre",
   "main": "./dist/sizzle.js",
   "devDependencies": {
-    "qunit": "~1.11.0",
+    "qunit": "~1.12.0",
     "benchmark": "~1.0.0",
     "requirejs": "~2.1.8",
     "requirejs-domready": "~2.0.1",
