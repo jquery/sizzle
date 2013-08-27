@@ -2,8 +2,16 @@
  * Performance test suite using benchmark.js
  */
 
-define([ "require", "benchmark.js/benchmark", "domReady!", "text!selectors.css", "data/checkJava" ],
-function( require, Benchmark, document, selectors ) {
+require({
+	domReady: "../bower_components/requirejs-domready/domReady",
+	text: "../bower_components/requirejs-text/text"
+}, [
+	"../bower_components/benchmark/benchmark",
+	"domReady!",
+	"text!selectors.css",
+	"data/checkJava"
+],
+function( Benchmark, document, selectors ) {
 
 	// Convert selectors to an array
 	selectors = selectors.split("\n");
