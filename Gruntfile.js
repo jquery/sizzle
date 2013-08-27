@@ -88,7 +88,8 @@ module.exports = function( grunt ) {
 				"<%= jshint.grunt.src %>",
 				"<%= jshint.speed.src %>",
 				"<%= jshint.tests.src %>",
-				"{package,bower}.json"
+				"{package,bower}.json",
+				"test/index.html"
 			],
 			tasks: "default"
 		}
