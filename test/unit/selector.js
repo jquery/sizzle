@@ -46,10 +46,10 @@ module("selector", { teardown: moduleTeardown });
 */
 
 test("element", function() {
-	expect( 38 );
+	expect( 39 );
 
 	var form, all, good, i, obj1, lengthtest,
-		siblingTest, iframe, iframeDoc, html;
+		siblingTest, siblingNext, iframe, iframeDoc, html;
 
 	equal( Sizzle("").length, 0, "Empty selector returns an empty array" );
 	deepEqual( Sizzle("div", document.createTextNode("")), [], "Text element as context fails silently" );
@@ -106,6 +106,11 @@ test("element", function() {
 	deepEqual( Sizzle("div em", siblingTest), [], "Element-rooted QSA does not select based on document context" );
 	deepEqual( Sizzle("div em, div em, div em:not(div em)", siblingTest), [], "Element-rooted QSA does not select based on document context" );
 	deepEqual( Sizzle("div em, em\\,", siblingTest), [], "Escaped commas do not get treated with an id in element-rooted QSA" );
+
+	siblingNext = document.getElementById("siblingnext");
+	document.createDocumentFragment().appendChild( siblingTest );
+	deepEqual( Sizzle( "em + :not(:has(*)):not(:empty), foo", siblingTest ), [ siblingNext ],
+		"Non-qSA path correctly sets detached context for sibling selectors (jQuery #14351)" );
 
 	iframe = document.getElementById("iframe"),
 		iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
