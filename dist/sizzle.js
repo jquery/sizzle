@@ -11,6 +11,7 @@
 (function( window ) {
 
 var i,
+	support,
 	cachedruns,
 	Expr,
 	getText,
@@ -49,11 +50,8 @@ var i,
 	strundefined = typeof undefined,
 	MAX_NEGATIVE = 1 << 31,
 
-	// Expose support vars for convenience
-	support = Sizzle.support = {},
-
 	// Instance methods
-	hasOwn = support.hasOwnProperty,
+	hasOwn = ({}).hasOwnProperty,
 	arr = [],
 	pop = arr.pop,
 	push_native = arr.push,
@@ -434,6 +432,9 @@ function createPositionalPseudo( fn ) {
 function testContext( context ) {
 	return context && typeof context.getElementsByTagName !== strundefined && context;
 }
+
+// Expose support vars for convenience
+support = Sizzle.support = {};
 
 /**
  * Detects XML nodes
