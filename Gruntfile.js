@@ -185,9 +185,9 @@ module.exports = function( grunt ) {
 			var text = grunt.file.read( filename );
 			text = text.replace( rversion, "$1" + version );
 			grunt.file.write( filename, text );
-			exec( "git add " + filename, function( err, stdout, stderr ) {
+			exec( "git add " + filename, function( err ) {
 				if ( err ) {
-					fatal( err + " " + stderr );
+					fatal( err );
 					return;
 				}
 				// Commit when all files are added
@@ -215,15 +215,23 @@ module.exports = function( grunt ) {
 		}
 		version = version.replace( rpreversion, "$1" );
 
-		// Build to dist directories along with a map and tag the release
-		grunt.task.run([
-			// Commit new version
-			"version:" + version,
-			// Tag new version
-			"tag:" + version,
-			// Commit next version
-			"version:" + next
-		]);
+		var done = this.async();
+		exec( "git diff --quiet HEAD", function( err ) {
+			if ( err ) {
+				fatal( "The working directory should be clean when releasing. Commit or stash changes." );
+				return;
+			}
+			// Build to dist directories along with a map and tag the release
+			grunt.task.run([
+				// Commit new version
+				"version:" + version,
+				// Tag new version
+				"tag:" + version,
+				// Commit next version
+				"version:" + next
+			]);
+			done();
+		});
 	});
 
 	// Load grunt tasks from NPM packages
