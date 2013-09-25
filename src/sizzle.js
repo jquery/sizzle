@@ -709,27 +709,20 @@ setDocument = Sizzle.setDocument = function( node ) {
 			return 0;
 		}
 
-		// Check the input for compareDocumentPosition
-		// This yields NaN if both have it; 0 if neither does; +/- Infinity otherwise
-		var compare = 1 / !b.compareDocumentPosition - 1 / !a.compareDocumentPosition;
-
-		// Sort on method existence if only one input has it
+		// Sort on method existence if only one input has compareDocumentPosition
+		var compare = !a.compareDocumentPosition - !b.compareDocumentPosition;
 		if ( compare ) {
 			return compare;
 		}
 
-		// Calculate position if both inputs are capable
-		compare = compare !== compare &&
-			// Support: IE
-			// ...and they share a document
-			( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
-
+		// Calculate position if both inputs share a document
+		compare = ( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
 			a.compareDocumentPosition( b ) :
 
 			// Otherwise they are disconnected
 			1;
 
-		// Disconnected or non-comparable nodes
+		// Disconnected nodes
 		if ( compare & 1 ||
 			(!support.sortDetached && b.compareDocumentPosition( a ) === compare) ) {
 
@@ -750,6 +743,12 @@ setDocument = Sizzle.setDocument = function( node ) {
 		return compare & 4 ? -1 : 1;
 	} :
 	function( a, b ) {
+		// Exit early if the nodes are identical
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+		}
+
 		var cur,
 			i = 0,
 			aup = a.parentNode,
@@ -757,13 +756,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 			ap = [ a ],
 			bp = [ b ];
 
-		// Exit early if the nodes are identical
-		if ( a === b ) {
-			hasDuplicate = true;
-			return 0;
-
 		// Parentless nodes are either documents or disconnected
-		} else if ( !aup || !bup ) {
+		if ( !aup || !bup ) {
 			return a === doc ? -1 :
 				b === doc ? 1 :
 				aup ? -1 :
