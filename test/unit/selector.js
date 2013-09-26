@@ -1086,31 +1086,31 @@ test("caching", function() {
 });
 
 asyncTest( "Iframe dispatch should not affect Sizzle, see jQuery #13936", 1, function() {
-	var i = 0,
+	var loaded = false,
 		thrown = false,
 		iframe = document.getElementById("iframe"),
 		iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 
 	jQuery( iframe ).on( "load", function() {
-		var doc;
+		var form;
 
 		try {
-			i++;
-			doc = this.contentDocument || this.contentWindow.document;
-			Sizzle( "form", doc ).pop().submit();
-
+			iframeDoc = this.contentDocument || this.contentWindow.document;
+			form = Sizzle( "#navigate", iframeDoc )[ 0 ];
 		} catch ( e ) {
-			thrown = true;
+			thrown = e;
 		}
 
-		if ( i === 2 ) {
-			jQuery( this ).off("load");
-			ok( !thrown, "Iframe reload should not affect Sizzle, see jQuery #13936" );
+		if ( loaded ) {
+			strictEqual( thrown, false, "No error thrown from post-reload Sizzle call" );
 			start();
+		} else {
+			loaded = true;
+			form.submit();
 		}
 	});
 
 	iframeDoc.open();
-	iframeDoc.write("<body><form></form></body>");
+	iframeDoc.write("<body><form id='navigate'></form></body>");
 	iframeDoc.close();
 });
