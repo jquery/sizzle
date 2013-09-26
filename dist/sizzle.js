@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-09-12
+ * Date: 2013-09-25
  */
 (function( window ) {
 
@@ -709,32 +709,45 @@ setDocument = Sizzle.setDocument = function( node ) {
 			return 0;
 		}
 
-		var compare = b.compareDocumentPosition && a.compareDocumentPosition && a.compareDocumentPosition( b );
+		// Check the input for compareDocumentPosition
+		// This yields NaN if both have it; 0 if neither does; +/- Infinity otherwise
+		var compare = 1 / !b.compareDocumentPosition - 1 / !a.compareDocumentPosition;
 
+		// Sort on method existence if only one input has it
 		if ( compare ) {
-			// Disconnected nodes
-			if ( compare & 1 ||
-				(!support.sortDetached && b.compareDocumentPosition( a ) === compare) ) {
-
-				// Choose the first element that is related to our preferred document
-				if ( a === doc || contains(preferredDoc, a) ) {
-					return -1;
-				}
-				if ( b === doc || contains(preferredDoc, b) ) {
-					return 1;
-				}
-
-				// Maintain original order
-				return sortInput ?
-					( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
-					0;
-			}
-
-			return compare & 4 ? -1 : 1;
+			return compare;
 		}
 
-		// Not directly comparable, sort on existence of method
-		return a.compareDocumentPosition ? -1 : 1;
+		// Calculate position if both inputs are capable
+		compare = compare !== compare &&
+			// Support: IE
+			// ...and they share a document
+			( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
+
+			a.compareDocumentPosition( b ) :
+
+			// Otherwise they are disconnected
+			1;
+
+		// Disconnected or non-comparable nodes
+		if ( compare & 1 ||
+			(!support.sortDetached && b.compareDocumentPosition( a ) === compare) ) {
+
+			// Choose the first element that is related to our preferred document
+			if ( a === doc || a.ownerDocument === preferredDoc && contains(preferredDoc, a) ) {
+				return -1;
+			}
+			if ( b === doc || b.ownerDocument === preferredDoc && contains(preferredDoc, b) ) {
+				return 1;
+			}
+
+			// Maintain original order
+			return sortInput ?
+				( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
+				0;
+		}
+
+		return compare & 4 ? -1 : 1;
 	} :
 	function( a, b ) {
 		var cur,
