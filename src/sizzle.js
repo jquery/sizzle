@@ -884,6 +884,9 @@ Sizzle.uniqueSort = function( results ) {
 		}
 	}
 
+	// clear input after sorting to prevent memory leak
+	sortInput = undefined;
+
 	return results;
 };
 
