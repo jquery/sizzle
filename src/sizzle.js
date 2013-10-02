@@ -715,11 +715,11 @@ setDocument = Sizzle.setDocument = function( node ) {
 			return compare;
 		}
 
-		// Calculate position if both inputs share a document
+		// Calculate position if both inputs belong to the same document
 		compare = ( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
 			a.compareDocumentPosition( b ) :
 
-			// Otherwise they are disconnected
+			// Otherwise we know they are disconnected
 			1;
 
 		// Disconnected nodes

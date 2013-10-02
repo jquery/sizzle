@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-09-25
+ * Date: 2013-10-02
  */
 (function( window ) {
 
@@ -716,11 +716,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 		}
 
 		// Calculate position if both inputs share a document
-		compare = ( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
-			a.compareDocumentPosition( b ) :
-
-			// Otherwise they are disconnected
-			1;
+		compare = ( a.ownerDocument || a ) !== ( b.ownerDocument || b ) ? 1 :
+			a.compareDocumentPosition( b );
 
 		// Disconnected nodes
 		if ( compare & 1 ||
