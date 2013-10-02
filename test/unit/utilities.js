@@ -165,3 +165,5 @@ test("Sizzle.uniqueSort", function() {
 		deepEqual( Sizzle.uniqueSort( new Arrayish(test.input) ).slice( 0, length ), test.expected, label + " (quasi-array)" );
 	});
 });
+
+testIframeWithCallback( "Sizzle.uniqueSort works cross-window (jQuery #14381)", "mixed_sort.html", deepEqual );
