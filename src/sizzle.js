@@ -884,6 +884,10 @@ Sizzle.uniqueSort = function( results ) {
 		}
 	}
 
+	// Clear input after sorting to release objects
+	// See https://github.com/jquery/sizzle/pull/225
+	sortInput = null;
+
 	return results;
 };
 

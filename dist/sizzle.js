@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-09-12
+ * Date: 2013-10-09
  */
 (function( window ) {
 
@@ -883,6 +883,10 @@ Sizzle.uniqueSort = function( results ) {
 			results.splice( duplicates[ j ], 1 );
 		}
 	}
+
+	// Clear input after sorting to release objects
+	// See https://github.com/jquery/sizzle/pull/225
+	sortInput = null;
 
 	return results;
 };

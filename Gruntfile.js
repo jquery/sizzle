@@ -208,14 +208,15 @@ module.exports = function( grunt ) {
 			fatal( "Next version should be a -pre version (x.x.x-pre): " + next );
 			return;
 		}
-		var version = grunt.config( "pkg.version" );
+		var done,
+			version = grunt.config( "pkg.version" );
 		if ( !rpreversion.test(version) ) {
 			fatal( "Existing version is not a pre version: " + version );
 			return;
 		}
 		version = version.replace( rpreversion, "$1" );
 
-		var done = this.async();
+		done = this.async();
 		exec( "git diff --quiet HEAD", function( err ) {
 			if ( err ) {
 				fatal( "The working directory should be clean when releasing. Commit or stash changes." );
