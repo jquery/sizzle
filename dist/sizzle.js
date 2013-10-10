@@ -1,12 +1,12 @@
 /*!
- * Sizzle CSS Selector Engine v1.10.10-pre
+ * Sizzle CSS Selector Engine v1.10.10
  * http://sizzlejs.com/
  *
  * Copyright 2013 jQuery Foundation, Inc. and other contributors
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-10-09
+ * Date: 2013-10-10
  */
 (function( window ) {
 
