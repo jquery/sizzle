@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-10-11
+ * Date: 2013-10-17
  */
 (function( window ) {
 
@@ -454,7 +454,8 @@ isXML = Sizzle.isXML = function( elem ) {
  * @returns {Object} Returns the current document
  */
 setDocument = Sizzle.setDocument = function( node ) {
-	var doc = node ? node.ownerDocument || node : preferredDoc,
+	var hasCompare,
+		doc = node ? node.ownerDocument || node : preferredDoc,
 		parent = doc.defaultView;
 
 	// If no document and documentElement is available, return
@@ -499,7 +500,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	});
 
 	// Check if getElementsByClassName can be trusted
-	support.getElementsByClassName = assert(function( div ) {
+	support.getElementsByClassName = rnative.test( doc.getElementsByClassName ) && assert(function( div ) {
 		div.innerHTML = "<div class='a'></div><div class='a i'></div>";
 
 		// Support: Safari<4
@@ -671,11 +672,12 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 	/* Contains
 	---------------------------------------------------------------------- */
+	hasCompare = rnative.test( docElem.compareDocumentPosition );
 
 	// Element contains another
 	// Purposefully does not implement inclusive descendent
 	// As in, an element does not contain itself
-	contains = rnative.test( docElem.contains ) || docElem.compareDocumentPosition ?
+	contains = hasCompare || rnative.test( docElem.contains ) ?
 		function( a, b ) {
 			var adown = a.nodeType === 9 ? a.documentElement : a,
 				bup = b && b.parentNode;
@@ -700,7 +702,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	---------------------------------------------------------------------- */
 
 	// Document order sorting
-	sortOrder = docElem.compareDocumentPosition ?
+	sortOrder = hasCompare ?
 	function( a, b ) {
 
 		// Flag for duplicate removal

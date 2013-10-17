@@ -15,6 +15,9 @@ var fireNative,
 		document.querySelectorAll = null;
 		document.documentElement.contains = null;
 		document.documentElement.compareDocumentPosition = null;
+		// Return array of length two to pass assertion
+		// But support should be false as its not native
+		document.getElementsByClassName = function() { return [ 0, 1 ]; };
 	}
 })();
 
