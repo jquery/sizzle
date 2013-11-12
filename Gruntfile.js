@@ -1,5 +1,8 @@
 module.exports = function( grunt ) {
 
+	// Load dev dependencies
+	require( "load-grunt-tasks" )( grunt );
+
 	"use strict";
 
 	var gzip = require("gzip-js"),
@@ -234,15 +237,6 @@ module.exports = function( grunt ) {
 			done();
 		});
 	});
-
-	// Load grunt tasks from NPM packages
-	grunt.loadNpmTasks("grunt-contrib-jshint");
-	grunt.loadNpmTasks("grunt-contrib-qunit");
-	grunt.loadNpmTasks("grunt-contrib-uglify");
-	grunt.loadNpmTasks("grunt-contrib-watch");
-	grunt.loadNpmTasks("grunt-compare-size");
-	grunt.loadNpmTasks("grunt-git-authors");
-	grunt.loadNpmTasks("grunt-jsonlint");
 
 	// Default task
 	grunt.registerTask( "default", [ "jsonlint", "jshint", "build", "uglify", "dist", "qunit", "compare_size" ] );
