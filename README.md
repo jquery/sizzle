@@ -63,7 +63,7 @@ grunt -version
 Then, to get a complete, minified (w/ [UglifyJS2](https://github.com/mishoo/UglifyJS2)), linted (w/ [JSHint](http://jshint.com/)) version of Sizzle, type the following:
 
 ```bash
-grunt
+grunt build
 ```
 
 The built version of Sizzle will be put in the `dist/` subdirectory, along with the minified copy and associated map file.

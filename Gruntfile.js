@@ -16,7 +16,7 @@ module.exports = function( grunt ) {
 		qunit: {
 			files: [ "test/index.html" ]
 		},
-		build: {
+		compile: {
 			all: {
 				dest: "dist/sizzle.js",
 				src: "src/sizzle.js"
@@ -99,8 +99,8 @@ module.exports = function( grunt ) {
 	});
 
 	grunt.registerMultiTask(
-		"build",
-		"Build sizzle.js to the dist directory. Embed date/version.",
+		"compile",
+		"Compile sizzle.js to the dist directory. Embed date/version.",
 		function() {
 			var data = this.data,
 				dest = data.dest,
@@ -238,8 +238,8 @@ module.exports = function( grunt ) {
 		});
 	});
 
-	// Default task
-	grunt.registerTask( "default", [ "jsonlint", "jshint", "build", "uglify", "dist", "qunit", "compare_size" ] );
+	grunt.registerTask( "build", [ "jsonlint", "jshint", "compile", "uglify", "dist" ] );
+	grunt.registerTask( "default", [ "build", "qunit", "compare_size" ] );
 
 	// Task aliases
 	grunt.registerTask( "lint", ["jshint"] );
