@@ -10,7 +10,7 @@ Documentation: https://github.com/jquery/sizzle/wiki/Sizzle-Documentation
 
 Browser support: https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#wiki-browsers
 
-Dependencies
+What you need to build Sizzle
 ---------------------------
 
 In order to build Sizzle, you need to have Node.js/npm latest and git 1.7 or later.<br/>
@@ -33,7 +33,7 @@ Linux/BSD users should use their appropriate package managers to install git and
 if you swing that way. Easy-peasy.
 
 
-Building
+How to build Sizzle
 ----------------------------
 
 First, clone a copy of the main Sizzle git repo by running:
@@ -42,7 +42,7 @@ First, clone a copy of the main Sizzle git repo by running:
 git clone git://github.com/jquery/sizzle.git
 ```
 
-Install the grunt-cli package so that you will have the correct version of grunt available from any project that needs it. This should be done as a global install:
+Install the [grunt-cli](http://gruntjs.com/getting-started#installing-the-cli) package so that you will have the correct version of grunt available from any project that needs it. This should be done as a global install:
 
 ```bash
 npm install -g grunt-cli
