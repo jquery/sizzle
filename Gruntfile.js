@@ -179,27 +179,26 @@ module.exports = function( grunt ) {
 		}
 
 		var done = this.async(),
-			files = grunt.config("version.files"),
-			n = files.length,
+			files = grunt.config( "version.files" ),
 			rversion = /("version":\s*")[^"]+/;
 
+		// Update version in specified files
 		files.forEach(function( filename ) {
-			// Update version in specified files
 			var text = grunt.file.read( filename );
 			text = text.replace( rversion, "$1" + version );
 			grunt.file.write( filename, text );
-			exec( "git add " + filename, function( err ) {
-				if ( err ) {
-					fatal( err );
-					return;
-				}
-				// Commit when all files are added
-				if ( !--n ) {
-					grunt.config( "pkg.version", version );
-					grunt.task.run([ "build", "uglify", "dist", "commit:\"Update version to " + version + "\"" ]);
-					done();
-				}
-			});
+		});
+
+		// Add files to git index
+		exec( "git add -A", function( err ) {
+			if ( err ) {
+				fatal( err );
+				return;
+			}
+			// Commit next pre version
+			grunt.config( "pkg.version", version );
+			grunt.task.run([ "build", "uglify", "dist", "commit:'Update version to " + version + "'" ]);
+			done();
 		});
 	});
 
