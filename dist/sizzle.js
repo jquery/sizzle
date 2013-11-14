@@ -1,5 +1,5 @@
 /*!
- * Sizzle CSS Selector Engine v1.10.12
+ * Sizzle CSS Selector Engine v1.10.13-pre
  * http://sizzlejs.com/
  *
  * Copyright 2013 jQuery Foundation, Inc. and other contributors
