@@ -2,7 +2,7 @@
 	"name": "sizzle",
 	"title": "Sizzle",
 	"description": "A pure-JavaScript, bottom-up CSS selector engine designed to be easily dropped in to a host library.",
-	"version": "1.10.12-pre",
+	"version": "1.10.12",
 	"homepage": "http://sizzlejs.com",
 	"author": {
 		"name": "jQuery Foundation and other contributors",
