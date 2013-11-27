@@ -1114,3 +1114,19 @@ asyncTest( "Iframe dispatch should not affect Sizzle, see jQuery #13936", 1, fun
 	iframeDoc.write("<body><form id='navigate'></form></body>");
 	iframeDoc.close();
 });
+
+test("matchesSelector", function() {
+	expect( 6 );
+
+	var el = document.getElementById("simon1"),
+		disconnected = document.createElement("div");
+
+	ok( Sizzle.matchesSelector( el, "[rel='bookmark']" ), "quoted attribute" );
+	ok( Sizzle.matchesSelector( el, "[rel=bookmark]" ), "unquoted attribute" );
+	ok( Sizzle.matchesSelector( el, "[\nrel = bookmark\t]" ), "unquoted attribute with non-semantic whitespace" );
+
+	ok( Sizzle.matchesSelector( disconnected, "div" ), "disconnected element" );
+
+	ok( Sizzle.matchesSelector( el, "* > *" ), "child combinator (matching)" );
+	ok( !Sizzle.matchesSelector( disconnected, "* > *" ), "child combinator (not matching)" );
+});
