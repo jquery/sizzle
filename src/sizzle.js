@@ -614,7 +614,13 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// setting a boolean content attribute,
 			// since its presence should be enough
 			// http://bugs.jquery.com/ticket/12359
-			div.innerHTML = "<select><option selected=''></option></select>";
+			div.innerHTML = "<select t=''><option selected=''></option></select>";
+
+			// Support: IE8, Opera 10-12
+			// Nothing should be selected when empty strings follow ^= or $= or *=
+			if ( div.querySelectorAll("[t^='']").length ) {
+				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
+			}
 
 			// Support: IE8
 			// Boolean attributes and "value" are not treated correctly
@@ -631,18 +637,16 @@ setDocument = Sizzle.setDocument = function( node ) {
 		});
 
 		assert(function( div ) {
-
-			// Support: Opera 10-12/IE8
-			// ^= $= *= and empty values
-			// Should not select anything
 			// Support: Windows 8 Native Apps
-			// The type attribute is restricted during .innerHTML assignment
+			// The type and name attributes are restricted during .innerHTML assignment
 			var input = doc.createElement("input");
 			input.setAttribute( "type", "hidden" );
-			div.appendChild( input ).setAttribute( "t", "" );
+			div.appendChild( input ).setAttribute( "name", "D" );
 
-			if ( div.querySelectorAll("[t^='']").length ) {
-				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
+			// Support: IE8
+			// Enforce case-sensitivity of name attribute
+			if ( div.querySelectorAll("[name=d]").length ) {
+				rbuggyQSA.push( "\\[" + whitespace + "*name" );
 			}
 
 			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
