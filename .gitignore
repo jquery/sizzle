@@ -6,5 +6,6 @@
 *.sizecache.json
 .DS_Store
 node_modules
-test/libs
 bower_components
+test/libs
+speed/libs

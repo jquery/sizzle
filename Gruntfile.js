@@ -48,6 +48,20 @@ module.exports = function( grunt ) {
 			options: {
 				clean: true
 			},
+
+			speed: {
+				options: {
+					destPrefix: "speed/libs"
+				},
+
+				files: {
+					"requirejs/require.js": "requirejs/require.js",
+					"requirejs-domready/domReady.js": "requirejs-domready/domReady.js",
+					"requirejs-text/text.js": "requirejs-text/text.js",
+					"benchmark/benchmark.js": "benchmark/benchmark.js"
+				}
+			},
+
 			"test/libs/qunit": "qunit/qunit"
 		},
 		jshint: {

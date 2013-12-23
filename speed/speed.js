@@ -1,14 +1,10 @@
 /*
  * Performance test suite using benchmark.js
  */
-
-require({
-	domReady: "../bower_components/requirejs-domready/domReady",
-	text: "../bower_components/requirejs-text/text"
-}, [
-	"../bower_components/benchmark/benchmark",
-	"domReady!",
-	"text!selectors.css",
+require([
+	"libs/benchmark/benchmark",
+	"libs/requirejs-domready/domReady!",
+	"libs/requirejs-text/text!selectors.css",
 	"data/checkJava"
 ],
 function( Benchmark, document, selectors ) {
