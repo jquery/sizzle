@@ -24,6 +24,7 @@
 	"dependencies": {},
 	"devDependencies": {
 		"grunt": "0.4.2",
+		"grunt-cli": "0.1.11",
 
 		"grunt-contrib-jshint": "0.7.2",
 		"grunt-contrib-qunit": "0.3.0",
@@ -33,11 +34,19 @@
 		"grunt-compare-size": "0.4.0",
 		"grunt-git-authors": "1.2.0",
 		"grunt-jsonlint": "1.0.4",
+		"grunt-bowercopy": "0.4.1",
 
 		"gzip-js": "0.3.2",
 		"load-grunt-tasks": "0.2.1",
 		"testswarm": "1.1.0"
 	},
+
+	"scripts": {
+		"install": "grunt bower",
+		"start": "grunt watch",
+		"test": "grunt"
+	},
+
 	"keywords": [
 		"sizzle",
 		"selector",
