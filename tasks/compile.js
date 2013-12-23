@@ -14,7 +14,7 @@ module.exports = function( grunt ) {
 			// Embed version and date
 			compiled = compiled
 				.replace( /@VERSION/g, version )
-				.replace( "@DATE", function () {
+				.replace( "@DATE", function() {
 					var date = new Date();
 
 					// YYYY-MM-DD

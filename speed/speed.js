@@ -561,7 +561,7 @@ function( Benchmark, document, selectors ) {
 
 			// Add totals to table
 			i = firstTestedColumn();
-			while( (elem = tds[ i++ ]) ) {
+			while ( (elem = tds[ i++ ]) ) {
 				attr = elem.getAttribute("data-engine");
 				if ( attr === fastest ) {
 					addClass( elem, "green" );

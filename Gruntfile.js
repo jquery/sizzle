@@ -1,7 +1,13 @@
 module.exports = function( grunt ) {
 	"use strict";
 
-	var gzip = require( "gzip-js" );
+	var gzip = require( "gzip-js" ),
+		files = {
+			source: "src/sizzle.js",
+			speed: "speed/speed.js",
+			tests: "test/unit/*.js",
+			grunt: [ "Gruntfile.js", "tasks/*" ]
+		};
 
 	// Project configuration.
 	grunt.initConfig({
@@ -66,28 +72,37 @@ module.exports = function( grunt ) {
 		},
 		jshint: {
 			source: {
-				src: [ "src/sizzle.js" ],
+				src: files.source,
 				options: {
 					jshintrc: "src/.jshintrc"
 				}
 			},
 			grunt: {
-				src: [ "Gruntfile.js", "tasks/*" ],
+				src: files.grunt,
 				options: {
 					jshintrc: ".jshintrc"
 				}
 			},
 			speed: {
-				src: [ "speed/speed.js" ],
+				src: files.speed,
 				options: {
 					jshintrc: "speed/.jshintrc"
 				}
 			},
 			tests: {
-				src: [ "test/unit/*.js" ],
+				src: files.tests,
 				options: {
 					jshintrc: "test/.jshintrc"
 				}
+			}
+		},
+		jscs: {
+			// Can't check the actual source file until
+			// https://github.com/mdevils/node-jscs/pull/90 is merged
+			files: [ files.grunt, files.speed ],
+
+			options: {
+				preset: "jquery",
 			}
 		},
 		jsonlint: {
@@ -100,9 +115,9 @@ module.exports = function( grunt ) {
 		},
 		watch: {
 			files: [
-				"<%= jshint.source.src %>",
-				"<%= jshint.grunt.src %>",
-				"<%= jshint.speed.src %>",
+				files.source,
+				files.grunt,
+				files.speed,
 				"<%= jshint.tests.src %>",
 				"{package,bower}.json",
 				"test/index.html"
@@ -110,14 +125,14 @@ module.exports = function( grunt ) {
 			tasks: "default"
 		}
 	});
-	
+
 	// Integrate Sizzle specific tasks
 	grunt.loadTasks( "tasks" );
 
 	// Load dev dependencies
 	require( "load-grunt-tasks" )( grunt );
 
-	grunt.registerTask( "build", [ "jsonlint", "jshint", "compile", "uglify", "dist" ] );
+	grunt.registerTask( "build", [ "jsonlint", "jshint", "jscs", "compile", "uglify", "dist" ] );
 	grunt.registerTask( "default", [ "build", "qunit", "compare_size" ] );
 
 	// Task aliases
