@@ -44,6 +44,12 @@ module.exports = function( grunt ) {
 				cache: "dist/.sizecache.json"
 			}
 		},
+		bowercopy: {
+			options: {
+				clean: true
+			},
+			"test/libs/qunit": "qunit/qunit"
+		},
 		jshint: {
 			source: {
 				src: [ "src/sizzle.js" ],
@@ -102,4 +108,5 @@ module.exports = function( grunt ) {
 
 	// Task aliases
 	grunt.registerTask( "lint", [ "jshint" ] );
+	grunt.registerTask( "bower", "bowercopy" );
 };

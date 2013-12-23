@@ -6,5 +6,5 @@
 *.sizecache.json
 .DS_Store
 node_modules
-test/qunit
+test/libs
 bower_components
