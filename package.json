@@ -43,9 +43,10 @@
 	},
 
 	"scripts": {
+		"build": "npm install && grunt",
 		"install": "grunt bower",
 		"start": "grunt watch",
-		"test": "grunt"
+		"test": "grunt test"
 	},
 
 	"keywords": [

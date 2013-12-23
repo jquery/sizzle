@@ -133,6 +133,7 @@ module.exports = function( grunt ) {
 	require( "load-grunt-tasks" )( grunt );
 
 	grunt.registerTask( "build", [ "jsonlint", "jshint", "jscs", "compile", "uglify", "dist" ] );
+	grunt.registerTask( "test", [ "jsonlint", "jshint", "jscs", "qunit" ] );
 	grunt.registerTask( "default", [ "build", "qunit", "compare_size" ] );
 
 	// Task aliases
