@@ -1,18 +1,11 @@
 module.exports = function( grunt ) {
-
-	// Load dev dependencies
-	require( "load-grunt-tasks" )( grunt );
-
 	"use strict";
 
-	var gzip = require("gzip-js"),
-		exec = require("child_process").exec,
-		fatal = grunt.fail.fatal,
-		rpreversion = /(\d\.\d+\.\d+)-pre/;
+	var gzip = require( "gzip-js" );
 
 	// Project configuration.
 	grunt.initConfig({
-		pkg: grunt.file.readJSON("package.json"),
+		pkg: grunt.file.readJSON( "package.json" ),
 		qunit: {
 			files: [ "test/index.html" ]
 		},
@@ -55,11 +48,11 @@ module.exports = function( grunt ) {
 			source: {
 				src: [ "src/sizzle.js" ],
 				options: {
-					jshintrc: ".jshintrc"
+					jshintrc: "src/.jshintrc"
 				}
 			},
 			grunt: {
-				src: [ "Gruntfile.js" ],
+				src: [ "Gruntfile.js", "tasks/*" ],
 				options: {
 					jshintrc: ".jshintrc"
 				}
@@ -97,149 +90,16 @@ module.exports = function( grunt ) {
 			tasks: "default"
 		}
 	});
+	
+	// Integrate Sizzle specific tasks
+	grunt.loadTasks( "tasks" );
 
-	grunt.registerMultiTask(
-		"compile",
-		"Compile sizzle.js to the dist directory. Embed date/version.",
-		function() {
-			var data = this.data,
-				dest = data.dest,
-				src = data.src,
-				version = grunt.config("pkg.version"),
-				compiled = grunt.file.read( src );
-
-			// Embed version and date
-			compiled = compiled
-				.replace( /@VERSION/g, version )
-				.replace( "@DATE", function () {
-					var date = new Date();
-
-					// YYYY-MM-DD
-					return [
-						date.getFullYear(),
-						( "0" + ( date.getMonth() + 1 ) ).slice( -2 ),
-						( "0" + date.getDate() ).slice( -2 )
-					].join( "-" );
-				});
-
-			// Write source to file
-			grunt.file.write( dest, compiled );
-
-			grunt.log.ok( "File written to " + dest );
-		}
-	);
-
-	// Process files for distribution
-	grunt.registerTask( "dist", function() {
-		var files = grunt.file.expand( { filter: "isFile" }, "dist/*" ),
-			fs = require("fs");
-
-		files.forEach(function( filename ) {
-			var map,
-				text = fs.readFileSync( filename, "utf8" );
-
-			// Modify map/min so that it points to files in the same folder;
-			// see https://github.com/mishoo/UglifyJS2/issues/47
-			if ( /\.map$/.test( filename ) ) {
-				text = text.replace( /"dist\//g, "\"" );
-				fs.writeFileSync( filename, text, "utf-8" );
-			} else if ( /\.min\.js$/.test( filename ) ) {
-				// Wrap sourceMap directive in multiline comments (#13274)
-				text = text.replace( /\n?(\/\/@\s*sourceMappingURL=)(.*)/,
-					function( _, directive, path ) {
-						map = "\n" + directive + path.replace( /^dist\//, "" );
-						return "";
-					});
-				if ( map ) {
-					text = text.replace( /(^\/\*[\w\W]*?)\s*\*\/|$/,
-						function( _, comment ) {
-							return ( comment || "\n/*" ) + map + "\n*/";
-						});
-				}
-				fs.writeFileSync( filename, text, "utf-8" );
-			}
-		});
-	});
-
-	// Commit and tag the specified version
-	grunt.registerTask( "tag", function( version ) {
-		exec( "git tag " + version, this.async() );
-	});
-
-	grunt.registerTask( "commit", function( message ) {
-		// Always add dist directory
-		exec( "git add dist && git commit -m " + message, this.async() );
-	});
-
-	// Commit a new version
-	grunt.registerTask( "version", function( version ) {
-		if ( !/\d\.\d+\.\d+(?:-pre)?/.test(version) ) {
-			fatal( "Version must follow semver release format: " + version );
-			return;
-		}
-
-		var done = this.async(),
-			files = grunt.config( "version.files" ),
-			rversion = /("version":\s*")[^"]+/;
-
-		// Update version in specified files
-		files.forEach(function( filename ) {
-			var text = grunt.file.read( filename );
-			text = text.replace( rversion, "$1" + version );
-			grunt.file.write( filename, text );
-		});
-
-		// Add files to git index
-		exec( "git add -A", function( err ) {
-			if ( err ) {
-				fatal( err );
-				return;
-			}
-			// Commit next pre version
-			grunt.config( "pkg.version", version );
-			grunt.task.run([ "build", "uglify", "dist", "commit:'Update version to " + version + "'" ]);
-			done();
-		});
-	});
-
-	// Release a version of sizzle
-	// Updates a pre version to released
-	// Inserts `next` as the new pre version
-	grunt.registerTask( "release", function( next ) {
-		if ( !rpreversion.test(next) ) {
-			fatal( "Next version should be a -pre version (x.x.x-pre): " + next );
-			return;
-		}
-		var done,
-			version = grunt.config( "pkg.version" );
-		if ( !rpreversion.test(version) ) {
-			fatal( "Existing version is not a pre version: " + version );
-			return;
-		}
-		version = version.replace( rpreversion, "$1" );
-
-		done = this.async();
-		exec( "git diff --quiet HEAD", function( err ) {
-			if ( err ) {
-				fatal( "The working directory should be clean when releasing. Commit or stash changes." );
-				return;
-			}
-			// Build to dist directories along with a map and tag the release
-			grunt.task.run([
-				// Commit new version
-				"version:" + version,
-				// Tag new version
-				"tag:" + version,
-				// Commit next version
-				"version:" + next
-			]);
-			done();
-		});
-	});
+	// Load dev dependencies
+	require( "load-grunt-tasks" )( grunt );
 
 	grunt.registerTask( "build", [ "jsonlint", "jshint", "compile", "uglify", "dist" ] );
 	grunt.registerTask( "default", [ "build", "qunit", "compare_size" ] );
 
 	// Task aliases
-	grunt.registerTask( "lint", ["jshint"] );
+	grunt.registerTask( "lint", [ "jshint" ] );
 };
