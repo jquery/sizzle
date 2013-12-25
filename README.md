@@ -52,5 +52,5 @@ Developing with [grunt](http://gruntjs.com)
 ----------------------------
 
 - `npm run build` or `grunt` will lint, build, test, and compare the sizes of the built files.
-- `grunt jshint` will only lint js files.
 - `npm start` or `grunt watch` can be run to re-lint, re-build, and re-test files as you change them.
+- `grunt -help` will show other available commands
