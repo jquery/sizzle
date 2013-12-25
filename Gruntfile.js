@@ -12,9 +12,6 @@ module.exports = function( grunt ) {
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON( "package.json" ),
-		qunit: {
-			files: [ "test/index.html" ]
-		},
 		compile: {
 			all: {
 				dest: "dist/sizzle.js",
@@ -116,16 +113,29 @@ module.exports = function( grunt ) {
 				src: [ "bower.json" ]
 			}
 		},
+		karma: {
+			options: {
+				configFile: "karma.conf.js"
+			},
+			watch: {
+				background: true,
+			},
+			unit: {
+				singleRun: true
+			}
+		},
 		watch: {
 			files: [
 				files.source,
 				files.grunt,
 				files.speed,
+				"karma.conf.js",
+				"test/**/*",
 				"<%= jshint.tests.src %>",
 				"{package,bower}.json",
-				"test/index.html"
+				"test/*.html"
 			],
-			tasks: "default"
+			tasks: [ "lint", "karma:watch:run" ]
 		}
 	});
 
@@ -136,10 +146,12 @@ module.exports = function( grunt ) {
 	require( "load-grunt-tasks" )( grunt );
 
 	grunt.registerTask( "lint", [ "jsonlint", "jshint", "jscs" ] );
-	grunt.registerTask( "build", [ "lint", "compile", "uglify", "dist" ] );
-	grunt.registerTask( "test", [ "lint", "qunit" ] );
-	grunt.registerTask( "default", [ "build", "qunit", "compare_size" ] );
+	grunt.registerTask( "test", [ "lint", "karma:unit" ] );
 
-	// Task aliases
+	grunt.registerTask( "start", [ "karma:watch:start", "watch" ] );
+
+	grunt.registerTask( "build", [ "lint", "compile", "uglify", "dist" ] );
+	grunt.registerTask( "default", [ "build", "karma:unit", "compare_size" ] );
+
 	grunt.registerTask( "bower", "bowercopy" );
 };

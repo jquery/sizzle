@@ -1,4 +1,4 @@
-module("utilities", { teardown: moduleTeardown });
+module( "utilities" );
 
 function testAttr( doc ) {
 	expect( 9 );
