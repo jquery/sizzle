@@ -5,6 +5,7 @@ var fireNative,
 	original$ = $;
 
 (function() {
+
 	// Config parameter to force basic code paths
 	QUnit.config.urlConfig.push({
 		id: "basic",
@@ -131,6 +132,5 @@ function testIframeWithCallback( title, fileName, func ) {
 			.appendTo( "#qunit-fixture" );
 	});
 };
-window.iframeCallback = undefined;
 
-function moduleTeardown() {}
+window.iframeCallback = undefined;

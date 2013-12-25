@@ -32,12 +32,20 @@
 		"grunt-contrib-qunit": "0.3.0",
 		"grunt-contrib-uglify": "0.2.7",
 		"grunt-contrib-watch": "0.5.3",
+
+		"grunt-compare-size": "0.4.0",
+
 		"grunt-git-authors": "1.2.0",
 		"grunt-jscs-checker": "0.3.0",
 		"grunt-jsonlint": "1.0.4",
 		"gzip-js": "0.3.2",
 		"load-grunt-tasks": "0.2.1",
-		"testswarm": "1.1.0"
+		"testswarm": "1.1.0",
+
+		"grunt-karma": "0.6.2",
+		"karma": "0.10",
+	    "karma-qunit": "0.1.1",
+	    "karma-browserstack-launcher": "0.0.7"
 	},
 
 	"scripts": {

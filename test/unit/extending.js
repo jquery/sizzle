@@ -1,4 +1,4 @@
-module("extending", { teardown: moduleTeardown });
+module( "extending" );
 
 test("custom pseudos", function() {
 	expect( 6 );
