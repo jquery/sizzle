@@ -25,6 +25,7 @@
 	"devDependencies": {
 		"grunt": "0.4.2",
 		"grunt-cli": "0.1.11",
+		"bower": "1.2.8",
 
 		"grunt-contrib-jshint": "0.7.2",
 		"grunt-contrib-qunit": "0.3.0",
