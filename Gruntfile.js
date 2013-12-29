@@ -6,6 +6,7 @@ module.exports = function( grunt ) {
 			source: "src/sizzle.js",
 			speed: "speed/speed.js",
 			tests: "test/unit/*.js",
+			karma: "karma.conf.js",
 			grunt: [ "Gruntfile.js", "tasks/*" ]
 		};
 
@@ -77,8 +78,8 @@ module.exports = function( grunt ) {
 					jshintrc: "src/.jshintrc"
 				}
 			},
-			grunt: {
-				src: files.grunt,
+			build: {
+				src: [ files.grunt, files.karma ],
 				options: {
 					jshintrc: ".jshintrc"
 				}
@@ -99,7 +100,7 @@ module.exports = function( grunt ) {
 		jscs: {
 			// Can't check the actual source file until
 			// https://github.com/mdevils/node-jscs/pull/90 is merged
-			files: [ files.grunt, files.speed ],
+			files: [ files.grunt, files.speed, files.karma ],
 
 			options: {
 				preset: "jquery",
@@ -129,7 +130,7 @@ module.exports = function( grunt ) {
 				files.source,
 				files.grunt,
 				files.speed,
-				"karma.conf.js",
+				files.karma,
 				"test/**/*",
 				"<%= jshint.tests.src %>",
 				"{package,bower}.json",
