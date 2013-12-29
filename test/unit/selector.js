@@ -652,7 +652,7 @@ test("pseudo - nth-child", function() {
 test("pseudo - nth-last-child", function() {
 	expect( 30 );
 
-	jQuery( "#qunit-fixture" ).append( "<form id='nth-last-child-form'/><i/><i/><i/><i/>" )
+	jQuery( "#qunit-fixture" ).append( "<form id='nth-last-child-form'/><i/><i/><i/><i/>" );
 	t( "Nth-last-child", "form:nth-last-child(5)", ["nth-last-child-form"] );
 	t( "Nth-last-child (with whitespace)", "form:nth-last-child( 5 )", ["nth-last-child-form"] );
 
@@ -991,13 +991,13 @@ test("pseudo - :target and :root", function() {
 
 test("pseudo - :lang", function() {
 	// expect( 105 );
-	ok(1)
+	ok(1);
 
 	var docElem = document.documentElement,
 		docXmlLang = docElem.getAttribute("xml:lang"),
 		docLang = docElem.lang,
-		foo = document.getElementById("foo");
-		anchor = document.getElementById("anchor2")
+		foo = document.getElementById("foo"),
+		anchor = document.getElementById("anchor2"),
 		xml = createWithFriesXML(),
 		testLang = function( text, elem, container, lang, extra ) {
 			var message,
