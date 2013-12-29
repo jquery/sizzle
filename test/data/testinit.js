@@ -67,7 +67,8 @@ function t( a, b, c ) {
  * @result "data/test.php?foo=bar&10538358345554"
  */
 function url( value ) {
-	return value + (/\?/.test(value) ? "&" : "?") + new Date().getTime() + "" + parseInt(Math.random()*100000);
+	return ( window.__karma__ ? "base/test/" : "" ) + value +
+		(/\?/.test(value) ? "&" : "?") + new Date().getTime() + "" + parseInt(Math.random()*100000);
 }
 
 var createWithFriesXML = function() {
@@ -128,7 +129,7 @@ function testIframeWithCallback( title, fileName, func ) {
 			}, 0 );
 		};
 		iframe = jQuery( "<div/>" ).css({ position: "absolute", width: "500px", left: "-600px" })
-			.append( jQuery( "<iframe/>" ).attr( "src", url( "./data/" + fileName ) ) )
+			.append( jQuery( "<iframe/>" ).attr( "src", url( "data/" + fileName ) ) )
 			.appendTo( "#qunit-fixture" );
 	});
 };
