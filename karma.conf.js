@@ -22,10 +22,7 @@ module.exports = function(config) {
 
 			"data/testrunner.js",
 			"unit/selector.js",
-		],
-
-		// list of files to exclude
-		exclude: [
+			"unit/extending.js"
 		],
 
 		// web server port
