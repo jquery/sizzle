@@ -1,4 +1,6 @@
-module.exports = function(config) {
+module.exports = function( config ) {
+
+	// should be executed only from grunt task
 	config.set({
 
 		// Can't specify path as "test" which would be intuitive
@@ -16,15 +18,12 @@ module.exports = function(config) {
 
 			{
 				pattern: "test/data/fixtures.html",
-				watched: true,
-				served: true,
-				included: true
+				watched: false
 			},
 
 			{
 				pattern: "test/data/mixed_sort.html",
 				watched: false,
-				served: true,
 				included: false
 			},
 
@@ -54,9 +53,6 @@ module.exports = function(config) {
 		// possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
 		logLevel: config.LOG_INFO,
 
-		// enable / disable watching file and executing tests whenever any file changes
-		autoWatch: false,
-
 		// Start these browsers, currently available:
 		// - Chrome
 		// - ChromeCanary
@@ -68,10 +64,6 @@ module.exports = function(config) {
 		browsers: [ "PhantomJS" ],
 
 		// If browser does not capture in given timeout [ms], kill it
-		captureTimeout: 60000,
-
-		// Continuous Integration mode
-		// if true, it capture browsers, run tests and exit
-		singleRun: false
+		captureTimeout: 60000
 	});
 };
