@@ -1,4 +1,4 @@
-module( "utilities" );
+module( "utilities", { setup: setup } );
 
 function testAttr( doc ) {
 	expect( 9 );
