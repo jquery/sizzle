@@ -1,14 +1,10 @@
 /*
  * Performance test suite using benchmark.js
  */
-
-require({
-	domReady: "../bower_components/requirejs-domready/domReady",
-	text: "../bower_components/requirejs-text/text"
-}, [
-	"../bower_components/benchmark/benchmark",
-	"domReady!",
-	"text!selectors.css",
+require([
+	"libs/benchmark/benchmark",
+	"libs/requirejs-domready/domReady!",
+	"libs/requirejs-text/text!selectors.css",
 	"data/checkJava"
 ],
 function( Benchmark, document, selectors ) {
@@ -565,7 +561,7 @@ function( Benchmark, document, selectors ) {
 
 			// Add totals to table
 			i = firstTestedColumn();
-			while( (elem = tds[ i++ ]) ) {
+			while ( (elem = tds[ i++ ]) ) {
 				attr = elem.getAttribute("data-engine");
 				if ( attr === fastest ) {
 					addClass( elem, "green" );

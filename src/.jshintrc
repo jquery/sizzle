@@ -13,5 +13,16 @@
 	"undef": true,
 	"unused": true,
 
-	"node": true
+	"regexdash": true,
+	"sub": true,
+
+	"browser": true,
+	"wsh": true,
+
+	"globals": {
+		"define": true,
+		"module": true,
+		"require": true,
+		"jQuery": true
+	}
 }
