@@ -2,4 +2,4 @@ Welcome! Thanks for your interest in contributing to Sizzle. You're **almost** i
 
 You may also want to take a look at our [commit & pull request guide](http://contribute.jquery.org/commits-and-pull-requests/) and [style guides](http://contribute.jquery.org/style-guide/) for instructions on how to maintain your fork and submit your code. Before we can merge any pull request, we'll also need you to sign our [contributor license agreement](http://contribute.jquery.org/cla).
 
-You can find us on [IRC](http://irc.jquery.org), specifically in [#jquery-dev](irc://irc.freenode.net/#jquery-dev) should you have any questions. If you've never contributed to open source before, we've put together [a short guide with tips, tricks, and ideas on getting started](http://contribute.jquery.org/open-source/).
+You can find us on [IRC](http://irc.jquery.org), specifically in #jquery-dev should you have any questions. If you've never contributed to open source before, we've put together [a short guide with tips, tricks, and ideas on getting started](http://contribute.jquery.org/open-source/).
