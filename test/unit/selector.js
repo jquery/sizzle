@@ -992,8 +992,7 @@ test("pseudo - :target and :root", function() {
 });
 
 test("pseudo - :lang", function() {
-	// expect( 105 );
-	ok(1);
+	expect( 105 );
 
 	var docElem = document.documentElement,
 		docXmlLang = docElem.getAttribute("xml:lang"),
