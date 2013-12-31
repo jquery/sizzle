@@ -1,9 +1,3 @@
-var fireNative,
-	jQuery = this.jQuery || "jQuery", // For testing .noConflict()
-	$ = this.$ || "$",
-	originaljQuery = jQuery,
-	original$ = $;
-
 (function() {
 
 	// Config parameter to force basic code paths
@@ -100,17 +94,6 @@ var createWithFriesXML = function() {
 
 	return jQuery.parseXML( string );
 };
-
-fireNative = document.createEvent ?
-	function( node, type ) {
-		var event = document.createEvent("HTMLEvents");
-		event.initEvent( type, true, true );
-		node.dispatchEvent( event );
-	} :
-	function( node, type ) {
-		var event = document.createEventObject();
-		node.fireEvent( "on" + type, event );
-	};
 
 function testIframeWithCallback( title, fileName, func ) {
 	test( title, function() {
