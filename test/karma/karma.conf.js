@@ -1,5 +1,5 @@
 module.exports = function( config ) {
-	var browsers = require( "./browsers" );
+	var env = require( "./environment" );
 
 	config.set({
 		browserStack: {
@@ -54,17 +54,15 @@ module.exports = function( config ) {
 
 		colors: true,
 
-		transports: [ "websocket", "flashsocket", "jsonp-polling", "xhr-polling" ],
-
-		customLaunchers: browsers.launchers,
+		browsers: [ "PhantomJS" ],
 
 		// level of logging
 		// possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
 		logLevel: config.LOG_INFO,
 
-		browsers: browsers.browsers,
-
 		// If browser does not capture in given timeout [ms], kill it
 		captureTimeout: 60000
 	});
+
+	env( config );
 };
