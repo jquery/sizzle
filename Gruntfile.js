@@ -6,7 +6,7 @@ module.exports = function( grunt ) {
 			source: "src/sizzle.js",
 			speed: "speed/speed.js",
 			tests: "test/unit/*.js",
-			karma: "karma.conf.js",
+			karma: "test/karma/karma.conf.js",
 			grunt: [ "Gruntfile.js", "tasks/*" ]
 		};
 
@@ -116,7 +116,7 @@ module.exports = function( grunt ) {
 		},
 		karma: {
 			options: {
-				configFile: "karma.conf.js"
+				configFile: files.karma
 			},
 			watch: {
 				background: true,
