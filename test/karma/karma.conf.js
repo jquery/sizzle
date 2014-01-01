@@ -24,6 +24,7 @@ module.exports = function( config ) {
 
 			"test/data/testinit.js",
 			"test/data/testrunner.js",
+			"test/data/empty.js",
 
 			"test/unit/selector.js",
 			"test/unit/utilities.js",
@@ -33,10 +34,6 @@ module.exports = function( config ) {
 			{
 				pattern: "test/data/mixed_sort.html",
 				watched: false,
-				included: false
-			},
-			{
-				pattern: "test/data/empty.js",
 				included: false
 			}
 		],
