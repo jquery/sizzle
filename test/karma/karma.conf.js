@@ -2,6 +2,10 @@ module.exports = function( config ) {
 	var browsers = require( "./browsers" );
 
 	config.set({
+		browserStack: {
+			project: "sizzle",
+			timeout: 600
+		},
 
 		// Can't specify path as "../../test" which would be intuitive
 		// because if we do, karma will make paths outside "test" folder absolute
