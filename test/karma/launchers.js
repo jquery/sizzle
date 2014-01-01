@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = {
 	"firefox-24": {
 		base: "BrowserStack",
@@ -136,4 +138,4 @@ module.exports = {
 		os: "android",
 		os_version: "4.1"
 	}
-}
+};

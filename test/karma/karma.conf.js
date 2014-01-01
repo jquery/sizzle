@@ -1,10 +1,12 @@
+"use strict";
+
 module.exports = function( config ) {
 	var env = require( "./environment" );
 
 	config.set({
 		browserStack: {
 			project: "sizzle",
-			timeout: 600
+			timeout: 600 // 10 min
 		},
 
 		// Can't specify path as "../../test" which would be intuitive
@@ -54,6 +56,7 @@ module.exports = function( config ) {
 
 		colors: true,
 
+		// Default option, might be augmented in environment module
 		browsers: [ "PhantomJS" ],
 
 		// level of logging
