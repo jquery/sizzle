@@ -1,4 +1,6 @@
 module.exports = function( config ) {
+	var browsers = require( "./browsers" );
+
 	config.set({
 
 		// Can't specify path as "../../test" which would be intuitive
@@ -51,11 +53,15 @@ module.exports = function( config ) {
 
 		colors: true,
 
+		transports: [ "websocket", "flashsocket", "jsonp-polling", "xhr-polling" ],
+
+		customLaunchers: browsers.launchers,
+
 		// level of logging
 		// possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
 		logLevel: config.LOG_INFO,
 
-		browsers: [ "PhantomJS" ],
+		browsers: browsers.browsers,
 
 		// If browser does not capture in given timeout [ms], kill it
 		captureTimeout: 60000
