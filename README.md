@@ -45,7 +45,7 @@ Testing
 ----------------------------
 
 - Run `npm install`, it's also preferable (but not necessarily) to globally install `grunt-cli` package – `npm install -g grunt-cli`
-- Open `test/index.html` in the browser or run `npm test` or `grunt test` on the command line
+- Open `test/index.html` in the browser. Or run `npm test`/`grunt test` on the command line, if environment variables `BROWSER_STACK_USERNAME` and `BROWSER_STACK_ACCESS_KEY` are set up, it will attempt to use [Browserstack](http://www.browserstack.com/) service, otherwise [PhantomJS](http://phantomjs.org/) will be used.
 - The actual unit tests are in the `test/unit` directory.
 
 Developing with [grunt](http://gruntjs.com)
