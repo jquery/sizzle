@@ -120,6 +120,10 @@ module.exports = function( grunt ) {
 			},
 			watch: {
 				background: true,
+
+				// Even if developer has browserstack access, do not use it to run all
+				// supported browsers at watch task, since it's execution will take a long time
+				browsers: [ "PhantomJS" ]
 			},
 			unit: {
 				singleRun: true
