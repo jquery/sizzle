@@ -1,12 +1,13 @@
 "use strict";
 
 module.exports = function( config ) {
+	var isTravis = process.env.TRAVIS;
 
 	// if Browserstack is set up, assume we can use it
 	if ( process.env.BROWSER_STACK_USERNAME && process.env.BROWSER_STACK_ACCESS_KEY ) {
 
 		// See http://jquery.com/browser-support/
-		config.browsers = config.browsers.concat(
+		config.browsers.push(
 			"chrome-30", "chrome-31",
 
 			"firefox-24", "firefox-25",
@@ -27,14 +28,21 @@ module.exports = function( config ) {
 		// otherwise IE6 can't connect to karma server
 		config.transports = [ "websocket", "flashsocket", "jsonp-polling", "xhr-polling" ];
 
-		if ( process.env.TRAVIS ) {
+		if ( isTravis ) {
 
 			// Browserstack launcher specifies "build" options as a default value
 			// of "TRAVIS_BUILD_NUMBER" variable, but this way a bit more verbose
 			config.browserStack.build = "Travis #" + process.env.TRAVIS_BUILD_NUMBER;
-
-			// Make travis output less verbose
-			config.reporters = [ "dots" ];
 		}
+
+	// You can't get access to secure environment variables from pull requests
+	// so we don't have browserstack from them, but travis has headless Firefox so use that
+	} else if ( isTravis && process.env.TRAVIS_PULL_REQUEST ) {
+		config.browsers.push( "Firefox" );
+	}
+
+	// Make travis output less verbose
+	if ( isTravis ) {
+		config.reporters = [ "dots" ];
 	}
 };
