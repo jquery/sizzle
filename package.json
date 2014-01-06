@@ -25,7 +25,6 @@
 	"devDependencies": {
 		"grunt": "0.4.2",
 		"grunt-cli": "0.1.11",
-		"bower": "1.2.8",
 
 		"grunt-contrib-jshint": "0.7.2",
 		"grunt-contrib-qunit": "0.3.0",
@@ -35,7 +34,7 @@
 		"grunt-compare-size": "0.4.0",
 		"grunt-git-authors": "1.2.0",
 		"grunt-jsonlint": "1.0.4",
-		"grunt-bowercopy": "0.4.1",
+		"grunt-bowercopy": "0.5.0",
 		"grunt-jscs-checker": "0.3.0",
 
 		"gzip-js": "0.3.2",
