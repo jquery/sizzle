@@ -1136,3 +1136,14 @@ test("matchesSelector", function() {
 	ok( Sizzle.matchesSelector( el, "* > *" ), "child combinator (matching)" );
 	ok( !Sizzle.matchesSelector( disconnected, "* > *" ), "child combinator (not matching)" );
 });
+
+test("select() with pre-compiled function", function() {
+	expect( 6 );
+
+	jQuery.each([ "#qunit-fixture #first", "ol#listWithTabIndex > li[tabindex]", "#liveSpan1" ],
+	function( i, selector ) {
+		var compiled = Sizzle.compile( selector );
+		equal( Sizzle.select( compiled, document ).length, 1, "Should match using a compiled selector function" );
+		equal( Sizzle.select( compiled, Sizzle( "#first")[0] ).length, 0, "Should not match with different context" );
+	});
+});
