@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2014-01-21
+ * Date: 2014-01-22
  */
 (function( window ) {
 
@@ -1874,7 +1874,6 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 
 		// Save selector and tokenization
 		cached.selector = selector;
-		cached.match = match;
 	}
 	return cached;
 };
@@ -1889,19 +1888,18 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
  * @param {Array} [seed] A set of elements to match against
  */
 select = Sizzle.select = function( selector, context, results, seed ) {
-	var i, tokens, token, type, find, match, compiled;
+	var i, tokens, token, type, find, compiled, match;
 
 	results = results || [];
 
 	if ( typeof selector === "function" ) {
 		compiled = selector;
-		match = compiled.match;
 		selector = compiled.selector;
-	} else {
-		match = tokenize( selector );
 	}
 
 	if ( !seed ) {
+		match = tokenize( selector );
+
 		// Try to minimize operations if there is only one group
 		if ( match.length === 1 ) {
 
