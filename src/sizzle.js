@@ -1303,7 +1303,8 @@ Expr = Sizzle.selectors = {
 		},
 
 		"disabled": function( elem ) {
-			return elem.disabled === true;
+			// isDisabled is IE8-11 mechanism for storing inherited disabledness (eg from disabled fieldset)
+			return elem.disabled === true || elem.isDisabled === true;
 		},
 
 		"checked": function( elem ) {
