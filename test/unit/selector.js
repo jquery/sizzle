@@ -941,7 +941,7 @@ test("pseudo - position", function() {
 });
 
 test("pseudo - form", function() {
-	expect( 10 );
+	expect( 11 );
 
 	var extraTexts = jQuery("<input id=\"impliedText\"/><input id=\"capitalText\" type=\"TEXT\">").appendTo("#form");
 
@@ -956,6 +956,7 @@ test("pseudo - form", function() {
 	t( "Selected Option Element", "#form option:selected", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
 	t( "Selected Option Element are also :checked", "#form option:checked", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
 	t( "Hidden inputs should be treated as enabled. See QSA test.", "#hidden1:enabled", ["hidden1"] );
+	t( "Children of disabled fieldsets should be :disabled", "#disabled-tests:disabled", ["disabled-fieldset", "disabled-fieldset-input"]);
 
 	extraTexts.remove();
 });
