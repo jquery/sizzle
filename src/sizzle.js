@@ -1310,12 +1310,14 @@ Expr = Sizzle.selectors = {
 
 		// Boolean properties
 		"enabled": function( elem ) {
-			return elem.disabled === false;
+			var nodeName = elem.nodeName.toLowerCase();
+			return elem.disabled === false && ( elem.isDisabled !== true && ( rinputs.test( nodeName ) || nodeName === "option" ) );
 		},
 
 		"disabled": function( elem ) {
-			// isDisabled is IE8-11 mechanism for storing inherited disabledness (eg from disabled fieldset)
-			return elem.disabled === true || ( elem.isDisabled === true && rinputs.test( elem.nodeName ) );
+			// isDisabled ie IE prop - but it
+			var nodeName = elem.nodeName.toLowerCase();
+			return elem.disabled === true || ( elem.isDisabled === true && ( rinputs.test( nodeName ) || nodeName === "option" ) );
 		},
 
 		"checked": function( elem ) {
