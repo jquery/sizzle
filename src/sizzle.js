@@ -659,6 +659,17 @@ setDocument = Sizzle.setDocument = function( node ) {
 			div.querySelectorAll("*,:x");
 			rbuggyQSA.push(",.*:");
 		});
+		
+		assert(function( div ) {
+			div.innerHTML = "<fieldset disabled><input type='text'/></fieldset>";
+			
+			// Support: IE8-11
+			// IE's :disabled selector does not pick up the children of disabled fieldsets
+			if ( div.querySelectorAll(":disabled").length !== 2 ) {
+				rbuggyQSA.push( ":disabled" );
+			}
+		});		
+		
 	}
 
 	if ( (support.matchesSelector = rnative.test( (matches = docElem.webkitMatchesSelector ||
@@ -1304,7 +1315,7 @@ Expr = Sizzle.selectors = {
 
 		"disabled": function( elem ) {
 			// isDisabled is IE8-11 mechanism for storing inherited disabledness (eg from disabled fieldset)
-			return elem.disabled === true || elem.isDisabled === true;
+			return elem.disabled === true || ( elem.isDisabled === true && rinputs.test( elem.nodeName ) );
 		},
 
 		"checked": function( elem ) {
