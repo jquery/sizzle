@@ -661,9 +661,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 		});
 		
 		assert(function( div ) {
-			div.innerHTML = "<fieldset disabled><input type='text'/></fieldset>";
+			div.innerHTML = "<fieldset disabled><input/></fieldset>";
 			
-			// Support: IE8-11
+			// Support: IE8-11+
 			// IE's :disabled selector does not pick up the children of disabled fieldsets
 			if ( div.querySelectorAll(":disabled").length !== 2 ) {
 				rbuggyQSA.push( ":disabled" );
