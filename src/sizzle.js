@@ -668,7 +668,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			if ( div.querySelectorAll(":disabled").length !== 2 ) {
 				rbuggyQSA.push( ":disabled" );
 			}
-		});		
+		});
 		
 	}
 
