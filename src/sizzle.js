@@ -1226,7 +1226,7 @@ Expr = Sizzle.selectors = {
 			return matcher[ expando ] ?
 				markFunction(function( seed, matches, context, xml ) {
 					var elem,
-						unmatched = matcher( seed, null, xml, [] ),
+						unmatched = matcher( null, [], seed, xml ),
 						i = seed.length;
 
 					// Match elements unmatched by `matcher`
@@ -1238,7 +1238,7 @@ Expr = Sizzle.selectors = {
 				}) :
 				function( elem, context, xml ) {
 					input[0] = elem;
-					matcher( input, null, xml, results );
+					matcher( null, results, input, xml );
 					return !results.pop();
 				};
 		}),
@@ -1752,7 +1752,7 @@ function matcherFromTokens( tokens ) {
 function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 	var bySet = setMatchers.length > 0,
 		byElement = elementMatchers.length > 0,
-		superMatcher = function( seed, context, xml, results, outermost ) {
+		superMatcher = function( context, results, seed, xml, outermost ) {
 			var elem, j, matcher,
 				matchedCount = 0,
 				i = "0",
@@ -1948,10 +1948,10 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 	// Compile and execute a filtering function if one is not provided
 	// Provide `match` to avoid retokenization if we modified the selector above
 	( compiled || compile( selector, match ) )(
-		seed,
 		context,
-		!documentIsHTML,
 		results,
+		seed,
+		!documentIsHTML,
 		rsibling.test( selector ) && testContext( context.parentNode ) || context
 	);
 	return results;
