@@ -1137,13 +1137,40 @@ test("matchesSelector", function() {
 	ok( !Sizzle.matchesSelector( disconnected, "* > *" ), "child combinator (not matching)" );
 });
 
-test("select() with pre-compiled function", function() {
+test("pre-compiled matchers", function() {
+	expect( 9 );
+
+	jQuery.each(
+		[ "#qunit-fixture #first", "ol#listWithTabIndex > li[tabindex]", "#liveSpan1" ],
+		function( i, selector ) {
+			var compiled = Sizzle.compile( selector ),
+				results = [];
+			compiled( document, results );
+			equal( results.length, 1, "Matches against document: " + selector );
+			results = [];
+			compiled( document.body, results );
+			equal( results.length, 1, "Matches against body: " + selector );
+			results = [];
+			compiled( document.getElementById("first"), results );
+			equal( results.length, 0, "Doesn't match against smaller context: " + selector );
+		}
+	);
+});
+
+test("pre-compiled matchers with pre-existing matches", function() {
 	expect( 6 );
 
-	jQuery.each([ "#qunit-fixture #first", "ol#listWithTabIndex > li[tabindex]", "#liveSpan1" ],
-	function( i, selector ) {
-		var compiled = Sizzle.compile( selector );
-		equal( Sizzle.select( compiled, document ).length, 1, "Should match using a compiled selector function" );
-		equal( Sizzle.select( compiled, Sizzle( "#first")[0] ).length, 0, "Should not match with different context" );
-	});
+	var compiled = Sizzle.compile("#foo p"),
+		matches = Sizzle("#foo P");
+
+	jQuery.each(
+		{ Element: [ document.documentElement ], Garbage: [ null, "string" ] },
+		function( label, results ) {
+			var before = results.slice( 0 );
+			compiled( document, results );
+			equal( results.length, before.length + matches.length, label + " results extended" );
+			deepEqual( results.slice( 0, before.length ), before, label + " input preserved" );
+			deepEqual( results.slice( before.length ), matches, label + " matches correct" );
+		}
+	);
 });

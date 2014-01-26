@@ -16,8 +16,8 @@ var i,
 	getText,
 	isXML,
 	compile,
-	select,
 	outermostContext,
+	contextExpanded,
 	sortInput,
 	hasDuplicate,
 
@@ -263,8 +263,10 @@ function Sizzle( selector, context, results, seed ) {
 				while ( i-- ) {
 					groups[i] = nid + toSelector( groups[i] );
 				}
-				newContext = rsibling.test( selector ) && testContext( context.parentNode ) || context;
 				newSelector = groups.join(",");
+				m = contextExpanded;
+				newContext = rsibling.test( selector ) && expandContext( context.parentNode ) || context;
+				contextExpanded = m;
 			}
 
 			if ( newSelector ) {
@@ -284,7 +286,8 @@ function Sizzle( selector, context, results, seed ) {
 	}
 
 	// All others
-	return select( selector.replace( rtrim, "$1" ), context, results, seed );
+	compile( selector.replace( rtrim, "$1" ) )( context, results, seed, !documentIsHTML );
+	return results;
 }
 
 /**
@@ -425,12 +428,13 @@ function createPositionalPseudo( fn ) {
 }
 
 /**
- * Checks a node for validity as a Sizzle context
- * @param {Element|Object=} context
- * @returns {Element|Object|Boolean} The input node if acceptable, otherwise a falsy value
+ * Checks a parentNode for validity as a Sizzle context
+ * @param {Element|null} parentNode
+ * @returns {Element|Boolean} The node if it is acceptable, otherwise a falsy value
  */
-function testContext( context ) {
-	return context && typeof context.getElementsByTagName !== strundefined && context;
+function expandContext( parentNode ) {
+	return parentNode && typeof parentNode.getElementsByTagName !== strundefined &&
+		(contextExpanded = true) && parentNode;
 }
 
 // Expose support vars for convenience
@@ -1709,7 +1713,7 @@ function matcherFromTokens( tokens ) {
 			return indexOf.call( checkContext, elem ) > -1;
 		}, implicitRelative, true ),
 		matchers = [ function( elem, context, xml ) {
-			return ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
+			return ( !leadingRelative && !contextExpanded && ( xml || context !== outermostContext ) ) || (
 				(checkContext = context).nodeType ?
 					matchContext( elem, context, xml ) :
 					matchAnyContext( elem, context, xml ) );
@@ -1749,20 +1753,32 @@ function matcherFromTokens( tokens ) {
 	return elementMatcher( matchers );
 }
 
-function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
+function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings ) {
 	var bySet = setMatchers.length > 0,
 		byElement = elementMatchers.length > 0,
-		superMatcher = function( context, results, seed, xml, outermost ) {
+		/**
+		 * A low-level function for full selection operations. Requires either context or seed.
+		 * @callback fullMatcher
+		 * @param {Element=} context The context under which to select
+		 * @param {Array} results The container in which to place matches
+		 * @param {Array=} seed A list of elements to check for matches
+		 * @param {Boolean=} xml True iff the matching context is (or seed elements are) non-HTML
+		 * @return {Array|undefined} The list of unmatched seed elements
+		 */
+		superMatcher = function( context, results, seed, xml ) {
 			var elem, j, matcher,
 				matchedCount = 0,
 				i = "0",
 				unmatched = seed && [],
 				setMatched = [],
+				expansionBackup = contextExpanded,
 				contextBackup = outermostContext,
+				outermost = contextBackup == null,
 				// We must always have either seed elements or outermost context
-				elems = seed || byElement && Expr.find["TAG"]( "*", outermost ),
+				elems = (contextExpanded = false) || seed || byElement && Expr.find["TAG"]( "*",
+					siblings && expandContext( context.parentNode ) || context ),
 				// Use integer dirruns iff this is the outermost matcher
-				dirrunsUnique = (dirruns += contextBackup == null ? 1 : Math.random() || 0.1),
+				dirrunsUnique = (dirruns += outermost ? 1 : Math.random() || 0.1),
 				len = elems.length;
 
 			if ( outermost ) {
@@ -1834,7 +1850,8 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 				}
 			}
 
-			// Override manipulation of globals by nested matchers
+			// Override manipulation of globals by ourself and our nested matchers
+			contextExpanded = expansionBackup;
 			if ( outermost ) {
 				dirruns = dirrunsUnique;
 				outermostContext = contextBackup;
@@ -1848,6 +1865,11 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 		superMatcher;
 }
 
+/**
+ * Returns a matcher function for finding elements corresponding to a selector
+ * @param {String} selector A valid selector
+ * @returns {fullMatcher} The corresponding matcher
+ */
 compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 	var i,
 		setMatchers = [],
@@ -1870,91 +1892,14 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 		}
 
 		// Cache the compiled function
-		cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) );
+		cached = compilerCache( selector,
+			matcherFromGroupMatchers( elementMatchers, setMatchers, rsibling.test( selector ) )
+		);
 
 		// Save selector and tokenization
 		cached.selector = selector;
 	}
 	return cached;
-};
-
-/**
- * A low-level selection function that works with Sizzle's compiled
- *  selector functions
- * @param {String|Function} selector A selector or a pre-compiled
- *  selector function built with Sizzle.compile
- * @param {Element} context
- * @param {Array} [results]
- * @param {Array} [seed] A set of elements to match against
- */
-select = Sizzle.select = function( selector, context, results, seed ) {
-	var i, tokens, token, type, find,
-		compiled = typeof selector === "function" && selector,
-		match = !seed && tokenize( (selector = compiled.selector || selector) );
-
-	results = results || [];
-
-	// Try to minimize operations if there is no seed and only one group
-	if ( match.length === 1 ) {
-
-		// Take a shortcut and set the context if the root selector is an ID
-		tokens = match[0] = match[0].slice( 0 );
-		if ( tokens.length > 2 && (token = tokens[0]).type === "ID" &&
-				support.getById && context.nodeType === 9 && documentIsHTML &&
-				Expr.relative[ tokens[1].type ] ) {
-
-			context = ( Expr.find["ID"]( token.matches[0].replace(runescape, funescape), context ) || [] )[0];
-			if ( !context ) {
-				return results;
-
-			// Precompiled matchers will still verify ancestry, so step up a level
-			} else if ( compiled ) {
-				context = context.parentNode;
-			}
-
-			selector = selector.slice( tokens.shift().value.length );
-		}
-
-		// Fetch a seed set for right-to-left matching
-		i = matchExpr["needsContext"].test( selector ) ? 0 : tokens.length;
-		while ( i-- ) {
-			token = tokens[i];
-
-			// Abort if we hit a combinator
-			if ( Expr.relative[ (type = token.type) ] ) {
-				break;
-			}
-			if ( (find = Expr.find[ type ]) ) {
-				// Search, expanding context for leading sibling combinators
-				if ( (seed = find(
-					token.matches[0].replace( runescape, funescape ),
-					rsibling.test( tokens[0].type ) && testContext( context.parentNode ) || context
-				)) ) {
-
-					// If seed is empty or no tokens remain, we can return early
-					tokens.splice( i, 1 );
-					selector = seed.length && toSelector( tokens );
-					if ( !selector ) {
-						push.apply( results, seed );
-						return results;
-					}
-
-					break;
-				}
-			}
-		}
-	}
-
-	// Compile and execute a filtering function if one is not provided
-	// Provide `match` to avoid retokenization if we modified the selector above
-	( compiled || compile( selector, match ) )(
-		context,
-		results,
-		seed,
-		!documentIsHTML,
-		rsibling.test( selector ) && testContext( context.parentNode ) || context
-	);
-	return results;
 };
 
 // One-time assignments
