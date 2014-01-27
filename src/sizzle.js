@@ -1314,7 +1314,8 @@ Expr = Sizzle.selectors = {
 		},
 
 		"disabled": function( elem ) {
-			// isDisabled ie IE prop - but it
+			// isDisabled is an IE6-11 prop.  
+			// We'll use it only for inputs to fix places where IE8-11 inputs don't inherit the :disabled for fieldset children.
 			return elem.disabled === true || ( elem.isDisabled === true && rinputs.test( elem.nodeName ) );
 		},
 
