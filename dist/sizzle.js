@@ -286,7 +286,7 @@ function Sizzle( selector, context, results, seed ) {
 	}
 
 	// All others
-	compile( selector.replace( rtrim, "$1" ) )( context, results, seed, !documentIsHTML );
+	compile( selector.replace( rtrim, "$1" ) )( context, results, seed );
 	return results;
 }
 
@@ -1713,7 +1713,7 @@ function matcherFromTokens( tokens ) {
 			return indexOf.call( checkContext, elem ) > -1;
 		}, implicitRelative, true ),
 		matchers = [ function( elem, context, xml ) {
-			return ( !leadingRelative && !contextExpanded && ( xml || context !== outermostContext ) ) || (
+			return !( leadingRelative || contextExpanded || context === outermostContext ) || (
 				(checkContext = context).nodeType ?
 					matchContext( elem, context, xml ) :
 					matchAnyContext( elem, context, xml ) );
@@ -1757,15 +1757,21 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings ) {
 	var bySet = setMatchers.length > 0,
 		byElement = elementMatchers.length > 0,
 		/**
-		 * A low-level function for full selection operations. Requires either context or seed.
+		 * A low-level function for full selection operations after setDocument.
+		 * Requires either context or seed.
 		 * @callback fullMatcher
 		 * @param {Element=} context The context under which to select
 		 * @param {Array} results The container in which to place matches
 		 * @param {Array=} seed A list of elements to check for matches
-		 * @param {Boolean=} xml True iff the matching context is (or seed elements are) non-HTML
+		 * @param {Boolean=} xml Replacement of setDocument non-HTML identification
 		 * @return {Array|undefined} The list of unmatched seed elements
 		 */
 		superMatcher = function( context, results, seed, xml ) {
+			// Use previously-established HTML vs. XML mode if not explicitly specified
+			if ( xml === undefined ) {
+				xml = !documentIsHTML;
+			}
+
 			var elem, j, matcher,
 				matchedCount = 0,
 				i = "0",
