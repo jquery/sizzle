@@ -941,7 +941,7 @@ test("pseudo - position", function() {
 });
 
 test("pseudo - form", function() {
-	expect( 11 );
+	expect( 10 );
 
 	var extraTexts = jQuery("<input id=\"impliedText\"/><input id=\"capitalText\" type=\"TEXT\">").appendTo("#form");
 
@@ -956,10 +956,18 @@ test("pseudo - form", function() {
 	t( "Selected Option Element", "#form option:selected", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
 	t( "Selected Option Element are also :checked", "#form option:checked", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
 	t( "Hidden inputs should be treated as enabled. See QSA test.", "#hidden1:enabled", ["hidden1"] );
-	t( "Children of disabled fieldsets should be :disabled", "#disabled-fieldset-input:disabled", ["disabled-fieldset-input"]);
 
 	extraTexts.remove();
 });
+
+if( navigator.userAgent.toLowerCase().indexOf("phantom") === -1 ){
+	test("pseudo - :disabled, including fieldset inheritance (#174)", function() {
+		expect( 2 );
+		
+		t( "Children of disabled fieldsets should be :disabled", "#disabled-fieldset :disabled", ["disabled-fieldset-input", "disabled-fieldset-textarea", "disabled-fieldset-button", "disabled-fieldset-select", "disabled-fieldset-option-disabled"]);
+		t( "Optgroups and Options never inherit their disabled status from a select or fieldset", "#disabled-fieldset :enabled", ["disabled-fieldset-optgroup", "disabled-fieldset-option-enabled"]);
+	});
+}
 
 test("pseudo - :target and :root", function() {
 	expect( 2 );

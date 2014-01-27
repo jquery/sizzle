@@ -237,8 +237,16 @@ Z</textarea>
 		</div>​	
 	</div>
 	<form id="disabled-tests">
-		<fieldset id="disabled-fieldset" disabled>
+		<fieldset id="disabled-fieldset" disabled="disabled">
 			<input id="disabled-fieldset-input" name="disabled-fieldset-input" type="text" />
+			<textarea id="disabled-fieldset-textarea" name="disabled-fieldset-textarea" ></textarea>
+			<button id="disabled-fieldset-button" name="disabled-fieldset-button">Go</button>
+			<select id="disabled-fieldset-select" name="disabled-fieldset-select" disabled="disabled">
+				<option id="disabled-fieldset-option-disabled" disabled="disabled">Black</option>
+				<optgroup id="disabled-fieldset-optgroup" label="and">
+					<option id="disabled-fieldset-option-enabled">Gold</option>
+				</optgroup>
+			</select>
 		</fieldset>
 	</form>
 	</dl>
