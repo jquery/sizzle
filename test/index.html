@@ -241,14 +241,31 @@ Z</textarea>
 			<input id="disabled-fieldset-input" name="disabled-fieldset-input" type="text" />
 			<textarea id="disabled-fieldset-textarea" name="disabled-fieldset-textarea" ></textarea>
 			<button id="disabled-fieldset-button" name="disabled-fieldset-button">Go</button>
-			<select id="disabled-fieldset-select" name="disabled-fieldset-select" disabled="disabled">
-				<option id="disabled-fieldset-option-disabled" disabled="disabled">Black</option>
-				<optgroup id="disabled-fieldset-optgroup" label="and">
-					<option id="disabled-fieldset-option-enabled">Gold</option>
-				</optgroup>
-			</select>
 			<div id="disabled-fieldset-div">Neither enabled nor disabled</div>
+			<label for="disabled-fieldset-input">Type</label>
 		</fieldset>
+		<fieldset id="enabled-fieldset">
+			<input id="enabled-input" name="enabled-input" type="text" />
+			<textarea id="enabled-textarea" name="enabled-textarea" ></textarea>
+			<button id="enabled-button" name="enabled-button">Go</button>
+			<div id="disabled-tests-div">Neither enabled nor disabled</div>
+			<label for="enabled-input">Type</label>
+		</fieldset>
+		<select id="enabled-select" name="enabled-select">
+			<option id="enabled-select-option">Black</option>
+			<option id="enabled-select-disabled-option" disabled="disabled">Red</option>
+			<optgroup id="enabled-select-disabled-optgroup" label="and" disabled="disabled">
+				<option id="disabled-optgroup-option">Gold</option>
+			</optgroup>
+		</select>
+		<select id="disabled-select" name="disabled-select" disabled="disabled">
+			<option id="disabled-select-option">Black</option>
+			<option id="disabled-select-disabled-option" disabled="disabled">Red</option>
+			<optgroup id="disabled-fieldset-optgroup" label="and">
+				<option id="disabled-fieldset-option-enabled">Gold</option>
+			</optgroup>
+		</select>
+		<div id="disabled-tests-div">Neither enabled nor disabled</div>
 	</form>
 	</dl>
 	<br id="last"/>
