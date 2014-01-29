@@ -123,6 +123,8 @@ var i,
 	},
 
 	rinputs = /^(?:input|select|textarea|button)$/i,
+	rinputsoptions = /^(?:input|select|textarea|button|optgroup|option)$/i,
+	
 	rheader = /^h\d$/i,
 
 	rnative = /^[^{]+\{\s*\[native \w/,
@@ -655,21 +657,18 @@ setDocument = Sizzle.setDocument = function( node ) {
 				rbuggyQSA.push( ":enabled", ":disabled" );
 			}
 
+			// Support: IE9-11+
+			// IE's :disabled selector does not pick up the children of disabled fieldsets
+			docElem.appendChild( div ).innerHTML = "<fieldset disabled='disabled'><input/></fieldset>";
+			if ( div.isDisabled === false && !div.querySelectorAll("input:disabled").length ) {
+				rbuggyQSA.push( ":enabled", ":disabled" );
+			}
+			
 			// Opera 10-11 does not throw on post-comma invalid pseudos
 			div.querySelectorAll("*,:x");
 			rbuggyQSA.push(",.*:");
 		});
-		
-		assert(function( div ) {
-			div.innerHTML = "<fieldset disabled='disabled'><input/></fieldset>";
-			
-			// Support: IE6-11+
-			// IE's :disabled selector does not pick up the children of disabled fieldsets
-			if ( div.querySelectorAll(":disabled").length !== 2 ) {
-				rbuggyQSA.push( ":enabled", ":disabled" );
-			}
-		});
-		
+
 	}
 
 	if ( (support.matchesSelector = rnative.test( (matches = docElem.webkitMatchesSelector ||
@@ -1310,7 +1309,7 @@ Expr = Sizzle.selectors = {
 
 		// Boolean properties
 		"enabled": function( elem ) {
-			return elem.disabled === false && ( elem.isDisabled !== true || !rinputs.test( elem.nodeName ) );
+			return elem.disabled === false && elem.isDisabled !== true && rinputsoptions.test( elem.nodeName );
 		},
 
 		"disabled": function( elem ) {

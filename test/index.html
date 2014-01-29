@@ -242,28 +242,35 @@ Z</textarea>
 			<textarea id="disabled-fieldset-textarea" name="disabled-fieldset-textarea" ></textarea>
 			<button id="disabled-fieldset-button" name="disabled-fieldset-button">Go</button>
 			<div id="disabled-fieldset-div">Neither enabled nor disabled</div>
+			<!-- exclude <select> because IE6 is bugged and fails -->
 		</fieldset>
 		<fieldset id="enabled-fieldset">
-			<input id="enabled-input" name="enabled-input" type="text" />
-			<textarea id="enabled-textarea" name="enabled-textarea" ></textarea>
+			<input id="disabled-input" name="disabled-input" type="text" disabled="disabled"/>
+			<textarea id="disabled-textarea" name="disabled-textarea" disabled="disabled"></textarea>
+			<button id="disabled-button" name="disabled-button" disabled="disabled">Go</button>
+			<select id="disabled-select" name="disabled-select" disabled="disabled">
+				<optgroup id="disabled-optgroup" label="and" disabled="disabled">
+					<option id="disabled-option" disabled="disabled">Black</option>
+				</optgroup>
+			</select>
+			<input id="enabled-input" name="enabled-input" type="text"/>
+			<textarea id="enabled-textarea" name="enabled-textarea"></textarea>
 			<button id="enabled-button" name="enabled-button">Go</button>
-			<div id="disabled-tests-div">Neither enabled nor disabled</div>
+			<select id="enabled-select" name="enabled-select">
+				<optgroup id="enabled-optgroup" label="and">
+					<option id="enabled-option">Gold</option>
+				</optgroup>
+			</select>				
+			<div id="enabled-fieldset-div">Neither enabled nor disabled</div>
 		</fieldset>
-		<select id="enabled-select" name="enabled-select">
-			<option id="enabled-select-option">Black</option>
-			<option id="enabled-select-disabled-option" disabled="disabled">Red</option>
-			<optgroup id="enabled-select-disabled-optgroup" label="and" disabled="disabled">
-				<option id="disabled-optgroup-option">Gold</option>
+		<select id="disabled-select-inherit" name="disabled-select-inherit" disabled="disabled">
+			<optgroup id="disabled-optgroup-inherit" label="and" disabled="disabled">
+				<option id="disabled-optgroup-option">Black</option>
 			</optgroup>
-		</select>
-		<select id="disabled-select" name="disabled-select" disabled="disabled">
-			<option id="disabled-select-option">Black</option>
-			<option id="disabled-select-disabled-option" disabled="disabled">Red</option>
-			<optgroup id="disabled-fieldset-optgroup" label="and">
-				<option id="disabled-fieldset-option-enabled">Gold</option>
+			<optgroup id="enabled-optgroup-inherit" label="and">
+				<option id="enabled-optgroup-option">Gold</option>
 			</optgroup>
-		</select>
-		<div id="disabled-tests-div">Neither enabled nor disabled</div>
+		</select>		
 	</form>
 	</dl>
 	<br id="last"/>
