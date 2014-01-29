@@ -659,6 +659,17 @@ setDocument = Sizzle.setDocument = function( node ) {
 			div.querySelectorAll("*,:x");
 			rbuggyQSA.push(",.*:");
 		});
+		
+		assert(function( div ) {
+			div.innerHTML = "<fieldset disabled='disabled'><input/></fieldset>";
+			
+			// Support: IE6-11+
+			// IE's :disabled selector does not pick up the children of disabled fieldsets
+			if ( div.querySelectorAll(":disabled").length !== 2 ) {
+				rbuggyQSA.push( ":enabled", ":disabled" );
+			}
+		});
+		
 	}
 
 	if ( (support.matchesSelector = rnative.test( (matches = docElem.webkitMatchesSelector ||
@@ -1299,11 +1310,13 @@ Expr = Sizzle.selectors = {
 
 		// Boolean properties
 		"enabled": function( elem ) {
-			return elem.disabled === false;
+			return elem.disabled === false && ( elem.isDisabled !== true || !rinputs.test( elem.nodeName ) );
 		},
 
 		"disabled": function( elem ) {
-			return elem.disabled === true;
+			// isDisabled is an IE6-11 prop.  
+			// We'll use it only for inputs to fix places where IE8-11 inputs don't inherit the :disabled for fieldset children.
+			return elem.disabled === true || ( elem.isDisabled === true && rinputs.test( elem.nodeName ) );
 		},
 
 		"checked": function( elem ) {

@@ -960,6 +960,37 @@ test("pseudo - form", function() {
 	extraTexts.remove();
 });
 
+// Both PhantomJS and Safari for Windows use a version of AppleWebkit that doesn't implement disable inheriting *at all* - so we skip these tests
+if( !/(?:PhantomJS\/1\.9\.6|5\.1\.7 Safari)/i.test( navigator.userAgent ) ) {
+	test("pseudo - :disabled fieldset inheritance (#174)", function() {
+		expect( 1 );
+		
+		t( "Inputs inherit disabled from fieldset", "#disabled-fieldset :disabled", ["disabled-fieldset-input", "disabled-fieldset-textarea", "disabled-fieldset-button"] );
+		//t( "Only Inputs are :enabled", "#enabled-fieldset :enabled", ["enabled-input", "enabled-textarea", "enabled-button"] );
+		
+		
+		// We don't run this test because IE6 doesn't disable children selects of disabled fieldsets (even though it does disabled inputs, textareas, etc)
+		//t( "Select inherit disabled", "#disabled-fieldset-select:disabled", ["disabled-fieldset-select"] );
+		
+		//t( "Input enabled", "#disabled-fieldset-input:disabled", ["disabled-fieldset-input"] );
+		//enabled-input
+		
+		// We don't run this test because Opera 12.1 believes that if a select is disabled, it's options :disabled, 
+		// but Firefox and Chrome believe that the options of a disabled select should remain :enabled,
+		// and IE6 reports that the options are disabled (isDisabled = true), but doesn't actually disable them in the UI.
+		//t( "Test option disabled inheritance", "#disabled-fieldset :enabled", ["disabled-fieldset-optgroup", "disabled-fieldset-option-enabled"]);
+	});
+}
+
+// MSIE 6 doesn't allow options to be disabled *at all* - so we skip these tests
+if( !/(?:MSIE 6)/i.test( navigator.userAgent ) ) {
+	test("pseudo - :disabled option inheritance", function() {
+		expect( 1 );
+		
+		t( "Inputs inherit disabled from fieldset", "#enabled-select :disabled", ["enabled-select-disabled-option", "enabled-select-disabled-optgroup", "disabled-optgroup-option"] );
+	});
+}
+
 test("pseudo - :target and :root", function() {
 	expect( 2 );
 
