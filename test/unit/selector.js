@@ -965,21 +965,45 @@ if( !/(?:PhantomJS\/1\.9\.[67]|5\.1\.7 Safari)/i.test( navigator.userAgent ) ) {
 	test("pseudo - :disabled, fieldset inheritance (#174)", function() {
 		expect( 1 );
 		
-		// We don't test select here because IE6 doesn't disabled selects
+		// We don't test select here because IE6 doesn't disabled selects when the fieldset is disabled
 		t( "Inputs inherit disabled from fieldset", "#disabled-fieldset :disabled", ["disabled-fieldset-input", "disabled-fieldset-textarea", "disabled-fieldset-button"] );
 	});
 }
+
+test("pseudo - :disabled, option inheritance", function(){
+	var options_inherit_optgroup,
+		options_inherit_select;
+	
+	// Preserve the order of these tests - they descend such that there shouldn't be a collision
+	// In Opera >= 12 (Presto engine), if any parent of an option is disabled, the option matches :disabled
+	if( /(?:Opera)/i.test( navigator.userAgent ) ) {
+		options_inherit_optgroup = true;
+		options_inherit_select = true;
+	// In all version of IE 6-11, options only match :disabled, if they're explicitly disabled
+	} else if( /(?:MSIE)/i.test( navigator.userAgent ) ) {
+		options_inherit_optgroup = false;
+		options_inherit_select = false;
+	// In all modern versions of the Webkit family, :disabled flows down from an optgroup, but not from a select
+	} else if( /(?:Chrome|Firefox|OPR)/i.test( navigator.userAgent ) ) {
+		options_inherit_optgroup = true;
+		options_inherit_select = false;
+	} 
+
+	if(!(options_inherit_optgroup || options_inherit_select)){
+		t( "Options never inherit parent's disabledness", "#disabled-select-inherit option:disabled", []);
+	}
+	if( options_inherit_select === true ) {
+		t( "Option disabled inheritance - select", "#disabled-select-inherit option:disabled", ["disabled-optgroup-option", "enabled-optgroup-option"]);
+	}
+	if( options_inherit_optgroup === true ){
+		t( "Option disabled inheritance - optgroup", "#enabled-select-inherit option:disabled", ["en_disabled-optgroup-option"]);
+	}
+});
 
 test("pseudo - (dis|en)abled, explicitly disabled", function() {
 	expect ( 2 );
 	t( "Explicitly disabled elements", "#enabled-fieldset :disabled", ["disabled-input", "disabled-textarea", "disabled-button", "disabled-select", "disabled-optgroup", "disabled-option"] );
 	t( "Enabled elements", "#enabled-fieldset :enabled", ["enabled-input", "enabled-textarea", "enabled-button", "enabled-select", "enabled-optgroup", "enabled-option"] );
-	
-	// We can't test :disabled-ness of select options because browsers disagree with each other:
-	// Opera 12.1 - if a select is disabled, it's options match :disabled, 
-	// Firefox/Chrome - if a select is disabled, it's options match :enabled,
-	// IE6 - if a select is disabled, the options *report* as disabled ( via isDisabled = true), but aren't *actually* disabled in the UI.
-	//t( "Test option disabled inheritance", "#disabled-select-inherit :enabled", ["enabled-optgroup-inherit", "enabled-optgroup-option"]);
 });
 
 test("pseudo - :target and :root", function() {
