@@ -104,7 +104,7 @@ test("element", function() {
 
 	siblingTest = document.getElementById("siblingTest");
 	deepEqual( Sizzle("div em", siblingTest), [], "Element-rooted QSA does not select based on document context" );
-	deepEqual( Sizzle("div em, div em, div em:not(div em)", siblingTest), [], "Element-rooted QSA does not select based on document context" );
+	deepEqual( Sizzle("div em, div em, div em:not(div em)", siblingTest), [], "Compound element-rooted QSA does not select based on document context" );
 	deepEqual( Sizzle("div em, em\\,", siblingTest), [], "Escaped commas do not get treated with an id in element-rooted QSA" );
 
 	siblingNext = document.getElementById("siblingnext");

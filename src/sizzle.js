@@ -16,10 +16,11 @@ var i,
 	getText,
 	isXML,
 	compile,
-	outermostContext,
-	contextExpanded,
-	sortInput,
+
+	// Invocation globals (for controlling functions called indirectly)
 	hasDuplicate,
+	sortInput,
+	contextExpanded,
 
 	// Local document vars
 	setDocument,
@@ -264,9 +265,7 @@ function Sizzle( selector, context, results, seed ) {
 					groups[i] = nid + toSelector( groups[i] );
 				}
 				newSelector = groups.join(",");
-				m = contextExpanded;
 				newContext = rsibling.test( selector ) && expandContext( context.parentNode ) || context;
-				contextExpanded = m;
 			}
 
 			if ( newSelector ) {
@@ -433,8 +432,7 @@ function createPositionalPseudo( fn ) {
  * @returns {Element|Boolean} The node if it is acceptable, otherwise a falsy value
  */
 function expandContext( parentNode ) {
-	return parentNode && typeof parentNode.getElementsByTagName !== strundefined &&
-		(contextExpanded = true) && parentNode;
+	return parentNode && typeof parentNode.getElementsByTagName !== strundefined && parentNode;
 }
 
 // Expose support vars for convenience
@@ -1713,7 +1711,7 @@ function matcherFromTokens( tokens ) {
 			return indexOf.call( checkContext, elem ) > -1;
 		}, implicitRelative, true ),
 		matchers = [ function( elem, context, xml ) {
-			return !( leadingRelative || contextExpanded || context === outermostContext ) || (
+			return !( leadingRelative || contextExpanded ) || (
 				(checkContext = context).nodeType ?
 					matchContext( elem, context, xml ) :
 					matchAnyContext( elem, context, xml ) );
@@ -1767,23 +1765,19 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, seede
 		 * @return {Array|undefined} The list of unmatched seed elements
 		 */
 		superMatcher = function( context, results, seed, xml ) {
+			var elems, elem, i, j, matcher, find, unmatched, len,
+				matchedCount = 0,
+				setMatched = [],
+				dirrunsBackup = dirruns,
+				expansionBackup = contextExpanded,
+				outermost = contextExpanded == null;
+
 			// Use previously-established HTML vs. XML mode if not explicitly specified
 			if ( xml === undefined ) {
 				xml = !documentIsHTML;
 			}
 
-			var elems, elem, j, matcher, find, unmatched, len,
-				matchedCount = 0,
-				setMatched = [],
-				i = seeders.length,
-				expansionBackup = contextExpanded,
-				contextBackup = outermostContext,
-				outermost = contextBackup == null,
-				// Use integer dirruns iff this is the outermost matcher
-				dirrunsUnique = (dirruns += outermost ? 1 : Math.random() || 0.1);
-
 			// Try to find a small seed collection
-			contextExpanded = false;
 			i = byElement && !seed && seeders.length;
 			while ( i-- ) {
 				if ( (find = Expr.find[ seeders[i].type ]) ) {
@@ -1796,9 +1790,9 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, seede
 				}
 			}
 
-			if ( outermost ) {
-				outermostContext = context !== document && context;
-			}
+			// Set invocation globals (reserving integer dirruns for the outermost matcher)
+			dirruns += outermost ? 1 : Math.random() || 0.1;
+			contextExpanded = context && context !== document || !seed && siblings;
 
 			// We must always have either seed elements or outermost context
 			unmatched = seed && [];
@@ -1818,9 +1812,6 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, seede
 							results.push( elem );
 							break;
 						}
-					}
-					if ( outermost ) {
-						dirruns = dirrunsUnique;
 					}
 				}
 
@@ -1873,9 +1864,8 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, seede
 
 			// Override manipulation of globals by ourself and our nested matchers
 			contextExpanded = expansionBackup;
-			if ( outermost ) {
-				dirruns = dirrunsUnique;
-				outermostContext = contextBackup;
+			if ( !outermost ) {
+				dirruns = dirrunsBackup;
 			}
 
 			return unmatched;
