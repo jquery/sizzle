@@ -1753,7 +1753,7 @@ function matcherFromTokens( tokens ) {
 	return elementMatcher( matchers );
 }
 
-function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings ) {
+function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, seeders ) {
 	var bySet = setMatchers.length > 0,
 		byElement = elementMatchers.length > 0,
 		/**
@@ -1772,30 +1772,45 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings ) {
 				xml = !documentIsHTML;
 			}
 
-			var elem, j, matcher,
+			var elems, elem, j, matcher, find, unmatched, len,
 				matchedCount = 0,
-				i = "0",
-				unmatched = seed && [],
 				setMatched = [],
+				i = seeders.length,
 				expansionBackup = contextExpanded,
 				contextBackup = outermostContext,
 				outermost = contextBackup == null,
-				// We must always have either seed elements or outermost context
-				elems = (contextExpanded = false) || seed || byElement && Expr.find["TAG"]( "*",
-					siblings && expandContext( context.parentNode ) || context ),
 				// Use integer dirruns iff this is the outermost matcher
-				dirrunsUnique = (dirruns += outermost ? 1 : Math.random() || 0.1),
-				len = elems.length;
+				dirrunsUnique = (dirruns += outermost ? 1 : Math.random() || 0.1);
+
+			// Try to find a small seed collection
+			contextExpanded = false;
+			i = byElement && !seed && seeders.length;
+			while ( i-- ) {
+				if ( (find = Expr.find[ seeders[i].type ]) ) {
+					if ( (seed = find(
+						seeders[i].matches[0].replace( runescape, funescape ),
+						siblings && expandContext( context.parentNode ) || context
+					)) ) {
+						break;
+					}
+				}
+			}
 
 			if ( outermost ) {
 				outermostContext = context !== document && context;
 			}
 
+			// We must always have either seed elements or outermost context
+			unmatched = seed && [];
+			elems = seed || byElement && Expr.find["TAG"]( "*",
+				siblings && expandContext( context.parentNode ) || context );
+			len = elems.length;
+
 			// Add elements passing elementMatchers directly to results
 			// Keep `i` a string if there are no elements so `matchedCount` will be "00" below
 			// Support: IE<9, Safari
 			// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
-			for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
+			for ( i = "0"; i !== len && (elem = elems[i]) != null; i++ ) {
 				if ( byElement && elem ) {
 					j = 0;
 					while ( (matcher = elementMatchers[j++]) ) {
@@ -1877,7 +1892,8 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings ) {
  * @returns {fullMatcher} The corresponding matcher
  */
 compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
-	var i,
+	var i, tokens, token,
+		seeders = [],
 		setMatchers = [],
 		elementMatchers = [],
 		cached = compilerCache[ selector + " " ];
@@ -1889,7 +1905,7 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 		}
 		i = match.length;
 		while ( i-- ) {
-			cached = matcherFromTokens( match[i] );
+			cached = matcherFromTokens( (tokens = match[i]) );
 			if ( cached[ expando ] ) {
 				setMatchers.push( cached );
 			} else {
@@ -1897,9 +1913,31 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 			}
 		}
 
+		// Check for possible optimizations if there is only one group
+		if ( match.length === 1 ) {
+			// Convenient right-to-left seeding
+			i = matchExpr["needsContext"].test( selector ) ? 0 : tokens.length;
+			while ( i-- ) {
+				token = tokens[i];
+
+				// Abort if we hit a combinator
+				if ( Expr.relative[ token.type ] ) {
+					break;
+				}
+
+				// Save shortcut types
+				if ( token.type === "ID" ) {
+					seeders.push( token );
+				} else if ( Expr.find[ token.type ] ) {
+					seeders.unshift( token );
+				}
+			}
+		}
+
 		// Cache the compiled function
 		cached = compilerCache( selector,
-			matcherFromGroupMatchers( elementMatchers, setMatchers, rsibling.test( selector ) )
+			matcherFromGroupMatchers( elementMatchers, setMatchers,
+				rsibling.test( selector ), seeders )
 		);
 
 		// Save selector and tokenization
