@@ -2,6 +2,9 @@
 #title
 h1#title
 div #title
+#nsdecl a
+#nsdecl * a
+#nsdecl .example
 div.example
 ul .tocline2
 .title
@@ -16,8 +19,11 @@ div p
 div > p
 div + p
 div ~ p
-div[class^=exa][class$=mple]
 div p a
+div > p > a
+div.example > p > a
+div + p + a
+div ~ p ~ p
 div, p, a
 ul.toc li.tocline2
 ul.toc > li.tocline2
@@ -33,12 +39,13 @@ div[class|=dialog]
 div[class!=made_up]
 div[class~=example]
 div:not(.example)
+div[class^=exa][class$=mple]
 p:contains(selectors)
-p:nth-child(even)
-p:nth-child(2n)
-p:nth-child(odd)
-p:nth-child(2n+1)
 p:nth-child(n)
+p:nth-child(2n)
+p:nth-child(2n+1)
+p:nth-child(even)
+p:nth-child(odd)
 p:only-child
 p:last-child
 p:first-child
