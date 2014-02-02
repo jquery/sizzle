@@ -33,7 +33,7 @@
 		"notDeepEqual": false,
 		"strictEqual": false,
 		"notStrictEqual": false,
-		"raises": false,
+		"throws": false,
 
 		"createWithFriesXML": false,
 		"fireNative": false,

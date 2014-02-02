@@ -162,7 +162,7 @@ test("broken", function() {
 
 	var attrbad,
 		broken = function( name, selector ) {
-			raises(function() {
+			throws(function() {
 				// Setting context to null here somehow avoids QUnit's window.error handling
 				// making the e & e.message correct
 				// For whatever reason, without this,
@@ -1055,7 +1055,7 @@ test("pseudo - :lang", function() {
 	anchor.lang = "ara\\b";
 	deepEqual( Sizzle( ":lang(ara\\b)", foo ), [], ":lang respects backslashes" );
 	deepEqual( Sizzle( ":lang(ara\\\\b)", foo ), [ anchor ], ":lang respects escaped backslashes" );
-	raises(function() {
+	throws(function() {
 		Sizzle.call( null, "dl:lang(c++)" );
 	}, function( e ) {
 		return e.message.indexOf("Syntax error") >= 0;
