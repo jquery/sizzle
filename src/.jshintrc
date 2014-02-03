@@ -17,6 +17,7 @@
 	"sub": true,
 
 	"browser": true,
+	"es3": true,
 	"wsh": true,
 
 	"globals": {
