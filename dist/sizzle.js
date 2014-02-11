@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2014-01-30
+ * Date: 2014-02-11
  */
 (function( window ) {
 
@@ -40,6 +40,10 @@ var i,
 	classCache = createCache(),
 	tokenCache = createCache(),
 	compilerCache = createCache(),
+	sortTokens = function( a, b ) {
+		return ("ATTR" + "CLASS" + "TAG" + "ID").indexOf( a.type ) -
+			("ATTR" + "CLASS" + "TAG" + "ID").indexOf( b.type );
+	},
 	sortOrder = function( a, b ) {
 		if ( a === b ) {
 			hasDuplicate = true;
@@ -548,7 +552,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	} else {
 		// Support: IE6/7
 		// getElementById is not reliable as a find shortcut
-		delete Expr.find["ID"];
+		Expr.find["ID"] = false;
 
 		Expr.filter["ID"] =  function( id ) {
 			var attrId = id.replace( runescape, funescape );
@@ -1559,9 +1563,10 @@ function addCombinator( matcher, combinator, base ) {
 		};
 }
 
-function elementMatcher( matchers ) {
-	return matchers.length > 1 ?
-		function( elem, context, xml ) {
+function elementMatcher( base, matchers ) {
+	if ( matchers.length ) {
+		matchers.unshift( base );
+		base = function( elem, context, xml ) {
 			var i = matchers.length;
 			while ( i-- ) {
 				if ( !matchers[i]( elem, context, xml ) ) {
@@ -1569,8 +1574,9 @@ function elementMatcher( matchers ) {
 				}
 			}
 			return true;
-		} :
-		matchers[0];
+		};
+	}
+	return base;
 }
 
 function multipleContexts( selector, contexts, results ) {
@@ -1719,7 +1725,7 @@ function matcherFromTokens( tokens ) {
 
 	for ( ; i < len; i++ ) {
 		if ( (matcher = Expr.relative[ tokens[i].type ]) ) {
-			matchers = [ addCombinator(elementMatcher( matchers ), matcher) ];
+			matchers = [ addCombinator(elementMatcher( matchers.shift(), matchers.sort( sortTokens ) ), matcher) ];
 		} else {
 			matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches );
 
@@ -1733,7 +1739,7 @@ function matcherFromTokens( tokens ) {
 					}
 				}
 				return setMatcher(
-					i > 1 && elementMatcher( matchers ),
+					i > 1 && elementMatcher( matchers.shift(), matchers.sort( sortTokens ) ),
 					i > 1 && toSelector(
 						// If the preceding token was a descendant combinator, insert an implicit any-element `*`
 						tokens.slice( 0, i - 1 ).concat({ value: tokens[ i - 2 ].type === " " ? "*" : "" })
@@ -1744,11 +1750,12 @@ function matcherFromTokens( tokens ) {
 					j < len && toSelector( tokens )
 				);
 			}
+			matcher.type = tokens[i].type;
 			matchers.push( matcher );
 		}
 	}
 
-	return elementMatcher( matchers );
+	return elementMatcher( matchers.shift(), matchers.sort( sortTokens ) );
 }
 
 function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, seeders ) {
