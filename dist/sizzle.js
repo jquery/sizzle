@@ -17,7 +17,7 @@ var i,
 	isXML,
 	compile,
 
-	// Invocation globals (for controlling functions called indirectly)
+	// Invocation globals (for communication between indirectly-called functions)
 	hasDuplicate,
 	sortInput,
 	contextExpanded,
@@ -1565,7 +1565,7 @@ function addCombinator( matcher, combinator, base ) {
 
 function elementMatcher( base, matchers ) {
 	if ( matchers.length ) {
-		matchers.unshift( base );
+		matchers.sort( sortTokens ).unshift( base );
 		base = function( elem, context, xml ) {
 			var i = matchers.length;
 			while ( i-- ) {
@@ -1708,6 +1708,8 @@ function matcherFromTokens( tokens ) {
 		leadingRelative = Expr.relative[ tokens[0].type ],
 		implicitRelative = leadingRelative || Expr.relative[" "],
 		i = leadingRelative ? 1 : 0,
+		lastCombinator = i - 1,
+		firstCombinator = lastCombinator,
 
 		// The foundational matcher ensures that elements are reachable from top-level context(s)
 		matchContext = addCombinator( function( elem ) {
@@ -1725,7 +1727,11 @@ function matcherFromTokens( tokens ) {
 
 	for ( ; i < len; i++ ) {
 		if ( (matcher = Expr.relative[ tokens[i].type ]) ) {
-			matchers = [ addCombinator(elementMatcher( matchers.shift(), matchers.sort( sortTokens ) ), matcher) ];
+			lastCombinator = i;
+			if ( firstCombinator < 0 ) {
+				firstCombinator = lastCombinator;
+			}
+			matchers = [ addCombinator(elementMatcher( matchers.shift(), matchers ), matcher) ];
 		} else {
 			matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches );
 
@@ -1738,27 +1744,27 @@ function matcherFromTokens( tokens ) {
 						break;
 					}
 				}
-				return setMatcher(
-					i > 1 && elementMatcher( matchers.shift(), matchers.sort( sortTokens ) ),
+				return [ setMatcher(
+					i > 1 && elementMatcher( matchers.shift(), matchers ),
 					i > 1 && toSelector(
 						// If the preceding token was a descendant combinator, insert an implicit any-element `*`
 						tokens.slice( 0, i - 1 ).concat({ value: tokens[ i - 2 ].type === " " ? "*" : "" })
 					).replace( rtrim, "$1" ),
 					matcher,
-					i < j && matcherFromTokens( tokens.slice( i, j ) ),
-					j < len && matcherFromTokens( (tokens = tokens.slice( j )) ),
+					i < j && matcherFromTokens( tokens.slice( i, j ) )[0],
+					j < len && matcherFromTokens( (tokens = tokens.slice( j )) )[0],
 					j < len && toSelector( tokens )
-				);
+				) ];
 			}
 			matcher.type = tokens[i].type;
 			matchers.push( matcher );
 		}
 	}
 
-	return elementMatcher( matchers.shift(), matchers.sort( sortTokens ) );
+	return [ elementMatcher( matchers.shift(), matchers ), firstCombinator, lastCombinator + 1 ];
 }
 
-function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, seeders ) {
+function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, reduceContext, seeders ) {
 	var bySet = setMatchers.length > 0,
 		byElement = elementMatchers.length > 0,
 		/**
@@ -1784,6 +1790,18 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, seede
 				xml = !documentIsHTML;
 			}
 
+			// Try to reduce context
+			// Because setMatchers reenter Sizzle for their seeds, we can ignore them here
+			if ( reduceContext && context && context.nodeType === 9 && support.getById && byElement && !xml ) {
+				if ( (elems = Expr.find["ID"]( reduceContext, context )) ) {
+					if ( elems.length ) {
+						context = elems[0];
+					} else {
+						return results;
+					}
+				}
+			}
+
 			// Try to find a small seed collection
 			i = byElement && !seed && seeders.length;
 			while ( i-- ) {
@@ -1797,9 +1815,14 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, seede
 				}
 			}
 
-			// Set invocation globals (reserving integer dirruns for the outermost matcher)
+			// Set invocation globals
+			// Reserve integer dirruns for the outermost matcher
 			dirruns += outermost ? 1 : Math.random() || 0.1;
-			contextExpanded = context && context !== document || !seed && siblings;
+			// Don't let any parts of the selector escape our context
+			if ( elems ) {
+				context = context.parentNode;
+			}
+			contextExpanded = context && context !== document && siblings != null || !seed && siblings;
 
 			// We must always have either seed elements or outermost context
 			unmatched = seed && [];
@@ -1889,8 +1912,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, seede
  * @returns {fullMatcher} The corresponding matcher
  */
 compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
-	var i, tokens, token,
-		seeders = [],
+	var i, tokens, siblings, leadingId, context,
 		setMatchers = [],
 		elementMatchers = [],
 		cached = compilerCache[ selector + " " ];
@@ -1902,39 +1924,29 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 		}
 		i = match.length;
 		while ( i-- ) {
-			cached = matcherFromTokens( (tokens = match[i]) );
-			if ( cached[ expando ] ) {
-				setMatchers.push( cached );
-			} else {
-				elementMatchers.push( cached );
+			tokens = match[i];
+			cached = matcherFromTokens( tokens );
+
+			// Check for possible optimizations
+			leadingId = cached[1] === 1 && tokens[0].type === "ID" && tokens[0].matches[0].replace( runescape, funescape );
+			if ( leadingId !== context ) {
+				context = context == null && leadingId;
 			}
-		}
+			if ( !siblings && cached[1] >= 0 ) {
+				siblings = rsibling.test( tokens[cached[1]].type );
+			}
 
-		// Check for possible optimizations if there is only one group
-		if ( match.length === 1 ) {
-			// Convenient right-to-left seeding
-			i = matchExpr["needsContext"].test( selector ) ? 0 : tokens.length;
-			while ( i-- ) {
-				token = tokens[i];
-
-				// Abort if we hit a combinator
-				if ( Expr.relative[ token.type ] ) {
-					break;
-				}
-
-				// Save shortcut types
-				if ( token.type === "ID" ) {
-					seeders.push( token );
-				} else if ( Expr.find[ token.type ] ) {
-					seeders.unshift( token );
-				}
+			if ( cached[0][ expando ] ) {
+				setMatchers.push( cached[0] );
+			} else {
+				elementMatchers.push( cached[0] );
 			}
 		}
 
 		// Cache the compiled function
 		cached = compilerCache( selector,
-			matcherFromGroupMatchers( elementMatchers, setMatchers,
-				rsibling.test( selector ), seeders )
+			matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, context,
+				match.length === 1 && tokens.slice( cached[ 2 ] ).sort( sortTokens ) )
 		);
 
 		// Save selector and tokenization
