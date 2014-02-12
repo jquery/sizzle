@@ -41,8 +41,8 @@ var i,
 	tokenCache = createCache(),
 	compilerCache = createCache(),
 	sortTokens = function( a, b ) {
-		return ("ATTR" + "CLASS" + "TAG" + "ID").indexOf( a.type ) -
-			("ATTR" + "CLASS" + "TAG" + "ID").indexOf( b.type );
+		return ("ATTR" + "TAG" + "CLASS" + "ID").indexOf( a.type ) -
+			("ATTR" + "TAG" + "CLASS" + "ID").indexOf( b.type );
 	},
 	sortOrder = function( a, b ) {
 		if ( a === b ) {
