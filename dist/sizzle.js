@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2014-02-12
+ * Date: 2014-02-13
  */
 (function( window ) {
 
@@ -1778,7 +1778,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, reduc
 		 * @return {Array|undefined} The list of unmatched seed elements
 		 */
 		superMatcher = function( context, results, seed, xml ) {
-			var elems, elem, i, j, matcher, find, unmatched, len,
+			var elem, len, i, j, matcher, unmatched,
 				matchedCount = 0,
 				setMatched = [],
 				dirrunsBackup = dirruns,
@@ -1786,16 +1786,16 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, reduc
 				outermost = contextExpanded == null;
 
 			// Use previously-established HTML vs. XML mode if not explicitly specified
-			if ( xml === undefined ) {
+			if ( xml == null ) {
 				xml = !documentIsHTML;
 			}
 
 			// Try to reduce context
 			// Because setMatchers reenter Sizzle for their seeds, we can ignore them here
 			if ( reduceContext && context && context.nodeType === 9 && support.getById && byElement && !xml ) {
-				if ( (elems = Expr.find["ID"]( reduceContext, context )) ) {
-					if ( elems.length ) {
-						context = elems[0];
+				if ( (elem = Expr.find["ID"]( reduceContext, context )) ) {
+					if ( elem.length ) {
+						context = elem[0];
 					} else {
 						return results;
 					}
@@ -1805,8 +1805,8 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, reduc
 			// Try to find a small seed collection
 			i = byElement && !seed && seeders.length;
 			while ( i-- ) {
-				if ( (find = Expr.find[ seeders[i].type ]) ) {
-					if ( (seed = find(
+				if ( (matcher = Expr.find[ seeders[i].type ]) ) {
+					if ( (seed = matcher(
 						seeders[i].matches[0].replace( runescape, funescape ),
 						siblings && expandContext( context.parentNode ) || context
 					)) ) {
@@ -1819,22 +1819,27 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, reduc
 			// Reserve integer dirruns for the outermost matcher
 			dirruns += outermost ? 1 : Math.random() || 0.1;
 			// Don't let any parts of the selector escape our context
-			if ( elems ) {
+			if ( elem ) {
 				context = context.parentNode;
 			}
 			contextExpanded = context && context !== document && siblings != null || !seed && siblings;
 
-			// We must always have either seed elements or outermost context
-			unmatched = seed && [];
-			elems = seed || byElement && Expr.find["TAG"]( "*",
-				siblings && expandContext( context.parentNode ) || context );
-			len = elems.length;
+			// If we have a seed, we need to keep track of unmatched elements
+			if ( seed ) {
+				unmatched = [];
+
+			// ...but ultimately, we require a seed regardless
+			} else {
+				seed = byElement ?
+					Expr.find["TAG"]( "*", siblings && expandContext( context.parentNode ) || context ) :
+					[];
+			}
 
 			// Add elements passing elementMatchers directly to results
-			// Keep `i` a string if there are no elements so `matchedCount` will be "00" below
 			// Support: IE<9, Safari
 			// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
-			for ( i = "0"; i !== len && (elem = elems[i]) != null; i++ ) {
+			len = seed.length;
+			for ( i = 0; i !== len && (elem = seed[i]) != null; i++ ) {
 				if ( byElement && elem ) {
 					j = 0;
 					while ( (matcher = elementMatchers[j++]) ) {
@@ -1853,7 +1858,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, reduc
 					}
 
 					// Lengthen the array for every element, matched or not
-					if ( seed ) {
+					if ( unmatched ) {
 						unmatched.push( elem );
 					}
 				}
@@ -1861,15 +1866,15 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, reduc
 
 			// Apply set filters to unmatched elements
 			matchedCount += i;
-			if ( bySet && i !== matchedCount ) {
+			if ( bySet && matchedCount < (i || 1) ) {
 				j = 0;
 				while ( (matcher = setMatchers[j++]) ) {
 					matcher( unmatched, setMatched, context, xml );
 				}
 
-				if ( seed ) {
+				if ( unmatched ) {
 					// Reintegrate element matches to eliminate the need for sorting
-					if ( matchedCount > 0 ) {
+					if ( matchedCount ) {
 						while ( i-- ) {
 							if ( !(unmatched[i] || setMatched[i]) ) {
 								setMatched[i] = pop.call( results );
@@ -1885,7 +1890,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, reduc
 				push.apply( results, setMatched );
 
 				// Seedless set matches succeeding multiple successful matchers stipulate sorting
-				if ( outermost && !seed && setMatched.length > 0 &&
+				if ( outermost && !unmatched && setMatched.length &&
 					( matchedCount + setMatchers.length ) > 1 ) {
 
 					Sizzle.uniqueSort( results );
