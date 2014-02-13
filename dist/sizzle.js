@@ -1566,10 +1566,10 @@ function addCombinator( matcher, combinator, base ) {
 function elementMatcher( base, matchers ) {
 	if ( matchers.length ) {
 		matchers.sort( sortTokens ).unshift( base );
-		base = function( elem, context, xml ) {
+		base = function( elem, context, xml, skip ) {
 			var i = matchers.length;
 			while ( i-- ) {
-				if ( !matchers[i]( elem, context, xml ) ) {
+				if ( i !== skip && !matchers[i]( elem, context, xml ) ) {
 					return false;
 				}
 			}
@@ -1778,7 +1778,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, reduc
 		 * @return {Array|undefined} The list of unmatched seed elements
 		 */
 		superMatcher = function( context, results, seed, xml ) {
-			var elem, len, i, j, matcher, unmatched,
+			var elem, len, i, j, matcher, unmatched, skipFilter,
 				matchedCount = 0,
 				setMatched = [],
 				dirrunsBackup = dirruns,
@@ -1810,6 +1810,8 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, reduc
 						seeders[i].matches[0].replace( runescape, funescape ),
 						siblings && expandContext( context.parentNode ) || context
 					)) ) {
+						// Don't use the associated filter
+						skipFilter = i + 1;
 						break;
 					}
 				}
@@ -1843,7 +1845,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers, siblings, reduc
 				if ( byElement && elem ) {
 					j = 0;
 					while ( (matcher = elementMatchers[j++]) ) {
-						if ( matcher( elem, context, xml ) ) {
+						if ( matcher( elem, context, xml, skipFilter ) ) {
 							results.push( elem );
 							break;
 						}
