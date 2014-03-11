@@ -615,20 +615,11 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// setting a boolean content attribute,
 			// since its presence should be enough
 			// http://bugs.jquery.com/ticket/12359
-			// Support: Windows Web Apps (WWA)
-			// unknown attribute `t` set with setAttribute for WWA security compliance
-			var select = document.createElement( "select" ),
-				option = document.createElement( "option" );
-
-			select.setAttribute( "t", "" );
-			option.setAttribute( "selected", "" );
-
-			select.appendChild( option );
-			div.appendChild( select );
+			div.innerHTML = "<select class=''><option selected=''></option></select>";
 
 			// Support: IE8, Opera 10-12
 			// Nothing should be selected when empty strings follow ^= or $= or *=
-			if ( div.querySelectorAll("[t^='']").length ) {
+			if ( div.querySelectorAll("[class^='']").length ) {
 				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
 			}
 
