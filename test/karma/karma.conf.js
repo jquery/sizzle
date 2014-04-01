@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = function( config ) {
-	var env = require( "./environment" );
+	var isTravis = process.env.TRAVIS;
 
 	config.set({
 		browserStack: {
@@ -14,10 +14,8 @@ module.exports = function( config ) {
 		// that will break iframe tests
 		basePath: "../../",
 
-		// frameworks to use
 		frameworks: [ "qunit" ],
 
-		// list of files/patterns to load in the browser
 		files: [
 			"test/jquery.js",
 			"dist/sizzle.js",
@@ -52,20 +50,45 @@ module.exports = function( config ) {
 			"test/data/fixtures.html": [ "html2js" ]
 		},
 
+		// Support: IE6
+		// Have to re-arrange socket.io transports by prioritizing "jsonp-polling"
+		// otherwise IE6 can't connect to karma server
+		transports: [ "websocket", "flashsocket", "jsonp-polling", "xhr-polling" ],
+
+		// Add BrowserStack launchers
+		customLaunchers: require( "./launchers" ),
+
+		// Make travis output less verbose
+		reporters: isTravis ? "dots" : "progress",
+
+		colors: !isTravis,
+
 		port: 9876,
 
-		colors: true,
-
-		// Default option, might be augmented in environment module
-		browsers: [ "PhantomJS" ],
-
-		// level of logging
-		// possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+		// Possible values:
+		// config.LOG_DISABLE
+		// config.LOG_ERROR
+		// config.LOG_WARN
+		// config.LOG_INFO
+		// config.LOG_DEBUG
 		logLevel: config.LOG_INFO,
 
 		// If browser does not capture in given timeout [ms], kill it
 		captureTimeout: 60000
 	});
 
-	env( config );
+	// Deal with Travis environment
+	if ( isTravis ) {
+
+		// Browserstack launcher specifies "build" options as a default value
+		// of "TRAVIS_BUILD_NUMBER" variable, but this way a bit more verbose
+		config.browserStack.build = "Travis #" + process.env.TRAVIS_BUILD_NUMBER;
+
+		// You can't get access to secure environment variables from pull requests
+		// so we don't have browserstack from them, but travis has headless Firefox so use that
+		if ( !(process.env.BROWSER_STACK_USERNAME && process.env.BROWSER_STACK_ACCESS_KEY) &&
+		    process.env.TRAVIS_PULL_REQUEST ) {
+			config.browsers.push( "Firefox" );
+		}
+	}
 };
