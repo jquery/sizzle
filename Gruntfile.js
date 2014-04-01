@@ -1,8 +1,14 @@
 module.exports = function( grunt ) {
 	"use strict";
 
-	var browsers = [ "PhantomJS" ],
-		gzip = require( "gzip-js" ),
+	var gzip = require( "gzip-js" ),
+		browsers = {
+			desktop: [ "PhantomJS" ],
+			old: [],
+			ios: [],
+			oldAndroid: [],
+			newAndroid: []
+		},
 		files = {
 			source: "src/sizzle.js",
 			speed: "speed/speed.js",
@@ -15,19 +21,29 @@ module.exports = function( grunt ) {
 	if ( process.env.BROWSER_STACK_USERNAME && process.env.BROWSER_STACK_ACCESS_KEY ) {
 
 		// See https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#browsers
-		browsers = [
-			"bs_chrome-30", "bs_chrome-31",
 
-			"bs_firefox-24", "bs_firefox-25",
+		browsers.desktop = [
+			"bs_chrome-32", "bs_chrome-33",
 
-			"bs_ie-6", "bs_ie-7", "bs_ie-8", "bs_ie-9", "bs_ie-10", "bs_ie-11",
+			"bs_firefox-27", "bs_firefox-28",
 
-			"bs_opera-12.16", "bs_opera-16", "bs_opera-17",
+			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 
-			"bs_safari-5.1", "bs_safari-6.1", "bs_safari-7",
+			"bs_opera-19", "bs_opera-20",
 
-			"bs_ios-6", "bs_android-2.3", "bs_android-4.1"
+			"bs_safari-6.1", "bs_safari-7"
 		];
+
+		browsers.old = [
+			"bs_ie-6", "bs_ie-7", "bs_ie-8"
+
+			// Opera 12.16 temporary unavailable on BS through Karma launcher
+			//,"bs_opera-12.16"
+		];
+
+		browsers.ios = [ "bs_ios-6", "bs_ios-7" ];
+		browsers.oldAndroid = [ "bs_android-2.3" ];
+		browsers.newAndroid = [ "bs_android-4.1" ];
 	}
 
 	// Project configuration.
@@ -136,15 +152,42 @@ module.exports = function( grunt ) {
 		},
 		karma: {
 			options: {
-				configFile: "test/karma/karma.conf.js"
+				configFile: "test/karma/karma.conf.js",
+				singleRun: true
 			},
 			watch: {
 				background: true,
+				singleRun: false,
 				browsers: [ "PhantomJS" ]
 			},
-			unit: {
-				singleRun: true,
-				browsers: browsers
+			desktop: {
+				browsers: browsers.desktop
+			},
+			old: {
+				browsers: browsers.old,
+
+				// Support: IE6
+				// Have to re-arrange socket.io transports by prioritizing "jsonp-polling"
+				// otherwise IE6 can't connect to karma server
+				transports: [ "jsonp-polling" ],
+			},
+			ios: {
+				browsers: browsers.ios
+			},
+			oldAndroid: {
+				browsers: browsers.oldAndroid,
+				transports: [ "jsonp-polling" ]
+			},
+			newAndroid: {
+				browsers: browsers.newAndroid
+			},
+			all: {
+				browsers: browsers.desktop.concat(
+					browsers.old,
+					browsers.ios,
+					browsers.newAndroid,
+					browsers.oldAndroid
+				)
 			}
 		},
 		watch: {
@@ -171,7 +214,14 @@ module.exports = function( grunt ) {
 	grunt.registerTask( "lint", [ "jsonlint", "jshint", "jscs" ] );
 	grunt.registerTask( "start", [ "karma:watch:start", "watch" ] );
 
-	grunt.registerTask( "build", [ "lint", "karma:unit", "compile", "uglify", "dist" ] );
+	// Execute tests all browsers in sequential way,
+	// so slow connections would not affect other runs
+	grunt.registerTask( "tests", [
+		"karma:desktop", "karma:old", "karma:ios",
+		"karma:newAndroid", "karma:oldAndroid"
+	] );
+
+	grunt.registerTask( "build", [ "lint", "tests", "compile", "uglify", "dist" ] );
 	grunt.registerTask( "default", [ "build", "compare_size" ] );
 
 	grunt.registerTask( "bower", "bowercopy" );
