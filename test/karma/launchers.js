@@ -1,32 +1,32 @@
 "use strict";
 
 module.exports = {
-	"bs_firefox-24": {
+	"bs_firefox-27": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "24.0",
+		browser_version: "27.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_firefox-25": {
+	"bs_firefox-28": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "25.0",
+		browser_version: "28.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
 
-	"bs_chrome-30": {
+	"bs_chrome-32": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "30.0",
+		browser_version: "32.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_chrome-31": {
+	"bs_chrome-33": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "31.0",
+		browser_version: "33.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
@@ -81,17 +81,17 @@ module.exports = {
 		os: "Windows",
 		os_version: "8.1"
 	},
-	"bs_opera-16": {
+	"bs_opera-19": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "16.0",
+		browser_version: "19.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_opera-17": {
+	"bs_opera-20": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "17.0",
+		browser_version: "20.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
@@ -124,17 +124,22 @@ module.exports = {
 		os: "ios",
 		os_version: "6.0"
 	},
+	"bs_ios-7": {
+		base: "BrowserStack",
+		device: "iPhone 5S",
+		os: "ios",
+		os_version: "7.0"
+	},
 
 	"bs_android-2.3": {
 		base: "BrowserStack",
-		device: "Samsung Galaxy S II",
+		device: "Motorola Droid 4",
 		os: "android",
 		os_version: "2.3"
 	},
-
 	"bs_android-4.1": {
 		base: "BrowserStack",
-		device: "Samsung Galaxy S III",
+		device: "Google Nexus 7",
 		os: "android",
 		os_version: "4.1"
 	}
