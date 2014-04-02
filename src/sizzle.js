@@ -1309,12 +1309,16 @@ Expr = Sizzle.selectors = {
 
 		// Boolean properties
 		"enabled": function( elem ) {
+			// Support: IE6-IE11+
+			// IE implements disabled and isDisabled on all elements, not just inputs
+			// In order to enabled, it must not be disabled, .isDisabled must be false or undefined, and it must be an input/option.
 			return elem.disabled === false && elem.isDisabled !== true && rinputsoptions.test( elem.nodeName );
 		},
 
 		"disabled": function( elem ) {
-			// isDisabled is an IE6-11 prop.  
-			// We'll use it only for inputs to fix places where IE8-11 inputs don't inherit the :disabled for fieldset children.
+			// Support: IE6-IE11+
+			// We'll use .isDisabled only for inputs to fix places where IE8-11 inputs don't inherit the :disabled for fieldset children.
+			// We need to filter by rinputs because the isDisabled is also present on non-form elements (eg. div)
 			return elem.disabled === true || ( elem.isDisabled === true && rinputs.test( elem.nodeName ) );
 		},
 

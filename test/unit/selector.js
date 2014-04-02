@@ -960,44 +960,20 @@ test("pseudo - form", function() {
 	extraTexts.remove();
 });
 
-// Both PhantomJS and Safari for Windows use a version of AppleWebkit that doesn't implement disable inheriting *at all* - so we skip these tests
-if( !/(?:PhantomJS\/1\.9\.[67]|5\.1\.7 Safari)/i.test( navigator.userAgent ) ) {
-	test("pseudo - :disabled, fieldset inheritance (#174)", function() {
-		expect( 1 );
-		
-		// We don't test select here because IE6 doesn't disabled selects when the fieldset is disabled
-		t( "Inputs inherit disabled from fieldset", "#disabled-fieldset :disabled", ["disabled-fieldset-input", "disabled-fieldset-textarea", "disabled-fieldset-button"] );
-	});
-}
-
-test("pseudo - :disabled, option inheritance", function(){
-	var options_inherit_optgroup,
-		options_inherit_select;
+test("pseudo - :disabled, fieldset inheritance (#174)", function() {
+	var expected_results = ["disabled-fieldset-input", "disabled-fieldset-textarea", "disabled-fieldset-button"];
+	// Both PhantomJS and Safari for Windows use a version of AppleWebkit that doesn't implement disable inheriting *at all* - so we skip these tests
+	if( /(?:PhantomJS\/1\.9|5\.1\.7 Safari)/i.test( navigator.userAgent ) ) {
+		expect(0);
+	} else {
+		// In IE6, don't test for disabled select because IE6 doesn't visibly or functionally disable selects when the fieldset is disabled
+		if( !/(?:MSIE 6)/i.test( navigator.userAgent ) ) {
+			expected_results.push( "disabled-fieldset-select");
+		}
 	
-	// Preserve the order of these tests - they descend such that there shouldn't be a collision
-	// In Opera >= 12 (Presto engine), if any parent of an option is disabled, the option matches :disabled
-	if( /(?:Opera)/i.test( navigator.userAgent ) ) {
-		options_inherit_optgroup = true;
-		options_inherit_select = true;
-	// In all version of IE 6-11, options only match :disabled, if they're explicitly disabled
-	} else if( /(?:MSIE)/i.test( navigator.userAgent ) ) {
-		options_inherit_optgroup = false;
-		options_inherit_select = false;
-	// In all modern versions of the Webkit family, :disabled flows down from an optgroup, but not from a select
-	} else if( /(?:Chrome|Firefox|OPR)/i.test( navigator.userAgent ) ) {
-		options_inherit_optgroup = true;
-		options_inherit_select = false;
-	} 
+		t( "Inputs inherit disabled from fieldset", "#disabled-fieldset :disabled", expected_results );
+	}
 
-	if(!(options_inherit_optgroup || options_inherit_select)){
-		t( "Options never inherit parent's disabledness", "#disabled-select-inherit option:disabled", []);
-	}
-	if( options_inherit_select === true ) {
-		t( "Option disabled inheritance - select", "#disabled-select-inherit option:disabled", ["disabled-optgroup-option", "enabled-optgroup-option"]);
-	}
-	if( options_inherit_optgroup === true ){
-		t( "Option disabled inheritance - optgroup", "#enabled-select-inherit option:disabled", ["en_disabled-optgroup-option"]);
-	}
 });
 
 test("pseudo - (dis|en)abled, explicitly disabled", function() {
