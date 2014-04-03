@@ -1318,7 +1318,7 @@ Expr = Sizzle.selectors = {
 		"disabled": function( elem ) {
 			// Support: IE6-IE11+
 			// We'll use .isDisabled only for inputs to fix places where IE8-11 inputs don't inherit the :disabled for fieldset children.
-			// We need to filter by rinputs because the isDisabled is also present on non-form elements (eg. div)
+			// We filter by rinputs rather than rinputsoptions to preserve native handling of option inheritance
 			return elem.disabled === true || ( elem.isDisabled === true && rinputs.test( elem.nodeName ) );
 		},
 
