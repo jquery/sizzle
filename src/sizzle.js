@@ -124,6 +124,8 @@ var i,
 	},
 
 	rinputs = /^(?:input|select|textarea|button)$/i,
+	rinputsoptions = /^(?:input|select|textarea|button|optgroup|option)$/i,
+	
 	rheader = /^h\d$/i,
 
 	rnative = /^[^{]+\{\s*\[native \w/,
@@ -656,10 +658,18 @@ setDocument = Sizzle.setDocument = function( node ) {
 				rbuggyQSA.push( ":enabled", ":disabled" );
 			}
 
+			// Support: IE9-11+
+			// IE's :disabled selector does not pick up the children of disabled fieldsets
+			docElem.appendChild( div ).innerHTML = "<fieldset disabled='disabled'><input/></fieldset>";
+			if ( div.isDisabled === false && !div.querySelectorAll("input:disabled").length ) {
+				rbuggyQSA.push( ":enabled", ":disabled" );
+			}
+			
 			// Opera 10-11 does not throw on post-comma invalid pseudos
 			div.querySelectorAll("*,:x");
 			rbuggyQSA.push(",.*:");
 		});
+
 	}
 
 	if ( (support.matchesSelector = rnative.test( (matches = docElem.matches ||
@@ -1301,11 +1311,17 @@ Expr = Sizzle.selectors = {
 
 		// Boolean properties
 		"enabled": function( elem ) {
-			return elem.disabled === false;
+			// Support: IE6-IE11+
+			// IE implements disabled and isDisabled on all elements, not just inputs
+			// In order to enabled, it must not be disabled, .isDisabled must be false or undefined, and it must be an input/option.
+			return elem.disabled === false && elem.isDisabled !== true && rinputsoptions.test( elem.nodeName );
 		},
 
 		"disabled": function( elem ) {
-			return elem.disabled === true;
+			// Support: IE6-IE11+
+			// We'll use .isDisabled only for inputs to fix places where IE8-11 inputs don't inherit the :disabled for fieldset children.
+			// We filter by rinputs rather than rinputsoptions to preserve native handling of option inheritance
+			return elem.disabled === true || ( elem.isDisabled === true && rinputs.test( elem.nodeName ) );
 		},
 
 		"checked": function( elem ) {

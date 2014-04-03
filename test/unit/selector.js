@@ -960,6 +960,44 @@ test("pseudo - form", function() {
 	extraTexts.remove();
 });
 
+test("pseudo - :disabled, IE6+ fix for fieldset inheritance (#174)", function() {
+	var div = document.createElement("div");
+		
+	// This *only* tests the .isDisabled fix for fieldset disabledness inheritence that's available to IE6+
+	if( div.isDisabled === undefined  ) {
+		expect(0);
+	} else {
+		// Doesn't test for presence of select because IE6 doesn't visibly or functionally disable them when the fieldset is disabled
+		t( "Inputs inherit disabled from fieldset", "#disabled-fieldset :disabled", ["disabled-fieldset-input", "disabled-fieldset-textarea", "disabled-fieldset-button"] );
+	}
+});
+
+test("pseudo - :disabled, preserve native option inheritance", function(){
+	var sizzle_results,
+		native_nodelist,
+		native_results = [],
+		selector = "#disabled-select-inherit option:disabled, #enabled-select-inherit option:disabled",
+		i;
+
+	try {
+		native_nodelist = document.querySelectorAll( selector );
+		for( i = native_nodelist.length; i--; native_results.unshift( native_nodelist[ i ] ) ){}
+
+		sizzle_results = Sizzle( selector );
+		
+		deepEqual(sizzle_results, native_results, "Matched native option support");
+	} catch ( e ){
+		// Test will be skipped for anything missing QSA, or with a bugged QSA
+		expect ( 0 );
+	}
+});
+
+test("pseudo - :(dis|en)abled, explicitly disabled", function() {
+	expect ( 2 );
+	t( "Explicitly disabled elements", "#enabled-fieldset :disabled", ["disabled-input", "disabled-textarea", "disabled-button", "disabled-select", "disabled-optgroup", "disabled-option"] );
+	t( "Enabled elements", "#enabled-fieldset :enabled", ["enabled-input", "enabled-textarea", "enabled-button", "enabled-select", "enabled-optgroup", "enabled-option"] );
+});
+
 test("pseudo - :target and :root", function() {
 	expect( 2 );
 
