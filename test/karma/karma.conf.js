@@ -6,6 +6,7 @@ module.exports = function( config ) {
 	config.set({
 		browserStack: {
 			project: "sizzle",
+			build: "local run",
 			timeout: 600 // 10 min
 		},
 
@@ -50,11 +51,6 @@ module.exports = function( config ) {
 			"test/data/fixtures.html": [ "html2js" ]
 		},
 
-		// Support: IE6
-		// Have to re-arrange socket.io transports by prioritizing "jsonp-polling"
-		// otherwise IE6 can't connect to karma server
-		transports: [ "websocket", "flashsocket", "jsonp-polling", "xhr-polling" ],
-
 		// Add BrowserStack launchers
 		customLaunchers: require( "./launchers" ),
 
@@ -74,7 +70,8 @@ module.exports = function( config ) {
 		logLevel: config.LOG_INFO,
 
 		// If browser does not capture in given timeout [ms], kill it
-		captureTimeout: 60000
+		captureTimeout: 3e5,
+		browserNoActivityTimeout: 3e5
 	});
 
 	// Deal with Travis environment
@@ -82,7 +79,7 @@ module.exports = function( config ) {
 
 		// Browserstack launcher specifies "build" options as a default value
 		// of "TRAVIS_BUILD_NUMBER" variable, but this way a bit more verbose
-		config.browserStack.build = "Travis #" + process.env.TRAVIS_BUILD_NUMBER;
+		config.browserStack.build = "travis #" + process.env.TRAVIS_BUILD_NUMBER;
 
 		// You can't get access to secure environment variables from pull requests
 		// so we don't have browserstack from them, but travis has headless Firefox so use that
