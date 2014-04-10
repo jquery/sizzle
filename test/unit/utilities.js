@@ -1,7 +1,7 @@
 module("utilities", { teardown: moduleTeardown });
 
 function testAttr( doc ) {
-	expect( 9 );
+	expect( 10 );
 
 	var el;
 	if ( doc ) {
@@ -34,6 +34,8 @@ function testAttr( doc ) {
 		"Object.prototype property \"constructor\"" );
 	strictEqual( Sizzle.attr( el, "watch" ), "bar",
 		"Gecko Object.prototype property \"watch\"" );
+	strictEqual( Sizzle.attr( [document.createComment("hello")], "data" ), null,
+		"attributes on comment node cannot exist");
 }
 
 test("Sizzle.attr (HTML)", function() {
