@@ -869,11 +869,13 @@ Sizzle.attr = function( elem, name ) {
 
 	return val !== undefined ?
 		val :
-		support.attributes || !documentIsHTML ?
-			elem.getAttribute( name ) :
-			(val = elem.getAttributeNode(name)) && val.specified ?
-				val.value :
-				null;
+		elem.nodeType !== 1 ?
+			null :
+			support.attributes || !documentIsHTML ?
+				elem.getAttribute( name ) :
+				(val = elem.getAttributeNode(name)) && val.specified ?
+						val.value :
+						null;
 };
 
 Sizzle.error = function( msg ) {
