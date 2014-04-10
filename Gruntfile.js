@@ -2,8 +2,10 @@ module.exports = function( grunt ) {
 	"use strict";
 
 	var gzip = require( "gzip-js" ),
+		isBrowserStack = process.env.BROWSER_STACK_USERNAME && process.env.BROWSER_STACK_ACCESS_KEY,
 		browsers = {
-			desktop: [ "PhantomJS" ],
+			phantom: [ "PhantomJS" ],
+			desktop: [],
 			old: [],
 			ios: [],
 			oldAndroid: [],
@@ -18,7 +20,7 @@ module.exports = function( grunt ) {
 		};
 
 	// if Browserstack is set up, assume we can use it
-	if ( process.env.BROWSER_STACK_USERNAME && process.env.BROWSER_STACK_ACCESS_KEY ) {
+	if ( isBrowserStack ) {
 
 		// See https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#browsers
 
@@ -158,7 +160,10 @@ module.exports = function( grunt ) {
 			watch: {
 				background: true,
 				singleRun: false,
-				browsers: [ "PhantomJS" ]
+				browsers: browsers.phantom
+			},
+			phantom: {
+				browsers: browsers.phantom
 			},
 			desktop: {
 				browsers: browsers.desktop
@@ -216,10 +221,10 @@ module.exports = function( grunt ) {
 
 	// Execute tests all browsers in sequential way,
 	// so slow connections would not affect other runs
-	grunt.registerTask( "tests", [
+	grunt.registerTask( "tests", isBrowserStack ? [
 		"karma:desktop", "karma:old", "karma:ios",
 		"karma:newAndroid", "karma:oldAndroid"
-	] );
+	] : "karma:phantom" );
 
 	grunt.registerTask( "build", [ "lint", "tests", "compile", "uglify", "dist" ] );
 	grunt.registerTask( "default", [ "build", "compare_size" ] );
