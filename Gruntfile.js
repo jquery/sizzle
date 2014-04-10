@@ -187,7 +187,8 @@ module.exports = function( grunt ) {
 				browsers: browsers.newAndroid
 			},
 			all: {
-				browsers: browsers.desktop.concat(
+				browsers: browsers.phantom.concat(
+					browsers.desktop,
 					browsers.old,
 					browsers.ios,
 					browsers.newAndroid,
@@ -222,8 +223,8 @@ module.exports = function( grunt ) {
 	// Execute tests all browsers in sequential way,
 	// so slow connections would not affect other runs
 	grunt.registerTask( "tests", isBrowserStack ? [
-		"karma:desktop", "karma:old", "karma:ios",
-		"karma:newAndroid", "karma:oldAndroid"
+	    "karma:phantom", "karma:desktop", "karma:old",
+	    "karma:ios", "karma:newAndroid", "karma:oldAndroid"
 	] : "karma:phantom" );
 
 	grunt.registerTask( "build", [ "lint", "tests", "compile", "uglify", "dist" ] );
