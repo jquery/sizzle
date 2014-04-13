@@ -158,7 +158,7 @@ test("XML Document Selectors", function() {
 });
 
 test("broken", function() {
-	expect( 26 );
+	expect( 29 );
 
 	var attrbad,
 		broken = function( name, selector ) {
@@ -209,9 +209,11 @@ test("broken", function() {
 	// Make sure attribute value quoting works correctly. See: #6093
 	attrbad = jQuery("<input type='hidden' value='2' name='foo.baz' id='attrbad1'/><input type='hidden' value='2' name='foo[baz]' id='attrbad2'/>").appendTo("#qunit-fixture");
 
-	broken( "Attribute not escaped", "input[name=foo.baz]", [] );
-	// Shouldn't be matching those inner brackets
-	broken( "Attribute not escaped", "input[name=foo[baz]]", [] );
+	broken( "No attribute value", "input[name=]" );
+	broken( "Attribute not escaped", "input[name=foo.baz]" );
+	broken( "Attribute not escaped", "input[name=foo[baz]]" );
+	broken( "Attribute quote mismatch", "input[name=''double-quoted'']" );
+	broken( "Attribute quote mismatch", "input[name='apostrophe'd']" );
 });
 
 test("id", function() {
