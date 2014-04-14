@@ -2,19 +2,55 @@ module.exports = function( grunt ) {
 	"use strict";
 
 	var gzip = require( "gzip-js" ),
+		isBrowserStack = process.env.BROWSER_STACK_USERNAME && process.env.BROWSER_STACK_ACCESS_KEY,
+		browsers = {
+			phantom: [ "PhantomJS" ],
+			desktop: [],
+			old: [],
+			ios: [],
+			oldAndroid: [],
+			newAndroid: []
+		},
 		files = {
 			source: "src/sizzle.js",
 			speed: "speed/speed.js",
 			tests: "test/unit/*.js",
+			karma: "test/karma/*.js",
 			grunt: [ "Gruntfile.js", "tasks/*" ]
 		};
+
+	// if Browserstack is set up, assume we can use it
+	if ( isBrowserStack ) {
+
+		// See https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#browsers
+
+		browsers.desktop = [
+			"bs_chrome-32", "bs_chrome-33",
+
+			"bs_firefox-27", "bs_firefox-28",
+
+			"bs_ie-9", "bs_ie-10", "bs_ie-11",
+
+			"bs_opera-19", "bs_opera-20",
+
+			"bs_safari-6.1", "bs_safari-7"
+		];
+
+		browsers.old = [
+			"bs_ie-6", "bs_ie-7", "bs_ie-8"
+
+			// Opera 12.16 temporary unavailable on BS through Karma launcher
+			//,"bs_opera-12.16"
+		];
+
+		browsers.ios = [ "bs_ios-6", "bs_ios-7" ];
+		browsers.oldAndroid = [ "bs_android-2.3" ];
+		browsers.newAndroid = [ "bs_android-4.1" ];
+	}
 
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON( "package.json" ),
-		qunit: {
-			files: [ "test/index.html" ]
-		},
 		compile: {
 			all: {
 				dest: "dist/sizzle.js",
@@ -80,8 +116,8 @@ module.exports = function( grunt ) {
 					jshintrc: "src/.jshintrc"
 				}
 			},
-			grunt: {
-				src: files.grunt,
+			build: {
+				src: [ files.grunt, files.karma ],
 				options: {
 					jshintrc: ".jshintrc"
 				}
@@ -102,10 +138,10 @@ module.exports = function( grunt ) {
 		jscs: {
 			// Can't check the actual source file until
 			// https://github.com/mdevils/node-jscs/pull/90 is merged
-			files: [ files.grunt, files.speed ],
+			files: [ files.grunt, files.speed, files.karma ],
 
 			options: {
-				preset: "jquery",
+				preset: "jquery"
 			}
 		},
 		jsonlint: {
@@ -116,16 +152,62 @@ module.exports = function( grunt ) {
 				src: [ "bower.json" ]
 			}
 		},
+		karma: {
+			options: {
+				configFile: "test/karma/karma.conf.js",
+				singleRun: true
+			},
+			watch: {
+				background: true,
+				singleRun: false,
+				browsers: browsers.phantom
+			},
+			phantom: {
+				browsers: browsers.phantom
+			},
+			desktop: {
+				browsers: browsers.desktop
+			},
+			old: {
+				browsers: browsers.old,
+
+				// Support: IE6
+				// Have to re-arrange socket.io transports by prioritizing "jsonp-polling"
+				// otherwise IE6 can't connect to karma server
+				transports: [ "jsonp-polling" ],
+			},
+			ios: {
+				browsers: browsers.ios
+			},
+			oldAndroid: {
+				browsers: browsers.oldAndroid,
+				transports: [ "jsonp-polling" ]
+			},
+			newAndroid: {
+				browsers: browsers.newAndroid
+			},
+			all: {
+				browsers: browsers.phantom.concat(
+					browsers.desktop,
+					browsers.old,
+					browsers.ios,
+					browsers.newAndroid,
+					browsers.oldAndroid
+				)
+			}
+		},
 		watch: {
 			files: [
 				files.source,
 				files.grunt,
 				files.speed,
+				files.karma,
+				"test/**/*",
 				"<%= jshint.tests.src %>",
 				"{package,bower}.json",
-				"test/index.html"
+				"test/*.html"
 			],
-			tasks: "default"
+			tasks: [ "lint", "karma:watch:run" ]
 		}
 	});
 
@@ -136,10 +218,17 @@ module.exports = function( grunt ) {
 	require( "load-grunt-tasks" )( grunt );
 
 	grunt.registerTask( "lint", [ "jsonlint", "jshint", "jscs" ] );
-	grunt.registerTask( "build", [ "lint", "compile", "uglify", "dist" ] );
-	grunt.registerTask( "test", [ "lint", "qunit" ] );
-	grunt.registerTask( "default", [ "build", "qunit", "compare_size" ] );
+	grunt.registerTask( "start", [ "karma:watch:start", "watch" ] );
 
-	// Task aliases
+	// Execute tests all browsers in sequential way,
+	// so slow connections would not affect other runs
+	grunt.registerTask( "tests", isBrowserStack ? [
+	    "karma:phantom", "karma:desktop", "karma:old",
+	    "karma:ios", "karma:newAndroid", "karma:oldAndroid"
+	] : "karma:phantom" );
+
+	grunt.registerTask( "build", [ "lint", "tests", "compile", "uglify", "dist" ] );
+	grunt.registerTask( "default", [ "build", "compare_size" ] );
+
 	grunt.registerTask( "bower", "bowercopy" );
 };

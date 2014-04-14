@@ -1,4 +1,4 @@
-module("extending", { teardown: moduleTeardown });
+module( "extending", { setup: setup } );
 
 test("custom pseudos", function() {
 	expect( 6 );
@@ -8,7 +8,7 @@ test("custom pseudos", function() {
 	delete Sizzle.selectors.filters.foundation;
 
 	Sizzle.selectors.setFilters.primary = Sizzle.selectors.setFilters.first;
-	t( "Copy set filter with new name", "div:primary", ["qunit"] );
+	t( "Copy set filter with new name", "div#qunit-fixture :primary", [ "firstp" ] );
 	delete Sizzle.selectors.setFilters.primary;
 
 	Sizzle.selectors.filters.aristotlean = Sizzle.selectors.createPseudo(function() {

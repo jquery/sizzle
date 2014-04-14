@@ -36,8 +36,7 @@
 		"throws": false,
 
 		"createWithFriesXML": false,
-		"fireNative": false,
-		"moduleTeardown": false,
+		"setup": false,
 		"q": false,
 		"t": false,
 		"testIframeWithCallback": false,
