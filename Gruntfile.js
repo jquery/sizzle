@@ -136,13 +136,7 @@ module.exports = function( grunt ) {
 			}
 		},
 		jscs: {
-			// Can't check the actual source file until
-			// https://github.com/mdevils/node-jscs/pull/90 is merged
-			files: [ files.grunt, files.speed, files.karma ],
-
-			options: {
-				preset: "jquery"
-			}
+			src: [ files.grunt, files.speed, files.karma ]
 		},
 		jsonlint: {
 			pkg: {

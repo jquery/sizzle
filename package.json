@@ -36,7 +36,7 @@
 		"grunt-compare-size": "0.4.0",
 
 		"grunt-git-authors": "1.2.0",
-		"grunt-jscs-checker": "0.3.0",
+		"grunt-jscs-checker": "0.4.1",
 		"grunt-jsonlint": "1.0.4",
 		"gzip-js": "0.3.2",
 		"load-grunt-tasks": "0.2.1",
