@@ -18,6 +18,7 @@
     "*.md",
     "*.txt",
     "src",
+    "test",
     "Gruntfile.js"
   ]
 }
