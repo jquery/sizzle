@@ -136,7 +136,12 @@ module.exports = function( grunt ) {
 			}
 		},
 		jscs: {
-			src: [ files.grunt, files.speed, files.karma ]
+			src: [
+				files.source,
+				files.grunt,
+				files.speed,
+				files.karma
+			]
 		},
 		jsonlint: {
 			pkg: {
