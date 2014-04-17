@@ -204,6 +204,51 @@ Z</textarea>
 		<span id="liveSpan2"><a href="#" id="liveLink2"></a></span>
 	</div>
 
+	<form id="disabled-tests">
+		<fieldset id="disabled-fieldset" disabled="disabled">
+			<input id="disabled-fieldset-input" name="disabled-fieldset-input" type="text" />
+			<textarea id="disabled-fieldset-textarea" name="disabled-fieldset-textarea" ></textarea>
+			<button id="disabled-fieldset-button" name="disabled-fieldset-button">Go</button>
+			<!-- exclude <select> because IE6 is bugged and fails
+			<select id="disabled-fieldset-select" name="disabled-fieldset-select"></select>
+			-->
+			<div id="disabled-fieldset-div">Neither enabled nor disabled</div>
+		</fieldset>
+		<fieldset id="enabled-fieldset">
+			<input id="disabled-input" name="disabled-input" type="text" disabled="disabled"/>
+			<textarea id="disabled-textarea" name="disabled-textarea" disabled="disabled"></textarea>
+			<button id="disabled-button" name="disabled-button" disabled="disabled">Go</button>
+			<select id="disabled-select" name="disabled-select" disabled="disabled">
+				<optgroup id="disabled-optgroup" label="and" disabled="disabled">
+					<option id="disabled-option" disabled="disabled">Black</option>
+				</optgroup>
+			</select>
+			<input id="enabled-input" name="enabled-input" type="text"/>
+			<textarea id="enabled-textarea" name="enabled-textarea"></textarea>
+			<button id="enabled-button" name="enabled-button">Go</button>
+			<select id="enabled-select" name="enabled-select">
+				<optgroup id="enabled-optgroup" label="and">
+					<option id="enabled-option">Gold</option>
+				</optgroup>
+			</select>				
+			<div id="enabled-fieldset-div">Neither enabled nor disabled</div>
+		</fieldset>
+		<select id="disabled-select-inherit" name="disabled-select-inherit" disabled="disabled">
+			<optgroup id="disabled-optgroup-inherit" label="and" disabled="disabled">
+				<option id="disabled-optgroup-option">Black</option>
+			</optgroup>
+			<optgroup id="enabled-optgroup-inherit" label="and">
+				<option id="enabled-optgroup-option">Gold</option>
+			</optgroup>
+		</select>
+		<select id="enabled-select-inherit" name="enabled-select-inherit">
+			<optgroup id="en_disabled-optgroup-inherit" label="and" disabled="disabled">
+				<option id="en_disabled-optgroup-option">Black</option>
+			</optgroup>
+			<option id="enabled-select-option">Black</option>
+		</select>			
+	</form>
+
 	<div id="siblingTest">
 		<em id="siblingfirst">1</em>
 		<em id="siblingnext">2</em>
