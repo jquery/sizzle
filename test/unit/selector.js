@@ -714,7 +714,7 @@ test("pseudo - nth-last-of-type", function() {
 	t( "Nth-last-of-type(even)", "#ap :nth-last-of-type(even)", ["groups"] );
 	t( "Nth-last-of-type(2n+1)", "#ap :nth-last-of-type(2n+1)", ["google", "code1", "anchor1", "mark"] );
 	t( "Nth-last-of-type(odd)", "#ap :nth-last-of-type(odd)", ["google", "code1", "anchor1", "mark"] );
-	t( "Nth-last-of-type(-n+2)", "#qunit-fixture > :nth-last-of-type(-n+2)", ["ap", "name+value", "first", "firstUL", "empty", "floatTest", "iframe", "table", "name-tests", "testForm", "liveHandlerOrder", "siblingTest", "last"] );
+	t( "Nth-last-of-type(-n+2)", "#qunit-fixture > :nth-last-of-type(-n+2)", ["ap", "name+value", "first", "firstUL", "empty", "floatTest", "iframe", "table", "testForm", "liveHandlerOrder", "disabled-tests", "siblingTest", "last"] );
 });
 
 test("pseudo - has", function() {
@@ -887,9 +887,9 @@ test("pseudo - :not", function() {
 	t( ":not() Multiple Class", "#foo a:not(.blog.link)", ["yahoo", "anchor2"] );
 
 	t( ":not chaining (compound)", "#qunit-fixture div[id]:not(:has(div, span)):not(:has(*))", ["nothiddendivchild", "divWithNoTabIndex"] );
-	t( ":not chaining (with attribute)", "#qunit-fixture form[id]:not([action$='formaction']):not(:button)", ["lengthtest", "name-tests", "testForm"] );
-	t( ":not chaining (colon in attribute)", "#qunit-fixture form[id]:not([action='form:action']):not(:button)", ["form", "lengthtest", "name-tests", "testForm"] );
-	t( ":not chaining (colon in attribute and nested chaining)", "#qunit-fixture form[id]:not([action='form:action']:button):not(:input)", ["form", "lengthtest", "name-tests", "testForm"] );
+	t( ":not chaining (with attribute)", "#qunit-fixture form[id]:not([action$='formaction']):not(:button)", ["lengthtest", "name-tests", "testForm", "disabled-tests"] );
+	t( ":not chaining (colon in attribute)", "#qunit-fixture form[id]:not([action='form:action']):not(:button)", ["form", "lengthtest", "name-tests", "testForm", "disabled-tests"] );
+	t( ":not chaining (colon in attribute and nested chaining)", "#qunit-fixture form[id]:not([action='form:action']:button):not(:input)", ["form", "lengthtest", "name-tests", "testForm", "disabled-tests"] );
 	t( ":not chaining", "#form select:not(.select1):contains(Nothing) > option:not(option)", [] );
 
 	t( "positional :not()", "#foo p:not(:last)", ["sndp", "en"] );
@@ -971,43 +971,38 @@ test("pseudo - form", function() {
 	extraTexts.remove();
 });
 
-test("pseudo - :disabled, IE6+ fix for fieldset inheritance (#174)", function() {
-	var div = document.createElement("div");
-		
-	// This *only* tests the .isDisabled fix for fieldset disabledness inheritence that's available to IE6+
-	if( div.isDisabled === undefined  ) {
-		expect(0);
-	} else {
-		// Doesn't test for presence of select because IE6 doesn't visibly or functionally disable them when the fieldset is disabled
-		t( "Inputs inherit disabled from fieldset", "#disabled-fieldset :disabled", ["disabled-fieldset-input", "disabled-fieldset-textarea", "disabled-fieldset-button"] );
-	}
-});
-
-test("pseudo - :disabled, preserve native option inheritance", function(){
-	var sizzle_results,
-		native_nodelist,
-		native_results = [],
-		selector = "#disabled-select-inherit option:disabled, #enabled-select-inherit option:disabled",
-		i;
-
-	try {
-		native_nodelist = document.querySelectorAll( selector );
-		for( i = native_nodelist.length; i--; native_results.unshift( native_nodelist[ i ] ) ){}
-
-		sizzle_results = Sizzle( selector );
-		
-		deepEqual(sizzle_results, native_results, "Matched native option support");
-	} catch ( e ){
-		// Test will be skipped for anything missing QSA, or with a bugged QSA
-		expect ( 0 );
-	}
-});
-
 test("pseudo - :(dis|en)abled, explicitly disabled", function() {
 	expect ( 2 );
-	t( "Explicitly disabled elements", "#enabled-fieldset :disabled", ["disabled-input", "disabled-textarea", "disabled-button", "disabled-select", "disabled-optgroup", "disabled-option"] );
-	t( "Enabled elements", "#enabled-fieldset :enabled", ["enabled-input", "enabled-textarea", "enabled-button", "enabled-select", "enabled-optgroup", "enabled-option"] );
+
+	t(
+		"Explicitly disabled elements",
+		"#enabled-fieldset :disabled",
+		[ "disabled-input", "disabled-textarea", "disabled-button",
+			"disabled-select", "disabled-optgroup", "disabled-option" ]
+	);
+
+	t(
+		"Enabled elements",
+		"#enabled-fieldset :enabled",
+		[ "enabled-input", "enabled-textarea", "enabled-button",
+			"enabled-select", "enabled-optgroup", "enabled-option" ]
+	);
 });
+
+if ( jQuery("<fieldset disabled='disabled'/>")[0].disabled ) {
+	test("pseudo - :disabled by ancestry", function() {
+		expect( 1 );
+
+		// Don't test for presence of select
+		// IE6 doesn't visibly or functionally disable them when the fieldset is disabled
+		t(
+			"Inputs inherit disabled from fieldset",
+			"#disabled-fieldset :disabled",
+			[ "disabled-fieldset-input", "disabled-fieldset-textarea",
+				"disabled-fieldset-button" ]
+		);
+	});
+}
 
 test("pseudo - :target and :root", function() {
 	expect( 2 );

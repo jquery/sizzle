@@ -212,7 +212,7 @@ Z</textarea>
 			<!-- exclude <select> because IE6 is bugged and fails
 			<select id="disabled-fieldset-select" name="disabled-fieldset-select"></select>
 			-->
-			<div id="disabled-fieldset-div">Neither enabled nor disabled</div>
+			<span id="disabled-fieldset-span">Neither enabled nor disabled</span>
 		</fieldset>
 		<fieldset id="enabled-fieldset">
 			<input id="disabled-input" name="disabled-input" type="text" disabled="disabled"/>
@@ -230,8 +230,8 @@ Z</textarea>
 				<optgroup id="enabled-optgroup" label="and">
 					<option id="enabled-option">Gold</option>
 				</optgroup>
-			</select>				
-			<div id="enabled-fieldset-div">Neither enabled nor disabled</div>
+			</select>
+			<span id="enabled-fieldset-span">Neither enabled nor disabled</span>
 		</fieldset>
 		<select id="disabled-select-inherit" name="disabled-select-inherit" disabled="disabled">
 			<optgroup id="disabled-optgroup-inherit" label="and" disabled="disabled">
@@ -246,7 +246,7 @@ Z</textarea>
 				<option id="en_disabled-optgroup-option">Black</option>
 			</optgroup>
 			<option id="enabled-select-option">Black</option>
-		</select>			
+		</select>
 	</form>
 
 	<div id="siblingTest">
