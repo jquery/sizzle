@@ -28,7 +28,7 @@ module.exports = function( grunt ) {
 			}
 			// Commit next pre version
 			grunt.config( "pkg.version", version );
-			grunt.task.run([ "build", "uglify", "dist", "commit:'Update version to " + version + "'" ]);
+			grunt.task.run([ "build", "uglify", "dist", "commit:'Release\\: Update version to " + version + "'" ]);
 			done();
 		});
 	});
