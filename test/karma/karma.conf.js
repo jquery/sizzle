@@ -71,7 +71,9 @@ module.exports = function( config ) {
 
 		// If browser does not capture in given timeout [ms], kill it
 		captureTimeout: 3e5,
-		browserNoActivityTimeout: 3e5
+		browserNoActivityTimeout: 3e5,
+		browserDisconnectTimeout: 3e5,
+		browserDisconnectTolerance: 3
 	});
 
 	// Deal with Travis environment
