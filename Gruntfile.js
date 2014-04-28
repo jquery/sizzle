@@ -110,29 +110,11 @@ module.exports = function( grunt ) {
 			"test/libs/qunit": "qunit/qunit"
 		},
 		jshint: {
-			source: {
-				src: files.source,
-				options: {
-					jshintrc: "src/.jshintrc"
-				}
+			options: {
+				jshintrc: true
 			},
-			build: {
-				src: [ files.grunt, files.karma ],
-				options: {
-					jshintrc: ".jshintrc"
-				}
-			},
-			speed: {
-				src: files.speed,
-				options: {
-					jshintrc: "speed/.jshintrc"
-				}
-			},
-			tests: {
-				src: files.tests,
-				options: {
-					jshintrc: "test/.jshintrc"
-				}
+			all: {
+				src: [ files.source, files.grunt, files.karma, files.speed, files.tests ]
 			}
 		},
 		jscs: {
