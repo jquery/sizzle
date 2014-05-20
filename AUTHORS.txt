@@ -37,3 +37,7 @@ Daniel Herman <daniel.c.herman@gmail.com>
 Frederic Junod <frederic.junod@camptocamp.com>
 Mitch Foley <mitch@thefoley.net>
 Dan Burzo <danburzo@gmail.com>
+Goare Mao <mygoare@gmail.com>
+Dongseok Paeng <dongseok83.paeng@lge.com>
+Michał Gołębiowski <m.goleb@gmail.com>
+Philip Jägenstedt <philip@foolip.org>
