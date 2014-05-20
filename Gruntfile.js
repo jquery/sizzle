@@ -27,7 +27,7 @@ module.exports = function( grunt ) {
 		browsers.desktop = [
 			"bs_chrome-32", "bs_chrome-33",
 
-			"bs_firefox-27", "bs_firefox-28",
+			"bs_firefox-28", "bs_firefox-29",
 
 			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 

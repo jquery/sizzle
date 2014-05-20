@@ -1,17 +1,17 @@
 "use strict";
 
 module.exports = {
-	"bs_firefox-27": {
-		base: "BrowserStack",
-		browser: "firefox",
-		browser_version: "27.0",
-		os: "OS X",
-		os_version: "Mavericks"
-	},
 	"bs_firefox-28": {
 		base: "BrowserStack",
 		browser: "firefox",
 		browser_version: "28.0",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
+	"bs_firefox-29": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "29.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
