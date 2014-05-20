@@ -1103,7 +1103,7 @@ test("caching", function() {
 asyncTest( "Iframe dispatch should not affect Sizzle, see jQuery #13936", 1, function() {
 	var loaded = false,
 		thrown = false,
-		iframe = document.getElementById("iframe"),
+		iframe = document.getElementById( "iframe" ),
 		iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 
 	jQuery( iframe ).on( "load", function() {
@@ -1126,7 +1126,7 @@ asyncTest( "Iframe dispatch should not affect Sizzle, see jQuery #13936", 1, fun
 	});
 
 	iframeDoc.open();
-	iframeDoc.write("<body><form id='navigate'></form></body>");
+	iframeDoc.write( "<body><form id='navigate' action='?'></form></body>" );
 	iframeDoc.close();
 });
 
