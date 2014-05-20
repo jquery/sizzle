@@ -1,6 +1,27 @@
 "use strict";
 
 module.exports = {
+	"bs_firefox-3.6": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "3.6",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
+	"bs_firefox-17": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "17.0",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
+	"bs_firefox-24": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "24.0",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
 	"bs_firefox-28": {
 		base: "BrowserStack",
 		browser: "firefox",
@@ -16,17 +37,31 @@ module.exports = {
 		os_version: "Mavericks"
 	},
 
-	"bs_chrome-32": {
+	"bs_chrome-14": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "32.0",
+		browser_version: "14.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_chrome-33": {
+	"bs_chrome-24": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "33.0",
+		browser_version: "24.0",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
+	"bs_chrome-34": {
+		base: "BrowserStack",
+		browser: "chrome",
+		browser_version: "34.0",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
+	"bs_chrome-35": {
+		base: "BrowserStack",
+		browser: "chrome",
+		browser_version: "35.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
@@ -81,13 +116,6 @@ module.exports = {
 		os: "Windows",
 		os_version: "8.1"
 	},
-	"bs_opera-19": {
-		base: "BrowserStack",
-		browser: "opera",
-		browser_version: "19.0",
-		os: "OS X",
-		os_version: "Mavericks"
-	},
 	"bs_opera-20": {
 		base: "BrowserStack",
 		browser: "opera",
@@ -95,11 +123,39 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
+	"bs_opera-21": {
+		base: "BrowserStack",
+		browser: "opera",
+		browser_version: "21.0",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
 
+	"bs_safari-4.0": {
+		base: "BrowserStack",
+		browser: "safari",
+		browser_version: "4.0",
+		os: "OS X",
+		os_version: "Snow Leopard"
+	},
+	"bs_safari-5.0": {
+		base: "BrowserStack",
+		browser: "safari",
+		browser_version: "5.0",
+		os: "OS X",
+		os_version: "Snow Leopard"
+	},
 	"bs_safari-5.1": {
 		base: "BrowserStack",
 		browser: "safari",
 		browser_version: "5.1",
+		os: "OS X",
+		os_version: "Lion"
+	},
+	"bs_safari-6.0": {
+		base: "BrowserStack",
+		browser: "safari",
+		browser_version: "6.0",
 		os: "OS X",
 		os_version: "Lion"
 	},
@@ -110,7 +166,7 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mountain Lion"
 	},
-	"bs_safari-7": {
+	"bs_safari-7.0": {
 		base: "BrowserStack",
 		browser: "safari",
 		browser_version: "7.0",
@@ -118,13 +174,19 @@ module.exports = {
 		os_version: "Mavericks"
 	},
 
-	"bs_ios-6": {
+	"bs_ios-5.1": {
+		base: "BrowserStack",
+		device: "iPhone 4S",
+		os: "ios",
+		os_version: "5.1"
+	},
+	"bs_ios-6.0": {
 		base: "BrowserStack",
 		device: "iPhone 5",
 		os: "ios",
 		os_version: "6.0"
 	},
-	"bs_ios-7": {
+	"bs_ios-7.0": {
 		base: "BrowserStack",
 		device: "iPhone 5S",
 		os: "ios",
@@ -137,10 +199,22 @@ module.exports = {
 		os: "android",
 		os_version: "2.3"
 	},
+	"bs_android-4.0": {
+		base: "BrowserStack",
+		device: "Motorola Razr",
+		os: "android",
+		os_version: "4.0"
+	},
 	"bs_android-4.1": {
 		base: "BrowserStack",
 		device: "Google Nexus 7",
 		os: "android",
 		os_version: "4.1"
+	},
+	"bs_android-4.2": {
+		base: "BrowserStack",
+		device: "LG Nexus 4",
+		os: "android",
+		os_version: "4.2"
 	}
 };

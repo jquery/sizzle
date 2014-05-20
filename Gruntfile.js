@@ -25,27 +25,35 @@ module.exports = function( grunt ) {
 		// See https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#browsers
 
 		browsers.desktop = [
-			"bs_chrome-32", "bs_chrome-33",
+			"bs_chrome-34", "bs_chrome-35",
 
+			"bs_firefox-17", "bs_firefox-24", // Firefox ESR
 			"bs_firefox-28", "bs_firefox-29",
 
 			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 
-			"bs_opera-19", "bs_opera-20",
+			"bs_opera-20", "bs_opera-21",
 
-			"bs_safari-6.1", "bs_safari-7"
+			"bs_safari-6.0", "bs_safari-6.1", "bs_safari-7.0"
 		];
 
 		browsers.old = [
-			"bs_ie-6", "bs_ie-7", "bs_ie-8"
+			// Node.js 0.10 has the same v8 version as Chrome 24
+			"bs_chrome-14", "bs_chrome-24",
+
+			"bs_firefox-3.6",
+
+			"bs_ie-6", "bs_ie-7", "bs_ie-8",
 
 			// Opera 12.16 temporary unavailable on BS through Karma launcher
-			//,"bs_opera-12.16"
+			//,"bs_opera-12.16",
+
+			"bs_safari-4.0", "bs_safari-5.0", "bs_safari-5.1"
 		];
 
-		browsers.ios = [ "bs_ios-6", "bs_ios-7" ];
+		browsers.ios = [ "bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0" ];
 		browsers.oldAndroid = [ "bs_android-2.3" ];
-		browsers.newAndroid = [ "bs_android-4.1" ];
+		browsers.newAndroid = [ "bs_android-4.0", "bs_android-4.1", "bs_android-4.2" ];
 	}
 
 	// Project configuration.
