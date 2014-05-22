@@ -726,7 +726,7 @@ test("pseudo - has", function() {
 });
 
 test("pseudo - misc", function() {
-	expect( 39 );
+	expect( 40 );
 
 	var select, tmp, input;
 
@@ -749,6 +749,8 @@ test("pseudo - misc", function() {
 	t( "Text Contains", "a:contains(Google Groups (Link))", ["groups"] );
 	t( "Text Contains", "a:contains((Link))", ["groups"] );
 
+	t( "Contains with CSS escapes", "span:contains(\"\\\"'\\53F0 \\5317 Ta\\301 ibe\\30C i\")",
+		["utf8class1"] );
 
 	tmp = document.createElement("div");
 	tmp.id = "tmp_input";
