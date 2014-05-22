@@ -208,7 +208,7 @@ module.exports = function( grunt ) {
 	    "karma:ios", "karma:newAndroid", "karma:oldAndroid"
 	] : "karma:phantom" );
 
-	grunt.registerTask( "build", [ "lint", "tests", "compile", "uglify", "dist" ] );
+	grunt.registerTask( "build", [ "lint", "compile", "uglify", "tests", "dist" ] );
 	grunt.registerTask( "default", [ "build", "compare_size" ] );
 
 	grunt.registerTask( "bower", "bowercopy" );
