@@ -8,7 +8,7 @@ module.exports = function( grunt ) {
 	grunt.registerTask( "release",
 		"Release a version of sizzle, updates a pre version to released, " +
 		"inserts `next` as the new pre version", function( next ) {
-		
+
 		if ( !rpreversion.test( next ) ) {
 			grunt.fatal( "Next version should be a -pre version (x.x.x-pre): " + next );
 			return;
