@@ -26,7 +26,7 @@
 	"licenses": [
 		{
 			"type": "MIT",
-			"url": "https://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt"
+			"url": "https://github.com/jquery/sizzle/blob/master/LICENSE.txt"
 		}
 	],
 	"dependencies": {},
