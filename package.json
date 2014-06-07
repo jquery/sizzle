@@ -48,6 +48,8 @@
 		"qunitjs": "1.12.0"
 	},
 
+	"main": "src/sizzle.js",
+
 	"scripts": {
 		"build": "npm install && grunt",
 		"start": "grunt watch",
