@@ -17,6 +17,7 @@
     "Makefile",
     "*.md",
     "*.txt",
+    "!MIT-LICENSE.txt",
     "src",
     "test",
     "Gruntfile.js"
