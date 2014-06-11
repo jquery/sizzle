@@ -4,8 +4,7 @@
 require([
 	"libs/benchmark/benchmark",
 	"libs/requirejs-domready/domReady!",
-	"libs/requirejs-text/text!selectors.css",
-	"data/checkJava"
+	"libs/requirejs-text/text!selectors.css"
 ],
 function( Benchmark, document, selectors ) {
 
