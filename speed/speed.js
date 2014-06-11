@@ -2,9 +2,9 @@
  * Performance test suite using benchmark.js
  */
 require([
-	"libs/benchmark/benchmark",
-	"libs/requirejs-domready/domReady!",
-	"libs/requirejs-text/text!selectors.css"
+	"../external/benchmark/benchmark",
+	"../external/requirejs-domready/domReady!",
+	"../external/requirejs-text/text!selectors.css"
 ],
 function( Benchmark, document, selectors ) {
 

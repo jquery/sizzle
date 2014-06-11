@@ -98,24 +98,29 @@ module.exports = function( grunt ) {
 			}
 		},
 		bowercopy: {
-			options: {
-				clean: true
-			},
-
-			speed: {
+			all: {
 				options: {
-					destPrefix: "speed/libs"
+					clean: true,
+					destPrefix: "external"
 				},
 
 				files: {
-					"requirejs/require.js": "requirejs/require.js",
-					"requirejs-domready/domReady.js": "requirejs-domready/domReady.js",
-					"requirejs-text/text.js": "requirejs-text/text.js",
-					"benchmark/benchmark.js": "benchmark/benchmark.js"
-				}
-			},
+					"benchmark/benchmark.js": "benchmark/benchmark.js",
+					"benchmark/LICENSE.txt": "benchmark/LICENSE.txt",
 
-			"test/libs/qunit": "qunit/qunit"
+					"qunit/qunit.js": "qunit/qunit/qunit.js",
+					"qunit/qunit.css": "qunit/qunit/qunit.css",
+					"qunit/MIT-LICENSE.txt": "qunit/MIT-LICENSE.txt",
+
+					"requirejs/require.js": "requirejs/require.js",
+
+					"requirejs-domready/domReady.js": "requirejs-domready/domReady.js",
+					"requirejs-domready/LICENSE.txt": "requirejs-domready/LICENSE",
+
+					"requirejs-text/text.js": "requirejs-text/text.js",
+					"requirejs-text/LICENSE.txt": "requirejs-text/LICENSE"
+				}
+			}
 		},
 		jshint: {
 			options: {
