@@ -18,7 +18,7 @@ module.exports = function( config ) {
 		frameworks: [ "qunit" ],
 
 		files: [
-			"test/jquery.js",
+			"external/jquery/jquery.js",
 			"dist/sizzle.js",
 
 			// Base fixtures

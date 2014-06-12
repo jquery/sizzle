@@ -108,6 +108,9 @@ module.exports = function( grunt ) {
 					"benchmark/benchmark.js": "benchmark/benchmark.js",
 					"benchmark/LICENSE.txt": "benchmark/LICENSE.txt",
 
+					"jquery/jquery.js": "jquery/jquery.js",
+					"jquery/MIT-LICENSE.txt": "jquery/MIT-LICENSE.txt",
+
 					"qunit/qunit.js": "qunit/qunit/qunit.js",
 					"qunit/qunit.css": "qunit/qunit/qunit.css",
 					"qunit/MIT-LICENSE.txt": "qunit/MIT-LICENSE.txt",
