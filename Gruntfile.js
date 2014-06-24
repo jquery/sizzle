@@ -111,6 +111,12 @@ module.exports = function( grunt ) {
 					"jquery/jquery.js": "jquery/jquery.js",
 					"jquery/MIT-LICENSE.txt": "jquery/MIT-LICENSE.txt",
 
+					"jquery-1.7.2/jquery.js": "jquery-1.7.2/jquery.js",
+					"jquery-1.7.2/MIT-LICENSE.txt": "jquery-1.7.2/MIT-LICENSE.txt",
+
+					"jquery-1.8.3/jquery.js": "jquery-1.8.3/jquery.js",
+					"jquery-1.8.3/MIT-LICENSE.txt": "jquery-1.8.3/MIT-LICENSE.txt",
+
 					"qunit/qunit.js": "qunit/qunit/qunit.js",
 					"qunit/qunit.css": "qunit/qunit/qunit.css",
 					"qunit/MIT-LICENSE.txt": "qunit/MIT-LICENSE.txt",

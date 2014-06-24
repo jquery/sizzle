@@ -63,7 +63,7 @@ function( Benchmark, document, selectors ) {
 		engines = {
 			// "qsa":                  "d.querySelectorAll( s )",
 			"jquery-1.7.2/jquery":  "jQuery.find( s, d )",
-			// "jquery-1.8.1/jquery":  "jQuery.find( s, d )",
+			// "jquery-1.8.3/jquery":  "jQuery.find( s, d )",
 			"sizzle-old/sizzle":    "Sizzle( s, d )",
 			"sizzle":               "Sizzle( s, d )",
 			// "dojo/dojo":            "dojo.query( s, d )",

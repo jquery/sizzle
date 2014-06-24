@@ -6,6 +6,8 @@
     "qunit": "1.14.0",
     "benchmark": "1.0.0",
     "jquery": "1.9.1",
+    "jquery-1.7.2": "jquery#1.7.2",
+    "jquery-1.8.3": "jquery#1.8.3",
     "requirejs": "2.1.10",
     "requirejs-domready": "2.0.1",
     "requirejs-text": "2.0.10"
