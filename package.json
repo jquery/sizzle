@@ -4,6 +4,14 @@
 	"description": "A pure-JavaScript, bottom-up CSS selector engine designed to be easily dropped in to a host library.",
 	"version": "1.10.20-pre",
 	"homepage": "http://sizzlejs.com",
+	"main": "dist/sizzle.js",
+	"files": [
+		"AUTHORS.txt",
+		"MIT-LICENSE.txt",
+		"dist/sizzle.js",
+		"dist/sizzle.min.js",
+		"dist/sizzle.min.map"
+	],
 	"author": {
 		"name": "jQuery Foundation and other contributors",
 		"url": "https://github.com/jquery/sizzle/blob/master/AUTHORS.txt"
