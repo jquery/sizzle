@@ -5,6 +5,7 @@
   "devDependencies": {
     "qunit": "1.14.0",
     "benchmark": "1.0.0",
+    "jquery": "1.9.1",
     "requirejs": "2.1.10",
     "requirejs-domready": "2.0.1",
     "requirejs-text": "2.0.10"

@@ -2,9 +2,9 @@
  * Performance test suite using benchmark.js
  */
 require([
-	"libs/benchmark/benchmark",
-	"libs/requirejs-domready/domReady!",
-	"libs/requirejs-text/text!selectors.css"
+	"../external/benchmark/benchmark",
+	"../external/requirejs-domready/domReady!",
+	"../external/requirejs-text/text!selectors.css"
 ],
 function( Benchmark, document, selectors ) {
 
@@ -61,14 +61,14 @@ function( Benchmark, document, selectors ) {
 
 		// Selector engines
 		engines = {
-			// "qsa":            "d.querySelectorAll( s )",
-			"jquery-1.7.2":   "jQuery.find( s, d )",
-			// "jquery-1.8.1":   "jQuery.find( s, d )",
-			"oldSizzle":      "Sizzle( s, d )",
-			"sizzle":         "Sizzle( s, d )",
-			// "dojo":           "dojo.query( s, d )",
-			"mootools-slick": "Slick.search( d, s )",
-			"nwmatcher":      "NW.Dom.select( s, d )"
+			// "qsa":                  "d.querySelectorAll( s )",
+			"jquery-1.7.2/jquery":  "jQuery.find( s, d )",
+			// "jquery-1.8.1/jquery":  "jQuery.find( s, d )",
+			"sizzle-old/sizzle":    "Sizzle( s, d )",
+			"sizzle":               "Sizzle( s, d )",
+			// "dojo/dojo":            "dojo.query( s, d )",
+			"mootools-slick/slick": "Slick.search( d, s )",
+			"nwmatcher/nwmatcher":  "NW.Dom.select( s, d )"
 		},
 
 		// Keeps track of overall scores
@@ -289,7 +289,7 @@ function( Benchmark, document, selectors ) {
 
 		// Build out headers
 		for ( engine in engines ) {
-			headers += "<th class='text-right'>" + engine + "</th>";
+			headers += "<th class='text-right'>" + engine.match( /^[^/]+/ )[ 0 ] + "</th>";
 			emptyColumns += "<td class='text-right' data-engine='" + engine + "'>&nbsp;</td>";
 		}
 
