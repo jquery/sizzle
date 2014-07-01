@@ -78,7 +78,7 @@ module.exports = function( grunt ) {
 						hoist_funs: false,
 						loops: false
 					},
-					banner: "/*! Sizzle v<%= pkg.version %> | (c) 2013 jQuery Foundation, Inc. | jquery.org/license */",
+					banner: "/*! Sizzle v<%= pkg.version %> | (c) 2008, 2014 jQuery Foundation, Inc. | jquery.org/license */",
 					sourceMap: "dist/sizzle.min.map",
 					beautify: {
 						ascii_only: true
