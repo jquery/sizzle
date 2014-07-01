@@ -7,7 +7,7 @@
 	"main": "dist/sizzle.js",
 	"files": [
 		"AUTHORS.txt",
-		"MIT-LICENSE.txt",
+		"LICENSE.txt",
 		"dist/sizzle.js",
 		"dist/sizzle.min.js",
 		"dist/sizzle.min.map"
