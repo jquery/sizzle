@@ -1044,7 +1044,7 @@
   function isPlainObject(value) {
     // avoid non-objects and false positives for `arguments` objects in IE < 9
     var result = false;
-    if (!(value && typeof value == 'object') || isArguments(value)) {
+    if (!(value && typeof value == 'object') || (noArgumentsClass && isArguments(value))) {
       return result;
     }
     // IE < 9 presents DOM nodes as `Object` objects except they have `toString`
@@ -3091,7 +3091,6 @@
 
       /**
        * The maximum time a benchmark is allowed to run before finishing (secs).
-       *
        * Note: Cycle delays aren't counted toward the maximum time.
        *
        * @memberOf Benchmark.options
