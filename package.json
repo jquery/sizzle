@@ -31,9 +31,10 @@
   ],
   "dependencies": {},
   "devDependencies": {
+    "benchmark": "1.0.0",
     "commitplease": "1.10.1",
+    "domReady": "git://github.com/requirejs/domReady.git",
     "grunt": "0.4.5",
-    "grunt-bowercopy": "1.1.0",
     "grunt-cli": "0.1.13",
     "grunt-compare-size": "0.4.0",
     "grunt-contrib-jshint": "0.10.0",
@@ -44,7 +45,9 @@
     "grunt-jscs-checker": "0.6.1",
     "grunt-jsonlint": "1.0.4",
     "grunt-karma": "0.8.3",
+    "grunt-npmcopy": "0.1.0",
     "gzip-js": "0.3.2",
+    "jquery": "1.9.1",
     "karma": "0.12.17",
     "karma-browserstack-launcher": "0.1.1",
     "karma-chrome-launcher": "0.1.4",
@@ -53,7 +56,9 @@
     "karma-phantomjs-launcher": "0.1.4",
     "karma-qunit": "0.1.3",
     "load-grunt-tasks": "0.6.0",
-    "qunitjs": "1.14.0"
+    "qunitjs": "1.14.0",
+    "requirejs": "2.1.14",
+    "text": "git://github.com/requirejs/text.git"
   },
   "scripts": {
     "build": "npm install && grunt",
@@ -62,6 +67,8 @@
   },
   "keywords": [
     "sizzle",
+    "javascript",
+    "CSS",
     "selector",
     "jquery"
   ]

@@ -99,13 +99,11 @@ module.exports = function( grunt ) {
 				cache: "dist/.sizecache.json"
 			}
 		},
-		bowercopy: {
+		npmcopy: {
 			all: {
 				options: {
-					clean: true,
 					destPrefix: "external"
 				},
-
 				files: {
 					"benchmark/benchmark.js": "benchmark/benchmark.js",
 					"benchmark/LICENSE.txt": "benchmark/LICENSE.txt",
@@ -113,23 +111,17 @@ module.exports = function( grunt ) {
 					"jquery/jquery.js": "jquery/jquery.js",
 					"jquery/MIT-LICENSE.txt": "jquery/MIT-LICENSE.txt",
 
-					"jquery-1.7.2/jquery.js": "jquery-1.7.2/jquery.js",
-					"jquery-1.7.2/MIT-LICENSE.txt": "jquery-1.7.2/MIT-LICENSE.txt",
-
-					"jquery-1.8.3/jquery.js": "jquery-1.8.3/jquery.js",
-					"jquery-1.8.3/MIT-LICENSE.txt": "jquery-1.8.3/MIT-LICENSE.txt",
-
-					"qunit/qunit.js": "qunit/qunit/qunit.js",
-					"qunit/qunit.css": "qunit/qunit/qunit.css",
-					"qunit/MIT-LICENSE.txt": "qunit/MIT-LICENSE.txt",
+					"qunit/qunit.js": "qunitjs/qunit/qunit.js",
+					"qunit/qunit.css": "qunitjs/qunit/qunit.css",
+					"qunit/MIT-LICENSE.txt": "qunitjs/MIT-LICENSE.txt",
 
 					"requirejs/require.js": "requirejs/require.js",
 
-					"requirejs-domready/domReady.js": "requirejs-domready/domReady.js",
-					"requirejs-domready/LICENSE.txt": "requirejs-domready/LICENSE",
+					"requirejs-domready/domReady.js": "domReady/domReady.js",
+					"requirejs-domready/LICENSE.txt": "domReady/LICENSE",
 
-					"requirejs-text/text.js": "requirejs-text/text.js",
-					"requirejs-text/LICENSE.txt": "requirejs-text/LICENSE"
+					"requirejs-text/text.js": "text/text.js",
+					"requirejs-text/LICENSE.txt": "text/LICENSE"
 				}
 			}
 		},
