@@ -75,19 +75,20 @@ module.exports = function( grunt ) {
 				},
 				options: {
 					compress: {
-						hoist_funs: false,
+						"hoist_funs": false,
 						loops: false
 					},
-					banner: "/*! Sizzle v<%= pkg.version %> | (c) 2008, 2014 jQuery Foundation, Inc. | jquery.org/license */",
+					banner: "/*! Sizzle v<%= pkg.version %> | (c) 2008, 2014 " +
+						"jQuery Foundation, Inc. | jquery.org/license */",
 					sourceMap: true,
 					sourceMapName: "dist/sizzle.min.map",
 					beautify: {
-						ascii_only: true
+						"ascii_only": true
 					}
 				}
 			}
 		},
-		compare_size: {
+		"compare_size": {
 			files: [ "dist/sizzle.js", "dist/sizzle.min.js" ],
 			options: {
 				compress: {
@@ -141,12 +142,20 @@ module.exports = function( grunt ) {
 			}
 		},
 		jscs: {
-			src: [
-				files.source,
-				files.grunt,
-				files.speed,
-				files.karma
-			]
+			src: {
+				options: {
+					requireDotNotation: null
+				},
+				src: [ files.source ]
+			},
+			grunt: [ files.grunt ],
+			speed: [ files.speed ],
+			karma: {
+				options: {
+					requireCamelCaseOrUpperCaseIdentifiers: null
+				},
+				src: [ files.karma ]
+			}
 		},
 		jsonlint: {
 			pkg: {
@@ -178,7 +187,7 @@ module.exports = function( grunt ) {
 				// Support: IE6
 				// Have to re-arrange socket.io transports by prioritizing "jsonp-polling"
 				// otherwise IE6 can't connect to karma server
-				transports: [ "jsonp-polling" ],
+				transports: [ "jsonp-polling" ]
 			},
 			ios: {
 				browsers: browsers.ios

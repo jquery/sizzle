@@ -295,9 +295,11 @@ function( Benchmark, document, selectors ) {
 
 		// Build out initial rows
 		for ( ; i < len; i++ ) {
-			rows += "<tr><td id='selector" + i + "' class='small selector'><span>" + selectors[i] + "</span></td>" + emptyColumns + "</tr>";
+			rows += "<tr><td id='selector" + i + "' class='small selector'><span>" +
+				selectors[i] + "</span></td>" + emptyColumns + "</tr>";
 		}
-		rows += "<tr><td id='results' class='bold'>Total (more is better)</td>" + emptyColumns + "</tr>";
+		rows += "<tr><td id='results' class='bold'>Total (more is better)</td>" +
+			emptyColumns + "</tr>";
 
 		get("perf-table-headers").innerHTML = headers;
 		get("perf-table-body").innerHTML = rows;
@@ -319,7 +321,8 @@ function( Benchmark, document, selectors ) {
 				"&qsa=" + useQSA ),
 			iframe = document.createElement("iframe");
 		iframe.setAttribute( "src", src );
-		iframe.style.cssText = "width: 500px; height: 500px; position: absolute; top: -600px; left: -600px; visibility: hidden;";
+		iframe.style.cssText = "width: 500px; height: 500px; position: absolute; " +
+			"top: -600px; left: -600px; visibility: hidden;";
 		document.body.appendChild( iframe );
 		iframes[ suite ].push( iframe );
 		return iframe;
@@ -346,7 +349,12 @@ function( Benchmark, document, selectors ) {
 		 */
 		function test( document ) {
 			var win = this,
-				select = new Function( "w", "s", "d", "return " + (engine !== "qsa" ? "w." : "") + engines[ engine ] );
+				select = new Function(
+					"w",
+					"s",
+					"d",
+					"return " + (engine !== "qsa" ? "w." : "") + engines[ engine ]
+				);
 			suite.add( engine, function() {
 				returned[ engine ][ selector ] = select( win, selector, document );
 			});
@@ -527,7 +535,7 @@ function( Benchmark, document, selectors ) {
 		try {
 			// Errors in IE
 			delete window.iframeCallbacks[ this.name ];
-		} catch( e ) {}
+		} catch ( e ) {}
 
 		if ( ++selectorIndex < selectors.length ) {
 			testSelector( selectors[selectorIndex] );

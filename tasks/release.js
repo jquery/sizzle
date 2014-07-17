@@ -25,7 +25,9 @@ module.exports = function( grunt ) {
 		done = this.async();
 		exec( "git diff --quiet HEAD", function( err ) {
 			if ( err ) {
-				grunt.fatal( "The working directory should be clean when releasing. Commit or stash changes." );
+				grunt.fatal(
+					"The working directory should be clean when releasing. Commit or stash changes."
+				);
 				return;
 			}
 			// Build to dist directories along with a map and tag the release
