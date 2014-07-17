@@ -79,7 +79,8 @@ module.exports = function( grunt ) {
 						loops: false
 					},
 					banner: "/*! Sizzle v<%= pkg.version %> | (c) 2008, 2014 jQuery Foundation, Inc. | jquery.org/license */",
-					sourceMap: "dist/sizzle.min.map",
+					sourceMap: true,
+					sourceMapName: "dist/sizzle.min.map",
 					beautify: {
 						ascii_only: true
 					}
