@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2014-07-01
+ * Date: 2014-09-03
  */
 (function( window ) {
 
@@ -48,7 +48,6 @@ var i,
 	},
 
 	// General-purpose constants
-	strundefined = typeof undefined,
 	MAX_NEGATIVE = 1 << 31,
 
 	// Instance methods
@@ -433,7 +432,7 @@ function createPositionalPseudo( fn ) {
  * @returns {Element|Object|Boolean} The input node if acceptable, otherwise a falsy value
  */
 function testContext( context ) {
-	return context && typeof context.getElementsByTagName !== strundefined && context;
+	return context && typeof context.getElementsByTagName !== "undefined" && context;
 }
 
 // Expose support vars for convenience
@@ -524,7 +523,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// ID find and filter
 	if ( support.getById ) {
 		Expr.find["ID"] = function( id, context ) {
-			if ( typeof context.getElementById !== strundefined && documentIsHTML ) {
+			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
 				var m = context.getElementById( id );
 				// Check parentNode to catch when Blackberry 4.6 returns
 				// nodes that are no longer in the document #6963
@@ -545,7 +544,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		Expr.filter["ID"] =  function( id ) {
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
-				var node = typeof elem.getAttributeNode !== strundefined && elem.getAttributeNode("id");
+				var node = typeof elem.getAttributeNode !== "undefined" && elem.getAttributeNode("id");
 				return node && node.value === attrId;
 			};
 		};
@@ -554,7 +553,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Tag
 	Expr.find["TAG"] = support.getElementsByTagName ?
 		function( tag, context ) {
-			if ( typeof context.getElementsByTagName !== strundefined ) {
+			if ( typeof context.getElementsByTagName !== "undefined" ) {
 				return context.getElementsByTagName( tag );
 			}
 		} :
@@ -1055,7 +1054,7 @@ Expr = Sizzle.selectors = {
 			return pattern ||
 				(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
 				classCache( className, function( elem ) {
-					return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== strundefined && elem.getAttribute("class") || "" );
+					return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== "undefined" && elem.getAttribute("class") || "" );
 				});
 		},
 
