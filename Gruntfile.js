@@ -59,6 +59,7 @@ module.exports = function( grunt ) {
 	// Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON( "package.json" ),
+		dateString: new Date().toISOString().replace( /\..*Z/, "" ),
 		compile: {
 			all: {
 				dest: "dist/sizzle.js",

@@ -1,12 +1,15 @@
 "use strict";
 
+var grunt = require( "grunt" );
+
 module.exports = function( config ) {
-	var isTravis = process.env.TRAVIS;
+	var isTravis = process.env.TRAVIS,
+		dateString = grunt.config( "dateString" );
 
 	config.set({
 		browserStack: {
 			project: "sizzle",
-			build: "local run",
+			build: "local run" + (dateString ? ", " + dateString : ""),
 			timeout: 600 // 10 min
 		},
 
