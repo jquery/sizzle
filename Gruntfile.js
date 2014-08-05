@@ -51,7 +51,7 @@ module.exports = function( grunt ) {
 			chrome: [ "bs_chrome-14", "bs_chrome-24" ],
 			safari: [ "bs_safari-4.0", "bs_safari-5.0", "bs_safari-5.1" ],
 			ie: [ "bs_ie-6", "bs_ie-7", "bs_ie-8" ],
-			opera: [ "bs_opera-12.16" ],
+			opera: [ "bs_opera-11.6", "bs_opera-12.16" ],
 			android: [ "bs_android-2.3" ]
 		};
 	}

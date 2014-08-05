@@ -109,12 +109,19 @@ module.exports = {
 		os_version: "8.1"
 	},
 
+	"bs_opera-11.6": {
+		base: "BrowserStack",
+		browser: "opera",
+		browser_version: "11.6",
+		os: "Windows",
+		os_version: "7"
+	},
 	"bs_opera-12.16": {
 		base: "BrowserStack",
 		browser: "opera",
 		browser_version: "12.16",
 		os: "Windows",
-		os_version: "8.1"
+		os_version: "7"
 	},
 	"bs_opera-22": {
 		base: "BrowserStack",
