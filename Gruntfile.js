@@ -6,10 +6,16 @@ module.exports = function( grunt ) {
 		browsers = {
 			phantom: [ "PhantomJS" ],
 			desktop: [],
-			old: [],
+			android: [],
 			ios: [],
-			oldAndroid: [],
-			newAndroid: []
+			old: {
+				firefox: [],
+				chrome: [],
+				safari: [],
+				ie: [],
+				opera: [],
+				android: []
+			}
 		},
 		files = {
 			source: "src/sizzle.js",
@@ -37,25 +43,20 @@ module.exports = function( grunt ) {
 			"bs_safari-6.0", "bs_safari-6.1", "bs_safari-7.0"
 		];
 
-		browsers.old = [
-			// Node.js 0.10 has the same v8 version as Chrome 24
-			"bs_chrome-14", "bs_chrome-24",
-
-			"bs_firefox-3.6",
-
-			"bs_ie-6", "bs_ie-7", "bs_ie-8",
-
-			"bs_opera-12.16",
-
-			"bs_safari-4.0", "bs_safari-5.0", "bs_safari-5.1"
-		];
-
 		browsers.ios = [ "bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0" ];
-		browsers.oldAndroid = [ "bs_android-2.3" ];
-		browsers.newAndroid = [ "bs_android-4.0", "bs_android-4.1", "bs_android-4.2" ];
+		browsers.android = [ "bs_android-4.0", "bs_android-4.1", "bs_android-4.2" ];
+
+		browsers.old = {
+			firefox: [ "bs_firefox-3.6" ],
+			chrome: [ "bs_chrome-14", "bs_chrome-24" ],
+			safari: [ "bs_safari-4.0", "bs_safari-5.0", "bs_safari-5.1" ],
+			ie: [ "bs_ie-6", "bs_ie-7", "bs_ie-8" ],
+			opera: [ "bs_opera-12.16" ],
+			android: [ "bs_android-2.3" ]
+		};
 	}
 
-	// Project configuration.
+	// Project configuration
 	grunt.initConfig({
 		pkg: grunt.file.readJSON( "package.json" ),
 		dateString: new Date().toISOString().replace( /\..*Z/, "" ),
@@ -173,31 +174,48 @@ module.exports = function( grunt ) {
 			desktop: {
 				browsers: browsers.desktop
 			},
-			old: {
-				browsers: browsers.old,
+			android: {
+				browsers: browsers.android
+			},
+			ios: {
+				browsers: browsers.ios
+			},
+			oldIe: {
+				browsers: browsers.old.ie,
 
 				// Support: IE6
 				// Have to re-arrange socket.io transports by prioritizing "jsonp-polling"
 				// otherwise IE6 can't connect to karma server
 				transports: [ "jsonp-polling" ]
 			},
-			ios: {
-				browsers: browsers.ios
+			oldOpera: {
+				browsers: browsers.old.opera
+			},
+			oldFirefox: {
+				browsers: browsers.old.firefox
+			},
+			oldChrome: {
+				browsers: browsers.old.chrome
+			},
+			oldSafari: {
+				browsers: browsers.old.safari
 			},
 			oldAndroid: {
-				browsers: browsers.oldAndroid,
-				transports: [ "jsonp-polling" ]
-			},
-			newAndroid: {
-				browsers: browsers.newAndroid
+				browsers: browsers.old.android
 			},
 			all: {
 				browsers: browsers.phantom.concat(
 					browsers.desktop,
-					browsers.old,
 					browsers.ios,
-					browsers.newAndroid,
-					browsers.oldAndroid
+					browsers.android,
+
+					browsers.old.firefox,
+					browsers.old.chrome,
+					browsers.old.safari,
+					browsers.old.ie,
+					browsers.old.opera,
+
+					browsers.old.android
 				)
 			}
 		},
@@ -228,8 +246,14 @@ module.exports = function( grunt ) {
 	// Execute tests all browsers in sequential way,
 	// so slow connections would not affect other runs
 	grunt.registerTask( "tests", isBrowserStack ? [
-		"karma:phantom", "karma:desktop", "karma:old",
-		"karma:ios", "karma:newAndroid", "karma:oldAndroid"
+		"karma:phantom", "karma:desktop",
+
+		"karma:ios", "karma:android",
+
+		"karma:oldIe", "karma:oldFirefox", "karma:oldChrome",
+		"karma:oldSafari", "karma:oldOpera",
+
+		"karma:oldAndroid"
 	] : "karma:phantom" );
 
 	grunt.registerTask( "build", [ "lint", "compile", "uglify", "tests", "dist" ] );
