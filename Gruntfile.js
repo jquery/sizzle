@@ -45,7 +45,6 @@ module.exports = function( grunt ) {
 
 			"bs_ie-6", "bs_ie-7", "bs_ie-8",
 
-			// Opera 12.16 temporary unavailable on BS through Karma launcher
 			"bs_opera-12.16",
 
 			"bs_safari-4.0", "bs_safari-5.0", "bs_safari-5.1"
