@@ -223,12 +223,11 @@ module.exports = function( grunt ) {
 			files: [
 				files.source,
 				files.grunt,
-				files.speed,
 				files.karma,
+				files.speed,
 				"test/**/*",
-				"<%= jshint.tests.src %>",
-				"{package,bower}.json",
-				"test/*.html"
+				"test/*.html",
+				"{package,bower}.json"
 			],
 			tasks: [ "lint", "karma:watch:run" ]
 		}
