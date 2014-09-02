@@ -58,12 +58,12 @@ var i,
 	push_native = arr.push,
 	push = arr.push,
 	slice = arr.slice,
-	// Use a stripped-down indexOf if we can't use a native one
-	indexOf = arr.indexOf || function( elem ) {
+	// Use a stripped-down indexOf as it's faster than native
+	indexOf = function( list, elem ) {
 		var i = 0,
-			len = this.length;
+			len = list.length;
 		for ( ; i < len; i++ ) {
-			if ( this[i] === elem ) {
+			if ( list[i] === elem ) {
 				return i;
 			}
 		}
@@ -746,7 +746,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 			// Maintain original order
 			return sortInput ?
-				( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
+				( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
 				0;
 		}
 
@@ -773,7 +773,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 				aup ? -1 :
 				bup ? 1 :
 				sortInput ?
-				( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
+				( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
 				0;
 
 		// If the nodes are siblings, we can do a quick check
@@ -1197,7 +1197,7 @@ Expr = Sizzle.selectors = {
 							matched = fn( seed, argument ),
 							i = matched.length;
 						while ( i-- ) {
-							idx = indexOf.call( seed, matched[i] );
+							idx = indexOf( seed, matched[i] );
 							seed[ idx ] = !( matches[ idx ] = matched[i] );
 						}
 					}) :
@@ -1669,7 +1669,7 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 				i = matcherOut.length;
 				while ( i-- ) {
 					if ( (elem = matcherOut[i]) &&
-						(temp = postFinder ? indexOf.call( seed, elem ) : preMap[i]) > -1 ) {
+						(temp = postFinder ? indexOf( seed, elem ) : preMap[i]) > -1 ) {
 
 						seed[temp] = !(results[temp] = elem);
 					}
@@ -1704,7 +1704,7 @@ function matcherFromTokens( tokens ) {
 			return elem === checkContext;
 		}, implicitRelative, true ),
 		matchAnyContext = addCombinator( function( elem ) {
-			return indexOf.call( checkContext, elem ) > -1;
+			return indexOf( checkContext, elem ) > -1;
 		}, implicitRelative, true ),
 		matchers = [ function( elem, context, xml ) {
 			return ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
