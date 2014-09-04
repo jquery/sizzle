@@ -51,17 +51,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_chrome-35": {
-		base: "BrowserStack",
-		browser: "chrome",
-		browser_version: "35.0",
-		os: "OS X",
-		os_version: "Mavericks"
-	},
 	"bs_chrome-36": {
 		base: "BrowserStack",
 		browser: "chrome",
 		browser_version: "36.0",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
+	"bs_chrome-37": {
+		base: "BrowserStack",
+		browser: "chrome",
+		browser_version: "37.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
