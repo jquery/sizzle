@@ -413,6 +413,30 @@ function createButtonPseudo( type ) {
 }
 
 /**
+ * Returns a function to use in pseudos for :enabled/:disabled
+ * @param {Boolean} disabled true for :disabled; false for :enabled
+ */
+function createDisabledPseudo( disabled ) {
+	// Known :disabled false positives:
+	// IE: *[disabled]:not(button, input, select, textarea, optgroup, option, menuitem, fieldset)
+	// not IE: fieldset[disabled] fieldset
+	return function( elem ) {
+		// :enabled ignores ancestry for optgroup, a[href], area[href], link[href]
+		return (disabled || "label" in elem || elem.href) && elem.disabled === disabled ||
+			"form" in elem && elem.disabled === false && (
+				// Support: IE6-11+
+				// Ancestry is covered for us
+				elem.isDisabled === disabled ||
+
+				// Otherwise, assume any non-<option> under fieldset[disabled] is disabled
+				/* jshint -W018 */
+				elem.isDisabled !== !disabled &&
+					("label" in elem || !disabledAncestor( elem )) !== disabled
+			);
+	};
+}
+
+/**
  * Returns a function to use in pseudos for positionals
  * @param {Function} fn
  */
@@ -1312,33 +1336,8 @@ Expr = Sizzle.selectors = {
 		},
 
 		// Boolean properties
-		"enabled": function( elem ) {
-			// Inheritance does not apply for a[href], area[href], link[href], optgroup
-			return elem.disabled === false && (!!elem.href || "label" in elem) ||
-				"form" in elem && elem.disabled === false && (
-					// Support: IE6-11+
-					// Inheritance is covered for us
-					elem.isDisabled === false ||
-
-					// Otherwise, match all <option>s and reject anything else under fieldset[disabled]
-					elem.isDisabled !== true && ("label" in elem || !disabledAncestor( elem ))
-				);
-		},
-
-		// Known false positives:
-		// IE: *[disabled]:not(button, input, select, textarea, optgroup, option, menuitem, fieldset)
-		// not IE: fieldset[disabled] fieldset
-		"disabled": function( elem ) {
-			return elem.disabled === true ||
-				"form" in elem && elem.disabled === false && (
-					// Support: IE6-11+
-					// Inheritance is covered for us
-					elem.isDisabled === true ||
-
-					// Otherwise, reject all <option>s and match anything else under fieldset[disabled]
-					elem.isDisabled !== false && !("label" in elem || !disabledAncestor( elem ))
-				);
-		},
+		"enabled": createDisabledPseudo( false ),
+		"disabled": createDisabledPseudo( true ),
 
 		"checked": function( elem ) {
 			// In CSS3, :checked should return both checked and selected elements
