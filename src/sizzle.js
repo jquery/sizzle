@@ -150,7 +150,14 @@ var i,
 				String.fromCharCode( high + 0x10000 ) :
 				// Supplemental Plane codepoint (surrogate pair)
 				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
-	};
+	},
+
+	disabledAncestor = addCombinator(
+		function( elem ) {
+			return elem.disabled === true;
+		},
+		{ dir: "parentNode", next: "legend" }
+	);
 
 // Optimize for push.apply( _, NodeList )
 try {
@@ -324,7 +331,7 @@ function markFunction( fn ) {
  * @param {Function} fn Passed the created div and expects a boolean result
  */
 function assert( fn ) {
-	var div = document.createElement("div");
+	var div = document.createElement("fieldset");
 
 	try {
 		return !!fn( div );
@@ -633,11 +640,13 @@ setDocument = Sizzle.setDocument = function( node ) {
 		});
 
 		assert(function( div ) {
+			div.innerHTML = "<select name='D' disabled='disabled'><option/></select>";
+
 			// Support: Windows 8 Native Apps
 			// The type and name attributes are restricted during .innerHTML assignment
 			var input = doc.createElement("input");
 			input.setAttribute( "type", "hidden" );
-			div.appendChild( input ).setAttribute( "name", "D" );
+			div.appendChild( input );
 
 			// Support: IE8
 			// Enforce case-sensitivity of name attribute
@@ -647,7 +656,14 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
 			// IE8 throws error here and will not see later tests
-			if ( !div.querySelectorAll(":enabled").length ) {
+			if ( div.querySelectorAll(":enabled").length !== 2 ) {
+				rbuggyQSA.push( ":enabled", ":disabled" );
+			}
+
+			// Support: IE9-11+
+			// IE's :disabled selector does not pick up the children of disabled fieldsets
+			docElem.appendChild( div ).disabled = true;
+			if ( div.querySelectorAll(":disabled").length !== 2 ) {
 				rbuggyQSA.push( ":enabled", ":disabled" );
 			}
 
@@ -666,7 +682,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		assert(function( div ) {
 			// Check to see if it's possible to do matchesSelector
 			// on a disconnected node (IE 9)
-			support.disconnectedMatch = matches.call( div, "div" );
+			support.disconnectedMatch = matches.call( div, "*" );
 
 			// This should fail with an exception
 			// Gecko does not error, returns false instead
@@ -1297,11 +1313,31 @@ Expr = Sizzle.selectors = {
 
 		// Boolean properties
 		"enabled": function( elem ) {
-			return elem.disabled === false;
+			// Inheritance does not apply for a[href], area[href], link[href], optgroup
+			return elem.disabled === false && (!!elem.href || "label" in elem) ||
+				"form" in elem && elem.disabled === false && (
+					// Support: IE6-11+
+					// Inheritance is covered for us
+					elem.isDisabled === false ||
+
+					// Otherwise, match all <option>s and reject anything else under fieldset[disabled]
+					elem.isDisabled !== true && ("label" in elem || !disabledAncestor( elem ))
+				);
 		},
 
+		// Known false positives:
+		// IE: *[disabled]:not(button, input, select, textarea, optgroup, option, menuitem, fieldset)
+		// not IE: fieldset[disabled] fieldset
 		"disabled": function( elem ) {
-			return elem.disabled === true;
+			return elem.disabled === true ||
+				"form" in elem && elem.disabled === false && (
+					// Support: IE6-11+
+					// Inheritance is covered for us
+					elem.isDisabled === true ||
+
+					// Otherwise, reject all <option>s and match anything else under fieldset[disabled]
+					elem.isDisabled !== false && !("label" in elem || !disabledAncestor( elem ))
+				);
 		},
 
 		"checked": function( elem ) {
@@ -1504,7 +1540,9 @@ function toSelector( tokens ) {
 
 function addCombinator( matcher, combinator, base ) {
 	var dir = combinator.dir,
-		checkNonElements = base && dir === "parentNode",
+		skip = combinator.next,
+		key = skip || dir,
+		checkNonElements = base && key === "parentNode",
 		doneName = done++;
 
 	return combinator.first ?
@@ -1535,14 +1573,16 @@ function addCombinator( matcher, combinator, base ) {
 				while ( (elem = elem[ dir ]) ) {
 					if ( elem.nodeType === 1 || checkNonElements ) {
 						outerCache = elem[ expando ] || (elem[ expando ] = {});
-						if ( (oldCache = outerCache[ dir ]) &&
+						if ( skip && skip === elem.nodeName.toLowerCase() ) {
+							elem = elem[ dir ] || elem;
+						} else if ( (oldCache = outerCache[ key ]) &&
 							oldCache[ 0 ] === dirruns && oldCache[ 1 ] === doneName ) {
 
 							// Assign to newCache so results back-propagate to previous elements
 							return (newCache[ 2 ] = oldCache[ 2 ]);
 						} else {
 							// Reuse newcache so results back-propagate to previous elements
-							outerCache[ dir ] = newCache;
+							outerCache[ key ] = newCache;
 
 							// A match means we're done; a fail means we have to keep checking
 							if ( (newCache[ 2 ] = matcher( elem, context, xml )) ) {
@@ -1971,7 +2011,7 @@ setDocument();
 // Detached nodes confoundingly follow *each other*
 support.sortDetached = assert(function( div1 ) {
 	// Should return 1, but returns 4 (following)
-	return div1.compareDocumentPosition( document.createElement("div") ) & 1;
+	return div1.compareDocumentPosition( document.createElement("fieldset") ) & 1;
 });
 
 // Support: IE<8
