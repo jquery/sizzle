@@ -22,17 +22,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_firefox-30": {
-		base: "BrowserStack",
-		browser: "firefox",
-		browser_version: "30.0",
-		os: "OS X",
-		os_version: "Mavericks"
-	},
 	"bs_firefox-31": {
 		base: "BrowserStack",
 		browser: "firefox",
 		browser_version: "31.0",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
+	"bs_firefox-32": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "32.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
@@ -123,17 +123,17 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-22": {
-		base: "BrowserStack",
-		browser: "opera",
-		browser_version: "22.0",
-		os: "OS X",
-		os_version: "Mavericks"
-	},
 	"bs_opera-23": {
 		base: "BrowserStack",
 		browser: "opera",
 		browser_version: "23.0",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
+	"bs_opera-24": {
+		base: "BrowserStack",
+		browser: "opera",
+		browser_version: "24.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
