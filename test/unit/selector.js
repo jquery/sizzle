@@ -424,7 +424,7 @@ test("child and adjacent", function() {
 });
 
 test("attributes", function() {
-	expect( 76 );
+	expect( 82 );
 
 	var opt, input, attrbad, div;
 
@@ -475,6 +475,16 @@ test("attributes", function() {
 	t( "Attribute Ends With", "a[href $= 'org/']", ["mark"] );
 	t( "Attribute Contains", "a[href *= 'google']", ["google","groups"] );
 	t( "Attribute Is Not Equal", "#ap a[hreflang!='en']", ["google","groups","anchor1"] );
+	t( "Attribute Dashed Prefix", "#names-group span[id|='name']",
+		["name-is-example","name-is-div"] );
+	t( "Attribute Dashed Prefix Containing Dash", "#names-group span[id|='name-is']",
+		["name-is-example","name-is-div"] );
+	t( "Attribute Dashed Prefix Ending With Dash", "#names-group span[id|='name-is-']", [] );
+	t( "Attribute Whitespace List Includes", "input[data-15233~='foo']",
+		["t15233-single","t15233-double","t15233-double-tab","t15233-double-nl","t15233-triple"] );
+	t( "Attribute Whitespace List Includes", "input[data-15233~='bar']",
+		["t15233-double","t15233-double-tab","t15233-double-nl","t15233-triple"] );
+	t( "Attribute Whitespace List Includes", "input[data-15233~='baz']", ["t15233-triple"] );
 
 	opt = document.getElementById("option1a");
 	opt.setAttribute( "test", "" );
