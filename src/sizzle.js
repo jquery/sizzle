@@ -150,7 +150,14 @@ var i,
 				String.fromCharCode( high + 0x10000 ) :
 				// Supplemental Plane codepoint (surrogate pair)
 				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
-	};
+	},
+
+	disabledAncestor = addCombinator(
+		function( elem ) {
+			return elem.disabled === true;
+		},
+		{ dir: "parentNode", next: "legend" }
+	);
 
 // Optimize for push.apply( _, NodeList )
 try {
@@ -321,22 +328,22 @@ function markFunction( fn ) {
 
 /**
  * Support testing using an element
- * @param {Function} fn Passed the created div and expects a boolean result
+ * @param {Function} fn Passed the created element and returns a boolean result
  */
 function assert( fn ) {
-	var div = document.createElement("div");
+	var el = document.createElement("fieldset");
 
 	try {
-		return !!fn( div );
+		return !!fn( el );
 	} catch (e) {
 		return false;
 	} finally {
 		// Remove from its parent by default
-		if ( div.parentNode ) {
-			div.parentNode.removeChild( div );
+		if ( el.parentNode ) {
+			el.parentNode.removeChild( el );
 		}
 		// release memory in IE
-		div = null;
+		el = null;
 	}
 }
 
@@ -402,6 +409,30 @@ function createButtonPseudo( type ) {
 	return function( elem ) {
 		var name = elem.nodeName.toLowerCase();
 		return (name === "input" || name === "button") && elem.type === type;
+	};
+}
+
+/**
+ * Returns a function to use in pseudos for :enabled/:disabled
+ * @param {Boolean} disabled true for :disabled; false for :enabled
+ */
+function createDisabledPseudo( disabled ) {
+	// Known :disabled false positives:
+	// IE: *[disabled]:not(button, input, select, textarea, optgroup, option, menuitem, fieldset)
+	// not IE: fieldset[disabled] fieldset
+	return function( elem ) {
+		// :enabled ignores ancestry for optgroup, a[href], area[href], link[href]
+		return (disabled || "label" in elem || elem.href) && elem.disabled === disabled ||
+			"form" in elem && elem.disabled === false && (
+				// Support: IE6-11+
+				// Ancestry is covered for us
+				elem.isDisabled === disabled ||
+
+				// Otherwise, assume any non-<option> under fieldset[disabled] is disabled
+				/* jshint -W018 */
+				elem.isDisabled !== !disabled &&
+					("label" in elem || !disabledAncestor( elem )) !== disabled
+			);
 	};
 }
 
@@ -495,18 +526,18 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 	// Support: IE<8
 	// Verify that getAttribute really returns attributes and not properties (excepting IE8 booleans)
-	support.attributes = assert(function( div ) {
-		div.className = "i";
-		return !div.getAttribute("className");
+	support.attributes = assert(function( el ) {
+		el.className = "i";
+		return !el.getAttribute("className");
 	});
 
 	/* getElement(s)By*
 	---------------------------------------------------------------------- */
 
 	// Check if getElementsByTagName("*") returns only elements
-	support.getElementsByTagName = assert(function( div ) {
-		div.appendChild( doc.createComment("") );
-		return !div.getElementsByTagName("*").length;
+	support.getElementsByTagName = assert(function( el ) {
+		el.appendChild( doc.createComment("") );
+		return !el.getElementsByTagName("*").length;
 	});
 
 	// Support: IE<9
@@ -516,8 +547,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Check if getElementById returns elements by name
 	// The broken getElementById methods don't pick up programatically-set names,
 	// so use a roundabout getElementsByName test
-	support.getById = assert(function( div ) {
-		docElem.appendChild( div ).id = expando;
+	support.getById = assert(function( el ) {
+		docElem.appendChild( el ).id = expando;
 		return !doc.getElementsByName || !doc.getElementsByName( expando ).length;
 	});
 
@@ -602,57 +633,66 @@ setDocument = Sizzle.setDocument = function( node ) {
 	if ( (support.qsa = rnative.test( doc.querySelectorAll )) ) {
 		// Build QSA regex
 		// Regex strategy adopted from Diego Perini
-		assert(function( div ) {
+		assert(function( el ) {
 			// Select is set to empty string on purpose
 			// This is to test IE's treatment of not explicitly
 			// setting a boolean content attribute,
 			// since its presence should be enough
 			// http://bugs.jquery.com/ticket/12359
-			div.innerHTML = "<select msallowcapture=''><option selected=''></option></select>";
+			el.innerHTML = "<select msallowcapture=''><option selected=''></option></select>";
 
 			// Support: IE8, Opera 11-12.16
 			// Nothing should be selected when empty strings follow ^= or $= or *=
 			// The test attribute must be unknown in Opera but "safe" for WinRT
 			// http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx#attribute_section
-			if ( div.querySelectorAll("[msallowcapture^='']").length ) {
+			if ( el.querySelectorAll("[msallowcapture^='']").length ) {
 				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
 			}
 
 			// Support: IE8
 			// Boolean attributes and "value" are not treated correctly
-			if ( !div.querySelectorAll("[selected]").length ) {
+			if ( !el.querySelectorAll("[selected]").length ) {
 				rbuggyQSA.push( "\\[" + whitespace + "*(?:value|" + booleans + ")" );
 			}
 
 			// Webkit/Opera - :checked should return selected option elements
 			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 			// IE8 throws error here and will not see later tests
-			if ( !div.querySelectorAll(":checked").length ) {
+			if ( !el.querySelectorAll(":checked").length ) {
 				rbuggyQSA.push(":checked");
 			}
 		});
 
-		assert(function( div ) {
+		assert(function( el ) {
+			el.innerHTML = "<select name='D' disabled='disabled'><option/></select>";
+
 			// Support: Windows 8 Native Apps
 			// The type and name attributes are restricted during .innerHTML assignment
 			var input = doc.createElement("input");
 			input.setAttribute( "type", "hidden" );
-			div.appendChild( input ).setAttribute( "name", "D" );
+			el.appendChild( input );
 
 			// Support: IE8
 			// Enforce case-sensitivity of name attribute
-			if ( div.querySelectorAll("[name=d]").length ) {
+			if ( el.querySelectorAll("[name=d]").length ) {
 				rbuggyQSA.push( "name" + whitespace + "*[*^$|!~]?=" );
 			}
 
 			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
 			// IE8 throws error here and will not see later tests
-			if ( !div.querySelectorAll(":enabled").length ) {
+			if ( el.querySelectorAll(":enabled").length !== 2 ) {
+				rbuggyQSA.push( ":enabled", ":disabled" );
+			}
+
+			// Support: IE9-11+
+			// IE's :disabled selector does not pick up the children of disabled fieldsets
+			docElem.appendChild( el ).disabled = true;
+			if ( el.querySelectorAll(":disabled").length !== 2 ) {
 				rbuggyQSA.push( ":enabled", ":disabled" );
 			}
 
 			// Opera 10-11 does not throw on post-comma invalid pseudos
-			div.querySelectorAll("*,:x");
+			el.querySelectorAll("*,:x");
 			rbuggyQSA.push(",.*:");
 		});
 	}
@@ -663,14 +703,14 @@ setDocument = Sizzle.setDocument = function( node ) {
 		docElem.oMatchesSelector ||
 		docElem.msMatchesSelector) )) ) {
 
-		assert(function( div ) {
+		assert(function( el ) {
 			// Check to see if it's possible to do matchesSelector
 			// on a disconnected node (IE 9)
-			support.disconnectedMatch = matches.call( div, "div" );
+			support.disconnectedMatch = matches.call( el, "*" );
 
 			// This should fail with an exception
 			// Gecko does not error, returns false instead
-			matches.call( div, "[s!='']:x" );
+			matches.call( el, "[s!='']:x" );
 			rbuggyMatches.push( "!=", pseudos );
 		});
 	}
@@ -1296,13 +1336,8 @@ Expr = Sizzle.selectors = {
 		},
 
 		// Boolean properties
-		"enabled": function( elem ) {
-			return elem.disabled === false;
-		},
-
-		"disabled": function( elem ) {
-			return elem.disabled === true;
-		},
+		"enabled": createDisabledPseudo( false ),
+		"disabled": createDisabledPseudo( true ),
 
 		"checked": function( elem ) {
 			// In CSS3, :checked should return both checked and selected elements
@@ -1504,7 +1539,9 @@ function toSelector( tokens ) {
 
 function addCombinator( matcher, combinator, base ) {
 	var dir = combinator.dir,
-		checkNonElements = base && dir === "parentNode",
+		skip = combinator.next,
+		key = skip || dir,
+		checkNonElements = base && key === "parentNode",
 		doneName = done++;
 
 	return combinator.first ?
@@ -1535,14 +1572,16 @@ function addCombinator( matcher, combinator, base ) {
 				while ( (elem = elem[ dir ]) ) {
 					if ( elem.nodeType === 1 || checkNonElements ) {
 						outerCache = elem[ expando ] || (elem[ expando ] = {});
-						if ( (oldCache = outerCache[ dir ]) &&
+						if ( skip && skip === elem.nodeName.toLowerCase() ) {
+							elem = elem[ dir ] || elem;
+						} else if ( (oldCache = outerCache[ key ]) &&
 							oldCache[ 0 ] === dirruns && oldCache[ 1 ] === doneName ) {
 
 							// Assign to newCache so results back-propagate to previous elements
 							return (newCache[ 2 ] = oldCache[ 2 ]);
 						} else {
 							// Reuse newcache so results back-propagate to previous elements
-							outerCache[ dir ] = newCache;
+							outerCache[ key ] = newCache;
 
 							// A match means we're done; a fail means we have to keep checking
 							if ( (newCache[ 2 ] = matcher( elem, context, xml )) ) {
@@ -1969,17 +2008,17 @@ setDocument();
 
 // Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
 // Detached nodes confoundingly follow *each other*
-support.sortDetached = assert(function( div1 ) {
+support.sortDetached = assert(function( el ) {
 	// Should return 1, but returns 4 (following)
-	return div1.compareDocumentPosition( document.createElement("div") ) & 1;
+	return el.compareDocumentPosition( document.createElement("fieldset") ) & 1;
 });
 
 // Support: IE<8
 // Prevent attribute/property "interpolation"
 // http://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
-if ( !assert(function( div ) {
-	div.innerHTML = "<a href='#'></a>";
-	return div.firstChild.getAttribute("href") === "#" ;
+if ( !assert(function( el ) {
+	el.innerHTML = "<a href='#'></a>";
+	return el.firstChild.getAttribute("href") === "#";
 }) ) {
 	addHandle( "type|href|height|width", function( elem, name, isXML ) {
 		if ( !isXML ) {
@@ -1990,10 +2029,10 @@ if ( !assert(function( div ) {
 
 // Support: IE<9
 // Use defaultValue in place of getAttribute("value")
-if ( !support.attributes || !assert(function( div ) {
-	div.innerHTML = "<input/>";
-	div.firstChild.setAttribute( "value", "" );
-	return div.firstChild.getAttribute( "value" ) === "";
+if ( !support.attributes || !assert(function( el ) {
+	el.innerHTML = "<input/>";
+	el.firstChild.setAttribute( "value", "" );
+	return el.firstChild.getAttribute( "value" ) === "";
 }) ) {
 	addHandle( "value", function( elem, name, isXML ) {
 		if ( !isXML && elem.nodeName.toLowerCase() === "input" ) {
@@ -2004,8 +2043,8 @@ if ( !support.attributes || !assert(function( div ) {
 
 // Support: IE<9
 // Use getAttributeNode to fetch booleans when getAttribute lies
-if ( !assert(function( div ) {
-	return div.getAttribute("disabled") == null;
+if ( !assert(function( el ) {
+	return el.getAttribute("disabled") == null;
 }) ) {
 	addHandle( booleans, function( elem, name, isXML ) {
 		var val;
