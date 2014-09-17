@@ -46,10 +46,9 @@ module( "selector", { setup: setup } );
 */
 
 test("element", function() {
-	expect( 39 );
+	expect( 35 );
 
-	var form, all, good, i, obj1, lengthtest,
-		siblingTest, siblingNext, iframe, iframeDoc, html;
+	var form, all, good, i, lengthtest, siblingTest, html;
 
 	equal( Sizzle("").length, 0, "Empty selector returns an empty array" );
 	deepEqual( Sizzle("div", document.createTextNode("")), [], "Text element as context fails silently" );
@@ -58,8 +57,8 @@ test("element", function() {
 	equal( Sizzle(" ").length, 0, "Empty selector returns an empty array" );
 	equal( Sizzle("\t").length, 0, "Empty selector returns an empty array" );
 
-	ok( Sizzle("*").length >= 30, "Select all" );
 	all = Sizzle("*");
+	ok( all.length >= 30, "Select all" );
 	good = true;
 	for ( i = 0; i < all.length; i++ ) {
 		if ( all[i].nodeType === 8 ) {
@@ -84,10 +83,6 @@ test("element", function() {
 
 	t( "Parent Element", "dl ol", ["empty", "listWithTabIndex"] );
 	t( "Parent Element (non-space descendant combinator)", "dl\tol", ["empty", "listWithTabIndex"] );
-	obj1 = document.getElementById("object1");
-	equal( Sizzle("param", obj1).length, 2, "Object/param as context" );
-
-	deepEqual( Sizzle("select", form), q("select1","select2","select3","select4","select5"), "Finding selects with a context." );
 
 	// Check for unique-ness and sort order
 	deepEqual( Sizzle("p, div p"), Sizzle("p"), "Check for duplicates: p, div p" );
@@ -107,22 +102,6 @@ test("element", function() {
 	deepEqual( Sizzle("div em", siblingTest), [], "Element-rooted QSA does not select based on document context" );
 	deepEqual( Sizzle("div em, div em, div em:not(div em)", siblingTest), [], "Element-rooted QSA does not select based on document context" );
 	deepEqual( Sizzle("div em, em\\,", siblingTest), [], "Escaped commas do not get treated with an id in element-rooted QSA" );
-
-	siblingNext = document.getElementById("siblingnext");
-	document.createDocumentFragment().appendChild( siblingTest );
-	deepEqual( Sizzle( "em + :not(:has(*)):not(:empty), foo", siblingTest ), [ siblingNext ],
-		"Non-qSA path correctly sets detached context for sibling selectors (jQuery #14351)" );
-
-	iframe = document.getElementById("iframe"),
-		iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-	iframeDoc.open();
-	iframeDoc.write("<body><p id='foo'>bar</p></body>");
-	iframeDoc.close();
-	deepEqual(
-		Sizzle( "p:contains(bar)", iframeDoc ),
-		[ iframeDoc.getElementById("foo") ],
-		"Other document as context"
-	);
 
 	html = "";
 	for ( i = 0; i < 100; i++ ) {
@@ -1100,6 +1079,56 @@ test("pseudo - :lang", function() {
 		docElem.setAttribute( "xml:lang", docXmlLang );
 	}
 	docElem.lang = docLang;
+});
+
+test("context", function() {
+	expect( 16 );
+
+	var context,
+		selector = ".blog",
+		expected = q( "mark", "simon" ),
+		iframe = document.getElementById( "iframe" ),
+		iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+	deepEqual( Sizzle( selector, document ), expected, "explicit document context" );
+	deepEqual( Sizzle( selector ), expected, "unspecified context becomes document" );
+	deepEqual( Sizzle( selector, undefined ), expected, "undefined context becomes document" );
+	deepEqual( Sizzle( selector, null ), expected, "null context becomes document" );
+
+	iframeDoc.open();
+	iframeDoc.write( "<body><p id='foo'>bar</p></body>" );
+	iframeDoc.close();
+	expected = [ iframeDoc.getElementById( "foo" ) ];
+	deepEqual( Sizzle( "p", iframeDoc ), expected, "Other document context (simple)");
+	deepEqual( Sizzle( "p:contains(ar)", iframeDoc ), expected, "Other document context (complex)");
+	deepEqual( Sizzle( "span", iframeDoc ), [], "Other document context (simple, no results)");
+	deepEqual( Sizzle( "* span", iframeDoc ), [], "Other document context (complex, no results)");
+
+	context = document.getElementById( "nothiddendiv" );
+	deepEqual( Sizzle( "*", context ), q( "nothiddendivchild" ), "<div> context" );
+	deepEqual( Sizzle( "* > *", context ), [], "<div> context (no results)" );
+
+	context = document.getElementById( "lengthtest" );
+	deepEqual( Sizzle( "input", context ), q( "length", "idTest" ), "<form> context");
+	deepEqual( Sizzle( "select", context ), [], "<form> context (no results)");
+
+	context = document.createDocumentFragment();
+	// Capture *independent* expected nodes before they're detached from the page
+	expected = q( "siblingnext", "siblingspan" );
+	context.appendChild( document.getElementById( "siblingTest" ) );
+	deepEqual(
+		Sizzle( "em:nth-child(2)", context ),
+		expected.slice( 0, 1 ),
+		"DocumentFragment context"
+	);
+	deepEqual( Sizzle( "span", context ), expected.slice( 1 ), "DocumentFragment context by tag name" );
+	deepEqual( Sizzle( "p", context ), [], "DocumentFragment context (no results)" );
+
+	deepEqual(
+		Sizzle( "em + :not(:has(*)):not(:empty), foo", context.firstChild ),
+		expected.slice( 0, 1 ),
+		"Non-qSA path correctly sets detached context for sibling selectors (jQuery #14351)"
+	);
 });
 
 test("caching", function() {
