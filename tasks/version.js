@@ -30,8 +30,7 @@ module.exports = function( grunt ) {
 			grunt.config( "pkg.version", version );
 			grunt.task.run([
 				"build",
-				"uglify",
-				"dist",
+				"tests",
 				"commit:'Release\\: Update version to " + version + "'"
 			]);
 			done();
