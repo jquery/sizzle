@@ -22,17 +22,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
+	"bs_firefox-30": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "30.0",
+		os: "OS X",
+		os_version: "Mountain Lion"
+	},
 	"bs_firefox-31": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "31.0",
-		os: "OS X",
-		os_version: "Mavericks"
-	},
-	"bs_firefox-32": {
-		base: "BrowserStack",
-		browser: "firefox",
-		browser_version: "32.0",
+		browser_version: "31",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
@@ -51,17 +51,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
+	"bs_chrome-35": {
+		base: "BrowserStack",
+		browser: "chrome",
+		browser_version: "35.0",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
 	"bs_chrome-36": {
 		base: "BrowserStack",
 		browser: "chrome",
 		browser_version: "36.0",
-		os: "OS X",
-		os_version: "Mavericks"
-	},
-	"bs_chrome-37": {
-		base: "BrowserStack",
-		browser: "chrome",
-		browser_version: "37.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},
@@ -199,10 +199,16 @@ module.exports = {
 		os: "ios",
 		os_version: "7.0"
 	},
+	"bs_ios-8.0": {
+		base: "BrowserStack",
+		device: "iPhone 6",
+		os: "ios",
+		os_version: "8.0"
+	},
 
 	"bs_android-2.3": {
 		base: "BrowserStack",
-		device: "Motorola Droid 4",
+		device: "Motorola Droid Razr",
 		os: "android",
 		os_version: "2.3"
 	},
