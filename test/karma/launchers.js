@@ -202,7 +202,7 @@ module.exports = {
 
 	"bs_android-2.3": {
 		base: "BrowserStack",
-		device: "Motorola Droid 4",
+		device: "Motorola Droid Razr",
 		os: "android",
 		os_version: "2.3"
 	},
