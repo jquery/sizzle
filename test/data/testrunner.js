@@ -12,6 +12,8 @@
 
 	jQuery( "body" ).attr( "id", "body" );
 
+	QUnit.config.testTimeout = 60000;
+
 	// Look for karma template, if found, we are in the karma suite
 	if ( window.__html__ ) {
 		document.body.innerHTML = window.__html__[ "test/data/fixtures.html" ];

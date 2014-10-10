@@ -18,7 +18,7 @@ module.exports = function( config ) {
 		// that will break iframe tests
 		basePath: "../../",
 
-		frameworks: [ "qunit" ],
+		frameworks: [ "qunit", "dynamicResponse" ],
 
 		files: [
 			"external/jquery/jquery.js",
@@ -46,6 +46,7 @@ module.exports = function( config ) {
 			}
 		],
 
+		plugins: [ "karma-*", require("./dynamic") ],
 		preprocessors: {
 
 			// mixed_sort.html downloaded through iframe inclusion
@@ -58,7 +59,7 @@ module.exports = function( config ) {
 		customLaunchers: require( "./launchers" ),
 
 		// Make travis output less verbose
-		reporters: isTravis ? "dots" : "progress",
+		reporters: [ isTravis ? "dots" : "progress" ],
 
 		colors: !isTravis,
 
