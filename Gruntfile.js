@@ -45,7 +45,7 @@ module.exports = function( grunt ) {
 			"bs_safari-6.0", "bs_safari-6.1", "bs_safari-7.0", "bs_safari-8.0"
 		];
 
-		browsers.ios = [ "bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0" ];
+		browsers.ios = [ "bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0", "bs_ios-8.0" ];
 		browsers.android = [
 			"bs_android-4.0", "bs_android-4.1", "bs_android-4.2",
 			"bs_android-4.3", "bs_android-4.4"

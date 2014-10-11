@@ -214,6 +214,12 @@ module.exports = {
 		os: "ios",
 		os_version: "7.0"
 	},
+	"bs_ios-8.0": {
+		base: "BrowserStack",
+		device: "iPhone 6",
+		os: "ios",
+		os_version: "8.0"
+	},
 
 	"bs_android-2.3": {
 		base: "BrowserStack",
