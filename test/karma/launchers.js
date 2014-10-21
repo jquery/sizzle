@@ -223,5 +223,17 @@ module.exports = {
 		device: "LG Nexus 4",
 		os: "android",
 		os_version: "4.2"
+	},
+	"bs_android-4.3": {
+		base: "BrowserStack",
+		device: "Samsung Galaxy S4",
+		os: "android",
+		os_version: "4.3"
+	},
+	"bs_android-4.4": {
+		base: "BrowserStack",
+		device: "Samsung Galaxy S5",
+		os: "android",
+		os_version: "4.4"
 	}
 };
