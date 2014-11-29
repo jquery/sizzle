@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2014-09-19
+ * Date: 2014-11-29
  */
 (function( window ) {
 
@@ -614,8 +614,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// setting a boolean content attribute,
 			// since its presence should be enough
 			// http://bugs.jquery.com/ticket/12359
-			div.innerHTML = "<select msallowcapture=''>" +
-				"<option id='d\f]' selected=''></option></select>";
+			div.innerHTML = "<select id='d\f]' msallowcapture=''>" +
+				"<option selected=''></option></select>";
 
 			// Support: IE8, Opera 11-12.16
 			// Nothing should be selected when empty strings follow ^= or $= or *=
@@ -641,6 +641,15 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// IE8 throws error here and will not see later tests
 			if ( !div.querySelectorAll(":checked").length ) {
 				rbuggyQSA.push(":checked");
+			}
+
+			// Support: Safari 8+, iOS 8+
+			// https://bugs.webkit.org/show_bug.cgi?id=136851
+			// In-page `selector#id sibing-combinator selector` fails
+			docElem.appendChild( div )
+				.insertBefore( document.createElement("div"), div.firstChild ).id = expando;
+			if ( !div.querySelectorAll( "div#" + expando + "+*" ).length ) {
+				rbuggyQSA.push(".#.+[+~]");
 			}
 		});
 
