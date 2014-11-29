@@ -342,25 +342,26 @@ test( "multiple", function() {
 });
 
 test("child and adjacent", function() {
-	expect( 42 );
+	expect( 43 );
 
 	var siblingFirst, en, nothiddendiv;
 
 	t( "Child", "p > a", ["simon1","google","groups","mark","yahoo","simon"] );
-	t( "Child", "p> a", ["simon1","google","groups","mark","yahoo","simon"] );
-	t( "Child", "p >a", ["simon1","google","groups","mark","yahoo","simon"] );
-	t( "Child", "p>a", ["simon1","google","groups","mark","yahoo","simon"] );
+	t( "Child minus whitespace", "p>a", ["simon1","google","groups","mark","yahoo","simon"] );
+	t( "Child minus trailing whitespace", "p> a", ["simon1","google","groups","mark","yahoo","simon"] );
+	t( "Child minus leading whitespace", "p >a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child w/ Class", "p > a.blog", ["mark","simon"] );
 	t( "All Children", "code > *", ["anchor1","anchor2"] );
 	t( "All Grandchildren", "p > * > *", ["anchor1","anchor2"] );
-	t( "Adjacent", "#qunit-fixture a + a", ["groups", "tName2ID"] );
-	t( "Adjacent", "#qunit-fixture a +a", ["groups", "tName2ID"] );
-	t( "Adjacent", "#qunit-fixture a+ a", ["groups", "tName2ID"] );
-	t( "Adjacent", "#qunit-fixture a+a", ["groups", "tName2ID"] );
-	t( "Adjacent", "p + p", ["ap","en","sap"] );
-	t( "Adjacent", "p#firstp + p", ["ap"] );
-	t( "Adjacent", "p[lang=en] + p", ["sap"] );
-	t( "Adjacent", "a.GROUPS + code + a", ["mark"] );
+	t( "Rooted tag adjacent", "#qunit-fixture a + a", ["groups", "tName2ID"] );
+	t( "Rooted tag adjacent minus whitespace", "#qunit-fixture a+a", ["groups", "tName2ID"] );
+	t( "Rooted tag adjacent minus leading whitespace", "#qunit-fixture a +a", ["groups", "tName2ID"] );
+	t( "Rooted tag adjacent minus trailing whitespace", "#qunit-fixture a+ a", ["groups", "tName2ID"] );
+	t( "Tag adjacent", "p + p", ["ap","en","sap"] );
+	t( "#id adjacent", "#firstp + p", ["ap"] );
+	t( "Tag#id adjacent", "p#firstp + p", ["ap"] );
+	t( "Tag[attr] adjacent", "p[lang=en] + p", ["sap"] );
+	t( "Tag.class adjacent", "a.GROUPS + code + a", ["mark"] );
 	t( "Comma, Child, and Adjacent", "#qunit-fixture a + a, code > a", ["groups","anchor1","anchor2","tName2ID"] );
 	t( "Element Preceded By", "#qunit-fixture p ~ div", ["foo", "nothiddendiv", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
 	t( "Element Preceded By", "#first ~ div", ["moretests","tabindex-tests", "liveHandlerOrder", "siblingTest"] );
