@@ -614,7 +614,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// setting a boolean content attribute,
 			// since its presence should be enough
 			// http://bugs.jquery.com/ticket/12359
-			div.innerHTML = "<select msallowcapture=''>" +
+			div.innerHTML = "<a id='" + expando + "'></a><select msallowcapture=''>" +
 				"<option id='d\f]' selected=''></option></select>";
 
 			// Support: IE8, Opera 11-12.16
@@ -646,9 +646,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// Support: Safari 8+, iOS 8+
 			// https://bugs.webkit.org/show_bug.cgi?id=136851
 			// In-page `selector#id sibing-combinator selector` fails
-			docElem.appendChild( div )
-				.insertBefore( document.createElement("div"), div.firstChild ).id = expando;
-			if ( !div.querySelectorAll( "div#" + expando + "+*" ).length ) {
+			docElem.appendChild( div );
+			if ( !div.querySelectorAll( "a#" + expando + "+*" ).length ) {
 				rbuggyQSA.push(".#.+[+~]");
 			}
 		});
