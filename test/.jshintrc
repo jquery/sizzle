@@ -34,6 +34,7 @@
 		"strictEqual": false,
 		"notStrictEqual": false,
 		"throws": false,
+		"console": false,
 
 		"createWithFriesXML": false,
 		"setup": false,
