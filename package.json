@@ -62,7 +62,7 @@
   },
   "scripts": {
     "build": "npm install && grunt",
-    "start": "grunt watch",
+    "start": "grunt start",
     "test": "grunt test"
   },
   "keywords": [
