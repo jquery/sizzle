@@ -144,8 +144,14 @@ module.exports = function( grunt ) {
 				},
 				src: [ files.source ]
 			},
-			grunt: [ files.grunt ],
+			grunt: files.grunt,
 			speed: [ files.speed ],
+			tests: {
+				options: {
+					maximumLineLength: null
+				},
+				src: [ files.tests ]
+			},
 			karma: {
 				options: {
 					requireCamelCaseOrUpperCaseIdentifiers: null
