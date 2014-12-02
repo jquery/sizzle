@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2014-12-01
+ * Date: 2014-12-02
  */
 (function( window ) {
 
@@ -1725,10 +1725,12 @@ function matcherFromTokens( tokens ) {
 			return indexOf( checkContext, elem ) > -1;
 		}, implicitRelative, true ),
 		matchers = [ function( elem, context, xml ) {
-			return ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
+			var rv = ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
 				(checkContext = context).nodeType ?
 					matchContext( elem, context, xml ) :
 					matchAnyContext( elem, context, xml ) );
+			checkContext = undefined; // https://github.com/jquery/sizzle/issues/299
+			return rv;
 		} ];
 
 	for ( ; i < len; i++ ) {
