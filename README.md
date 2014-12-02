@@ -3,8 +3,8 @@
 __A pure-JavaScript CSS selector engine designed to be easily dropped in to a host library.__
 
 - [More information](http://sizzlejs.com/)
-- [Documentation](https://github.com/jquery/sizzle/wiki/Sizzle-Documentation)
-- [Browser support](https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#wiki-browsers)
+- [Documentation](https://github.com/jquery/sizzle/wiki/)
+- [Browser support](https://github.com/jquery/sizzle/wiki/#wiki-browsers)
 
 Contribution Guides
 ---------------------------
