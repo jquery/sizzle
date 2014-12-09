@@ -403,105 +403,130 @@ test("child and adjacent", function() {
 	t( "Non-existant ancestors", ".fototab > .thumbnails > a", [] );
 });
 
-test("attributes", function() {
-	expect( 82 );
+test("attributes - existence", function() {
+	expect( 7 );
 
-	var opt, input, attrbad, div;
+	t( "on element", "#qunit-fixture a[title]", [ "google" ] );
+	t( "on element (whitespace ignored)", "#qunit-fixture a[ title ]", [ "google" ] );
+	t( "on element (case-insensitive)", "#qunit-fixture a[TITLE]", [ "google" ] );
+	t( "on any element", "#qunit-fixture *[title]", [ "google" ] );
+	t( "on implicit element", "#qunit-fixture [title]", [ "google" ] );
+	t( "boolean", "#select2 option[selected]", [ "option2d" ]);
+	t( "for attribute on label", "form label[for]", [ "label-for" ] );
+});
 
-	t( "Attribute Exists", "#qunit-fixture a[title]", ["google"] );
-	t( "Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"] );
-	t( "Attribute Exists", "#qunit-fixture *[title]", ["google"] );
-	t( "Attribute Exists", "#qunit-fixture [title]", ["google"] );
-	t( "Attribute Exists", "#qunit-fixture a[ title ]", ["google"] );
+test("attributes - equals", function() {
+	expect( 20 );
 
-	t( "Boolean attribute exists", "#select2 option[selected]", ["option2d"]);
-	t( "Boolean attribute equals", "#select2 option[selected='selected']", ["option2d"]);
+	t( "identifier", "#qunit-fixture a[rel=bookmark]", [ "simon1" ] );
+	t( "identifier containing underscore", "input[id=types_all]", ["types_all"] );
+	t( "string", "#qunit-fixture a[rel='bookmark']", [ "simon1" ] );
+	t( "string (whitespace ignored)", "#qunit-fixture a[ rel = 'bookmark' ]", [ "simon1" ] );
+	t( "non-identifier string", "#qunit-fixture a[href='http://www.google.com/']", [ "google" ] );
+	t( "empty string", "#select1 option[value='']", [ "option1a" ] );
+	t( "number",
+		"#qunit-fixture option[value=1]",
+		[ "option1b", "option2b", "option3b", "option4b", "option5c" ] );
+	t( "negative number", "#qunit-fixture li[tabIndex=-1]", [ "foodWithNegativeTabIndex" ] );
+	t( "non-ASCII identifier", "span[lang=中文]", ["台北"] );
 
-	t( "Attribute Equals", "#qunit-fixture a[rel='bookmark']", ["simon1"] );
-	t( "Attribute Equals", "#qunit-fixture a[rel='bookmark']", ["simon1"] );
-	t( "Attribute Equals", "#qunit-fixture a[rel=bookmark]", ["simon1"] );
-	t( "Attribute Equals", "#qunit-fixture a[href='http://www.google.com/']", ["google"] );
-	t( "Attribute Equals", "#qunit-fixture a[ rel = 'bookmark' ]", ["simon1"] );
-	t( "Attribute Equals Number", "#qunit-fixture option[value=1]", ["option1b","option2b","option3b","option4b","option5c"] );
-	t( "Attribute Equals Number", "#qunit-fixture li[tabIndex=-1]", ["foodWithNegativeTabIndex"] );
+	t( "input[type=text]", "#form input[type=text]", [ "text1", "text2", "hidden2", "name" ] );
+	t( "input[type=search]", "#form input[type=search]", [ "search" ] );
+	t( "script[src] (jQuery #13777)", "#moretests script[src]", [ "script-src" ] );
+	t( "boolean attribute equals name", "#select2 option[selected='selected']", [ "option2d" ]);
+	t( "for attribute in form", "#form [for=action]", [ "label-for" ] );
+	t( "name attribute", "input[name='foo[bar]']", [ "hidden2" ] );
+	t( "value attribute", "input[value=Test]", [ "text1", "text2" ] );
 
+	deepEqual(
+		Sizzle( "input[data-comma='0,1']" ),
+		q( "el12087" ),
+		"Without context, single-quoted attribute containing ','" );
+	deepEqual(
+		Sizzle( "input[data-comma=\"0,1\"]" ),
+		q( "el12087" ),
+		"Without context, double-quoted attribute containing ','" );
+	deepEqual(
+		Sizzle( "input[data-comma='0,1']", document.getElementById( "t12087" ) ),
+		q( "el12087" ),
+		"With context, single-quoted attribute containing ','" );
+	deepEqual(
+		Sizzle( "input[data-comma=\"0,1\"]", document.getElementById( "t12087" ) ),
+		q( "el12087" ),
+		"With context, double-quoted attribute containing ','" );
+});
+
+test("attributes - does not equal", function() {
+	expect( 2 );
+
+	t( "string", "#ap a[hreflang!='en']", [ "google", "groups", "anchor1" ] );
+	t( "empty string", "#select1 option[value!='']", [ "option1b", "option1c", "option1d" ] );
+});
+
+test("attributes - starts with", function() {
+	expect( 4 );
+
+	// Support: IE<8
+	// There is apparently no way to bypass interpolation of the *originally-defined* href attribute
 	document.getElementById("anchor2").href = "#2";
-	t( "href Attribute", "p a[href^='#']", ["anchor2"] );
-	t( "href Attribute", "p a[href*='#']", ["simon1", "anchor2"] );
+	t( "string (whitespace ignored)", "a[href ^= 'http://www']", [ "google", "yahoo" ] );
+	t( "href starts with hash", "p a[href^='#']", [ "anchor2" ] );
+	t( "string containing '['", "input[name^='foo[']", [ "hidden2" ] );
+	t( "string containing '[' ... ']'", "input[name^='foo[bar]']", [ "hidden2" ] );
+});
 
-	t( "for Attribute", "form label[for]", ["label-for"] );
-	t( "for Attribute in form", "#form [for=action]", ["label-for"] );
+test("attributes - contains", function() {
+	expect( 4 );
 
-	t( "Attribute containing []", "input[name^='foo[']", ["hidden2"] );
-	t( "Attribute containing []", "input[name^='foo[bar]']", ["hidden2"] );
-	t( "Attribute containing []", "input[name*='[bar]']", ["hidden2"] );
-	t( "Attribute containing []", "input[name$='bar]']", ["hidden2"] );
-	t( "Attribute containing []", "input[name$='[bar]']", ["hidden2"] );
-	t( "Attribute containing []", "input[name$='foo[bar]']", ["hidden2"] );
-	t( "Attribute containing []", "input[name*='foo[bar]']", ["hidden2"] );
+	t( "string (whitespace ignored)", "a[href *= 'google']", [ "google", "groups" ] );
+	t( "string starting with '[' ... ']'", "input[name*='[bar]']", [ "hidden2" ] );
+	t( "string containing '[' ... ']'", "input[name*='foo[bar]']", [ "hidden2" ] );
 
-	deepEqual( Sizzle( "input[data-comma='0,1']" ), [ document.getElementById("el12087") ], "Without context, single-quoted attribute containing ','" );
-	deepEqual( Sizzle( "input[data-comma=\"0,1\"]" ), [ document.getElementById("el12087") ], "Without context, double-quoted attribute containing ','" );
-	deepEqual( Sizzle( "input[data-comma='0,1']", document.getElementById("t12087") ), [ document.getElementById("el12087") ], "With context, single-quoted attribute containing ','" );
-	deepEqual( Sizzle( "input[data-comma=\"0,1\"]", document.getElementById("t12087") ), [ document.getElementById("el12087") ], "With context, double-quoted attribute containing ','" );
+	t( "href contains hash", "p a[href*='#']", [ "simon1", "anchor2" ] );
+});
 
-	t( "Multiple Attribute Equals", "#form input[type='radio'], #form input[type='hidden']", ["radio1", "radio2", "hidden1"] );
-	t( "Multiple Attribute Equals", "#form input[type='radio'], #form input[type=\"hidden\"]", ["radio1", "radio2", "hidden1"] );
-	t( "Multiple Attribute Equals", "#form input[type='radio'], #form input[type=hidden]", ["radio1", "radio2", "hidden1"] );
+test("attributes - ends with", function() {
+	expect( 4 );
 
-	t( "Attribute selector using UTF8", "span[lang=中文]", ["台北"] );
+	t( "string (whitespace ignored)", "a[href $= 'org/']", [ "mark" ] );
+	t( "string ending with ']'", "input[name$='bar]']", [ "hidden2" ] );
+	t( "string like '[' ... ']'", "input[name$='[bar]']", [ "hidden2" ] );
+	t( "string containing '[' ... ']'", "input[name$='foo[bar]']", [ "hidden2" ] );
+});
 
-	t( "Attribute Begins With", "a[href ^= 'http://www']", ["google","yahoo"] );
-	t( "Attribute Ends With", "a[href $= 'org/']", ["mark"] );
-	t( "Attribute Contains", "a[href *= 'google']", ["google","groups"] );
-	t( "Attribute Is Not Equal", "#ap a[hreflang!='en']", ["google","groups","anchor1"] );
-	t( "Attribute Dashed Prefix", "#names-group span[id|='name']",
-		["name-is-example","name-is-div"] );
-	t( "Attribute Dashed Prefix Containing Dash", "#names-group span[id|='name-is']",
-		["name-is-example","name-is-div"] );
-	t( "Attribute Dashed Prefix Ending With Dash", "#names-group span[id|='name-is-']", [] );
-	t( "Attribute Whitespace List Includes", "input[data-15233~='foo']",
-		["t15233-single","t15233-double","t15233-double-tab","t15233-double-nl","t15233-triple"] );
-	t( "Attribute Whitespace List Includes", "input[data-15233~='bar']",
-		["t15233-double","t15233-double-tab","t15233-double-nl","t15233-triple"] );
-	t( "Attribute Whitespace List Includes", "input[data-15233~='baz']", ["t15233-triple"] );
+test("attributes - whitespace list includes", function() {
+	expect( 3 );
 
-	opt = document.getElementById("option1a");
-	opt.setAttribute( "test", "" );
+	t( "string found at the beginning",
+		"input[data-15233~='foo']",
+		[ "t15233-single", "t15233-double", "t15233-double-tab", "t15233-double-nl", "t15233-triple" ] );
+	t( "string found in the middle",
+		"input[data-15233~='bar']",
+		[ "t15233-double", "t15233-double-tab", "t15233-double-nl", "t15233-triple" ] );
+	t( "string found at the end", "input[data-15233~='baz']", [ "t15233-triple" ] );
+});
 
-	ok( Sizzle.matchesSelector( opt, "[id*=option1][type!=checkbox]" ), "Attribute Is Not Equal Matches" );
-	ok( Sizzle.matchesSelector( opt, "[id*=option1]" ), "Attribute With No Quotes Contains Matches" );
-	ok( Sizzle.matchesSelector( opt, "[test=]" ), "Attribute With No Quotes No Content Matches" );
-	ok( !Sizzle.matchesSelector( opt, "[test^='']" ), "Attribute with empty string value does not match startsWith selector (^=)" );
-	ok( Sizzle.matchesSelector( opt, "[id=option1a]" ), "Attribute With No Quotes Equals Matches" );
-	ok( Sizzle.matchesSelector( document.getElementById("simon1"), "a[href*=#]" ), "Attribute With No Quotes Href Contains Matches" );
+test("attributes - hypen-prefix matches", function() {
+	expect( 3 );
 
-	t( "Empty values", "#select1 option[value='']", ["option1a"] );
-	t( "Empty values", "#select1 option[value!='']", ["option1b","option1c","option1d"] );
+	t( "string", "#names-group span[id|='name']", [ "name-is-example", "name-is-div" ] );
+	t( "string containing hyphen",
+		"#names-group span[id|='name-is']",
+		[ "name-is-example", "name-is-div" ] );
+	t( "string ending with hyphen", "#names-group span[id|='name-is-']", [] );
+});
 
-	t( "Select options via :selected", "#select1 option:selected", ["option1a"] );
-	t( "Select options via :selected", "#select2 option:selected", ["option2d"] );
-	t( "Select options via :selected", "#select3 option:selected", ["option3b", "option3c"] );
-	t( "Select options via :selected", "select[name='select2'] option:selected", ["option2d"] );
+test("attributes - special characters", function() {
+	expect( 13 );
 
-	t( "Grouped Form Elements", "input[name='foo[bar]']", ["hidden2"] );
+	var attrbad,
+		div = document.createElement( "div" );
 
-	input = document.getElementById("text1");
-	input.title = "Don't click me";
-
-	ok( Sizzle.matchesSelector( input, "input[title=\"Don't click me\"]" ), "Quote within attribute value does not mess up tokenizer" );
-
-	// Uncomment if the boolHook is removed
-	// var check2 = document.getElementById("check2");
-	// check2.checked = true;
-	// ok( !Sizzle.matches("[checked]", [ check2 ] ), "Dynamic boolean attributes match when they should with Sizzle.matches (#11115)" );
-
-	// jQuery #12303
-	input.setAttribute( "data-pos", ":first" );
-	ok( Sizzle.matchesSelector( input, "input[data-pos=\\:first]"), "POS within attribute value is treated as an attribute value" );
-	ok( Sizzle.matchesSelector( input, "input[data-pos=':first']"), "POS within attribute value is treated as an attribute value" );
-	ok( Sizzle.matchesSelector( input, ":input[data-pos=':first']"), "POS within attribute value after pseudo is treated as an attribute value" );
-	input.removeAttribute("data-pos");
+	// #3279
+	div.innerHTML = "<div id='foo' xml:test='something'></div>";
+	deepEqual( Sizzle( "[xml\\:test]", div ),
+		[ div.firstChild ],
+		"attribute name containing colon" );
 
 	// Make sure attribute value quoting works correctly. See jQuery #6093; #6428; #13894
 	// Use seeded results to bypass querySelectorAll optimizations
@@ -517,58 +542,81 @@ test("attributes", function() {
 		"<input type='hidden' id='attrbad_unicode' data-attr='&#x4e00;'/>"
 	).appendTo("#qunit-fixture").get();
 
-	t( "Underscores don't need escaping", "input[id=types_all]", ["types_all"] );
+	deepEqual( Sizzle( "input[name=foo\\ bar]", null, null, attrbad ),
+		q( "attrbad_space" ),
+		"identifier containing space" );
+	deepEqual( Sizzle( "input[name=foo\\.baz]", null, null, attrbad ),
+		q( "attrbad_dot" ),
+		"identifier containing dot" );
+	deepEqual( Sizzle( "input[name=foo\\[baz\\]]", null, null, attrbad ),
+		q( "attrbad_brackets" ),
+		"identifier containing brackets" );
+	deepEqual( Sizzle( "input[data-attr='foo_baz\\']']", null, null, attrbad ),
+		q( "attrbad_injection" ),
+		"string containing quote and right bracket" );
 
-	deepEqual( Sizzle( "input[name=foo\\ bar]", null, null, attrbad ), q("attrbad_space"),
-		"Escaped space" );
-	deepEqual( Sizzle( "input[name=foo\\.baz]", null, null, attrbad ), q("attrbad_dot"),
-		"Escaped dot" );
-	deepEqual( Sizzle( "input[name=foo\\[baz\\]]", null, null, attrbad ), q("attrbad_brackets"),
-		"Escaped brackets" );
-	deepEqual( Sizzle( "input[data-attr='foo_baz\\']']", null, null, attrbad ), q("attrbad_injection"),
-		"Escaped quote + right bracket" );
+	deepEqual( Sizzle( "input[data-attr='\\'']", null, null, attrbad ),
+		q( "attrbad_quote" ),
+		"string containing quote" );
+	deepEqual( Sizzle( "input[data-attr='\\\\']", null, null, attrbad ),
+		q( "attrbad_backslash" ),
+		"string containing backslash" );
+	deepEqual( Sizzle( "input[data-attr='\\\\\\'']", null, null, attrbad ),
+		q( "attrbad_backslash_quote" ),
+		"string containing backslash and quote" );
+	deepEqual( Sizzle( "input[data-attr='\\\\\\\\']", null, null, attrbad ),
+		q( "attrbad_backslash_backslash" ),
+		"string containing adjacent backslashes" );
 
-	deepEqual( Sizzle( "input[data-attr='\\'']", null, null, attrbad ), q("attrbad_quote"),
-		"Quoted quote" );
-	deepEqual( Sizzle( "input[data-attr='\\\\']", null, null, attrbad ), q("attrbad_backslash"),
-		"Quoted backslash" );
-	deepEqual( Sizzle( "input[data-attr='\\\\\\'']", null, null, attrbad ), q("attrbad_backslash_quote"),
-		"Quoted backslash quote" );
-	deepEqual( Sizzle( "input[data-attr='\\\\\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
-		"Quoted backslash backslash" );
-
-	deepEqual( Sizzle( "input[data-attr='\\5C\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
-		"Quoted backslash backslash (numeric escape)" );
-	deepEqual( Sizzle( "input[data-attr='\\5C \\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
-		"Quoted backslash backslash (numeric escape with trailing space)" );
-	deepEqual( Sizzle( "input[data-attr='\\5C\t\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
-		"Quoted backslash backslash (numeric escape with trailing tab)" );
-	deepEqual( Sizzle( "input[data-attr='\\04e00']", null, null, attrbad ), q("attrbad_unicode"),
+	deepEqual( Sizzle( "input[data-attr='\\5C\\\\']", null, null, attrbad ),
+		q( "attrbad_backslash_backslash" ),
+		"string containing numeric-escape backslash and backslash" );
+	deepEqual( Sizzle( "input[data-attr='\\5C \\\\']", null, null, attrbad ),
+		q( "attrbad_backslash_backslash" ),
+		"string containing numeric-escape-with-trailing-space backslash and backslash" );
+	deepEqual( Sizzle( "input[data-attr='\\5C\t\\\\']", null, null, attrbad ),
+		q( "attrbad_backslash_backslash" ),
+		"string containing numeric-escape-with-trailing-tab backslash and backslash" );
+	deepEqual( Sizzle( "input[data-attr='\\04e00']", null, null, attrbad ),
+		q( "attrbad_unicode" ),
 		"Long numeric escape (BMP)" );
-	document.getElementById("attrbad_unicode").setAttribute( "data-attr", "\uD834\uDF06A" );
+
+	document.getElementById( "attrbad_unicode" ).setAttribute( "data-attr", "\uD834\uDF06A" );
 	// It was too much code to fix Safari 5.x Supplemental Plane crashes (see ba5f09fa404379a87370ec905ffa47f8ac40aaa3)
-	// deepEqual( Sizzle( "input[data-attr='\\01D306A']", null, null, attrbad ), q("attrbad_unicode"),
+	// deepEqual( Sizzle( "input[data-attr='\\01D306A']", null, null, attrbad ),
+	// 	q( "attrbad_unicode" ),
 	// 	"Long numeric escape (non-BMP)" );
+});
 
-	t( "input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"] );
-	t( "input[type=search]", "#form input[type=search]", ["search"] );
-	t( "script[src] (jQuery #13777)", "#moretests script[src]", ["script-src"] );
+test("attributes - other", function() {
+	expect( 7 );
 
-	// #3279
-	div = document.createElement("div");
-	div.innerHTML = "<div id='foo' xml:test='something'></div>";
+	var div = document.getElementById( "foo" );
 
-	deepEqual( Sizzle( "[xml\\:test]", div ), [ div.firstChild ], "Finding by attribute with escaped characters." );
+	t( "Selector list with multiple quoted attribute-equals",
+		"#form input[type='radio'], #form input[type='hidden']",
+		[ "radio1", "radio2", "hidden1" ] );
+	t( "Selector list with differently-quoted attribute-equals",
+		"#form input[type='radio'], #form input[type=\"hidden\"]",
+		[ "radio1", "radio2", "hidden1" ] );
+	t( "Selector list with quoted and unquoted attribute-equals",
+		"#form input[type='radio'], #form input[type=hidden]",
+		[ "radio1", "radio2", "hidden1" ] );
 
-	div = document.getElementById("foo");
-	t( "Object.prototype property \"constructor\" (negative)", "[constructor]", [] );
-	t( "Gecko Object.prototype property \"watch\" (negative)", "[watch]", [] );
+	t( "attribute name is Object.prototype property \"constructor\" (negative)",
+		"[constructor]",
+		[] );
+	t( "attribute name is Gecko Object.prototype property \"watch\" (negative)",
+		"[watch]",
+		[] );
 	div.setAttribute( "constructor", "foo" );
 	div.setAttribute( "watch", "bar" );
-	t( "Object.prototype property \"constructor\"", "[constructor='foo']", ["foo"] );
-	t( "Gecko Object.prototype property \"watch\"", "[watch='bar']", ["foo"] );
-
-	t( "Value attribute is retrieved correctly", "input[value=Test]", ["text1", "text2"] );
+	t( "attribute name is Object.prototype property \"constructor\"",
+		"[constructor='foo']",
+		[ "foo" ] );
+	t( "attribute name is Gecko Object.prototype property \"watch\"",
+		"[watch='bar']",
+		[ "foo" ] );
 });
 
 test("pseudo - (parent|empty)", function() {
@@ -954,9 +1002,16 @@ test("pseudo - form", function() {
 	t( "Form element :checkbox:checked", "#form :checkbox:checked", ["check1"] );
 	t( "Form element :radio:checked, :checkbox:checked", "#form :radio:checked, #form :checkbox:checked", ["radio2", "check1"] );
 
-	t( "Selected Option Element", "#form option:selected", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
-	t( "Selected Option Element are also :checked", "#form option:checked", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
-	t( "Hidden inputs should be treated as enabled. See QSA test.", "#hidden1:enabled", ["hidden1"] );
+	t( "Selected option element",
+		"#form option:selected",
+		[ "option1a", "option2d", "option3b", "option3c", "option4b", "option4c", "option4d",
+			"option5a" ] );
+	t( "Selected option elements are also :checked", "#form option:checked",
+		[ "option1a", "option2d", "option3b", "option3c", "option4b", "option4c", "option4d",
+			"option5a" ] );
+	t( "Hidden inputs are still :enabled",
+		"#hidden1:enabled",
+		[ "hidden1" ] );
 
 	extraTexts.remove();
 });
@@ -1173,19 +1228,43 @@ asyncTest( "Iframe dispatch should not affect Sizzle, see jQuery #13936", 1, fun
 });
 
 test("matchesSelector", function() {
-	expect( 6 );
+	expect( 16 );
 
-	var el = document.getElementById("simon1"),
-		disconnected = document.createElement("div");
+	var link = document.getElementById( "simon1" ),
+		input = document.getElementById( "text1" ),
+		option = document.getElementById( "option1a" ),
+		disconnected = document.createElement( "div" );
 
-	ok( Sizzle.matchesSelector( el, "[rel='bookmark']" ), "quoted attribute" );
-	ok( Sizzle.matchesSelector( el, "[rel=bookmark]" ), "unquoted attribute" );
-	ok( Sizzle.matchesSelector( el, "[\nrel = bookmark\t]" ), "unquoted attribute with non-semantic whitespace" );
+	link.title = "Don't click me";
+	ok( Sizzle.matchesSelector( link, "[rel='bookmark']" ), "attribute-equals string" );
+	ok( Sizzle.matchesSelector( link, "[rel=bookmark]" ), "attribute-equals identifier" );
+	ok( Sizzle.matchesSelector( link, "[\nrel = bookmark\t]" ),
+		"attribute-equals identifier (whitespace ignored)" );
+	ok( Sizzle.matchesSelector( link, "a[href*=#]" ),
+		"attribute-contains unquoted non-identifier" );
+	ok( Sizzle.matchesSelector( link, "a[title=\"Don't click me\"]" ),
+		"attribute-equals string containing single quote" );
+
+	// jQuery #12303
+	input.setAttribute( "data-pos", ":first" );
+	ok( Sizzle.matchesSelector( input, "input[data-pos=\\:first]" ),
+		"attribute-equals POS in identifier" );
+	ok( Sizzle.matchesSelector( input, "input[data-pos=':first']" ),
+		"attribute-equals POS in string" );
+	ok( Sizzle.matchesSelector( input, ":input[data-pos=':first']" ),
+		"attribute-equals POS in string after pseudo" );
+
+	option.setAttribute( "test", "" );
+	ok( Sizzle.matchesSelector( option, "[id=option1a]" ), "id attribute-equals identifier" );
+	ok( Sizzle.matchesSelector( option, "[id*=option1][type!=checkbox]" ),
+		"attribute-not-equals identifier" );
+	ok( Sizzle.matchesSelector( option, "[id*=option1]" ), "attribute-contains identifier" );
+	ok( Sizzle.matchesSelector( option, "[test=]" ), "attribute-equals non-value" );
+	ok( !Sizzle.matchesSelector( option, "[test^='']" ), "attribute-starts-with empty string (negative)" );
 
 	ok( Sizzle.matchesSelector( disconnected, "div" ), "disconnected element" );
-
-	ok( Sizzle.matchesSelector( el, "* > *" ), "child combinator (matching)" );
-	ok( !Sizzle.matchesSelector( disconnected, "* > *" ), "child combinator (not matching)" );
+	ok( Sizzle.matchesSelector( link, "* > *" ), "child combinator matches in document" );
+	ok( !Sizzle.matchesSelector( disconnected, "* > *" ), "child combinator fails in fragment" );
 });
 
 test("select() with pre-compiled function", function() {
