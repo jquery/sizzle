@@ -607,11 +607,6 @@ test("attributes - other", function() {
 	t( "Select options via :selected", "#select3 option:selected", ["option3b", "option3c"] );
 	t( "Select options via :selected", "select[name='select2'] option:selected", ["option2d"] );
 
-	// Uncomment if the boolHook is removed
-	// var check2 = document.getElementById("check2");
-	// check2.checked = true;
-	// ok( !Sizzle.matches("[checked]", [ check2 ] ), "Dynamic boolean attributes match when they should with Sizzle.matches (#11115)" );
-
 	t( "attribute name is Object.prototype property \"constructor\" (negative)",
 		"[constructor]",
 		[] );
