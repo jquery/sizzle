@@ -588,7 +588,7 @@ test("attributes - special characters", function() {
 });
 
 test("attributes - other", function() {
-	expect( 11 );
+	expect( 7 );
 
 	var div = document.getElementById( "foo" );
 
@@ -601,11 +601,6 @@ test("attributes - other", function() {
 	t( "Selector list with quoted and unquoted attribute-equals",
 		"#form input[type='radio'], #form input[type=hidden]",
 		[ "radio1", "radio2", "hidden1" ] );
-
-	t( "Select options via :selected", "#select1 option:selected", ["option1a"] );
-	t( "Select options via :selected", "#select2 option:selected", ["option2d"] );
-	t( "Select options via :selected", "#select3 option:selected", ["option3b", "option3c"] );
-	t( "Select options via :selected", "select[name='select2'] option:selected", ["option2d"] );
 
 	t( "attribute name is Object.prototype property \"constructor\" (negative)",
 		"[constructor]",
@@ -1006,9 +1001,16 @@ test("pseudo - form", function() {
 	t( "Form element :checkbox:checked", "#form :checkbox:checked", ["check1"] );
 	t( "Form element :radio:checked, :checkbox:checked", "#form :radio:checked, #form :checkbox:checked", ["radio2", "check1"] );
 
-	t( "Selected Option Element", "#form option:selected", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
-	t( "Selected Option Element are also :checked", "#form option:checked", ["option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a"] );
-	t( "Hidden inputs should be treated as enabled. See QSA test.", "#hidden1:enabled", ["hidden1"] );
+	t( "Selected Option Element",
+		"#form option:selected",
+		[ "option1a", "option2d", "option3b", "option3c", "option4b", "option4c", "option4d",
+			"option5a" ] );
+	t( "Selected Option Element are also :checked", "#form option:checked",
+		[ "option1a", "option2d", "option3b", "option3c", "option4b", "option4c", "option4d",
+			"option5a" ] );
+	t( "Hidden inputs are still enabled",
+		"#hidden1:enabled",
+		[ "hidden1" ] );
 
 	extraTexts.remove();
 });
