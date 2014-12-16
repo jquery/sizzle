@@ -426,8 +426,8 @@ test("attributes", function() {
 	t( "Attribute Equals Number", "#qunit-fixture li[tabIndex=-1]", ["foodWithNegativeTabIndex"] );
 
 	document.getElementById("anchor2").href = "#2";
-	t( "href Attribute", "p a[href^='#']", ["anchor2"] );
-	t( "href Attribute", "p a[href*='#']", ["simon1", "anchor2"] );
+	t( "href Attribute", "p a[href^=#]", ["anchor2"] );
+	t( "href Attribute", "p a[href*=#]", ["simon1", "anchor2"] );
 
 	t( "for Attribute", "form label[for]", ["label-for"] );
 	t( "for Attribute in form", "#form [for=action]", ["label-for"] );
