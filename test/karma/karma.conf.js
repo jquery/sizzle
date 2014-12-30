@@ -10,7 +10,7 @@ module.exports = function( config ) {
 		browserStack: {
 			project: "sizzle",
 			build: "local run" + (dateString ? ", " + dateString : ""),
-			timeout: 600 // 10 min
+			timeout: 30 // 0.5 min
 		},
 
 		// Can't specify path as "../../test" which would be intuitive
