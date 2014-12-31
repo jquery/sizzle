@@ -82,7 +82,7 @@ module.exports = function( grunt ) {
 						"hoist_funs": false,
 						loops: false
 					},
-					banner: "/*! Sizzle v<%= pkg.version %> | (c) 2008, 2014 " +
+					banner: "/*! Sizzle v<%= pkg.version %> | (c) " +
 						"jQuery Foundation, Inc. | jquery.org/license */",
 					sourceMap: true,
 					sourceMapName: "dist/sizzle.min.map",
