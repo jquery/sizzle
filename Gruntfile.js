@@ -238,7 +238,7 @@ module.exports = function( grunt ) {
 				"test/*.html",
 				"{package,bower}.json"
 			],
-			tasks: [ "lint", "karma:watch:run" ]
+			tasks: [ "build", "karma:watch:run" ]
 		}
 	});
 
