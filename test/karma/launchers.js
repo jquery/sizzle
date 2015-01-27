@@ -22,19 +22,19 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_firefox-32": {
+	"bs_firefox-34": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "32.0",
+		browser_version: "34.0",
 		os: "OS X",
-		os_version: "Mavericks"
+		os_version: "Yosemite"
 	},
-	"bs_firefox-33": {
+	"bs_firefox-35": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "33.0",
+		browser_version: "35.0",
 		os: "OS X",
-		os_version: "Mavericks"
+		os_version: "Yosemite"
 	},
 
 	"bs_chrome-14": {
@@ -51,19 +51,19 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_chrome-37": {
-		base: "BrowserStack",
-		browser: "chrome",
-		browser_version: "37.0",
-		os: "OS X",
-		os_version: "Mavericks"
-	},
 	"bs_chrome-38": {
 		base: "BrowserStack",
 		browser: "chrome",
 		browser_version: "38.0",
 		os: "OS X",
-		os_version: "Mavericks"
+		os_version: "Yosemite"
+	},
+	"bs_chrome-39": {
+		base: "BrowserStack",
+		browser: "chrome",
+		browser_version: "39.0",
+		os: "OS X",
+		os_version: "Yosemite"
 	},
 
 	"bs_ie-6": {
@@ -123,19 +123,27 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-24": {
-		base: "BrowserStack",
-		browser: "opera",
-		browser_version: "24.0",
-		os: "OS X",
-		os_version: "Mavericks"
-	},
 	"bs_opera-25": {
 		base: "BrowserStack",
 		browser: "opera",
 		browser_version: "25.0",
 		os: "OS X",
-		os_version: "Mavericks"
+		os_version: "Yosemite"
+	},
+	"bs_opera-26": {
+		base: "BrowserStack",
+		browser: "opera",
+		browser_version: "26.0",
+		os: "OS X",
+		os_version: "Yosemite"
+	},
+
+	"bs_yandex-14.5": {
+		base: "BrowserStack",
+		browser: "yandex",
+		browser_version: "14.5",
+		os: "OS X",
+		os_version: "Yosemite"
 	},
 
 	"bs_safari-4.0": {
@@ -179,6 +187,13 @@ module.exports = {
 		browser_version: "7.0",
 		os: "OS X",
 		os_version: "Mavericks"
+	},
+	"bs_safari-8.0": {
+		base: "BrowserStack",
+		browser: "safari",
+		browser_version: "8.0",
+		os: "OS X",
+		os_version: "Yosemite"
 	},
 
 	"bs_ios-5.1": {
