@@ -258,12 +258,13 @@ module.exports = function( grunt ) {
 	grunt.registerTask( "tests", isBrowserStack ? [
 		"karma:phantom", "karma:desktop",
 
-		"karma:ios", "karma:android",
+		"karma:ios",
 
 		"karma:oldIe", "karma:oldFirefox", "karma:oldChrome",
-		"karma:oldSafari", "karma:oldOpera",
+		"karma:oldSafari", "karma:oldOpera"
 
-		"karma:oldAndroid"
+		// See #314 :-(
+		// "karma:android", "karma:oldAndroid"
 	] : "karma:phantom" );
 
 	grunt.registerTask( "build", [ "lint", "compile", "uglify", "dist" ] );
