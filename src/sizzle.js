@@ -447,6 +447,9 @@ function testContext( context ) {
 // Expose support vars for convenience
 support = Sizzle.support = {};
 
+// Expose expando so it can be removed if needed (#310)
+Sizzle.expando = expando;
+
 /**
  * Detects XML nodes
  * @param {Element|Object} elem An element or a document

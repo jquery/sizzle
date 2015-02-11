@@ -2,11 +2,11 @@
  * Sizzle CSS Selector Engine v2.2.0-pre
  * http://sizzlejs.com/
  *
- * Copyright 2008, 2014 jQuery Foundation, Inc. and other contributors
+ * Copyright jQuery Foundation and other contributors
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2014-12-30
+ * Date: 2015-02-11
  */
 (function( window ) {
 
@@ -446,6 +446,9 @@ function testContext( context ) {
 
 // Expose support vars for convenience
 support = Sizzle.support = {};
+
+// Expose expando so it can be removed if needed (#310)
+Sizzle.expando = expando;
 
 /**
  * Detects XML nodes
