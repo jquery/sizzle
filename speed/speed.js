@@ -9,7 +9,17 @@ require([
 function( Benchmark, document, selectors ) {
 
 	// Convert selectors to an array
-	selectors = selectors.split("\n");
+	selectors = (function() {
+		var s = selectors.split( "\n" ),
+			i = 0;
+
+		for ( ; i < s.length; i++ ) {
+			if ( !s[ i ] ) {
+				s.splice( i--, 1 );
+			}
+		}
+		return s;
+	})();
 
 	var // Used to indicate whether console profiling is begin run
 		profiling,
