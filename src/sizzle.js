@@ -251,7 +251,7 @@ function Sizzle( selector, context, results, seed ) {
 		}
 
 		// QSA path
-		if ( support.qsa && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
+		if ( support.qsa && !compilerCache[ selector + " " ] && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
 			nid = old = expando;
 			newContext = context;
 			newSelector = nodeType !== 1 && selector;
@@ -284,7 +284,7 @@ function Sizzle( selector, context, results, seed ) {
 						newContext.querySelectorAll( newSelector )
 					);
 					return results;
-				} catch(qsaError) {
+				} catch ( qsaError ) {
 				} finally {
 					if ( !old ) {
 						context.removeAttribute("id");
@@ -852,6 +852,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 	expr = expr.replace( rattributeQuotes, "='$1']" );
 
 	if ( support.matchesSelector && documentIsHTML &&
+		!compilerCache[ expr + " " ] &&
 		( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
 		( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
 
