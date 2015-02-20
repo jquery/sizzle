@@ -231,6 +231,9 @@ module.exports = function( grunt ) {
 			}
 		},
 		watch: {
+			options: {
+				livereload: true
+			},
 			files: [
 				files.source,
 				files.grunt,
