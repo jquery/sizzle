@@ -1267,6 +1267,28 @@ test("matchesSelector", function() {
 	ok( !Sizzle.matchesSelector( disconnected, "* > *" ), "child combinator fails in fragment" );
 });
 
+test("matches", function() {
+	expect( 3 );
+
+	var iframeChild,
+		input = document.getElementById( "text1" ),
+		div = document.createElement( "div" ),
+		iframe = document.getElementById( "iframe" ),
+		iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+	deepEqual( Sizzle.matches( "input", [ input ] ), [ input ], "Sizzle.matches with seed of input element" );
+	deepEqual( Sizzle.matches( "div", [ div ] ), [ div ], "Sizzle.matches with disconnected element" );
+
+	iframeDoc.open();
+	iframeDoc.write( "<body><div id='foo'><div id='bar'></div></div></body>" );
+	iframeDoc.close();
+
+	iframeChild = iframeDoc.getElementById( "bar" );
+
+	deepEqual( Sizzle.matches( ":root > body > #foo > #bar", [ iframeChild ] ), [ iframeChild ],
+		"Sizzle.matches infers context from element" );
+});
+
 test("select() with pre-compiled function", function() {
 	expect( 6 );
 
