@@ -249,6 +249,11 @@ test("id", function() {
 	t( "Dash ID", "#qunit-fixture", ["qunit-fixture"] );
 
 	t( "ID with weird characters in it", "#name\\+value", ["name+value"] );
+	try {
+		Sizzle( "#." );
+	} catch ( e ) {
+		ok( false, "ID with a leading dot should not throw an exception" );
+	}
 });
 
 test("class", function() {
