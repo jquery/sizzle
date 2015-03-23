@@ -489,8 +489,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// If iframe document is assigned to "document" variable and if iframe has been reloaded,
 	// IE will throw "permission denied" error when accessing "document" variable, see jQuery #13936
 	// IE6-8 do not support the defaultView property so parent will be undefined
-	if ( parent && parent !== parent.top ) {
-		// IE11 does not have attachEvent, so all must suffer
+	// Limit teardown handler to IE, see Sizzle gh-316
+	if ( parent && parent !== parent.top && document.documentMode ) {
+		// IE11 does not have attachEvent
 		if ( parent.addEventListener ) {
 			parent.addEventListener( "unload", unloadHandler, false );
 		} else if ( parent.attachEvent ) {
