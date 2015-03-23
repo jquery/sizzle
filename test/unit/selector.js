@@ -1268,7 +1268,7 @@ test("matchesSelector", function() {
 });
 
 test("matches", function() {
-	expect( 3 );
+	expect( 4 );
 
 	var iframeChild,
 		input = document.getElementById( "text1" ),
@@ -1287,6 +1287,11 @@ test("matches", function() {
 
 	deepEqual( Sizzle.matches( ":root > body > #foo > #bar", [ iframeChild ] ), [ iframeChild ],
 		"Sizzle.matches infers context from element" );
+
+	deepEqual(
+		Sizzle.matches( ":root *", [ div, iframeChild, input ] ),
+		[ iframeChild, input ],
+		"Sizzle.matches infers context from each seed element" );
 });
 
 test("select() with pre-compiled function", function() {

@@ -1831,12 +1831,12 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 			for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
 				if ( byElement && elem ) {
 					j = 0;
-					if ( !context && ( elem.ownerDocument || elem ) !== document ) {
+					if ( !context && elem.ownerDocument !== document ) {
 						setDocument( elem );
-						context = document;
+						xml = !documentIsHTML;
 					}
 					while ( (matcher = elementMatchers[j++]) ) {
-						if ( matcher( elem, context, xml ) ) {
+						if ( matcher( elem, context || document, xml) ) {
 							results.push( elem );
 							break;
 						}
