@@ -191,15 +191,16 @@ try {
 }
 
 function Sizzle( selector, context, results, seed ) {
-	var match, elem, m, nodeType,
-		// QSA vars
-		i, groups, old, nid, newContext, newSelector;
+	var m, i, elem, nid, match, groups, newSelector,
+		newContext = context && context.ownerDocument,
+
+		// nodeType defaults to 9, since context defaults to document
+		nodeType = context ? context.nodeType : 9;
 
 	results = results || [];
 
 	// Return early from calls with invalid selector or context
 	if ( typeof selector !== "string" || !selector ||
-		context && (nodeType = context.nodeType) &&
 		nodeType !== 1 && nodeType !== 9 && nodeType !== 11 ) {
 
 		return results;
@@ -211,10 +212,9 @@ function Sizzle( selector, context, results, seed ) {
 		if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
 			setDocument( context );
 		}
+		context = context || document;
 
 		if ( documentIsHTML ) {
-			context = context || document;
-			nodeType = context.nodeType;
 
 			// If the selector is sufficiently simple, try using a "get*By*" DOM method
 			// (excepting DocumentFragment context, where the methods don't exist)
@@ -244,9 +244,9 @@ function Sizzle( selector, context, results, seed ) {
 						// Support: IE, Opera, Webkit
 						// TODO: identify versions
 						// getElementById can match elements by name instead of ID
-						if ( context.ownerDocument &&
-							(elem = context.ownerDocument.getElementById( m )) &&
-							contains( context, elem ) && elem.id === m ) {
+						if ( newContext && (elem = newContext.getElementById( m )) &&
+							contains( context, elem ) &&
+							elem.id === m ) {
 
 							results.push( elem );
 							return results;
@@ -270,37 +270,34 @@ function Sizzle( selector, context, results, seed ) {
 				!compilerCache[ selector + " " ] &&
 				(!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
 
-				nid = old = expando;
-				newContext = context;
-				newSelector = nodeType !== 1 && selector;
+				if ( nodeType !== 1 ) {
+					newContext = context;
+					newSelector = selector;
 
 				// qSA looks outside Element context, which is not what we want
 				// Thanks to Andrew Dupont for this workaround technique
 				// Support: IE <=8
 				// Exclude object elements
-				if ( nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
-					groups = tokenize( selector );
+				} else if ( context.nodeName.toLowerCase() !== "object" ) {
 
 					// Capture the context ID, setting it first if necessary
-					if ( (old = context.getAttribute( "id" )) ) {
-						nid = old.replace( rescape, "\\$&" );
+					if ( (nid = context.getAttribute( "id" )) ) {
+						nid = nid.replace( rescape, "\\$&" );
 					} else {
-						context.setAttribute( "id", nid );
+						context.setAttribute( "id", (nid = expando) );
 					}
 
 					// Prefix every selector in the list
-					nid = "[id='" + nid + "'] ";
+					groups = tokenize( selector );
 					i = groups.length;
 					while ( i-- ) {
-						groups[i] = nid + toSelector( groups[i] );
+						groups[i] = "[id='" + nid + "'] " + toSelector( groups[i] );
 					}
+					newSelector = groups.join( "," );
 
 					// Expand context for sibling selectors
 					newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
 						context;
-
-					// Update selector
-					newSelector = groups.join( "," );
 				}
 
 				if ( newSelector ) {
@@ -311,7 +308,7 @@ function Sizzle( selector, context, results, seed ) {
 						return results;
 					} catch ( qsaError ) {
 					} finally {
-						if ( !old ) {
+						if ( nid === expando ) {
 							context.removeAttribute( "id" );
 						}
 					}
