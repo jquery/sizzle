@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2015-03-23
+ * Date: 2015-03-24
  */
 (function( window ) {
 
@@ -197,6 +197,7 @@ function Sizzle( selector, context, results, seed ) {
 
 	results = results || [];
 
+	// Return early from calls with invalid selector or context
 	if ( typeof selector !== "string" || !selector ||
 		context && (nodeType = context.nodeType) &&
 		nodeType !== 1 && nodeType !== 9 && nodeType !== 11 ) {
@@ -204,6 +205,7 @@ function Sizzle( selector, context, results, seed ) {
 		return results;
 	}
 
+	// Try to shortcut find operations (as opposed to filters) in HTML documents
 	if ( !seed ) {
 
 		if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
@@ -214,17 +216,24 @@ function Sizzle( selector, context, results, seed ) {
 			context = context || document;
 			nodeType = context.nodeType;
 
-			// Try to shortcut find operations when possible (e.g., not under DocumentFragment)
+			// If the selector is sufficiently simple, try using a "get*By*" DOM method
+			// (excepting DocumentFragment context, where the methods don't exist)
 			if ( nodeType !== 11 && (match = rquickExpr.exec( selector )) ) {
-				// Speed-up: Sizzle("#ID")
+
+				// ID selector
 				if ( (m = match[1]) ) {
+
+					// Document context
 					if ( nodeType === 9 ) {
 						elem = context.getElementById( m );
-						// Check parentNode to catch when Blackberry 4.6 returns
-						// nodes that are no longer in the document (jQuery #6963)
+
+						// Support: Blackberry <=4.6
+						// getElementById can return detached nodes (jQuery trac-6963)
 						if ( elem && elem.parentNode ) {
-							// Handle the case where IE, Opera, and Webkit return items
-							// by name instead of ID
+
+							// Support: IE, Opera, Webkit
+							// TODO: identify versions
+							// getElementById can match elements by name instead of ID
 							if ( elem.id === m ) {
 								results.push( elem );
 								return results;
@@ -232,53 +241,70 @@ function Sizzle( selector, context, results, seed ) {
 						} else {
 							return results;
 						}
+
+					// Element context
 					} else {
-						// Context is not a document
-						if ( context.ownerDocument && (elem = context.ownerDocument.getElementById( m )) &&
+
+						// Support: IE, Opera, Webkit
+						// TODO: identify versions
+						// getElementById can match elements by name instead of ID
+						if ( context.ownerDocument &&
+							(elem = context.ownerDocument.getElementById( m )) &&
 							contains( context, elem ) && elem.id === m ) {
+
 							results.push( elem );
 							return results;
 						}
 					}
 
-				// Speed-up: Sizzle("TAG")
+				// Type selector
 				} else if ( match[2] ) {
 					push.apply( results, context.getElementsByTagName( selector ) );
 					return results;
 
-				// Speed-up: Sizzle(".CLASS")
+				// Class selector
 				} else if ( (m = match[3]) && support.getElementsByClassName ) {
 					push.apply( results, context.getElementsByClassName( m ) );
 					return results;
 				}
 			}
 
-			// QSA path
-			if ( support.qsa && !compilerCache[ selector + " " ] && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
+			// Take advantage of querySelectorAll
+			if ( support.qsa &&
+				!compilerCache[ selector + " " ] &&
+				(!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
+
 				nid = old = expando;
 				newContext = context;
 				newSelector = nodeType !== 1 && selector;
 
-				// qSA works strangely on Element-rooted queries
-				// We can work around this by specifying an extra ID on the root
-				// and working up from there (Thanks to Andrew Dupont for the technique)
-				// IE 8 doesn't work on object elements
+				// qSA looks outside Element context, which is not what we want
+				// Thanks to Andrew Dupont for this workaround technique
+				// Support: IE <=8
+				// Exclude object elements
 				if ( nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
 					groups = tokenize( selector );
 
-					if ( (old = context.getAttribute("id")) ) {
+					// Capture the context ID, setting it first if necessary
+					if ( (old = context.getAttribute( "id" )) ) {
 						nid = old.replace( rescape, "\\$&" );
 					} else {
 						context.setAttribute( "id", nid );
 					}
-					nid = "[id='" + nid + "'] ";
 
+					// Prefix every selector in the list
+					nid = "[id='" + nid + "'] ";
 					i = groups.length;
 					while ( i-- ) {
 						groups[i] = nid + toSelector( groups[i] );
 					}
-					newContext = rsibling.test( selector ) && testContext( context.parentNode ) || context;
-					newSelector = groups.join(",");
+
+					// Expand context for sibling selectors
+					newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
+						context;
+
+					// Update selector
+					newSelector = groups.join( "," );
 				}
 
 				if ( newSelector ) {
@@ -290,7 +316,7 @@ function Sizzle( selector, context, results, seed ) {
 					} catch ( qsaError ) {
 					} finally {
 						if ( !old ) {
-							context.removeAttribute("id");
+							context.removeAttribute( "id" );
 						}
 					}
 				}
@@ -475,7 +501,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	var hasCompare, parent,
 		doc = node ? node.ownerDocument || node : preferredDoc;
 
-	// If no document and documentElement is available, return
+	// Return early if doc is invalid or already selected
 	if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
 		return document;
 	}
@@ -483,17 +509,17 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Set our document
 	document = doc;
 	docElem = doc.documentElement;
-	parent = doc.defaultView;
 
-	// Support: IE>8
-	// If iframe document is assigned to "document" variable and if iframe has been reloaded,
-	// IE will throw "permission denied" error when accessing "document" variable, see jQuery #13936
-	// IE6-8 do not support the defaultView property so parent will be undefined
-	// Limit teardown handler to IE, see Sizzle gh-316
+	// Support: IE 9 - 11
+	// Accessing iframe documents after unload throws "permission denied" errors (jQuery #13936)
+	// Limit the fix to IE with document.documentMode and IE >=9 with document.defaultView
+	parent = doc.defaultView;
 	if ( parent && parent !== parent.top && document.documentMode ) {
-		// IE11 does not have attachEvent
+		// Support: IE 11
 		if ( parent.addEventListener ) {
 			parent.addEventListener( "unload", unloadHandler, false );
+
+		// Support: IE 9 - 10 only
 		} else if ( parent.attachEvent ) {
 			parent.attachEvent( "onunload", unloadHandler );
 		}
@@ -559,7 +585,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 		Expr.filter["ID"] =  function( id ) {
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
-				var node = typeof elem.getAttributeNode !== "undefined" && elem.getAttributeNode("id");
+				var node = typeof elem.getAttributeNode !== "undefined" &&
+					elem.getAttributeNode("id");
 				return node && node.value === attrId;
 			};
 		};
@@ -1799,7 +1826,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 				contextBackup = outermostContext,
 				// We must always have either seed elements or outermost context
 				elems = seed || byElement && Expr.find["TAG"]( "*", outermost ),
-				// Use integer dirruns if this is the outermost matcher
+				// Use integer dirruns iff this is the outermost matcher
 				dirrunsUnique = (dirruns += contextBackup == null ? 1 : Math.random() || 0.1),
 				len = elems.length;
 
@@ -1808,7 +1835,6 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 			}
 
 			// Add elements passing elementMatchers directly to results
-			// Keep `i` a string if there are no elements so `matchedCount` will be "00" below
 			// Support: IE<9, Safari
 			// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
 			for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
@@ -1843,8 +1869,17 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 				}
 			}
 
-			// Apply set filters to unmatched elements
+			// `i` is now the count of elements visited above, and adding it to `matchedCount`
+			// makes the latter nonnegative.
 			matchedCount += i;
+
+			// Apply set filters to unmatched elements
+			// NOTE: This can be skipped if there are no unmatched elements (i.e., `matchedCount`
+			// equals `i`), unless we didn't visit _any_ elements in the above loop because we have
+			// no element matchers and no seed.
+			// Incrementing an initially-string "0" `i` allows `i` to remain a string only in that
+			// case, which will result in a "00" `matchedCount` that differs from `i` but is also
+			// numerically zero.
 			if ( bySet && i !== matchedCount ) {
 				j = 0;
 				while ( (matcher = setMatchers[j++]) ) {
@@ -1936,10 +1971,11 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 
 	results = results || [];
 
-	// Try to minimize operations if there is no seed and only one group
+	// Try to minimize operations if there is only one selector in the list and no seed
+	// (the latter of which guarantees us context)
 	if ( match.length === 1 ) {
 
-		// Take a shortcut and set the context if the root selector is an ID
+		// Reduce context if the leading compound selector is an ID
 		tokens = match[0] = match[0].slice( 0 );
 		if ( tokens.length > 2 && (token = tokens[0]).type === "ID" &&
 				support.getById && context.nodeType === 9 && documentIsHTML &&
