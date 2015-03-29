@@ -1188,13 +1188,27 @@ test("context", function() {
 });
 
 test("caching", function() {
-	expect( 2 );
+	expect( 3 );
+
+	var sap = document.getElementById("sap");
+
 	Sizzle( ":not(code)", document.getElementById("ap") );
-	deepEqual( Sizzle( ":not(code)", document.getElementById("foo") ), q("sndp", "en", "yahoo", "sap", "anchor2", "simon"), "Reusing selector with new context" );
+	deepEqual(
+		Sizzle( ":not(code)", document.getElementById("foo") ),
+		q( "sndp", "en", "yahoo", "sap", "anchor2", "simon" ),
+		"Reusing selector with new context"
+	);
 
 	t( "Deep ancestry caching in post-positional element matcher (jQuery #14657)",
 		"#qunit-fixture a:lt(3):parent",
 		[ "simon1", "google", "groups" ] );
+
+	sap.className = "original";
+	Sizzle( "#qunit-fixture:noQSA .original" );
+	document.getElementById("nothiddendiv").appendChild(
+		sap.cloneNode( true ) ).className = "clone";
+	equal( Sizzle( "#qunit-fixture:noQSA .clone [href*='2']" ).length, 1,
+		"Cloning does not poison caches" );
 });
 
 asyncTest( "Iframe dispatch should not affect Sizzle, see jQuery #13936", 1, function() {
