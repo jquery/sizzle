@@ -23,6 +23,7 @@ module.exports = function( config ) {
 		files: [
 			"external/jquery/jquery.js",
 			"dist/sizzle.js",
+			"test/data/testingPseudos.js",
 
 			// Base fixtures
 			{
