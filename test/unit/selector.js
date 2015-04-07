@@ -108,8 +108,8 @@ test("element", function() {
 		html = "<div>" + html + "</div>";
 	}
 	html = jQuery( html ).appendTo( document.body );
-	ok( !!Sizzle("body div div div").length, "No stack or performance problems with large amounts of descendents" );
-	ok( !!Sizzle("body>div div div").length, "No stack or performance problems with large amounts of descendents" );
+	ok( !!Sizzle("body div div div").length, "No stack or performance problems with large amounts of descendants" );
+	ok( !!Sizzle("body>div div div").length, "No stack or performance problems with large amounts of descendants" );
 	html.remove();
 
 	// Real use case would be using .watch in browsers with window.watch (see Issue #157)
@@ -212,7 +212,7 @@ test("id", function() {
 	t( "Child ID selector using UTF8", "form > #台北", ["台北"] );
 
 	t( "Escaped ID", "#foo\\:bar", ["foo:bar"] );
-	t( "Escaped ID with descendent", "#foo\\:bar span:not(:input)", ["foo_descendent"] );
+	t( "Escaped ID with descendant", "#foo\\:bar span:not(:input)", ["foo_descendant"] );
 	t( "Escaped ID", "#test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
 	t( "Descendant escaped ID", "div #foo\\:bar", ["foo:bar"] );
 	t( "Descendant escaped ID", "div #test\\.foo\\[5\\]bar", ["test.foo[5]bar"] );
