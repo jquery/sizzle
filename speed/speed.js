@@ -29,7 +29,7 @@ function( Benchmark, document, selectors ) {
 
 		// Class manipulation
 		// IE doesn't match non-breaking spaces with \s
-		rtrim = /\S/.test( "\xA0" ) ? (/^[\s\xA0]+|[\s\xA0]+$/g) : /^\s+|\s+$/g,
+		rtrim = /\S/.test( "\xA0" ) ? ( /^[\s\xA0]+|[\s\xA0]+$/g ) : /^\s+|\s+$/g,
 		rspaces = /\s+/,
 		ptrim = String.prototype.trim,
 
@@ -227,7 +227,7 @@ function( Benchmark, document, selectors ) {
 	 *  of the row that has just been tested
 	 */
 	function firstTestedColumn() {
-		return selectorIndex * (numEngines + 1) + 1;
+		return selectorIndex * ( numEngines + 1 ) + 1;
 	}
 
 	/**
@@ -244,7 +244,7 @@ function( Benchmark, document, selectors ) {
 	 * // => "data/test.php?foo=bar&10538358345554"
 	 */
 	function url( value ) {
-		return value + (/\?/.test( value ) ? "&" : "?") + new Date().getTime() + "" + parseInt( Math.random() * 100000, 10 );
+		return value + ( /\?/.test( value ) ? "&" : "?" ) + new Date().getTime() + "" + parseInt( Math.random() * 100000, 10 );
 	}
 
 	/**
@@ -275,7 +275,7 @@ function( Benchmark, document, selectors ) {
 			count = returned[ engine ][ selector ];
 			if ( count ) {
 				count = count.length;
-				counts[ count ] = (counts[ count ] || 0) + 1;
+				counts[ count ] = ( counts[ count ] || 0 ) + 1;
 			}
 		}
 
@@ -369,7 +369,7 @@ function( Benchmark, document, selectors ) {
 					"w",
 					"s",
 					"d",
-					"return " + (engine !== "qsa" ? "w." : "") + engines[ engine ]
+					"return " + ( engine !== "qsa" ? "w." : "" ) + engines[ engine ]
 				);
 			suite.add( engine, function() {
 				returned[ engine ][ selector ] = select( win, selector, document );
@@ -587,7 +587,7 @@ function( Benchmark, document, selectors ) {
 
 			// Add totals to table
 			i = firstTestedColumn();
-			while ( (elem = tds[ i++ ]) ) {
+			while ( ( elem = tds[ i++ ] ) ) {
 				attr = elem.getAttribute( "data-engine" );
 				if ( attr === fastest ) {
 					addClass( elem, "green" );
