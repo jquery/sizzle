@@ -23,7 +23,7 @@ module.exports = function( grunt ) {
 						( "0" + ( date.getMonth() + 1 ) ).slice( -2 ),
 						( "0" + date.getDate() ).slice( -2 )
 					].join( "-" );
-				});
+				} );
 
 			// Write source to file
 			grunt.file.write( dest, compiled );

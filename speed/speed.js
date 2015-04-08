@@ -1,7 +1,7 @@
 /*
  * Performance test suite using benchmark.js
  */
-require([
+require( [
 	"../external/benchmark/benchmark",
 	"../external/requirejs-domready/domReady!",
 	"../external/requirejs-text/text!selectors.css"
@@ -9,7 +9,7 @@ require([
 function( Benchmark, document, selectors ) {
 
 	// Convert selectors to an array
-	selectors = (function() {
+	selectors = ( function() {
 		var s = selectors.split( "\n" ),
 			i = 0;
 
@@ -19,15 +19,17 @@ function( Benchmark, document, selectors ) {
 			}
 		}
 		return s;
-	})();
+	} )();
 
-	var // Used to indicate whether console profiling is begin run
+	var
+
+		// Used to indicate whether console profiling is begin run
 		profiling,
 		trim,
 
 		// Class manipulation
 		// IE doesn't match non-breaking spaces with \s
-		rtrim = /\S/.test("\xA0") ? (/^[\s\xA0]+|[\s\xA0]+$/g) : /^\s+|\s+$/g,
+		rtrim = /\S/.test( "\xA0" ) ? (/^[\s\xA0]+|[\s\xA0]+$/g) : /^\s+|\s+$/g,
 		rspaces = /\s+/,
 		ptrim = String.prototype.trim,
 
@@ -35,18 +37,19 @@ function( Benchmark, document, selectors ) {
 		testHtml = "selector",
 
 		// Construct search parameters object
-		urlParams = (function() {
+		urlParams = ( function() {
 			var parts, value,
 				params = {},
-				search = location.search.substring(1).split("&"),
+				search = location.search.substring( 1 ).split( "&" ),
 				i = 0,
 				len = search.length;
 
 			for ( ; i < len; i++ ) {
-				parts = search[i].split("=");
-				value = parts[1];
+				parts = search[ i ].split( "=" );
+				value = parts[ 1 ];
+
 				// Cast booleans and treat no value as true
-				params[ decodeURIComponent(parts[0]) ] =
+				params[ decodeURIComponent( parts[ 0 ] ) ] =
 					value && value !== "true" ?
 						value === "false" ? false :
 						decodeURIComponent( value ) :
@@ -54,7 +57,7 @@ function( Benchmark, document, selectors ) {
 			}
 
 			return params;
-		})(),
+		} )(),
 
 		// Whether to allow the use of QSA by the selector engines
 		useQSA = urlParams.qsa || false,
@@ -70,6 +73,7 @@ function( Benchmark, document, selectors ) {
 		errors = {},
 
 		// Selector engines
+		// jscs:disable requirePaddingNewLinesBeforeLineComments
 		engines = {
 			// "qsa":                  "d.querySelectorAll( s )",
 			"jquery-1.7.2/jquery":  "jQuery.find( s, d )",
@@ -80,29 +84,30 @@ function( Benchmark, document, selectors ) {
 			"mootools-slick/slick": "Slick.search( d, s )",
 			"nwmatcher/nwmatcher":  "NW.Dom.select( s, d )"
 		},
+		// jscs:enable requirePaddingNewLinesBeforeLineComments
 
 		// Keeps track of overall scores
-		scores = (function() {
+		scores = ( function() {
 			var engine,
 				scores = {};
 			for ( engine in engines ) {
 				scores[ engine ] = 0;
 			}
 			return scores;
-		})(),
+		} )(),
 
 		// Keeps track of the number of elements returned
-		returned = (function() {
+		returned = ( function() {
 			var engine,
 				returned = {};
 			for ( engine in engines ) {
 				returned[ engine ] = {};
 			}
 			return returned;
-		})(),
+		} )(),
 
 		// Just counts the engines
-		numEngines = (function() {
+		numEngines = ( function() {
 			var engine,
 				count = 0;
 
@@ -110,7 +115,7 @@ function( Benchmark, document, selectors ) {
 				count++;
 			}
 			return count;
-		})(),
+		} )(),
 
 		selectorIndex = 0;
 
@@ -156,7 +161,7 @@ function( Benchmark, document, selectors ) {
 			len = classStr.length;
 		for ( ; i < len; ++i ) {
 			c = classStr[ i ];
-			if ( c && cls.indexOf(" " + c + " ") < 0 ) {
+			if ( c && cls.indexOf( " " + c + " " ) < 0 ) {
 				cls += c + " ";
 			}
 		}
@@ -179,11 +184,12 @@ function( Benchmark, document, selectors ) {
 			i = 0;
 			len = classStr.length;
 			for ( ; i < len; ++i ) {
-				cls = cls.replace(" " + classStr[ i ] + " ", " ");
+				cls = cls.replace( " " + classStr[ i ] + " ", " " );
 			}
 			cls = trim( cls );
+
+		// Remove all classes
 		} else {
-			// Remove all classes
 			cls = "";
 		}
 
@@ -231,10 +237,10 @@ function( Benchmark, document, selectors ) {
 	 * @param {String} value The url to which to add cache control
 	 * @returns {String} Returns the new url
 	 *
-	 * @example url("data/test.html")
+	 * @example url( "data/test.html" )
 	 * // => "data/test.html?10538358428943"
 	 *
-	 * @example url("data/test.php?foo=bar")
+	 * @example url( "data/test.php?foo=bar" )
 	 * // => "data/test.php?foo=bar&10538358345554"
 	 */
 	function url( value ) {
@@ -306,13 +312,13 @@ function( Benchmark, document, selectors ) {
 		// Build out initial rows
 		for ( ; i < len; i++ ) {
 			rows += "<tr><td id='selector" + i + "' class='small selector'><span>" +
-				selectors[i] + "</span></td>" + emptyColumns + "</tr>";
+				selectors[ i ] + "</span></td>" + emptyColumns + "</tr>";
 		}
 		rows += "<tr><td id='results' class='bold'>Total (more is better)</td>" +
 			emptyColumns + "</tr>";
 
-		get("perf-table-headers").innerHTML = headers;
-		get("perf-table-body").innerHTML = rows;
+		get( "perf-table-headers" ).innerHTML = headers;
+		get( "perf-table-body" ).innerHTML = rows;
 	}
 
 	/**
@@ -329,7 +335,7 @@ function( Benchmark, document, selectors ) {
 				"&suite=" + encodeURIComponent( suite ) +
 				"&callback=" + callbackIndex +
 				"&qsa=" + useQSA ),
-			iframe = document.createElement("iframe");
+			iframe = document.createElement( "iframe" );
 		iframe.setAttribute( "src", src );
 		iframe.style.cssText = "width: 500px; height: 500px; position: absolute; " +
 			"top: -600px; left: -600px; visibility: hidden;";
@@ -367,7 +373,7 @@ function( Benchmark, document, selectors ) {
 				);
 			suite.add( engine, function() {
 				returned[ engine ][ selector ] = select( win, selector, document );
-			});
+			} );
 			if ( typeof iframeLoaded !== "undefined" ) {
 				iframeLoaded();
 			}
@@ -378,13 +384,13 @@ function( Benchmark, document, selectors ) {
 			name = suite.name,
 			callbacks = window.iframeCallbacks[ name ];
 
-		index = callbacks.push(function() {
+		index = callbacks.push( function() {
 			var self = this,
 				args = arguments;
-			setTimeout(function() {
+			setTimeout( function() {
 				test.apply( self, args );
 			}, 0 );
-		}) - 1;
+		} ) - 1;
 
 		// Load fixture in iframe and add it to the list
 		createIframe( engine, name, index );
@@ -408,7 +414,6 @@ function( Benchmark, document, selectors ) {
 		 *   have loaded to run the suite
 		 */
 		function loaded() {
-			// Run the suite
 			if ( --count === 0 ) {
 				suite.run();
 			}
@@ -452,24 +457,24 @@ function( Benchmark, document, selectors ) {
 	function onCycle( event ) {
 		var i = firstTestedColumn(),
 			len = i + numEngines,
-			tableBody = get("perf-table-body"),
-			tds = tableBody.getElementsByTagName("td"),
+			tableBody = get( "perf-table-body" ),
+			tds = tableBody.getElementsByTagName( "td" ),
 			bench = event.target,
 			hasError = errors[ bench.id ],
 			textNode = document.createTextNode(
 				hasError ?
 					"FAILED" :
-					Benchmark.formatNumber(getHz( bench ).toFixed( 2 )) + "o/s | " +
-						returned[ bench.name ][ selectors[selectorIndex] ].length +
+					Benchmark.formatNumber( getHz( bench ).toFixed( 2 ) ) + "o/s | " +
+						returned[ bench.name ][ selectors[ selectorIndex ] ].length +
 						" found"
 			);
 
 		// Add the result to the row
 		for ( ; i < len; i++ ) {
-			if ( tds[i].getAttribute("data-engine") === bench.name ) {
-				tds[i].appendChild( textNode );
+			if ( tds[ i ].getAttribute( "data-engine" ) === bench.name ) {
+				tds[ i ].appendChild( textNode );
 				if ( hasError ) {
-					addClass( tds[i], "black" );
+					addClass( tds[ i ], "black" );
 				}
 				break;
 			}
@@ -491,44 +496,46 @@ function( Benchmark, document, selectors ) {
 		profileEnd( selectors[selectorIndex] );
 		var fastestHz, slowestHz, elem, attr, j, jlen, td, ret,
 			i = firstTestedColumn(),
+
 			// Determine different elements returned
 			selector = selectors[ selectorIndex ],
 			common = getCommonReturn( selector ),
 			len = i + numEngines,
 			selectorElem = get( "selector" + selectorIndex ),
-			tableBody = get("perf-table-body"),
-			tds = tableBody.getElementsByTagName("td"),
-			fastest = this.filter("fastest"),
-			slowest = this.filter("slowest");
+			tableBody = get( "perf-table-body" ),
+			tds = tableBody.getElementsByTagName( "td" ),
+			fastest = this.filter( "fastest" ),
+			slowest = this.filter( "slowest" );
 
 		removeClass( selectorElem, "pending" );
 
 		// Add up the scores
-		this.forEach(function( bench ) {
+		this.forEach( function( bench ) {
 			if ( errors[ bench.id ] ) {
+
 				// No need to store this error anymore
 				delete errors[ bench.id ];
 			} else {
 				scores[ bench.name ] += getHz( bench );
 			}
-		});
+		} );
 
 		// Highlight different returned yellow, fastest green, and slowest red
 		for ( ; i < len; i++ ) {
-			td = tds[i];
-			attr = td.getAttribute("data-engine");
+			td = tds[ i ];
+			attr = td.getAttribute( "data-engine" );
 			ret = returned[ attr ][ selector ];
 			if ( ret && ret.length !== common ) {
 				addClass( td, "yellow" );
 				continue;
 			}
 			for ( j = 0, jlen = slowest.length; j < jlen; j++ ) {
-				if ( slowest[j].name === attr ) {
+				if ( slowest[ j ].name === attr ) {
 					addClass( td, "red" );
 				}
 			}
 			for ( j = 0, jlen = fastest.length; j < jlen; j++ ) {
-				if ( fastest[j].name === attr ) {
+				if ( fastest[ j ].name === attr ) {
 					addClass( td, "green" );
 				}
 			}
@@ -543,6 +550,7 @@ function( Benchmark, document, selectors ) {
 		// Remove all callbacks on the window for this suite
 		window.iframeCallbacks[ this.name ] = null;
 		try {
+
 			// Errors in IE
 			delete window.iframeCallbacks[ this.name ];
 		} catch ( e ) {}
@@ -557,29 +565,30 @@ function( Benchmark, document, selectors ) {
 			fastestHz = 0;
 			slowestHz = Infinity;
 			for ( i in scores ) {
-				if ( scores[i] > fastestHz ) {
-					fastestHz = scores[i];
+				if ( scores[ i ] > fastestHz ) {
+					fastestHz = scores[ i ];
 					fastest = i;
-				} else if ( scores[i] < slowestHz ) {
-					slowestHz = scores[i];
+				} else if ( scores[ i ] < slowestHz ) {
+					slowestHz = scores[ i ];
 					slowest = i;
 				}
+
 				// Format scores for display
-				scores[i] = Benchmark.formatNumber( scores[i].toFixed(2) ) + "o/s";
+				scores[ i ] = Benchmark.formatNumber( scores[ i ].toFixed( 2 ) ) + "o/s";
 			}
 
 			// Add conclusion to the header
-			elem = document.createElement("h3");
+			elem = document.createElement( "h3" );
 			elem.innerHTML = "The fastest is <i>" + fastest + " (" +
 				scores[ fastest ] + ")</i>. " +
 				"The slowest is <i>" + slowest + " (" +
 				scores[ slowest ] + ")</i>.";
-			get("header").appendChild( elem );
+			get( "header" ).appendChild( elem );
 
 			// Add totals to table
 			i = firstTestedColumn();
 			while ( (elem = tds[ i++ ]) ) {
-				attr = elem.getAttribute("data-engine");
+				attr = elem.getAttribute( "data-engine" );
 				if ( attr === fastest ) {
 					addClass( elem, "green" );
 				} else if ( attr === slowest ) {
@@ -610,5 +619,4 @@ function( Benchmark, document, selectors ) {
 	// Kick it off
 	buildTable();
 	testSelector( selectors[selectorIndex] );
-
-});
+} );

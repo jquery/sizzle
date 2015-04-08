@@ -30,16 +30,20 @@ module.exports = function( grunt ) {
 				);
 				return;
 			}
+
 			// Build to dist directories along with a map and tag the release
-			grunt.task.run([
+			grunt.task.run( [
+
 				// Commit new version
 				"version:" + version,
+
 				// Tag new version
 				"tag:" + version,
+
 				// Commit next version
 				"version:" + next
-			]);
+			] );
 			done();
-		});
-	});
+		} );
+	} );
 };
