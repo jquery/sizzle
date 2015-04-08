@@ -295,7 +295,14 @@ test("class", function() {
 
 	div = jQuery("<div><svg width='200' height='250' version='1.1' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='30' height='30' class='foo'></rect></svg></div>")[0];
 	equal( Sizzle(".foo", div).length, 1, "Class selector against SVG container" );
-	equal( Sizzle(".foo", div.firstChild).length, 1, "Class selector directly against SVG" );
+
+	// Support: IE <=7
+	// Test SVG selection only if SVG works
+	if ( div.firstChild.firstChild ) {
+		equal( Sizzle(".foo", div.firstChild).length, 1, "Class selector directly against SVG" );
+	} else {
+		ok( true, "SVG not supported" );
+	}
 });
 
 test("name", function() {
