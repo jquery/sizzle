@@ -29,12 +29,11 @@ module.exports = function( grunt ) {
 	if ( isBrowserStack ) {
 
 		// See https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#browsers
-
 		browsers.desktop = [
 			"bs_chrome-38", "bs_chrome-39",
 
-			"bs_firefox-24", "bs_firefox-31", // Firefox ESR
-			"bs_firefox-34", "bs_firefox-35",
+			// Old, ESR, (BrowserStack) latest minus one, (BrowserStack) latest
+			"bs_firefox-24", "bs_firefox-31", "bs_firefox-35", "bs_firefox-36",
 
 			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 
@@ -62,7 +61,7 @@ module.exports = function( grunt ) {
 	}
 
 	// Project configuration
-	grunt.initConfig({
+	grunt.initConfig( {
 		pkg: grunt.file.readJSON( "package.json" ),
 		dateString: new Date().toISOString().replace( /\..*Z/, "" ),
 		compile: {
@@ -245,7 +244,7 @@ module.exports = function( grunt ) {
 			],
 			tasks: [ "build", "karma:watch:run" ]
 		}
-	});
+	} );
 
 	// Integrate Sizzle specific tasks
 	grunt.loadTasks( "tasks" );

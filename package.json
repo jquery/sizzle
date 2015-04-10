@@ -42,7 +42,7 @@
     "grunt-contrib-uglify": "0.5.1",
     "grunt-contrib-watch": "0.6.1",
     "grunt-git-authors": "1.2.0",
-    "grunt-jscs": "0.6.2",
+    "grunt-jscs": "1.6.0",
     "grunt-jsonlint": "1.0.4",
     "grunt-karma": "0.8.3",
     "grunt-npmcopy": "0.1.0",
