@@ -1,6 +1,6 @@
 {
   "name": "sizzle",
-  "version": "2.2.0-pre",
+  "version": "2.2.0",
   "main": "./dist/sizzle.js",
   "license": "MIT",
   "ignore": [
