@@ -560,7 +560,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		Expr.filter["ID"] = function( id ) {
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
-				return elem.getAttribute("id") === attrId;
+				return elem.getAttribute && elem.getAttribute("id") === attrId;
 			};
 		};
 	} else {
