@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2015-04-10
+ * Date: 2015-08-17
  */
 (function( window ) {
 
@@ -503,10 +503,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 	docElem = document.documentElement;
 	documentIsHTML = !isXML( document );
 
-	// Support: IE 9 - 11
+	// Support: IE 9-11, Edge
 	// Accessing iframe documents after unload throws "permission denied" errors (jQuery #13936)
-	// Limit the fix to IE with document.documentMode and IE >=9 with document.defaultView
-	if ( document.documentMode && (parent = document.defaultView) && parent.top !== parent ) {
+	if ( (parent = document.defaultView) && parent.top !== parent ) {
 		// Support: IE 11
 		if ( parent.addEventListener ) {
 			parent.addEventListener( "unload", unloadHandler, false );
