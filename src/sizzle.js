@@ -24,7 +24,7 @@ var i,
 
 	// Local document vars
 	setDocument,
-	document,
+	document = window.document,
 	docElem,
 	documentIsHTML,
 	rbuggyQSA,
