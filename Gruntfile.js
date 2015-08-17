@@ -36,6 +36,8 @@ module.exports = function( grunt ) {
 			"bs_firefox-31", "bs_firefox-38", // Firefox ESR
 			"bs_firefox-39", "bs_firefox-40",
 
+			"bs_edge",
+
 			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 
 			"bs_opera-30", "bs_opera-31",

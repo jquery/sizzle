@@ -66,6 +66,14 @@ module.exports = {
 		os_version: "Yosemite"
 	},
 
+	"bs_edge": {
+		base: "BrowserStack",
+		browser: "edge",
+		browser_version: "0.11",
+		os: "Windows",
+		os_version: "10"
+	},
+
 	"bs_ie-6": {
 		base: "BrowserStack",
 		browser: "ie",
