@@ -8,13 +8,6 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_firefox-24": {
-		base: "BrowserStack",
-		browser: "firefox",
-		browser_version: "24.0",
-		os: "OS X",
-		os_version: "Mavericks"
-	},
 	"bs_firefox-31": {
 		base: "BrowserStack",
 		browser: "firefox",
@@ -22,17 +15,24 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_firefox-34": {
+	"bs_firefox-38": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "34.0",
+		browser_version: "38.0",
+		os: "OS X",
+		os_version: "Mavericks"
+	},
+	"bs_firefox-39": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "39.0",
 		os: "OS X",
 		os_version: "Yosemite"
 	},
-	"bs_firefox-35": {
+	"bs_firefox-40": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "35.0",
+		browser_version: "40.0",
 		os: "OS X",
 		os_version: "Yosemite"
 	},
@@ -51,17 +51,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_chrome-38": {
+	"bs_chrome-43": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "38.0",
+		browser_version: "43.0",
 		os: "OS X",
 		os_version: "Yosemite"
 	},
-	"bs_chrome-39": {
+	"bs_chrome-44": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "39.0",
+		browser_version: "44.0",
 		os: "OS X",
 		os_version: "Yosemite"
 	},
@@ -123,17 +123,17 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-25": {
+	"bs_opera-30": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "25.0",
+		browser_version: "30.0",
 		os: "OS X",
 		os_version: "Yosemite"
 	},
-	"bs_opera-26": {
+	"bs_opera-31": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "26.0",
+		browser_version: "31.0",
 		os: "OS X",
 		os_version: "Yosemite"
 	},
@@ -214,11 +214,11 @@ module.exports = {
 		os: "ios",
 		os_version: "7.0"
 	},
-	"bs_ios-8.0": {
+	"bs_ios-8.3": {
 		base: "BrowserStack",
 		device: "iPhone 6",
 		os: "ios",
-		os_version: "8.0"
+		os_version: "8.3"
 	},
 
 	"bs_android-2.3": {
