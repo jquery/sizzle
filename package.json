@@ -1,17 +1,16 @@
 {
-  "name": "sizzle",
   "title": "Sizzle",
-  "description": "A pure-JavaScript, bottom-up CSS selector engine designed to be easily dropped in to a host library.",
+  "name": "sizzle",
   "version": "2.2.1-pre",
-  "homepage": "http://sizzlejs.com",
-  "main": "dist/sizzle.js",
-  "files": [
-    "AUTHORS.txt",
-    "LICENSE.txt",
-    "dist/sizzle.js",
-    "dist/sizzle.min.js",
-    "dist/sizzle.min.map"
+  "description": "A pure-JavaScript, bottom-up CSS selector engine designed to be easily dropped in to a host library.",
+  "keywords": [
+    "sizzle",
+    "javascript",
+    "CSS",
+    "selector",
+    "jquery"
   ],
+  "homepage": "http://sizzlejs.com",
   "author": {
     "name": "jQuery Foundation and other contributors",
     "url": "https://github.com/jquery/sizzle/blob/master/AUTHORS.txt"
@@ -23,12 +22,15 @@
   "bugs": {
     "url": "https://github.com/jquery/sizzle/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/jquery/sizzle/blob/master/LICENSE.txt"
-    }
+  "license": "MIT",
+  "files": [
+    "AUTHORS.txt",
+    "LICENSE.txt",
+    "dist/sizzle.js",
+    "dist/sizzle.min.js",
+    "dist/sizzle.min.map"
   ],
+  "main": "dist/sizzle.js",
   "dependencies": {},
   "devDependencies": {
     "benchmark": "1.0.0",
@@ -65,12 +67,5 @@
     "build": "npm install && grunt",
     "start": "grunt start",
     "test": "grunt test"
-  },
-  "keywords": [
-    "sizzle",
-    "javascript",
-    "CSS",
-    "selector",
-    "jquery"
-  ]
+  }
 }
