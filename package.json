@@ -34,7 +34,7 @@
   "dependencies": {},
   "devDependencies": {
     "benchmark": "1.0.0",
-    "commitplease": "1.10.1",
+    "commitplease": "2.2.3",
     "domReady": "git://github.com/requirejs/domReady.git",
     "grunt": "0.4.5",
     "grunt-cli": "0.1.13",
@@ -67,5 +67,19 @@
     "build": "npm install && grunt",
     "start": "grunt start",
     "test": "grunt test"
+  },
+  "commitplease": {
+    "components": [
+      "Misc",
+      "Docs",
+      "Tests",
+      "Build",
+      "Release",
+      "Core",
+      "Tokenize",
+      "Compile",
+      "Selector",
+      "SetDocument"
+    ]
   }
 }
