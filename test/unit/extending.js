@@ -93,3 +93,10 @@ test("custom attribute getters", function() {
 
 	Sizzle.selectors.attrHandle.hreflang = original;
 });
+
+test("Ensure no 'undefined' handler is added", function() {
+	expect( 1 );
+
+	ok( !Sizzle.selectors.attrHandle.hasOwnProperty( "undefined" ),
+		"Extra attr handlers are not added to Expr.attrHandle (gh-353)" );
+});
