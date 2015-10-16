@@ -146,17 +146,9 @@ module.exports = {
 		os_version: "Yosemite"
 	},
 
-	"bs_yandex-14.5": {
+	"bs_yandex-latest": {
 		base: "BrowserStack",
 		browser: "yandex",
-		browser_version: "14.5",
-		os: "OS X",
-		os_version: "Yosemite"
-	},
-	"bs_yandex-14.12": {
-		base: "BrowserStack",
-		browser: "yandex",
-		browser_version: "14.12",
 		os: "OS X",
 		os_version: "Yosemite"
 	},
@@ -189,26 +181,19 @@ module.exports = {
 		os: "OS X",
 		os_version: "Lion"
 	},
-	"bs_safari-6.1": {
-		base: "BrowserStack",
-		browser: "safari",
-		browser_version: "6.1",
-		os: "OS X",
-		os_version: "Mountain Lion"
-	},
-	"bs_safari-7.0": {
-		base: "BrowserStack",
-		browser: "safari",
-		browser_version: "7.0",
-		os: "OS X",
-		os_version: "Mavericks"
-	},
 	"bs_safari-8.0": {
 		base: "BrowserStack",
 		browser: "safari",
 		browser_version: "8.0",
 		os: "OS X",
 		os_version: "Yosemite"
+	},
+	"bs_safari-9.0": {
+		base: "BrowserStack",
+		browser: "safari",
+		browser_version: "9.0",
+		os: "OS X",
+		os_version: "El Capitan"
 	},
 
 	"bs_ios-5.1": {

@@ -42,9 +42,10 @@ module.exports = function( grunt ) {
 
 			"bs_opera-31", "bs_opera-32",
 
-			"bs_yandex-14.5", "bs_yandex-14.12",
+			"bs_yandex-latest",
 
-			"bs_safari-6.0", "bs_safari-6.1", "bs_safari-7.0", "bs_safari-8.0"
+			// Real Safari 6.1 and 7.0 are not available
+			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.0"
 		];
 
 		browsers.ios = [ "bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0", "bs_ios-8.3" ];
