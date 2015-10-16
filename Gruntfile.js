@@ -31,18 +31,18 @@ module.exports = function( grunt ) {
 		// See https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#browsers
 
 		browsers.desktop = [
-			"bs_chrome-43", "bs_chrome-44",
+			"bs_chrome-44", "bs_chrome-45",
 
 			"bs_firefox-31", "bs_firefox-38", // Firefox ESR
-			"bs_firefox-39", "bs_firefox-40",
+			"bs_firefox-40", "bs_firefox-41",
 
-			"bs_edge",
+			"bs_edge-12",
 
 			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 
-			"bs_opera-30", "bs_opera-31",
+			"bs_opera-31", "bs_opera-32",
 
-			"bs_yandex-14.5",
+			"bs_yandex-14.5", "bs_yandex-14.12",
 
 			"bs_safari-6.0", "bs_safari-6.1", "bs_safari-7.0", "bs_safari-8.0"
 		];
