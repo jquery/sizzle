@@ -1,4 +1,4 @@
-Authors ordered by first contribution.
+Authors ordered by first contribution
 
 John Resig <jeresig@gmail.com>
 Cheah Chu Yeow <chuyeow@gmail.com>
@@ -51,3 +51,5 @@ Neftaly Hernandez <neftaly.hernandez@gmail.com>
 Jörn Wagner <joern.wagner@explicatis.com>
 Chris Rebert <code@rebertia.com>
 Colin Frick <colin@bash.li>
+John-David Dalton <john.david.dalton@gmail.com>
+Kevin Kirsche <Kev.Kirsche+GitHub@gmail.com>

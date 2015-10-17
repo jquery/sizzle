@@ -43,7 +43,7 @@
     "grunt-contrib-qunit": "0.7.0",
     "grunt-contrib-uglify": "0.5.1",
     "grunt-contrib-watch": "0.6.1",
-    "grunt-git-authors": "1.2.0",
+    "grunt-git-authors": "3.0.0",
     "grunt-jscs": "0.6.2",
     "grunt-jsonlint": "1.0.4",
     "grunt-karma": "0.12.1",
