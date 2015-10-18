@@ -506,8 +506,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 	// Support: IE 9-11, Edge
 	// Accessing iframe documents after unload throws "permission denied" errors (jQuery #13936)
-	if ( (parent = document.defaultView) && parent.top !== parent ) {
-		// Support: IE 11
+	if ( preferredDoc !== document && (parent = document.defaultView) && parent.top !== parent ) {
+		// Support: IE 11, Edge
 		if ( parent.addEventListener ) {
 			parent.addEventListener( "unload", unloadHandler, false );
 
