@@ -140,10 +140,10 @@ test("Sizzle.uniqueSort", function() {
 		},
 		"Detached children": {
 			input: [
+				detached2.childNodes[3],
 				detached2.childNodes[0],
-				detached2.childNodes[1],
 				detached2.childNodes[2],
-				detached2.childNodes[3]
+				detached2.childNodes[1]
 			],
 			expected: [
 				detached2.childNodes[0],
