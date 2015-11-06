@@ -397,6 +397,8 @@ function addHandle( attrs, handler ) {
 function siblingCheck( a, b ) {
 	var cur = b && a,
 		diff = cur && a.nodeType === 1 && b.nodeType === 1 &&
+			// If there is any detached elements, put them at the end of the list when sorting
+			// see http://bugs.jquery.com/ticket/13505 and http://bugs.jquery.com/ticket/13331
 			( ~b.sourceIndex || MAX_NEGATIVE ) -
 			( ~a.sourceIndex || MAX_NEGATIVE );
 
