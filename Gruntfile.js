@@ -122,15 +122,9 @@ module.exports = function( grunt ) {
 
 					"qunit/qunit.js": "qunitjs/qunit/qunit.js",
 					"qunit/qunit.css": "qunitjs/qunit/qunit.css",
-					"qunit/MIT-LICENSE.txt": "qunitjs/MIT-LICENSE.txt",
+					"qunit/LICENSE.txt": "qunitjs/LICENSE.txt",
 
-					"requirejs/require.js": "requirejs/require.js",
-
-					"requirejs-domready/domReady.js": "domReady/domReady.js",
-					"requirejs-domready/LICENSE.txt": "domReady/LICENSE",
-
-					"requirejs-text/text.js": "text/text.js",
-					"requirejs-text/LICENSE.txt": "text/LICENSE"
+					"requirejs/require.js": "requirejs/require.js"
 				}
 			}
 		},
@@ -197,7 +191,7 @@ module.exports = function( grunt ) {
 			oldIe: {
 				browsers: browsers.old.ie,
 
-				// Support: IE6
+				// Support: IE6 with karma<0.13
 				// Have to re-arrange socket.io transports by prioritizing "jsonp-polling"
 				// otherwise IE6 can't connect to karma server
 				transports: [ "jsonp-polling" ]
