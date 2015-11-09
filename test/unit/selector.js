@@ -1146,7 +1146,7 @@ test("pseudo - :lang", function() {
 });
 
 test("context", function() {
-	expect( 16 );
+	expect( 21 );
 
 	var context,
 		selector = ".blog",
@@ -1172,9 +1172,23 @@ test("context", function() {
 	deepEqual( Sizzle( "*", context ), q( "nothiddendivchild" ), "<div> context" );
 	deepEqual( Sizzle( "* > *", context ), [], "<div> context (no results)" );
 
+	context.removeAttribute( "id" );
+	deepEqual( Sizzle( "*", context ), q( "nothiddendivchild" ), "no-id element context" );
+	deepEqual( Sizzle( "* > *", context ), [], "no-id element context (no results)" );
+
+	// Support: IE<8 only
+	// ID attroperty is never really gone
+	strictEqual( context.getAttribute( "id" ) || "", "", "id not added by no-id selection" );
+
 	context = document.getElementById( "lengthtest" );
 	deepEqual( Sizzle( "input", context ), q( "length", "idTest" ), "<form> context");
 	deepEqual( Sizzle( "select", context ), [], "<form> context (no results)");
+
+	context = document.getElementById( "台北Táiběi" );
+	expected = q( "台北Táiběi-child" );
+	deepEqual( Sizzle( "span[id]", context ), expected, "context with non-ASCII id");
+	deepEqual( Sizzle( "#台北Táiběi span[id]", context.parentNode ), expected,
+		"context with non-ASCII id selector prefix");
 
 	context = document.createDocumentFragment();
 	// Capture *independent* expected nodes before they're detached from the page
