@@ -156,12 +156,12 @@ var i,
 	fcssescape = function( ch, numeric ) {
 
 		// We allow NULL input, unlike the draft spec as of 2015-11-09
-		// This is so in part because our syntax is already broader
+		// Our syntax is already broader elsewhere
 		//if ( ch === "\0" ) {
 		//	throw new Error( "Cannot escape U+0000: " + str );
 		//}
 		if ( numeric ) {
-			// Preserve the prefix (if any), code-point-escape the offending character
+			// Code-point-escape the offending character, preserving any non-escaped prefix
 			return ch.slice( 0, -1 ) + "\\" + ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
 		} else {
 			return "\\" + ch;
