@@ -1326,3 +1326,19 @@ test("select() with pre-compiled function", function() {
 		equal( Sizzle.select( compiled, Sizzle( "#first")[0] ).length, 0, "Should not match with different context" );
 	});
 });
+
+test("Sizzle supports shadow DOM nodes as root", function() {
+	if ( !document.documentElement.createShadowRoot ) {
+		ok( true, "Shadow DOM not supported in this browser" );
+		return;
+	}
+
+	expect( 2 );
+
+	var div = jQuery( "<div/>" ).appendTo( "#qunit-fixture" )[ 0 ],
+		shadowRoot = div.createShadowRoot();
+
+	shadowRoot.innerHTML = "<div class='vagabond'><p></p></div>";
+	equal( Sizzle( ".vagabond", shadowRoot ).length, 1, "Selection by class with shadow root" );
+	equal( Sizzle( "p", shadowRoot ).length, 1, "Paragraph element selected from shadow root" );
+} );
