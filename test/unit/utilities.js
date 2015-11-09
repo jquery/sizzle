@@ -44,6 +44,112 @@ test("Sizzle.attr (XML)", function() {
 	testAttr( jQuery.parseXML("<root/>") );
 });
 
+test("Sizzle.escape", function( assert ) {
+
+	// Edge cases
+	assert.equal( Sizzle.escape(), "undefined", "Converts undefined to string" );
+	assert.equal( Sizzle.escape("-"), "\\-", "Escapes standalone dash" );
+	assert.equal( Sizzle.escape("-a"), "-a", "Doesn't escape leading dash followed by non-number" );
+	assert.equal( Sizzle.escape("--"), "--", "Doesn't escape standalone double dash" );
+	assert.equal( Sizzle.escape( "\uFFFD" ), "\uFFFD",
+		"Doesn't escape standalone replacement character" );
+	assert.equal( Sizzle.escape( "a\uFFFD" ), "a\uFFFD",
+		"Doesn't escape trailing replacement character" );
+	assert.equal( Sizzle.escape( "\uFFFDb" ), "\uFFFDb",
+		"Doesn't escape leading replacement character" );
+	assert.equal( Sizzle.escape( "a\uFFFDb" ), "a\uFFFDb",
+		"Doesn't escape embedded replacement character" );
+
+	// Derived from CSSOM tests
+	// https://test.csswg.org/harness/test/cssom-1_dev/section/7.1/
+
+	// String conversion
+	assert.equal( Sizzle.escape( true ), "true", "Converts boolean true to string" );
+	assert.equal( Sizzle.escape( false ), "false", "Converts boolean true to string" );
+	assert.equal( Sizzle.escape( null ), "null", "Converts null to string" );
+	assert.equal( Sizzle.escape( "" ), "", "Doesn't modify empty string" );
+
+	// Null bytes
+	assert.equal( Sizzle.escape( "\0" ), "\uFFFD",
+		"Escapes null-character input as replacement character" );
+	assert.equal( Sizzle.escape( "a\0" ), "a\uFFFD",
+		"Escapes trailing-null input as replacement character" );
+	assert.equal( Sizzle.escape( "\0b" ), "\uFFFDb",
+		"Escapes leading-null input as replacement character" );
+	assert.equal( Sizzle.escape( "a\0b" ), "a\uFFFDb",
+		"Escapes embedded-null input as replacement character" );
+
+	// Number prefix
+	assert.equal( Sizzle.escape( "0a" ), "\\30 a", "Escapes leading 0" );
+	assert.equal( Sizzle.escape( "1a" ), "\\31 a", "Escapes leading 1" );
+	assert.equal( Sizzle.escape( "2a" ), "\\32 a", "Escapes leading 2" );
+	assert.equal( Sizzle.escape( "3a" ), "\\33 a", "Escapes leading 3" );
+	assert.equal( Sizzle.escape( "4a" ), "\\34 a", "Escapes leading 4" );
+	assert.equal( Sizzle.escape( "5a" ), "\\35 a", "Escapes leading 5" );
+	assert.equal( Sizzle.escape( "6a" ), "\\36 a", "Escapes leading 6" );
+	assert.equal( Sizzle.escape( "7a" ), "\\37 a", "Escapes leading 7" );
+	assert.equal( Sizzle.escape( "8a" ), "\\38 a", "Escapes leading 8" );
+	assert.equal( Sizzle.escape( "9a" ), "\\39 a", "Escapes leading 9" );
+
+	// Letter-number prefix
+	assert.equal( Sizzle.escape( "a0b" ), "a0b", "Doesn't escape embedded 0" );
+	assert.equal( Sizzle.escape( "a1b" ), "a1b", "Doesn't escape embedded 1" );
+	assert.equal( Sizzle.escape( "a2b" ), "a2b", "Doesn't escape embedded 2" );
+	assert.equal( Sizzle.escape( "a3b" ), "a3b", "Doesn't escape embedded 3" );
+	assert.equal( Sizzle.escape( "a4b" ), "a4b", "Doesn't escape embedded 4" );
+	assert.equal( Sizzle.escape( "a5b" ), "a5b", "Doesn't escape embedded 5" );
+	assert.equal( Sizzle.escape( "a6b" ), "a6b", "Doesn't escape embedded 6" );
+	assert.equal( Sizzle.escape( "a7b" ), "a7b", "Doesn't escape embedded 7" );
+	assert.equal( Sizzle.escape( "a8b" ), "a8b", "Doesn't escape embedded 8" );
+	assert.equal( Sizzle.escape( "a9b" ), "a9b", "Doesn't escape embedded 9" );
+
+	// Dash-number prefix
+	assert.equal( Sizzle.escape( "-0a" ), "-\\30 a", "Escapes 0 after leading dash" );
+	assert.equal( Sizzle.escape( "-1a" ), "-\\31 a", "Escapes 1 after leading dash" );
+	assert.equal( Sizzle.escape( "-2a" ), "-\\32 a", "Escapes 2 after leading dash" );
+	assert.equal( Sizzle.escape( "-3a" ), "-\\33 a", "Escapes 3 after leading dash" );
+	assert.equal( Sizzle.escape( "-4a" ), "-\\34 a", "Escapes 4 after leading dash" );
+	assert.equal( Sizzle.escape( "-5a" ), "-\\35 a", "Escapes 5 after leading dash" );
+	assert.equal( Sizzle.escape( "-6a" ), "-\\36 a", "Escapes 6 after leading dash" );
+	assert.equal( Sizzle.escape( "-7a" ), "-\\37 a", "Escapes 7 after leading dash" );
+	assert.equal( Sizzle.escape( "-8a" ), "-\\38 a", "Escapes 8 after leading dash" );
+	assert.equal( Sizzle.escape( "-9a" ), "-\\39 a", "Escapes 9 after leading dash" );
+
+	// Double dash prefix
+	assert.equal( Sizzle.escape( "--a" ), "--a", "Doesn't escape leading double dash" );
+
+	// Miscellany
+	assert.equal( Sizzle.escape( "\x01\x02\x1E\x1F" ), "\\1 \\2 \\1e \\1f ",
+		"Escapes C0 control characters" );
+	assert.equal( Sizzle.escape( "\x80\x2D\x5F\xA9" ), "\x80\x2D\x5F\xA9",
+		"Doesn't escape general punctuation or non-ASCII ISO-8859-1 characters" );
+	assert.equal(
+		Sizzle.escape( "\x7F\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90" +
+			"\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F" ),
+		"\\7f \x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90" +
+			"\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F",
+		"Escapes DEL control character"
+	);
+	assert.equal( Sizzle.escape( "\xA0\xA1\xA2" ), "\xA0\xA1\xA2",
+		"Doesn't escape non-ASCII ISO-8859-1 characters" );
+	assert.equal( Sizzle.escape( "a0123456789b" ), "a0123456789b",
+		"Doesn't escape embedded numbers" );
+	assert.equal( Sizzle.escape( "abcdefghijklmnopqrstuvwxyz" ), "abcdefghijklmnopqrstuvwxyz",
+		"Doesn't escape lowercase ASCII letters" );
+	assert.equal( Sizzle.escape( "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ), "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+		"Doesn't escape uppercase ASCII letters" );
+	assert.equal( Sizzle.escape( "\x20\x21\x78\x79" ), "\\ \\!xy",
+		"Escapes non-word ASCII characters" );
+
+	// Astral symbol (U+1D306 TETRAGRAM FOR CENTRE)
+	assert.equal( Sizzle.escape( "\uD834\uDF06" ), "\uD834\uDF06",
+		"Doesn't escape astral characters" );
+
+	// Lone surrogates
+	assert.equal( Sizzle.escape( "\uDF06" ), "\uDF06", "Doesn't escape lone low surrogate" );
+	assert.equal( Sizzle.escape( "\uD834" ), "\uD834", "Doesn't escape lone high surrogate" );
+});
+
 test("Sizzle.contains", function() {
 	expect( 16 );
 
