@@ -629,20 +629,20 @@ test("attributes - other", function() {
 
 test("pseudo - (parent|empty)", function() {
 	expect( 3 );
-	t( "Empty", "ul:empty", ["firstUL"] );
-	t( "Empty with comment node", "ol:empty", ["empty"] );
+	t( "Empty", "#qunit-fixture ul:empty", ["firstUL"] );
+	t( "Empty with comment node", "#qunit-fixture ol:empty", ["empty"] );
 	t( "Is A Parent", "#qunit-fixture p:parent", ["firstp","ap","sndp","en","sap","first"] );
 });
 
 test("pseudo - (first|last|only)-(child|of-type)", function() {
 	expect( 12 );
 
-	t( "First Child", "p:first-child", ["firstp","sndp"] );
+	t( "First Child", "#qunit-fixture p:first-child", ["firstp","sndp"] );
 	t( "First Child (leading id)", "#qunit-fixture p:first-child", ["firstp","sndp"] );
 	t( "First Child (leading class)", ".nothiddendiv div:first-child", ["nothiddendivchild"] );
 	t( "First Child (case-insensitive)", "#qunit-fixture p:FIRST-CHILD", ["firstp","sndp"] );
 
-	t( "Last Child", "p:last-child", ["sap"] );
+	t( "Last Child", "#qunit-fixture p:last-child", ["sap"] );
 	t( "Last Child (leading id)", "#qunit-fixture a:last-child", ["simon1","anchor1","mark","yahoo","anchor2","simon","liveLink1","liveLink2"] );
 
 	t( "Only Child", "#qunit-fixture a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
