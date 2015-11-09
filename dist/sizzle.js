@@ -153,10 +153,13 @@ var i,
 	// CSS string/identifier serialization
 	// https://drafts.csswg.org/cssom/#common-serializing-idioms
 	rcssescape = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\x80-\uFFFF\w-]/g,
-	fcssescape = function( ch, numeric, i, str ) {
-		if ( ch === "\0" ) {
-			throw new Error( "Cannot escape U+0000: " + str );
-		}
+	fcssescape = function( ch, numeric ) {
+
+		// We allow NULL input, unlike the draft spec as of 2015-11-09
+		// This is so in part because our syntax is already broader
+		//if ( ch === "\0" ) {
+		//	throw new Error( "Cannot escape U+0000: " + str );
+		//}
 		if ( numeric ) {
 			// Preserve the prefix (if any), code-point-escape the offending character
 			return ch.slice( 0, -1 ) + "\\" + ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";

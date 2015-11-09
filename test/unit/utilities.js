@@ -45,6 +45,13 @@ test("Sizzle.attr (XML)", function() {
 });
 
 test("Sizzle.escape", function( assert ) {
+	// Null bytes
+	// We allow NULL input, unlike the draft spec as of 2015-11-09
+	assert.equal( Sizzle.escape( "\0" ), "\\0 ", "Escapes null-character input" );
+	assert.equal( Sizzle.escape( "a\0" ), "a\\0 ", "Escapes trailing-null input" );
+	assert.equal( Sizzle.escape( "\0b" ), "\\0 b", "Escapes leading-null input" );
+	assert.equal( Sizzle.escape( "a\0b" ), "a\\0 b", "Escapes embedded-null input" );
+
 	// Edge cases
 	assert.equal( Sizzle.escape(), "undefined", "Converts undefined to string" );
 	assert.equal( Sizzle.escape("-"), "\\-", "Escapes standalone dash" );
@@ -61,14 +68,15 @@ test("Sizzle.escape", function( assert ) {
 	assert.equal( Sizzle.escape( "" ), "", "Doesn't modify empty string" );
 
 	// Null bytes
-	assert.throws( function() { Sizzle.escape( "\0" ); }, /escape/,
-		"Throws on null-character input" );
-	assert.throws( function() { Sizzle.escape( "a\0" ); }, /escape/,
-		"Throws on trailing-null input" );
-	assert.throws( function() { Sizzle.escape( "\0b" ); }, /escape/,
-		"Throws on leading-null input" );
-	assert.throws( function() { Sizzle.escape( "a\0b" ); }, /escape/,
-		"Throws on embedded-null input" );
+	// We allow NULL input, unlike the draft spec as of 2015-11-09
+	//assert.throws( function() { Sizzle.escape( "\0" ); }, /escape/,
+	//	"Throws on null-character input" );
+	//assert.throws( function() { Sizzle.escape( "a\0" ); }, /escape/,
+	//	"Throws on trailing-null input" );
+	//assert.throws( function() { Sizzle.escape( "\0b" ); }, /escape/,
+	//	"Throws on leading-null input" );
+	//assert.throws( function() { Sizzle.escape( "a\0b" ); }, /escape/,
+	//	"Throws on embedded-null input" );
 
 	// Number prefix
 	assert.equal( Sizzle.escape( "0a" ), "\\30 a", "Escapes leading 0" );
