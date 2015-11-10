@@ -18,8 +18,7 @@ In the spirit of open source software development, jQuery always encourages comm
 What you need to build Sizzle
 ---------------------------
 
-In order to build Sizzle, you need to have Node.js/npm latest and git 1.7 or later.
-(Earlier versions might work OK, but are not tested.)
+In order to build Sizzle, you should have Node.js/npm latest and git 1.7 or later (earlier versions might work OK, but are not tested).
 
 For Windows you have to download and install [git](http://git-scm.com/downloads) and [Node.js](http://nodejs.org/download/).
 
