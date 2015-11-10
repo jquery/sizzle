@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script>var QUnit = parent.QUnit</script>
+	<script src="testinit.js"></script>
+	<script src="../../dist/sizzle.js"></script>
+	<script>
+		var Sizzle1 = Sizzle;
+	</script>
+	<script src="../../dist/sizzle.js"></script>
+	<script>
+		var Sizzle2 = Sizzle;
+	</script>
+</head>
+<body>
+	<script>
+		var doc = parent.document,
+			framed = Sizzle( "html > *" );		
+
+		window.parent.iframeCallback( function( QUnit ) {
+				QUnit.notStrictEqual( Sizzle, Sizzle1, "Before noConflict, Sizzle !== Sizzle1" );
+				Sizzle.noConflict();
+				QUnit.strictEqual( Sizzle, Sizzle1, "After noConflict, Sizzle === Sizzle1");
+			});
+	</script>
+</body>
+</html>

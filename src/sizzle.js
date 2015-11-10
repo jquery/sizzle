@@ -34,6 +34,7 @@ var i,
 
 	// Instance-specific data
 	expando = "sizzle" + 1 * new Date(),
+	_sizzle = window.Sizzle,
 	preferredDoc = window.document,
 	dirruns = 0,
 	done = 0,
@@ -2136,6 +2137,14 @@ if ( typeof define === "function" && define.amd ) {
 } else {
 	window.Sizzle = Sizzle;
 }
+
+Sizzle.noConflict = function() {
+	if ( window.Sizzle === Sizzle ) {
+		window.Sizzle = _sizzle;
+	}
+
+	return Sizzle;
+};
 // EXPOSE
 
 })( window );

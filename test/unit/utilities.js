@@ -167,3 +167,4 @@ test("Sizzle.uniqueSort", function() {
 });
 
 testIframeWithCallback( "Sizzle.uniqueSort works cross-window (jQuery #14381)", "mixed_sort.html", deepEqual );
+testIframeWithCallback( "Sizzle.noConflict", "noConflict.html", function( reporter ) { reporter( QUnit ); } );
