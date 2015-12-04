@@ -20,7 +20,9 @@
 
 		window.parent.iframeCallback( function( QUnit ) {
 				QUnit.notStrictEqual( Sizzle, Sizzle1, "Before noConflict, Sizzle !== Sizzle1" );
+				QUnit.deepEqual( framed, Sizzle1( "html > *" ), "Before noConflict, Sizzle( selector ) == Sizzle1( selector )" );
 				Sizzle.noConflict();
+				QUnit.deepEqual( framed, Sizzle2( "html > *" ), "After noConflict, Sizzle( selector ) == Sizzle2( selector )" );
 				QUnit.strictEqual( Sizzle, Sizzle1, "After noConflict, Sizzle === Sizzle1");
 			});
 	</script>
