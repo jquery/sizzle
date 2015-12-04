@@ -47,14 +47,22 @@ module.exports = function( config ) {
 				pattern: "test/data/mixed_sort.html",
 				watched: false,
 				included: false
+			},
+
+			// For iframe tests
+			{
+				pattern: "test/data/noConflict.html",
+				watched: false,
+				included: false
 			}
 		],
 
 		preprocessors: {
 
-			// mixed_sort.html downloaded through iframe inclusion
+			// mixed_sort.html, noConflict.html downloaded through iframe inclusion
 			// so it should not be preprocessed
 			"test/data/mixed_sort.html": [],
+			"test/data/noConflict.html": [],
 			"test/data/fixtures.html": [ "html2js" ]
 		},
 

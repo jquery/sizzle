@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script>var QUnit = parent.QUnit</script>
+	<script src="testinit.js"></script>
+	<script src="../../dist/sizzle.js"></script>
+	<script>
+		var Sizzle1 = Sizzle;
+	</script>
+	<script src="../../dist/sizzle.js"></script>
+	<script>
+		var Sizzle2 = Sizzle;
+	</script>
+</head>
+<body>
+	<script>
+		var doc = parent.document,
+			selection = Sizzle( "html > *" );		
+
+		window.parent.iframeCallback( function( QUnit ) {
+				QUnit.deepEqual( selection, [ document.documentElement.firstChild, document.body ], "selection sanity check" );
+				QUnit.notStrictEqual( Sizzle, Sizzle1, "first Sizzle overwritten by second" );
+				QUnit.deepEqual( Sizzle( "html > *" ), Sizzle1( "html > *" ), "second Sizzle selects identically" );
+				var replaced = Sizzle.noConflict();
+				QUnit.strictEqual( Sizzle, Sizzle1, "first Sizzle restored by noConflict" );
+				QUnit.strictEqual( replaced, Sizzle2, "second Sizzle returned by noConflict" );
+				QUnit.deepEqual( Sizzle( "html > *" ), Sizzle2( "html > *" ), "both Sizzles still select identically" );
+				QUnit.deepEqual( Sizzle( "html > *" ), selection, "Sizzle still selects correctly" );
+			});
+	</script>
+</body>
+</html>
