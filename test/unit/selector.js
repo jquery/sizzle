@@ -514,7 +514,7 @@ test("attributes - whitespace list includes", function() {
 	t( "string found at the end", "input[data-15233~='baz']", [ "t15233-triple" ] );
 });
 
-test("attributes - hypen-prefix matches", function() {
+test("attributes - hyphen-prefix matches", function() {
 	expect( 3 );
 
 	t( "string", "#names-group span[id|='name']", [ "name-is-example", "name-is-div" ] );
