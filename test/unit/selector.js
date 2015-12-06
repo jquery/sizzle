@@ -430,7 +430,7 @@ test("attributes - equals", function() {
 	t( "identifier containing underscore", "input[id=types_all]", ["types_all"] );
 	t( "string", "#qunit-fixture a[rel='bookmark']", [ "simon1" ] );
 	t( "string (whitespace ignored)", "#qunit-fixture a[ rel = 'bookmark' ]", [ "simon1" ] );
-	t( "non-identifier string", "#qunit-fixture a[href='http://www.google.com/']", [ "google" ] );
+	t( "non-identifier string", "#qunit-fixture a[href='https://www.google.com/']", [ "google" ] );
 	t( "empty string", "#select1 option[value='']", [ "option1a" ] );
 	t( "number",
 		"#qunit-fixture option[value=1]",
@@ -477,7 +477,7 @@ test("attributes - starts with", function() {
 	// Support: IE<8
 	// There is apparently no way to bypass interpolation of the *originally-defined* href attribute
 	document.getElementById("anchor2").href = "#2";
-	t( "string (whitespace ignored)", "a[href ^= 'http://www']", [ "google", "yahoo" ] );
+	t( "string (whitespace ignored)", "a[href ^= 'https://www']", [ "google", "yahoo" ] );
 	t( "href starts with hash", "p a[href^='#']", [ "anchor2" ] );
 	t( "string containing '['", "input[name^='foo[']", [ "hidden2" ] );
 	t( "string containing '[' ... ']'", "input[name^='foo[bar]']", [ "hidden2" ] );

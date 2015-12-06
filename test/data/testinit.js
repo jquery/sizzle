@@ -71,11 +71,11 @@ var createWithFriesXML = function() {
 		xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> \
 		<soap:Body> \
-			<jsconf xmlns="http://www.example.com/ns1"> \
-				<response xmlns:ab="http://www.example.com/ns2"> \
+			<jsconf xmlns="https://www.example.com/ns1"> \
+				<response xmlns:ab="https://www.example.com/ns2"> \
 					<meta> \
 						<component id="seite1" class="component"> \
-							<properties xmlns:cd="http://www.example.com/ns3"> \
+							<properties xmlns:cd="https://www.example.com/ns3"> \
 								<property name="prop1"> \
 									<thing /> \
 									<value>1</value> \

@@ -10,7 +10,7 @@
     "selector",
     "jquery"
   ],
-  "homepage": "http://sizzlejs.com",
+  "homepage": "https://sizzlejs.com",
   "author": {
     "name": "jQuery Foundation and other contributors",
     "url": "https://github.com/jquery/sizzle/blob/master/AUTHORS.txt"

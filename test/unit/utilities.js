@@ -10,7 +10,7 @@ function testAttr( doc ) {
 		el.setAttribute( "type", "checkbox" );
 	} else {
 		// Set checked on creation by creating with a fragment
-		// See http://jsfiddle.net/8sVgA/1/show/light in oldIE
+		// See https://jsfiddle.net/8sVgA/1/show/light in oldIE
 		el = jQuery( "<input type='checkbox' checked='checked' />" )[0];
 	}
 

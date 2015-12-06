@@ -50,7 +50,7 @@
 				Innovations SARL)
 
 			</dd><dd class="vcard"><a class="url fn" href="mailto:ian@hixie.ch">Ian
-					Hickson</a> (<span class="company"><a href="http://www.google.com/">Google</a></span>)
+					Hickson</a> (<span class="company"><a href="https://www.google.com/">Google</a></span>)
 
 			</dd><dd class="vcard"><span class="fn">Peter Linss</span> (former editor, <span class="company"><a href="http://www.netscape.com/">Netscape/AOL</a></span>)
 
@@ -62,7 +62,7 @@
 		<p>See also <a href="http://www.w3.org/2003/03/Translations/byTechnology?technology=css3-selectors"> <strong>translations</strong></a>.</p>
 
 		<!--begin-copyright-->
-		<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2011 <a href="http://www.w3.org/"><acronym title="World Wide Web Consortium">W3C</acronym></a><sup>®</sup> (<a href="http://www.csail.mit.edu/"><acronym title="Massachusetts Institute of Technology">MIT</acronym></a>, <a href="http://www.ercim.eu/"><acronym title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
+		<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2011 <a href="http://www.w3.org/"><acronym title="World Wide Web Consortium">W3C</acronym></a><sup>®</sup> (<a href="https://www.csail.mit.edu/"><acronym title="Massachusetts Institute of Technology">MIT</acronym></a>, <a href="http://www.ercim.eu/"><acronym title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
 		<!--end-copyright-->
 		<hr title="Separator for header">
 	</div>
@@ -111,7 +111,7 @@
 
 	</p><p>A W3C Recommendation is a mature document that has been widely
 	reviewed and has been shown to be implementable. W3C encourages everybody
-	to implement this specification. Comments may be sent to the (<a href="http://lists.w3.org/Archives/Public/www-style/">archived</a>) public
+	to implement this specification. Comments may be sent to the (<a href="https://lists.w3.org/Archives/Public/www-style/">archived</a>) public
 	mailing list <a href="mailto:www-style@w3.org?Subject=%5Bcss3-selectors%5D%20PUT%20SUBJECT%20HERE">www-style@w3.org</a>
 	(see <a href="http://www.w3.org/Mail/Request">instructions</a>). When
 	sending e-mail, please put the text “css3-selectors” in the
@@ -1017,7 +1017,7 @@
 	<div class="example">
 		<p>CSS examples:</p>
 
-		<pre>@namespace foo url(http://www.example.com);
+		<pre>@namespace foo url(https://www.example.com);
 			foo|h1 { color: blue }  /* first rule */
 			foo|* { color: yellow } /* second rule */
 			|h1 { color: red }      /* ...*/
@@ -1025,10 +1025,10 @@
 			h1 { color: green }</pre>
 
 		<p>The first rule (not counting the <code>@namespace</code> at-rule) will
-			match only <code>h1</code> elements in the "http://www.example.com"
+			match only <code>h1</code> elements in the "https://www.example.com"
 			namespace.</p>
 
-		<p>The second rule will match all elements in the "http://www.example.com"
+		<p>The second rule will match all elements in the "https://www.example.com"
 			namespace.</p>
 
 		<p>The third rule will match only <code>h1</code> elements with no
@@ -1282,14 +1282,14 @@
 	</p><div class="example">
 		<p>CSS examples:</p>
 
-		<pre>@namespace foo "http://www.example.com";
+		<pre>@namespace foo "https://www.example.com";
 			[foo|att=val] { color: blue }
 			[*|att] { color: yellow }
 			[|att] { color: green }
 			[att] { color: green }</pre>
 
 		<p>The first rule will match only elements with the attribute
-			<code>att</code> in the "http://www.example.com" namespace with the value
+			<code>att</code> in the "https://www.example.com" namespace with the value
 			"val".</p>
 
 		<p>The second rule will match only elements with the attribute
@@ -1618,7 +1618,7 @@
 	document, known as the target element. For instance, here is a URI
 	pointing to an anchor named <code>section_2</code> in an HTML document:
 
-	</p><pre>http://example.com/html/top.html#section_2</pre>
+	</p><pre>https://example.com/html/top.html#section_2</pre>
 
 	<p>A target element can be represented by the <code>:target</code>
 		pseudo-class. If the document's URI has no fragment identifier, then the
@@ -2161,7 +2161,7 @@
 	</p><div class="example">
 		<p>Examples:</p>
 
-		<p>Assuming that the default namespace is bound to "http://example.com/",
+		<p>Assuming that the default namespace is bound to "https://example.com/",
 			the following selector represents all elements that are not in that
 			namespace:</p>
 
