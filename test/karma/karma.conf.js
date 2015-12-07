@@ -48,8 +48,6 @@ module.exports = function( config ) {
 				watched: false,
 				included: false
 			},
-
-			// For iframe tests
 			{
 				pattern: "test/data/noConflict.html",
 				watched: false,

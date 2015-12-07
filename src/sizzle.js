@@ -34,7 +34,6 @@ var i,
 
 	// Instance-specific data
 	expando = "sizzle" + 1 * new Date(),
-	_sizzle = window.Sizzle,
 	preferredDoc = window.document,
 	dirruns = 0,
 	done = 0,
@@ -2129,14 +2128,7 @@ if ( !assert(function( div ) {
 }
 
 // EXPOSE
-if ( typeof define === "function" && define.amd ) {
-	define(function() { return Sizzle; });
-// Sizzle requires that there be a global window in Common-JS like environments
-} else if ( typeof module !== "undefined" && module.exports ) {
-	module.exports = Sizzle;
-} else {
-	window.Sizzle = Sizzle;
-}
+var _sizzle = window.Sizzle;
 
 Sizzle.noConflict = function() {
 	if ( window.Sizzle === Sizzle ) {
@@ -2145,6 +2137,15 @@ Sizzle.noConflict = function() {
 
 	return Sizzle;
 };
+
+if ( typeof define === "function" && define.amd ) {
+	define(function() { return Sizzle; });
+// Sizzle requires that there be a global window in Common-JS like environments
+} else if ( typeof module !== "undefined" && module.exports ) {
+	module.exports = Sizzle;
+} else {
+	window.Sizzle = Sizzle;
+}
 // EXPOSE
 
 })( window );
