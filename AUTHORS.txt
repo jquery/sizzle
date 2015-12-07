@@ -53,3 +53,6 @@ Chris Rebert <code@rebertia.com>
 Colin Frick <colin@bash.li>
 John-David Dalton <john.david.dalton@gmail.com>
 Kevin Kirsche <Kev.Kirsche+GitHub@gmail.com>
+Steve Mao <maochenyan@gmail.com>
+Tom von Clef <thomas.vonclef@gmail.com>
+Josh Soref <apache@soref.com>
