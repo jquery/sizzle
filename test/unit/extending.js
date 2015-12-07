@@ -11,13 +11,13 @@ test("custom pseudos", function() {
 	t( "Copy set filter with new name", "div#qunit-fixture :primary", [ "firstp" ] );
 	delete Sizzle.selectors.setFilters.primary;
 
-	Sizzle.selectors.filters.aristotlean = Sizzle.selectors.createPseudo(function() {
+	Sizzle.selectors.filters.aristotelean = Sizzle.selectors.createPseudo(function() {
 		return function( elem ) {
 			return !!elem.id;
 		};
 	});
-	t( "Custom element filter", "#foo :aristotlean", [ "sndp", "en", "yahoo", "sap", "anchor2", "simon" ] );
-	delete Sizzle.selectors.filters.aristotlean;
+	t( "Custom element filter", "#foo :aristotelean", [ "sndp", "en", "yahoo", "sap", "anchor2", "simon" ] );
+	delete Sizzle.selectors.filters.aristotelean;
 
 	Sizzle.selectors.filters.endswith = Sizzle.selectors.createPseudo(function( text ) {
 		return function( elem ) {
