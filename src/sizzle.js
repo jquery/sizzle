@@ -154,14 +154,14 @@ var i,
 	// https://drafts.csswg.org/cssom/#common-serializing-idioms
 	rcssescape = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\x80-\uFFFF\w-]/g,
 	fcssescape = function( ch, asCodePoint ) {
-
-		// U+0000 NULL becomes U+FFFD REPLACEMENT CHARACTER
-		if ( ch === "\0" ) {
-			return "\uFFFD";
-		}
-
-		// Control characters and (dependent upon position) numbers get escaped as code points
 		if ( asCodePoint ) {
+
+			// U+0000 NULL becomes U+FFFD REPLACEMENT CHARACTER
+			if ( ch === "\0" ) {
+				return "\uFFFD";
+			}
+
+			// Control characters and (dependent upon position) numbers get escaped as code points
 			return ch.slice( 0, -1 ) + "\\" + ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
 		}
 
