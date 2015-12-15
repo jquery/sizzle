@@ -153,19 +153,20 @@ var i,
 	// CSS string/identifier serialization
 	// https://drafts.csswg.org/cssom/#common-serializing-idioms
 	rcssescape = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\x80-\uFFFF\w-]/g,
-	fcssescape = function( ch, numeric ) {
+	fcssescape = function( ch, asCodePoint ) {
 
-		// We allow NULL input, unlike the draft spec as of 2015-11-09
-		// Our syntax is already broader elsewhere
-		//if ( ch === "\0" ) {
-		//	throw new Error( "Cannot escape U+0000: " + str );
-		//}
-		if ( numeric ) {
-			// Code-point-escape the offending character, preserving any non-escaped prefix
-			return ch.slice( 0, -1 ) + "\\" + ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
-		} else {
-			return "\\" + ch;
+		// U+0000 NULL becomes U+FFFD REPLACEMENT CHARACTER
+		if ( ch === "\0" ) {
+			return "\uFFFD";
 		}
+
+		// Control characters and (dependent upon position) numbers get escaped as code points
+		if ( asCodePoint ) {
+			return ch.slice( 0, -1 ) + "\\" + ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
+		}
+
+		// Other potentially-special ASCII characters get backslash-escaped
+		return "\\" + ch;
 	},
 
 	// Used for iframes

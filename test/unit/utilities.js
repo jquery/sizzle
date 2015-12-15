@@ -45,18 +45,20 @@ test("Sizzle.attr (XML)", function() {
 });
 
 test("Sizzle.escape", function( assert ) {
-	// Null bytes
-	// We allow NULL input, unlike the draft spec as of 2015-11-09
-	assert.equal( Sizzle.escape( "\0" ), "\\0 ", "Escapes null-character input" );
-	assert.equal( Sizzle.escape( "a\0" ), "a\\0 ", "Escapes trailing-null input" );
-	assert.equal( Sizzle.escape( "\0b" ), "\\0 b", "Escapes leading-null input" );
-	assert.equal( Sizzle.escape( "a\0b" ), "a\\0 b", "Escapes embedded-null input" );
 
 	// Edge cases
 	assert.equal( Sizzle.escape(), "undefined", "Converts undefined to string" );
 	assert.equal( Sizzle.escape("-"), "\\-", "Escapes standalone dash" );
 	assert.equal( Sizzle.escape("-a"), "-a", "Doesn't escape leading dash followed by non-number" );
 	assert.equal( Sizzle.escape("--"), "--", "Doesn't escape standalone double dash" );
+	assert.equal( Sizzle.escape( "\uFFFD" ), "\uFFFD",
+		"Doesn't escape standalone replacement character" );
+	assert.equal( Sizzle.escape( "a\uFFFD" ), "a\uFFFD",
+		"Doesn't escape trailing replacement character" );
+	assert.equal( Sizzle.escape( "\uFFFDb" ), "\uFFFDb",
+		"Doesn't escape leading replacement character" );
+	assert.equal( Sizzle.escape( "a\uFFFDb" ), "a\uFFFDb",
+		"Doesn't escape embedded replacement character" );
 
 	// Derived from CSSOM tests
 	// https://test.csswg.org/harness/test/cssom-1_dev/section/7.1/
@@ -68,15 +70,14 @@ test("Sizzle.escape", function( assert ) {
 	assert.equal( Sizzle.escape( "" ), "", "Doesn't modify empty string" );
 
 	// Null bytes
-	// We allow NULL input, unlike the draft spec as of 2015-11-09
-	//assert.throws( function() { Sizzle.escape( "\0" ); }, /escape/,
-	//	"Throws on null-character input" );
-	//assert.throws( function() { Sizzle.escape( "a\0" ); }, /escape/,
-	//	"Throws on trailing-null input" );
-	//assert.throws( function() { Sizzle.escape( "\0b" ); }, /escape/,
-	//	"Throws on leading-null input" );
-	//assert.throws( function() { Sizzle.escape( "a\0b" ); }, /escape/,
-	//	"Throws on embedded-null input" );
+	assert.equal( Sizzle.escape( "\0" ), "\uFFFD",
+		"Escapes null-character input as replacement character" );
+	assert.equal( Sizzle.escape( "a\0" ), "a\uFFFD",
+		"Escapes trailing-null input as replacement character" );
+	assert.equal( Sizzle.escape( "\0b" ), "\uFFFDb",
+		"Escapes leading-null input as replacement character" );
+	assert.equal( Sizzle.escape( "a\0b" ), "a\uFFFDb",
+		"Escapes embedded-null input as replacement character" );
 
 	// Number prefix
 	assert.equal( Sizzle.escape( "0a" ), "\\30 a", "Escapes leading 0" );
