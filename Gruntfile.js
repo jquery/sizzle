@@ -91,9 +91,7 @@ module.exports = function( grunt ) {
 						"jQuery Foundation, Inc. | jquery.org/license */",
 					sourceMap: true,
 					sourceMapName: "dist/sizzle.min.map",
-					beautify: {
-						"ascii_only": true
-					}
+					ASCIIOnly: true
 				}
 			}
 		},
