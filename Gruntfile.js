@@ -95,6 +95,9 @@ module.exports = function( grunt ) {
 				}
 			}
 		},
+		"ensure_ascii": {
+			files: [ "dist/*.js" ]
+		},
 		"compare_size": {
 			files: [ "dist/sizzle.js", "dist/sizzle.min.js" ],
 			options: {
@@ -265,7 +268,7 @@ module.exports = function( grunt ) {
 		// "karma:android", "karma:oldAndroid"
 	] : "karma:phantom" );
 
-	grunt.registerTask( "build", [ "lint", "compile", "uglify", "dist" ] );
+	grunt.registerTask( "build", [ "lint", "compile", "uglify", "dist", "ensure_ascii" ] );
 	grunt.registerTask( "default", [ "build", "tests", "compare_size" ] );
 
 	grunt.registerTask( "bower", "bowercopy" );
