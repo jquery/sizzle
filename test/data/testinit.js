@@ -105,9 +105,9 @@ function testIframeWithCallback( title, fileName, func ) {
 				args = arguments;
 			setTimeout(function() {
 				window.iframeCallback = undefined;
-				iframe.remove();
 				func.apply( self, args );
 				func = function() {};
+				iframe.remove();
 				start();
 			}, 0 );
 		};
