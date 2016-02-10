@@ -13,35 +13,23 @@
 </head>
 <body>
 	<script>
-		// Gather results here, then asynchronously report to the parent window
-		var overwritten = Sizzle !== Sizzle1,
-			selector = "html > *",
+		var selector = "html > *",
 			expected = [ document.documentElement.firstChild, document.body ],
+			originalSizzle = Sizzle,
 			sizzle1Selection = Sizzle1( selector ),
 			sizzle2Selection = Sizzle2( selector ),
-			returned = Sizzle.noConflict(),
-			returnedCorrect = returned === Sizzle2 || { actual: returned, expected: Sizzle2 },
-			restored = Sizzle === Sizzle1 || { actual: Sizzle, expected: Sizzle1 },
-			sizzle1Selection2 = Sizzle1( selector ),
-			sizzle2Selection2 = Sizzle2( selector );
+			replaced = Sizzle.noConflict();
 
-		window.parent.iframeCallback( [
-			{ assertion: "strictEqual", args: [ overwritten, true,
-				"first Sizzle overwritten" ] },
-			{ assertion: "deepEqual", args: [ sizzle1Selection, expected,
-				"selection by first Sizzle" ] },
-			{ assertion: "deepEqual", args: [ sizzle2Selection, expected,
-				"selection by second Sizzle" ] },
+		window.parent.iframeCallback( function( QUnit ) {
+			QUnit.notStrictEqual( originalSizzle, Sizzle1, "first Sizzle overwritten" );
+			QUnit.deepEqual( sizzle1Selection, expected, "selection by first Sizzle" );
+			QUnit.deepEqual( sizzle2Selection, expected, "selection by second Sizzle" );
 
-			{ assertion: "strictEqual", args: [ restored, true,
-				"first Sizzle restored by noConflict" ] },
-			{ assertion: "strictEqual", args: [ returnedCorrect, true,
-				"second Sizzle returned by noConflict" ] },
-			{ assertion: "deepEqual", args: [ sizzle1Selection2, expected,
-				"another selection by first Sizzle" ] },
-			{ assertion: "deepEqual", args: [ sizzle2Selection2, expected,
-				"another selection by second Sizzle" ] },
-		] );
+			QUnit.strictEqual( Sizzle, Sizzle1, "first Sizzle restored by noConflict" );
+			QUnit.strictEqual( replaced, Sizzle2, "second Sizzle returned by noConflict" );
+			QUnit.deepEqual( Sizzle1( selector ), expected, "another selection by first Sizzle" );
+			QUnit.deepEqual( Sizzle2( selector ), expected, "another selection by second Sizzle" );
+		} );
 	</script>
 </body>
 </html>
