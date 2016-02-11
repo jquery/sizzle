@@ -37,10 +37,10 @@ module.exports = {
 		os_version: "Yosemite"
 	},
 
-	"bs_chrome-14": {
+	"bs_chrome-16": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "14.0",
+		browser_version: "16.0",
 		os: "OS X",
 		os_version: "Mavericks"
 	},

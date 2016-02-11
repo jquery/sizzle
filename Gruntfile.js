@@ -56,7 +56,7 @@ module.exports = function( grunt ) {
 
 		browsers.old = {
 			firefox: [ "bs_firefox-3.6" ],
-			chrome: [ "bs_chrome-14", "bs_chrome-24" ],
+			chrome: [ "bs_chrome-16", "bs_chrome-24" ],
 			safari: [ "bs_safari-4.0", "bs_safari-5.0", "bs_safari-5.1" ],
 			ie: [ "bs_ie-6", "bs_ie-7", "bs_ie-8" ],
 			opera: [ "bs_opera-11.6", "bs_opera-12.16" ],

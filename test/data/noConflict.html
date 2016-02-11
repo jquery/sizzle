@@ -14,11 +14,18 @@
 <body>
 	<script>
 		var selector = "html > *",
-			expected = [ document.documentElement.firstChild, document.body ],
+			elem = document.documentElement.firstChild,
+			expected = [],
 			originalSizzle = Sizzle,
 			sizzle1Selection = Sizzle1( selector ),
 			sizzle2Selection = Sizzle2( selector ),
 			replaced = Sizzle.noConflict();
+
+		do {
+			if ( elem.nodeType === 1 ) {
+				expected.push( elem );
+			}
+		} while ( (elem = elem.nextSibling) );
 
 		window.parent.iframeCallback( function( QUnit ) {
 			QUnit.notStrictEqual( originalSizzle, Sizzle1, "first Sizzle overwritten" );
