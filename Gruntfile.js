@@ -192,10 +192,10 @@ module.exports = function( grunt ) {
 			oldIe: {
 				browsers: browsers.old.ie,
 
-				// Support: IE6 with karma<0.13
-				// Have to re-arrange socket.io transports by prioritizing "jsonp-polling"
-				// otherwise IE6 can't connect to karma server
-				transports: [ "jsonp-polling" ]
+				// Support: IE <=8 only
+				// Force use of JSONP polling
+				transports: [ "polling" ],
+				forceJSONP: true
 			},
 			oldOpera: {
 				browsers: browsers.old.opera
