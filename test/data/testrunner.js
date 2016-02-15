@@ -16,17 +16,6 @@
 	if ( window.__html__ ) {
 		fixture = window.__html__[ "test/data/fixtures.html" ];
 
-		// See fixtures.html
-		window.setup = function() {
-			var $fixture = jQuery( "#dl" );
-			jQuery( "#qunit-fixture" ).remove();
-			if ( $fixture.length ) {
-				$fixture.replaceWith( fixture );
-			} else {
-				jQuery( document.body ).append( fixture );
-			}
-		};
-
 	// If template has not been found, it must be a QUnit suite
 	} else {
 		QUnit.config.autostart = false;
@@ -34,9 +23,9 @@
 			fixture = html;
 			QUnit.start();
 		});
-
-		window.setup = function() {
-			jQuery( "#qunit-fixture" ).replaceWith( fixture );
-		};
 	}
+
+	window.setup = function() {
+		jQuery( "#qunit-fixture" ).replaceWith( fixture );
+	};
 })();

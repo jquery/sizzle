@@ -48,7 +48,9 @@ function t( a, b, c ) {
 		s += ( s && "," ) + '"' + f[ i ].id + '"';
 	}
 
-	deepEqual(f, q.apply( q, c ), a + " (" + b + ")");
+	// TODO refactor to parameterize assert (or remove entirely)
+	QUnit.config.current.assert.deepEqual(f, q.apply( q, c ), a + " (" + b + ")");
+
 }
 
 /**
@@ -96,19 +98,18 @@ var createWithFriesXML = function() {
 };
 
 function testIframeWithCallback( title, fileName, func ) {
-	test( title, function() {
-		var iframe;
+	QUnit.test( title, function( assert ) {
+		var iframe,
+			done = assert.async();
 
-		stop();
 		window.iframeCallback = function() {
-			var self = this,
-				args = arguments;
+			var args = arguments;
 			setTimeout(function() {
 				window.iframeCallback = undefined;
-				func.apply( self, args );
+				func.apply( assert, args );
 				func = function() {};
 				iframe.remove();
-				start();
+				done();
 			}, 0 );
 		};
 		iframe = jQuery( "<div/>" ).css({ position: "absolute", width: "500px", left: "-600px" })

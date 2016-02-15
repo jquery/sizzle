@@ -1,10 +1,10 @@
-module( "extending", { setup: setup } );
+QUnit.module( "extending", { beforeEach: setup } );
 
-test("custom pseudos", function() {
-	expect( 6 );
+QUnit.test("custom pseudos", function( assert ) {
+	assert.expect( 6 );
 
 	Sizzle.selectors.filters.foundation = Sizzle.selectors.filters.root;
-	deepEqual( Sizzle(":foundation"), [ document.documentElement ], "Copy element filter with new name" );
+	assert.deepEqual( Sizzle(":foundation"), [ document.documentElement ], "Copy element filter with new name" );
 	delete Sizzle.selectors.filters.foundation;
 
 	Sizzle.selectors.setFilters.primary = Sizzle.selectors.setFilters.first;
@@ -56,8 +56,8 @@ test("custom pseudos", function() {
 	delete Sizzle.selectors.filters.slice;
 });
 
-test("backwards-compatible custom pseudos", function() {
-	expect( 3 );
+QUnit.test("backwards-compatible custom pseudos", function( assert ) {
+	assert.expect( 3 );
 
 	Sizzle.selectors.filters.icontains = function( elem, i, match ) {
 		return Sizzle.getText( elem ).toLowerCase().indexOf( (match[3] || "").toLowerCase() ) > -1;
@@ -76,8 +76,8 @@ test("backwards-compatible custom pseudos", function() {
 	delete Sizzle.selectors.setFilters.podium;
 });
 
-test("custom attribute getters", function() {
-	expect( 2 );
+QUnit.test("custom attribute getters", function( assert ) {
+	assert.expect( 2 );
 
 	var original = Sizzle.selectors.attrHandle.hreflang,
 		selector = "a:contains('mark')[hreflang='http://diveintomark.org/en']";
@@ -88,15 +88,15 @@ test("custom attribute getters", function() {
 		return lang && ( href + lang );
 	};
 
-	deepEqual( Sizzle(selector, createWithFriesXML()), [], "Custom attrHandle (preferred document)" );
+	assert.deepEqual( Sizzle(selector, createWithFriesXML()), [], "Custom attrHandle (preferred document)" );
 	t( "Custom attrHandle (preferred document)", selector, ["mark"] );
 
 	Sizzle.selectors.attrHandle.hreflang = original;
 });
 
-test("Ensure no 'undefined' handler is added", function() {
-	expect( 1 );
+QUnit.test("Ensure no 'undefined' handler is added", function( assert ) {
+	assert.expect( 1 );
 
-	ok( !Sizzle.selectors.attrHandle.hasOwnProperty( "undefined" ),
+	assert.ok( !Sizzle.selectors.attrHandle.hasOwnProperty( "undefined" ),
 		"Extra attr handlers are not added to Expr.attrHandle (gh-353)" );
 });
