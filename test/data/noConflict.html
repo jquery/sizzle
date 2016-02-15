@@ -27,15 +27,15 @@
 			}
 		} while ( (elem = elem.nextSibling) );
 
-		window.parent.iframeCallback( function( QUnit ) {
-			QUnit.notStrictEqual( originalSizzle, Sizzle1, "first Sizzle overwritten" );
-			QUnit.deepEqual( sizzle1Selection, expected, "selection by first Sizzle" );
-			QUnit.deepEqual( sizzle2Selection, expected, "selection by second Sizzle" );
+		window.parent.iframeCallback( function( assert ) {
+			assert.notStrictEqual( originalSizzle, Sizzle1, "first Sizzle overwritten" );
+			assert.deepEqual( sizzle1Selection, expected, "selection by first Sizzle" );
+			assert.deepEqual( sizzle2Selection, expected, "selection by second Sizzle" );
 
-			QUnit.strictEqual( Sizzle, Sizzle1, "first Sizzle restored by noConflict" );
-			QUnit.strictEqual( replaced, Sizzle2, "second Sizzle returned by noConflict" );
-			QUnit.deepEqual( Sizzle1( selector ), expected, "another selection by first Sizzle" );
-			QUnit.deepEqual( Sizzle2( selector ), expected, "another selection by second Sizzle" );
+			assert.strictEqual( Sizzle, Sizzle1, "first Sizzle restored by noConflict" );
+			assert.strictEqual( replaced, Sizzle2, "second Sizzle returned by noConflict" );
+			assert.deepEqual( Sizzle1( selector ), expected, "another selection by first Sizzle" );
+			assert.deepEqual( Sizzle2( selector ), expected, "another selection by second Sizzle" );
 		} );
 	</script>
 </body>
