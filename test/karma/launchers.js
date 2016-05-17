@@ -22,19 +22,19 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_firefox-40": {
+	"bs_firefox-45": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "40.0",
+		browser_version: "45.0",
 		os: "OS X",
-		os_version: "Yosemite"
+		os_version: "El Capitan"
 	},
-	"bs_firefox-41": {
+	"bs_firefox-46": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "41.0",
+		browser_version: "46.0",
 		os: "OS X",
-		os_version: "Yosemite"
+		os_version: "El Capitan"
 	},
 
 	"bs_chrome-16": {
@@ -51,25 +51,32 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_chrome-44": {
+	"bs_chrome-49": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "44.0",
+		browser_version: "49.0",
 		os: "OS X",
-		os_version: "Yosemite"
+		os_version: "El Capitan"
 	},
-	"bs_chrome-45": {
+	"bs_chrome-50": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "45.0",
+		browser_version: "50.0",
 		os: "OS X",
-		os_version: "Yosemite"
+		os_version: "El Capitan"
 	},
 
 	"bs_edge-12": {
 		base: "BrowserStack",
 		browser: "edge",
 		browser_version: "12.0",
+		os: "Windows",
+		os_version: "10"
+	},
+	"bs_edge-13": {
+		base: "BrowserStack",
+		browser: "edge",
+		browser_version: "13.0",
 		os: "Windows",
 		os_version: "10"
 	},
@@ -131,19 +138,19 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-31": {
+	"bs_opera-36": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "31.0",
+		browser_version: "36.0",
 		os: "OS X",
-		os_version: "Yosemite"
+		os_version: "El Capitan"
 	},
-	"bs_opera-32": {
+	"bs_opera-37": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "32.0",
+		browser_version: "37.0",
 		os: "OS X",
-		os_version: "Yosemite"
+		os_version: "El Capitan"
 	},
 
 	"bs_yandex-latest": {
@@ -188,10 +195,10 @@ module.exports = {
 		os: "OS X",
 		os_version: "Yosemite"
 	},
-	"bs_safari-9.0": {
+	"bs_safari-9.1": {
 		base: "BrowserStack",
 		browser: "safari",
-		browser_version: "9.0",
+		browser_version: "9.1",
 		os: "OS X",
 		os_version: "El Capitan"
 	},
@@ -219,6 +226,12 @@ module.exports = {
 		device: "iPhone 6",
 		os: "ios",
 		os_version: "8.3"
+	},
+	"bs_ios-9.3": {
+		base: "BrowserStack",
+		device: "iPhone 6S",
+		os: "ios",
+		os_version: "9.3"
 	},
 
 	"bs_android-2.3": {
