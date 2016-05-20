@@ -1000,12 +1000,12 @@ Sizzle.attr = function( elem, name ) {
 	return val !== undefined ?
 		val :
 		elem.getAttribute === undefined || elem.getAttributeNode === undefined ?
-		null :
-			support.attributes || !documentIsHTML ?
-				elem.getAttribute( name ) :
-				(val = elem.getAttributeNode(name)) && val.specified ?
-					val.value :
-					null;
+			null :
+				support.attributes || !documentIsHTML ?
+					elem.getAttribute( name ) :
+					(val = elem.getAttributeNode(name)) && val.specified ?
+						val.value :
+						null;
 };
 
 Sizzle.escape = function( sel ) {
