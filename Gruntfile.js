@@ -42,8 +42,6 @@ module.exports = function( grunt ) {
 
 			"bs_opera-36", "bs_opera-37",
 
-			"bs_yandex-latest",
-
 			// Real Safari 6.1 and 7.0 are not available
 			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.1"
 		];

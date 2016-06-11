@@ -153,13 +153,6 @@ module.exports = {
 		os_version: "El Capitan"
 	},
 
-	"bs_yandex-latest": {
-		base: "BrowserStack",
-		browser: "yandex",
-		os: "OS X",
-		os_version: "Yosemite"
-	},
-
 	"bs_safari-4.0": {
 		base: "BrowserStack",
 		browser: "safari",
