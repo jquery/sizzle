@@ -66,13 +66,6 @@ module.exports = {
 		os_version: "El Capitan"
 	},
 
-	"bs_edge-12": {
-		base: "BrowserStack",
-		browser: "edge",
-		browser_version: "12.0",
-		os: "Windows",
-		os_version: "10"
-	},
 	"bs_edge-13": {
 		base: "BrowserStack",
 		browser: "edge",
