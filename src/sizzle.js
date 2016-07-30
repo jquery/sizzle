@@ -472,7 +472,7 @@ function createDisabledPseudo( disabled ) {
 		// Only certain elements can match :enabled or :disabled
 		// https://html.spec.whatwg.org/multipage/scripting.html#selector-enabled
 		// https://html.spec.whatwg.org/multipage/scripting.html#selector-disabled
-		return "form" in elem && elem.disabled === false ?
+		if ( "form" in elem ) {
 
 			// Check for inherited disabledness on relevant non-disabled elements:
 			// * listed form-associated elements in a disabled fieldset
@@ -481,29 +481,35 @@ function createDisabledPseudo( disabled ) {
 			// * option elements in a disabled optgroup
 			//   https://html.spec.whatwg.org/multipage/forms.html#concept-option-disabled
 			// All such elements have a "form" property.
+			if ( elem.parentNode && elem.disabled === false ) {
+				return "label" in elem ?
 
-			// Support: IE 6 - 11
-			// Use the isDisabled shortcut property, which already covers inheritance
-			elem.isDisabled === disabled ||
+					// Option elements defer to a parent optgroup if present
+					( "label" in elem.parentNode ?
+						elem.parentNode.disabled === disabled :
+						elem.disabled === disabled ) :
 
-			// Where there is no isDisabled, check ancestors manually
-			/* jshint -W018 */
-			elem.isDisabled !== !disabled && ( "label" in elem ?
+					// Support: IE 6 - 11
+					// Use the isDisabled shortcut property to check for disabled fieldset ancestors
+					elem.isDisabled === disabled ||
 
-				// Option elements defer to a parent optgroup if present
-				( elem.parentNode && "label" in elem.parentNode ?
-					elem.parentNode.disabled === disabled :
-					elem.disabled === disabled ) :
+					// Where there is no isDisabled, check manually
+					/* jshint -W018 */
+					elem.isDisabled !== !disabled &&
+						disabledAncestor( elem ) === disabled;
+			}
 
-				// All others defer to ancestor fieldsets if present
-				disabledAncestor( elem ) === disabled
-			) :
+			return elem.disabled === disabled;
 
-			// Try to winnow out elements that can't be disabled before trusting the property.
-			// Some victims get caught in our net (label, legend, menu, track), but it shouldn't
-			// even exist on them, let alone have a boolean value.
-			"form" in elem && elem.disabled === disabled ||
-			"label" in elem && elem.disabled === disabled;
+		// Try to winnow out elements that can't be disabled before trusting the property.
+		// Some victims get caught in our net (label, legend, menu, track), but it shouldn't
+		// even exist on them, let alone have a boolean value.
+		} else if ( "label" in elem ) {
+			return elem.disabled === disabled;
+		}
+
+		// Remaining elements are neither :enabled nor :disabled
+		return false;
 	};
 }
 
