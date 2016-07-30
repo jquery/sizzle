@@ -1088,6 +1088,16 @@ QUnit.test("pseudo - form", function( assert ) {
 QUnit.test("pseudo - :(dis|en)abled, explicitly disabled", function( assert ) {
 	assert.expect( 2 );
 
+	// Set a meaningless disabled property on a common ancestor
+	var container = document.getElementById( "disabled-tests" );
+	container.disabled = true;
+
+	// Support: IE 6 - 11
+	// Unset the property where it is not meaningless
+	if ( document.getElementById( "enabled-input" ).isDisabled ) {
+		container.disabled = undefined;
+	}
+
 	t(
 		"Explicitly disabled elements",
 		"#enabled-fieldset :disabled",
