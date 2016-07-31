@@ -1103,6 +1103,23 @@ QUnit.test("pseudo - :(dis|en)abled, explicitly disabled", function( assert ) {
 	);
 });
 
+QUnit.test("pseudo - :(dis|en)abled, optgroup and option", function( assert ) {
+	assert.expect( 2 );
+
+	t(
+		":disabled",
+		"#disabled-select-inherit :disabled, #enabled-select-inherit :disabled",
+		[ "disabled-optgroup-inherit", "disabled-optgroup-option", "en_disabled-optgroup-inherit",
+			"en_disabled-optgroup-option" ]
+	);
+
+	t(
+		":enabled",
+		"#disabled-select-inherit :enabled, #enabled-select-inherit :enabled",
+		[ "enabled-optgroup-inherit", "enabled-optgroup-option", "enabled-select-option" ]
+	);
+});
+
 // Support: PhantomJS
 // fieldsetElement.disabled is undefined
 if ( jQuery("<fieldset disabled='disabled'/>")[0].disabled ) {
