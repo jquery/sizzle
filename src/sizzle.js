@@ -232,7 +232,7 @@ function Sizzle( selector, context, results, seed ) {
 	// Try to shortcut find operations (as opposed to filters) in HTML documents
 	if ( !seed ) {
 
-		if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
+		if ( Sizzle.autoDocument && ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
 			setDocument( context );
 		}
 		context = context || document;
@@ -561,6 +561,9 @@ isXML = Sizzle.isXML = function( elem ) {
 	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
 	return documentElement ? documentElement.nodeName !== "HTML" : false;
 };
+
+//Global variable to control if setDocument should auto-switch current document
+Sizzle.autoDocument = true;
 
 /**
  * Sets document-related variables once based on the current document
@@ -977,7 +980,7 @@ Sizzle.matches = function( expr, elements ) {
 
 Sizzle.matchesSelector = function( elem, expr ) {
 	// Set document vars if needed
-	if ( ( elem.ownerDocument || elem ) !== document ) {
+	if ( Sizzle.autoDocument && ( elem.ownerDocument || elem ) !== document ) {
 		setDocument( elem );
 	}
 
@@ -1007,7 +1010,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 
 Sizzle.contains = function( context, elem ) {
 	// Set document vars if needed
-	if ( ( context.ownerDocument || context ) !== document ) {
+	if ( Sizzle.autoDocument && ( context.ownerDocument || context ) !== document ) {
 		setDocument( context );
 	}
 	return contains( context, elem );
@@ -1015,7 +1018,7 @@ Sizzle.contains = function( context, elem ) {
 
 Sizzle.attr = function( elem, name ) {
 	// Set document vars if needed
-	if ( ( elem.ownerDocument || elem ) !== document ) {
+	if ( Sizzle.autoDocument && ( elem.ownerDocument || elem ) !== document ) {
 		setDocument( elem );
 	}
 
@@ -1991,7 +1994,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 			for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
 				if ( byElement && elem ) {
 					j = 0;
-					if ( !context && elem.ownerDocument !== document ) {
+					if ( Sizzle.autoDocument && !context && elem.ownerDocument !== document ) {
 						setDocument( elem );
 						xml = !documentIsHTML;
 					}
