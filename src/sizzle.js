@@ -310,6 +310,12 @@ function Sizzle( selector, context, results, seed ) {
 						nid = nid.replace( rcssescape, fcssescape );
 					} else {
 						context.setAttribute( "id", (nid = expando) );
+						if ( typeof console !== "undefined" && console.warn ) {
+							console.warn("The selector " + selector + " has been de-optimized due to an inability to run " +
+								"native querySelectorAll() or to use an id on the parent. This will lead to a style " +
+								"recalculation and may cause poor performance. Please consider adding an id to the " +
+								"parent element or using a simpler selector.");
+						}
 					}
 
 					// Prefix every selector in the list
