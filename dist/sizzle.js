@@ -2,11 +2,11 @@
  * Sizzle CSS Selector Engine v2.3.4-pre
  * https://sizzlejs.com/
  *
- * Copyright jQuery Foundation and other contributors
+ * Copyright JS Foundation and other contributors
  * Released under the MIT license
- * http://jquery.org/license
+ * https://js.foundation/
  *
- * Date: 2016-08-15
+ * Date: 2016-11-20
  */
 (function( window ) {
 

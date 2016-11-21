@@ -1,4 +1,4 @@
-Welcome! Thanks for your interest in contributing to Sizzle. You're **almost** in the right place. More information on how to contribute to this and all other jQuery Foundation projects is over at [contribute.jquery.org](https://contribute.jquery.org). You'll definitely want to take a look at the articles on contributing [code](https://contribute.jquery.org/code).
+Welcome! Thanks for your interest in contributing to Sizzle. You're **almost** in the right place. More information on how to contribute to this and all other JS Foundation projects is over at [contribute.jquery.org](https://contribute.jquery.org). You'll definitely want to take a look at the articles on contributing [code](https://contribute.jquery.org/code).
 
 You may also want to take a look at our [commit & pull request guide](https://contribute.jquery.org/commits-and-pull-requests/) and [style guides](https://contribute.jquery.org/style-guide/) for instructions on how to maintain your fork and submit your code. Before we can merge any pull request, we'll also need you to sign our [contributor license agreement](https://contribute.jquery.org/cla).
 
