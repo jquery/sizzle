@@ -2,9 +2,9 @@
  * Sizzle CSS Selector Engine v@VERSION
  * https://sizzlejs.com/
  *
- * Copyright jQuery Foundation and other contributors
+ * Copyright JS Foundation and other contributors
  * Released under the MIT license
- * http://jquery.org/license
+ * https://js.foundation/
  *
  * Date: @DATE
  */
