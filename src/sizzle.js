@@ -33,7 +33,7 @@ var i,
 	contains,
 
 	// Instance-specific data
-	expando = "sizzle" + 1 * new Date(),
+	expando = "sizzle" + Date.now(),
 	preferredDoc = window.document,
 	dirruns = 0,
 	done = 0,
