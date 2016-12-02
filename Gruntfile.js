@@ -86,7 +86,7 @@ module.exports = function( grunt ) {
 						loops: false
 					},
 					banner: "/*! Sizzle v<%= pkg.version %> | (c) " +
-						"JS Foundation, Inc. | js.foundation */",
+						"JS Foundation and other contributors | js.foundation */",
 					sourceMap: true,
 					sourceMapName: "dist/sizzle.min.map",
 					ASCIIOnly: true
