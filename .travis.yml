@@ -1,7 +1,7 @@
 sudo: false
 language: node_js
 node_js:
-- '0.10'
+- '8'
 env:
     global:
         - secure: "uU9pJ7IjebsIjCft0G47GUW4TTQyVRjt9G2iIsbw1Jfyi8RnjDumOEMRRieFDUYWR5faM9FuixVwFKYolEfmY7TxU0I1J5Lmbak5YUb4ELWFpQ83Ydk2oHHxlX7SEHxOsj1Y42IoMyych4cgf3iKRSc0Kx5KptpXH+yQgqQIZ6M="
