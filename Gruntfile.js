@@ -31,22 +31,26 @@ module.exports = function( grunt ) {
 		// See https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#browsers
 
 		browsers.desktop = [
-			"bs_chrome-50", "bs_chrome-51",
+			"bs_chrome-45", // shares V8 with Node.js 4 LTS
+			"bs_chrome-59", "bs_chrome-60",
 
-			"bs_firefox-38", "bs_firefox-45", // Firefox ESR
-			"bs_firefox-46", "bs_firefox-47",
+			"bs_firefox-45", "bs_firefox-52", // Firefox ESR
+			"bs_firefox-54", "bs_firefox-55",
 
-			"bs_edge-13",
+			"bs_edge-14", /* "bs_edge-15", */ // Edge 15 disabled temporarily due to gh-406
 
 			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 
-			"bs_opera-37", "bs_opera-38",
+			"bs_opera-46", "bs_opera-47",
 
 			// Real Safari 6.1 and 7.0 are not available
-			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.1"
+			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.1", "bs_safari-10.1"
 		];
 
-		browsers.ios = [ "bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0", "bs_ios-8.3", "bs_ios-9.3" ];
+		browsers.ios = [
+			"bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0", "bs_ios-8.3",
+			"bs_ios-9.3", "bs_ios-10.3"
+		];
 		browsers.android = [
 			"bs_android-4.0", "bs_android-4.1", "bs_android-4.2",
 			"bs_android-4.3", "bs_android-4.4"
@@ -54,7 +58,7 @@ module.exports = function( grunt ) {
 
 		browsers.old = {
 			firefox: [ "bs_firefox-3.6" ],
-			chrome: [ "bs_chrome-16", "bs_chrome-24" ],
+			chrome: [ "bs_chrome-16" ],
 			safari: [ "bs_safari-4.0", "bs_safari-5.0", "bs_safari-5.1" ],
 			ie: [ "bs_ie-7", "bs_ie-8" ],
 			opera: [ "bs_opera-11.6", "bs_opera-12.16" ],
