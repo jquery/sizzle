@@ -1646,16 +1646,16 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 	groups = [];
 	preFilters = Expr.preFilter;
 
-	while ( soFar ) {
+	// Comma
+	if ( (match = rcomma.exec( soFar )) && match ) {
+		// Don't consume trailing commas as valid
+		soFar = soFar.slice( match[0].length ) || soFar;
+	}
+	
+	// do this on before looping
+	groups.push( (tokens = []) );
 
-		// Comma and first run
-		if ( !matched || (match = rcomma.exec( soFar )) ) {
-			if ( match ) {
-				// Don't consume trailing commas as valid
-				soFar = soFar.slice( match[0].length ) || soFar;
-			}
-			groups.push( (tokens = []) );
-		}
+	while ( soFar ) {
 
 		matched = false;
 
