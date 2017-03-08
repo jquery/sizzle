@@ -1621,10 +1621,10 @@ Expr = Sizzle.selectors = {
 Expr.pseudos["nth"] = Expr.pseudos["eq"];
 
 // Add button/input type pseudos
-for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
+for ( i in { radio: 1, checkbox: 1, file: 1, password: 1, image: 1 } ) {
 	Expr.pseudos[ i ] = createInputPseudo( i );
 }
-for ( i in { submit: true, reset: true } ) {
+for ( i in { submit: 1, reset: 1 } ) {
 	Expr.pseudos[ i ] = createButtonPseudo( i );
 }
 
