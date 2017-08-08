@@ -317,7 +317,7 @@ QUnit.test("class", function( assert ) {
 });
 
 QUnit.test("name", function( assert ) {
-	assert.expect( 14 );
+	assert.expect( 24 );
 
 	var form;
 
@@ -348,6 +348,26 @@ QUnit.test("name", function( assert ) {
 	t( "Find elements that have similar IDs", "#tName2ID", ["tName2ID"] );
 
 	t( "Case-sensitivity", "[name=tname1]", [] );
+
+	// Shorthand tests
+	t( "Name selector with shorthand", "input@action", ["text1"] );
+
+	t( "Name selector non-input with shorthand", "@example", ["name-is-example"] );
+	t( "Name selector non-input with shorthand", "@div", ["name-is-div"] );
+	t( "Name selector non-input with shorthand", "*@iframe", ["iframe"] );
+
+	t( "Name selector for grouped input with shorthand", "input@types[]", ["types_all", "types_anime", "types_movie"] );
+
+	form = document.getElementById("form");
+	assert.deepEqual( Sizzle("input@action", form), q("text1"),
+		"Name selector within the context of another element with shorthand" );
+	assert.deepEqual( Sizzle("input@foo[bar]", form), q("hidden2"),
+	 	"Name selector for grouped form element within the context of another element with shorthand" );
+
+	t( "Find elements that have similar IDs with shorthand", "@tName1", ["tName1ID"] );
+	t( "Find elements that have similar IDs with shorthand", "@tName2", ["tName2ID"] );
+
+	t( "Case-sensitivity with shorthand", "@tname1", [] );
 });
 
 QUnit.test( "multiple", function( assert ) {
