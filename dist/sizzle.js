@@ -6,7 +6,7 @@
  * Released under the MIT license
  * https://js.foundation/
  *
- * Date: 2016-12-02
+ * Date: 2017-08-09
  */
 (function( window ) {
 
@@ -111,6 +111,7 @@ var i,
 	matchExpr = {
 		"ID": new RegExp( "^#(" + identifier + ")" ),
 		"CLASS": new RegExp( "^\\.(" + identifier + ")" ),
+		"NAME": new RegExp( "^@(" + identifier + "(\\[(" + identifier + ")?\\])*)" ),
 		"TAG": new RegExp( "^(" + identifier + "|[*])" ),
 		"ATTR": new RegExp( "^" + attributes ),
 		"PSEUDO": new RegExp( "^" + pseudos ),
@@ -724,6 +725,13 @@ setDocument = Sizzle.setDocument = function( node ) {
 		}
 	};
 
+	// Name
+	Expr.find["NAME"] = support.getElementsByName && function( nameAttribute, context ) {
+		if ( typeof context.getElementsByName !== "undefined" && documentIsHTML ) {
+			return context.getElementsByName( nameAttribute );
+		}
+	};
+
 	/* QSA/matchesSelector
 	---------------------------------------------------------------------- */
 
@@ -1228,6 +1236,12 @@ Expr = Sizzle.selectors = {
 				classCache( className, function( elem ) {
 					return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== "undefined" && elem.getAttribute("class") || "" );
 				});
+		},
+
+		"NAME": function( nameAttribute ) {
+			return function( elem ) {
+				return elem.getAttribute("name") === nameAttribute;
+			};
 		},
 
 		"ATTR": function( name, operator, check ) {
