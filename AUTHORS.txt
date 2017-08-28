@@ -41,7 +41,7 @@ Oleg Gaidarenko <markelog@gmail.com>
 Dan Burzo <danburzo@gmail.com>
 Goare Mao <mygoare@gmail.com>
 Dongseok Paeng <dongseok83.paeng@lge.com>
-Michał Gołębiowski <m.goleb@gmail.com>
+Michał Gołębiowski-Owczarek <m.goleb@gmail.com>
 Philip Jägenstedt <philip@foolip.org>
 Chris Antaki <ChrisAntaki@gmail.com>
 Benjamin Tan <demoneaux@gmail.com>
