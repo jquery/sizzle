@@ -658,7 +658,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		// getElementById is not reliable as a find shortcut
 		Expr.find["ID"] = function( id, context ) {
 			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
-				var node, i, elems,
+				var node, i, elems, length,
 					elem = context.getElementById( id );
 
 				if ( elem ) {
@@ -671,8 +671,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 					// Fall back on getElementsByName
 					elems = context.getElementsByName( id );
+					length = elems.length;
 					i = 0;
-					while ( (elem = elems[i++]) ) {
+					for ( ; i !== length && (elem = elems[ i ]) != null; i++ ) {
 						node = elem.getAttributeNode("id");
 						if ( node && node.value === id ) {
 							return [ elem ];
@@ -702,11 +703,12 @@ setDocument = Sizzle.setDocument = function( node ) {
 				tmp = [],
 				i = 0,
 				// By happy coincidence, a (broken) gEBTN appears on DocumentFragment nodes too
-				results = context.getElementsByTagName( tag );
+				results = context.getElementsByTagName( tag ),
+				length = results.length;
 
 			// Filter out possible comments
 			if ( tag === "*" ) {
-				while ( (elem = results[i++]) ) {
+				for ( ; i !== length && (elem = results[ i ]) != null; i++ ) {
 					if ( elem.nodeType === 1 ) {
 						tmp.push( elem );
 					}
@@ -1054,7 +1056,8 @@ Sizzle.uniqueSort = function( results ) {
 	var elem,
 		duplicates = [],
 		j = 0,
-		i = 0;
+		i = 0,
+		length = results.length;
 
 	// Unless we *know* we can detect duplicates, assume their presence
 	hasDuplicate = !support.detectDuplicates;
@@ -1062,9 +1065,10 @@ Sizzle.uniqueSort = function( results ) {
 	results.sort( sortOrder );
 
 	if ( hasDuplicate ) {
-		while ( (elem = results[i++]) ) {
-			if ( elem === results[ i ] ) {
-				j = duplicates.push( i );
+		for ( ; i < length; i++ ) {
+			elem = results[ i ];
+			if ( i + 1 < length && elem === results[ i + 1 ] ) {
+				j = duplicates.push( i + 1 );
 			}
 		}
 		while ( j-- ) {
