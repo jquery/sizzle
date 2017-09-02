@@ -1402,7 +1402,7 @@ QUnit.test( "Iframe dispatch should not affect Sizzle, see jQuery #13936", 1, fu
 });
 
 QUnit.test("matchesSelector", function( assert ) {
-	assert.expect( 16 );
+	assert.expect( 17 );
 
 	var link = document.getElementById( "simon1" ),
 		input = document.getElementById( "text1" ),
@@ -1437,6 +1437,10 @@ QUnit.test("matchesSelector", function( assert ) {
 	assert.ok( Sizzle.matchesSelector( option, "[test=]" ), "attribute-equals non-value" );
 	assert.ok( !Sizzle.matchesSelector( option, "[test^='']" ),
 		"attribute-starts-with empty string (negative)" );
+
+	option.setAttribute( "class", "=]" );
+	assert.ok( Sizzle.matchesSelector( option, ".\\=\\]" ),
+		"class selector with attribute-equals confusable" );
 
 	assert.ok( Sizzle.matchesSelector( disconnected, "div" ), "disconnected element" );
 	assert.ok( Sizzle.matchesSelector( link, "* > *" ), "child combinator matches in document" );
