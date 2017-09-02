@@ -1435,7 +1435,7 @@ QUnit.test("matchesSelector", function( assert ) {
 	assert.ok( !Sizzle.matchesSelector( option, "[test^='']" ),
 		"attribute-starts-with empty string (negative)" );
 
-	option.setAttribute( "class", "=]" );
+	option.className = "=]";
 	assert.ok( Sizzle.matchesSelector( option, ".\\=\\]" ),
 		"class selector with attribute-equals confusable" );
 
