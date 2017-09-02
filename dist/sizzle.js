@@ -6,7 +6,7 @@
  * Released under the MIT license
  * https://js.foundation/
  *
- * Date: 2016-12-02
+ * Date: 2017-09-01
  */
 (function( window ) {
 
