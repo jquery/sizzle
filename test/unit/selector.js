@@ -186,11 +186,11 @@ QUnit.test("broken", function( assert ) {
 	// Make sure attribute value quoting works correctly. See: #6093
 	attrbad = jQuery("<input type='hidden' value='2' name='foo.baz' id='attrbad1'/><input type='hidden' value='2' name='foo[baz]' id='attrbad2'/>").appendTo("#qunit-fixture");
 
-	broken( "No attribute value", "input[name=]" );
-	broken( "Attribute not escaped", "input[name=foo.baz]" );
-	broken( "Attribute not escaped", "input[name=foo[baz]]" );
-	broken( "Attribute quote mismatch", "input[name=''double-quoted'']" );
-	broken( "Attribute quote mismatch", "input[name='apostrophe'd']" );
+	broken( "Attribute equals non-value", "input[name=]" );
+	broken( "Attribute equals unquoted non-identifer", "input[name=foo.baz]" );
+	broken( "Attribute equals unquoted non-identifer", "input[name=foo[baz]]" );
+	broken( "Attribute equals bad string", "input[name=''double-quoted'']" );
+	broken( "Attribute equals bad string", "input[name='apostrophe'd']" );
 });
 
 QUnit.test("id", function( assert ) {
@@ -1402,7 +1402,7 @@ QUnit.test( "Iframe dispatch should not affect Sizzle, see jQuery #13936", 1, fu
 });
 
 QUnit.test("matchesSelector", function( assert ) {
-	assert.expect( 17 );
+	assert.expect( 15 );
 
 	var link = document.getElementById( "simon1" ),
 		input = document.getElementById( "text1" ),
@@ -1414,8 +1414,6 @@ QUnit.test("matchesSelector", function( assert ) {
 	assert.ok( Sizzle.matchesSelector( link, "[rel=bookmark]" ), "attribute-equals identifier" );
 	assert.ok( Sizzle.matchesSelector( link, "[\nrel = bookmark\t]" ),
 		"attribute-equals identifier (whitespace ignored)" );
-	assert.ok( Sizzle.matchesSelector( link, "a[href*=#]" ),
-		"attribute-contains unquoted non-identifier" );
 	assert.ok( Sizzle.matchesSelector( link, "a[title=\"Don't click me\"]" ),
 		"attribute-equals string containing single quote" );
 
@@ -1434,7 +1432,6 @@ QUnit.test("matchesSelector", function( assert ) {
 	assert.ok( Sizzle.matchesSelector( option, "[id*=option1][type!=checkbox]" ),
 		"attribute-not-equals identifier" );
 	assert.ok( Sizzle.matchesSelector( option, "[id*=option1]" ), "attribute-contains identifier" );
-	assert.ok( Sizzle.matchesSelector( option, "[test=]" ), "attribute-equals non-value" );
 	assert.ok( !Sizzle.matchesSelector( option, "[test^='']" ),
 		"attribute-starts-with empty string (negative)" );
 
