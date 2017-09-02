@@ -306,7 +306,7 @@ function Sizzle( selector, context, results, seed ) {
 
 					// Capture the context ID, setting it first if necessary
 					if ( (nid = context.getAttribute( "id" )) ) {
-						nid = nid.replace( rcssescape, fcssescape );
+						nid = Sizzle.escape(nid);
 					} else {
 						context.setAttribute( "id", (nid = expando) );
 					}
