@@ -89,11 +89,13 @@ module.exports = function( grunt ) {
 						"hoist_funs": false,
 						loops: false
 					},
+					output: {
+						ascii_only: true
+					},
 					banner: "/*! Sizzle v<%= pkg.version %> | (c) " +
 						"JS Foundation and other contributors | js.foundation */",
 					sourceMap: true,
-					sourceMapName: "dist/sizzle.min.map",
-					ASCIIOnly: true
+					sourceMapName: "dist/sizzle.min.map"
 				}
 			}
 		},
@@ -146,7 +148,12 @@ module.exports = function( grunt ) {
 				},
 				src: [ files.source ]
 			},
-			grunt: files.grunt,
+			grunt: {
+				options: {
+					requireCamelCaseOrUpperCaseIdentifiers: null
+				},
+				src: [ files.grunt ]
+			},
 			speed: [ files.speed ],
 			tests: {
 				options: {
