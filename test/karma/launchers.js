@@ -22,19 +22,19 @@ module.exports = {
 		os: "OS X",
 		os_version: "Sierra"
 	},
-	"bs_firefox-54": {
-		base: "BrowserStack",
-		browser: "firefox",
-		browser_version: "54.0",
-		os: "OS X",
-		os_version: "Sierra"
-	},
 	"bs_firefox-55": {
 		base: "BrowserStack",
 		browser: "firefox",
 		browser_version: "55.0",
 		os: "OS X",
-		os_version: "Sierra"
+		os_version: "High Sierra"
+	},
+	"bs_firefox-56": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "56.0",
+		os: "OS X",
+		os_version: "High Sierra"
 	},
 
 	"bs_chrome-16": {
@@ -51,33 +51,33 @@ module.exports = {
 		os: "OS X",
 		os_version: "Sierra"
 	},
-	"bs_chrome-59": {
-		base: "BrowserStack",
-		browser: "chrome",
-		browser_version: "59.0",
-		os: "OS X",
-		os_version: "Sierra"
-	},
 	"bs_chrome-60": {
 		base: "BrowserStack",
 		browser: "chrome",
 		browser_version: "60.0",
 		os: "OS X",
-		os_version: "Sierra"
+		os_version: "High Sierra"
 	},
-
-	"bs_edge-14": {
+	"bs_chrome-61": {
 		base: "BrowserStack",
-		browser: "edge",
-		browser_version: "14.0",
-		os: "Windows",
-		os_version: "10"
+		browser: "chrome",
+		browser_version: "61.0",
+		os: "OS X",
+		os_version: "High Sierra"
 	},
 
 	"bs_edge-15": {
 		base: "BrowserStack",
 		browser: "edge",
 		browser_version: "15.0",
+		os: "Windows",
+		os_version: "10"
+	},
+
+	"bs_edge-16": {
+		base: "BrowserStack",
+		browser: "edge",
+		browser_version: "16.0",
 		os: "Windows",
 		os_version: "10"
 	},
@@ -139,19 +139,19 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-46": {
-		base: "BrowserStack",
-		browser: "opera",
-		browser_version: "46.0",
-		os: "OS X",
-		os_version: "Sierra"
-	},
 	"bs_opera-47": {
 		base: "BrowserStack",
 		browser: "opera",
 		browser_version: "47.0",
 		os: "OS X",
-		os_version: "Sierra"
+		os_version: "High Sierra"
+	},
+	"bs_opera-48": {
+		base: "BrowserStack",
+		browser: "opera",
+		browser_version: "48.0",
+		os: "OS X",
+		os_version: "High Sierra"
 	},
 
 	"bs_safari-4.0": {
@@ -202,6 +202,13 @@ module.exports = {
 		browser_version: "10.1",
 		os: "OS X",
 		os_version: "Sierra"
+	},
+	"bs_safari-11.0": {
+		base: "BrowserStack",
+		browser: "safari",
+		browser_version: "11.0",
+		os: "OS X",
+		os_version: "High Sierra"
 	},
 
 	"bs_ios-5.1": {

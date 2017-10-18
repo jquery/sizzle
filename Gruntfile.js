@@ -32,19 +32,19 @@ module.exports = function( grunt ) {
 
 		browsers.desktop = [
 			"bs_chrome-45", // shares V8 with Node.js 4 LTS
-			"bs_chrome-59", "bs_chrome-60",
+			"bs_chrome-60", "bs_chrome-61",
 
 			"bs_firefox-45", "bs_firefox-52", // Firefox ESR
-			"bs_firefox-54", "bs_firefox-55",
+			"bs_firefox-55", "bs_firefox-56",
 
-			"bs_edge-14", /* "bs_edge-15", */ // Edge 15 disabled temporarily due to gh-406
+			"bs_edge-15", "bs_edge-16",
 
 			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 
-			"bs_opera-46", "bs_opera-47",
+			"bs_opera-47", "bs_opera-48",
 
 			// Real Safari 6.1 and 7.0 are not available
-			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.1", "bs_safari-10.1"
+			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.1", "bs_safari-10.1", "bs_safari-11.0"
 		];
 
 		browsers.ios = [
