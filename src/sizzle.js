@@ -1524,6 +1524,15 @@ Expr = Sizzle.selectors = {
 			return elem.selected === true;
 		},
 
+		"invalid": function( elem ) {
+			// Both `invaild` and `valid` return false if elem has no `validity` attribute
+			return elem.validity !== undefined && elem.validity.valid === false;
+		},
+
+		"valid": function( elem ) {
+			return elem.validity !== undefined && elem.validity.valid === true;
+		},
+
 		// Contents
 		"empty": function( elem ) {
 			// http://www.w3.org/TR/selectors/#empty-pseudo
