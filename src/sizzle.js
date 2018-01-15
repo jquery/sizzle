@@ -128,7 +128,16 @@ var i,
 	rnative = /^[^{]+\{\s*\[native \w/,
 
 	// Easily-parseable/retrievable ID or TAG or CLASS selectors
-	rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
+	// ID: #((?:[\w-]|\\.)+)
+	//     Starts with '#' and repetition of one of:
+	//     - Any letter or number or minus ('-')
+	//     - Character escaped with backslash
+	// TAG: (\w+) Letters or number without any special characters
+	// CLASS: \.((?:[\w-]|\\.)+)
+	//     Starts with '.' and repetition of one of:
+	//     - Any letter or number or minus ('-')
+	//     - Character escaped with backslash
+	rquickExpr = /^(?:#((?:[\w-]|\\.)+)|(\w+)|\.((?:[\w-]|\\.)+))$/,
 
 	rsibling = /[+~]/,
 
@@ -212,6 +221,10 @@ try {
 	};
 }
 
+function unescapeSelector(str) {
+	return str.replace(/\\(.)/g, "$1");
+}
+
 function Sizzle( selector, context, results, seed ) {
 	var m, i, elem, nid, match, groups, newSelector,
 		newContext = context && context.ownerDocument,
@@ -245,6 +258,7 @@ function Sizzle( selector, context, results, seed ) {
 				// ID selector
 				if ( (m = match[1]) ) {
 
+					m = unescapeSelector (m);
 					// Document context
 					if ( nodeType === 9 ) {
 						if ( (elem = context.getElementById( m )) ) {
@@ -277,14 +291,14 @@ function Sizzle( selector, context, results, seed ) {
 
 				// Type selector
 				} else if ( match[2] ) {
-					push.apply( results, context.getElementsByTagName( selector ) );
+					push.apply( results, context.getElementsByTagName( unescapeSelector (selector) ) );
 					return results;
 
 				// Class selector
 				} else if ( (m = match[3]) && support.getElementsByClassName &&
 					context.getElementsByClassName ) {
 
-					push.apply( results, context.getElementsByClassName( m ) );
+					push.apply( results, context.getElementsByClassName( unescapeSelector (m) ) );
 					return results;
 				}
 			}
