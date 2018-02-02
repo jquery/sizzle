@@ -221,6 +221,14 @@ function Sizzle( selector, context, results, seed ) {
 
 	results = results || [];
 
+	 // Balasaheb - this try/catch seems to fix IE 'permission denied' errors as described here:
+         try {
+               document === document; //may cause permission denied
+            }
+        catch (err) {
+                document = window.document; //resets document, and no more permission denied errors.
+           }
+	
 	// Return early from calls with invalid selector or context
 	if ( typeof selector !== "string" || !selector ||
 		nodeType !== 1 && nodeType !== 9 && nodeType !== 11 ) {
