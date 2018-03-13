@@ -132,7 +132,9 @@ module.exports = function( grunt ) {
 					"qunit/qunit.css": "qunitjs/qunit/qunit.css",
 					"qunit/LICENSE.txt": "qunitjs/LICENSE.txt",
 
-					"requirejs/require.js": "requirejs/require.js"
+					"requirejs/require.js": "requirejs/require.js",
+					"requirejs-domready/domReady.js": "requirejs-domready/domReady.js",
+					"requirejs-text/text.js": "requirejs-text/text.js",
 				}
 			}
 		},
