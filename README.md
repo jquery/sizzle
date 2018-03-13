@@ -1,3 +1,47 @@
+# AdGuard's fork of Sizzle
+
+This is a modified version of Sizzle that we use in our [ExtendedCss](https://github.com/AdguardTeam/ExtendedCss) library.
+
+## How to build and test Sizzle
+
+Run this command to build Sizzle and run tests:
+```
+grunt
+```
+
+The version we use in ExtendedCss is `dist/sizzle.adguard.js`.
+
+In order to test Sizzle performance, do the following:
+```
+// Build Sizzle
+grunt build
+
+// Run a web server
+python -m SimpleHTTPServer
+```
+
+Then open `http://localhost:8000/speed/?qsa` to run the performance tests.
+
+## Changes compared to the original Sizzle
+
+**Global changes**
+
+1. Added additional parameters to the `Sizzle.tokenize` method so that it can be used for stylesheets parsing and validation.
+2. Added tokens re-sorting mechanism forcing slow pseudos to be matched last  (see `TokenSorter`).
+3. Fix the `nonnativeSelectorCache` caching -- there was no value corresponding to a key.
+4. Added Sizzle.compile call to the `:has` pseudo definition.
+
+**Changes that are applied to the ADGUARD_EXTCSS build only**
+
+1. Do not expose Sizzle to the global scope. Initialize it lazily via `initializeSizzle()`.
+2. Removed `:contains` pseudo declaration -- its syntax is changed and declared outside of Sizzle.
+3. Removed declarations for the following non-standard pseudo classes: 
+    ```
+    :parent, :header, :input, :button, :text, :first, :last, :eq,
+    :even, :odd, :lt, :gt, :nth, :radio, :checkbox, :file,
+    :password, :image, :submit, :reset
+    ```
+
 # Sizzle
 
 __A pure-JavaScript CSS selector engine designed to be easily dropped in to a host library.__
