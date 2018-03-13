@@ -1638,7 +1638,7 @@ Expr.setFilters = new setFilters();
  * Sorts the tokens in order to mitigate the performance issues caused by matching slow pseudos first:
  * https://github.com/AdguardTeam/ExtendedCss/issues/55#issuecomment-364058745
  */
-var TokenSorter = (function() {
+var sortTokenGroups = (function() {
 
 	/**
 	 * Splits compound selector into a list of simple selectors
@@ -1752,7 +1752,7 @@ var TokenSorter = (function() {
 	 * @param {Array} groups An array of tokens arrays.
 	 * @returns {Array} A new array that consists of the same tokens arrays after sorting
 	 */
-	var sort = function(groups) {
+	var sortTokenGroups = function(groups) {
 		var sortedGroups = [];
 		var len = groups.length;
 		var i = 0;
@@ -1763,9 +1763,7 @@ var TokenSorter = (function() {
 	};
 
 	// Expose
-	return {
-		sort: sort
-	};
+	return sortTokenGroups;
 })();
 
 /**
@@ -1799,7 +1797,7 @@ function removeTrailingSpaces(tokens) {
  * @param {*} groups Token groups (see {@link Sizzle.tokenize})
  * @returns {Array.<SelectorData>} An array of selectors data we got from the groups
  */
-function tolerantTokenize(groups) {
+function tokenGroupsToSelectors(groups) {
 
 	// Remove trailing spaces which we can encounter in tolerant mode
 	// We're doing it in tolerant mode only as this is the only case when
@@ -1807,7 +1805,7 @@ function tolerantTokenize(groups) {
 	removeTrailingSpaces(groups[groups.length - 1]);
 
 	// We need sorted tokens to make cache work properly
-	var sortedGroups = TokenSorter.sort(groups);
+	var sortedGroups = sortTokenGroups(groups);
 	
 	var selectors = [];
 	for (var i = 0; i < groups.length; i++) {
@@ -1916,25 +1914,25 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly, options) {
 	// Return the length of the invalid excess
 	// if we're just parsing
 	// Otherwise, throw an error or return tokens
-	var validLen = soFar.length;
+	var invalidLen = soFar.length;
 	if (parseOnly) {
-		return validLen;
+		return invalidLen;
 	}
 
-	if (validLen !== 0 && !tolerant) { 
+	if (invalidLen !== 0 && !tolerant) { 
 		Sizzle.error( selector ); // Throws an error.
 	}
 
 	// We can get inside of this "if" in tolerant mode only
-	if (validLen !== 0) {
+	if (invalidLen !== 0) {
 		/** 
 		 * [AdGuard Patch]:
 		 * In tolerant mode we return a special object that constists of 
 		 * an array of parsed selectors (and their tokens) and a "nextIndex" field
 		 * that points to an index after which we're not able to parse selectors farther.
 		 */
-		var nextIndex = selector.length - validLen;
-		var selectors = tolerantTokenize(groups);
+		var nextIndex = selector.length - invalidLen;
+		var selectors = tokenGroupsToSelectors(groups);
 		return {
 			selectors: selectors,
 			nextIndex: nextIndex
@@ -1942,7 +1940,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly, options) {
 	}
 
 	/** [AdGuard Patch]: Sorting tokens */
-	var sortedGroups = TokenSorter.sort(groups);	
+	var sortedGroups = sortTokenGroups(groups);
 
 	/** [AdGuard Patch]: Change the way tokens are cached */
 	var tokensCacheItem = {

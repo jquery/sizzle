@@ -27,7 +27,7 @@ Then open `http://localhost:8000/speed/?qsa` to run the performance tests.
 **Global changes**
 
 1. Added additional parameters to the `Sizzle.tokenize` method so that it can be used for stylesheets parsing and validation.
-2. Added tokens re-sorting mechanism forcing slow pseudos to be matched last  (see `TokenSorter`).
+2. Added tokens re-sorting mechanism forcing slow pseudos to be matched last  (see `sortTokenGroups`).
 3. Fix the `nonnativeSelectorCache` caching -- there was no value corresponding to a key.
 4. Added Sizzle.compile call to the `:has` pseudo definition.
 
