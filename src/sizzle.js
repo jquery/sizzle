@@ -331,7 +331,7 @@ function Sizzle( selector, context, results, seed ) {
 						);
 						return results;
 					} catch ( qsaError ) {
-						nonnativeSelectorCache( selector );
+						nonnativeSelectorCache( selector, true );
 					} finally {
 						if ( nid === expando ) {
 							context.removeAttribute( "id" );
@@ -997,7 +997,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 				return ret;
 			}
 		} catch (e) {
-			nonnativeSelectorCache( expr );
+			nonnativeSelectorCache( expr, true );
 		}
 	}
 
