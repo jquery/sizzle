@@ -1835,7 +1835,7 @@ function removeTrailingSpaces(tokens) {
 /**
  * [AdGuard Patch]:
  * An object with the information about selectors and their token representation
- * @typedef {Object} SelectorData
+ * @typedef {{selectorText: string, groups: Array}} SelectorData
  * @property {string} selectorText A CSS selector text
  * @property {Array} groups An array of token groups corresponding to that selector
  */
