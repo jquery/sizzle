@@ -1834,13 +1834,16 @@ function removeTrailingSpaces(tokens) {
 
 /**
  * [AdGuard Patch]:
- * 
- * This method processes parsed token groups, divides them into a number of selectors
- * and makes sure that each selector's tokens are cached properly in Sizzle.
- * 
+ * An object with the information about selectors and their token representation
  * @typedef {Object} SelectorData
  * @property {string} selectorText A CSS selector text
  * @property {Array} groups An array of token groups corresponding to that selector
+ */
+
+/**
+ * [AdGuard Patch]:
+ * This method processes parsed token groups, divides them into a number of selectors
+ * and makes sure that each selector's tokens are cached properly in Sizzle.
  * 
  * @param {*} groups Token groups (see {@link Sizzle.tokenize})
  * @returns {Array.<SelectorData>} An array of selectors data we got from the groups
