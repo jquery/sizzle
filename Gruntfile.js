@@ -277,7 +277,7 @@ module.exports = function( grunt ) {
 		// "karma:android", "karma:oldAndroid"
 	] : "karma:phantom" );
 
-	grunt.registerTask( "build", [ "lint", "compile", "uglify", "dist", "ensure_ascii" ] );
+	grunt.registerTask( "build", [ "lint", "compile", "preprocess_dist", "uglify", "dist", "ensure_ascii" ] );
 	grunt.registerTask( "default", [ "build", "tests", "compare_size" ] );
 
 	grunt.registerTask( "bower", "bowercopy" );

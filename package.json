@@ -59,7 +59,8 @@
     "load-grunt-tasks": "3.5.2",
     "phantomjs-prebuilt": "2.1.15",
     "qunitjs": "1.23.1",
-    "requirejs": "2.3.5"
+    "requirejs": "2.3.5",
+    "preprocess": "3.1.0"
   },
   "scripts": {
     "build": "npm install && grunt",

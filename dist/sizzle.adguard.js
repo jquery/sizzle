@@ -1,14 +1,13 @@
 /*!
- * Sizzle CSS Selector Engine v@VERSION-adguard
+ * Sizzle CSS Selector Engine v2.3.4-pre-adguard
  * https://sizzlejs.com/
  *
  * Copyright JS Foundation and other contributors
  * Released under the MIT license
  * https://js.foundation/
  *
- * Date: @DATE
+ * Date: 2018-03-14
  */
-// @if ADGUARD_EXTCSS=true
 /**
  * Version of Sizzle patched by AdGuard in order to be used in https://github.com/AdguardTeam/ExtendedCss.
  * Look for [AdGuard Patch] and ADGUARD_EXTCSS markers to find out what exactly was changed by us.
@@ -40,7 +39,6 @@ var initializeSizzle = function() { // jshint ignore:line
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 Sizzle = 
-// @endif
 (function( window ) {
 
 var i,
@@ -1492,17 +1490,7 @@ Expr = Sizzle.selectors = {
 			};
 		}),
 
-		// @if ADGUARD_EXTCSS=true
 		// Removed :contains pseudo-class declaration
-		// @endif
-		// @if ADGUARD_EXTCSS=false
-		"contains": markFunction(function( text ) {
-			text = text.replace( runescape, funescape );
-			return function( elem ) {
-				return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
-			};
-		}),
-		// @endif
 
 		// "Whether an element is represented by a :lang() selector
 		// is based solely on the element's language value
@@ -1581,100 +1569,11 @@ Expr = Sizzle.selectors = {
 			return true;
 		},
 
-		// @if ADGUARD_EXTCSS=true
 		// Removed custom pseudo-classes
-		// @endif
-		// @if ADGUARD_EXTCSS=false
-		"parent": function( elem ) {
-			return !Expr.pseudos["empty"]( elem );
-		},
-
-		// Element/input types
-		"header": function( elem ) {
-			return rheader.test( elem.nodeName );
-		},
-
-		"input": function( elem ) {
-			return rinputs.test( elem.nodeName );
-		},
-
-		"button": function( elem ) {
-			var name = elem.nodeName.toLowerCase();
-			return name === "input" && elem.type === "button" || name === "button";
-		},
-
-		"text": function( elem ) {
-			var attr;
-			return elem.nodeName.toLowerCase() === "input" &&
-				elem.type === "text" &&
-
-				// Support: IE<8
-				// New HTML5 attribute values (e.g., "search") appear with elem.type === "text"
-				( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text" );
-		},
-
-		// Position-in-collection
-		"first": createPositionalPseudo(function() {
-			return [ 0 ];
-		}),
-
-		"last": createPositionalPseudo(function( matchIndexes, length ) {
-			return [ length - 1 ];
-		}),
-
-		"eq": createPositionalPseudo(function( matchIndexes, length, argument ) {
-			return [ argument < 0 ? argument + length : argument ];
-		}),
-
-		"even": createPositionalPseudo(function( matchIndexes, length ) {
-			var i = 0;
-			for ( ; i < length; i += 2 ) {
-				matchIndexes.push( i );
-			}
-			return matchIndexes;
-		}),
-
-		"odd": createPositionalPseudo(function( matchIndexes, length ) {
-			var i = 1;
-			for ( ; i < length; i += 2 ) {
-				matchIndexes.push( i );
-			}
-			return matchIndexes;
-		}),
-
-		"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-			var i = argument < 0 ? argument + length : argument;
-			for ( ; --i >= 0; ) {
-				matchIndexes.push( i );
-			}
-			return matchIndexes;
-		}),
-
-		"gt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-			var i = argument < 0 ? argument + length : argument;
-			for ( ; ++i < length; ) {
-				matchIndexes.push( i );
-			}
-			return matchIndexes;
-		})
-		// @endif
 	}
 };
 
-// @if ADGUARD_EXTCSS=true
 // Removed custom pseudo-classes
-// @endif
-// @if ADGUARD_EXTCSS=false
-Expr.pseudos["nth"] = Expr.pseudos["eq"];
-
-// Add button/input type pseudos
-for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
-	Expr.pseudos[ i ] = createInputPseudo( i );
-}
-for ( i in { submit: true, reset: true } ) {
-	Expr.pseudos[ i ] = createButtonPseudo( i );
-}
-// @endif
 
 // Easy API for creating new setFilters
 function setFilters() {}
@@ -2556,41 +2455,15 @@ if ( !assert(function( el ) {
 
 // EXPOSE
 
-// @if ADGUARD_EXTCSS=true
 // Do not expose Sizzle to the global scope in the case of AdGuard ExtendedCss build
-// @endif
-// @if ADGUARD_EXTCSS=false 
-var _sizzle = window.Sizzle;
-
-Sizzle.noConflict = function() {
-	if ( window.Sizzle === Sizzle ) {
-		window.Sizzle = _sizzle;
-	}
 
 	return Sizzle;
-};
-
-if ( typeof define === "function" && define.amd ) {
-	define(function() { return Sizzle; });
-// Sizzle requires that there be a global window in Common-JS like environments
-} else if ( typeof module !== "undefined" && module.exports ) {
-	module.exports = Sizzle;
-} else {
-	window.Sizzle = Sizzle;
-}
-// @endif
-
-// @if ADGUARD_EXTCSS=true
-	return Sizzle;
-// @endif
 
 // EXPOSE
 
 })( window );
 
-// @if ADGUARD_EXTCSS=true
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 }
 };
-// @endif

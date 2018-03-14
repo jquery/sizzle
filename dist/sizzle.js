@@ -1,12 +1,12 @@
 /*!
- * Sizzle CSS Selector Engine v2.3.4-pre
+ * Sizzle CSS Selector Engine v2.3.4-pre-adguard
  * https://sizzlejs.com/
  *
  * Copyright JS Foundation and other contributors
  * Released under the MIT license
  * https://js.foundation/
  *
- * Date: 2017-09-01
+ * Date: 2018-03-14
  */
 (function( window ) {
 
@@ -331,7 +331,8 @@ function Sizzle( selector, context, results, seed ) {
 						);
 						return results;
 					} catch ( qsaError ) {
-						nonnativeSelectorCache( selector );
+						// [AdGuard Path]: Fix the cache value
+						nonnativeSelectorCache( selector, true );
 					} finally {
 						if ( nid === expando ) {
 							context.removeAttribute( "id" );
@@ -997,7 +998,8 @@ Sizzle.matchesSelector = function( elem, expr ) {
 				return ret;
 			}
 		} catch (e) {
-			nonnativeSelectorCache( expr );
+			// [AdGuard Path]: Fix the cache value
+			nonnativeSelectorCache( expr, true );
 		}
 	}
 
@@ -1449,6 +1451,9 @@ Expr = Sizzle.selectors = {
 		}),
 
 		"has": markFunction(function( selector ) {
+			if (typeof selector === "string") {
+				Sizzle.compile(selector);
+			}			
 			return function( elem ) {
 				return Sizzle( selector, elem ).length > 0;
 			};
@@ -1628,13 +1633,238 @@ function setFilters() {}
 setFilters.prototype = Expr.filters = Expr.pseudos;
 Expr.setFilters = new setFilters();
 
-tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
+/**
+ * [AdGuard Patch]:
+ * Sorts the tokens in order to mitigate the performance issues caused by matching slow pseudos first:
+ * https://github.com/AdguardTeam/ExtendedCss/issues/55#issuecomment-364058745
+ */
+var sortTokenGroups = (function() {
+
+	/**
+	 * Splits compound selector into a list of simple selectors
+	 * 
+	 * @param {*} tokens Tokens to split into groups
+	 * @returns an array consisting of token groups (arrays) and relation tokens.
+	 */
+	var splitCompoundSelector = function(tokens) {
+
+		var groups = [];
+		var currentTokensGroup = [];
+		var maxIdx = tokens.length - 1;
+		for (var i = 0; i <= maxIdx; i++) {
+
+			var token = tokens[i];
+			var relative = Sizzle.selectors.relative[token.type];
+			if (relative) {
+				groups.push(currentTokensGroup);
+				groups.push(token);
+				currentTokensGroup = [];
+			} else {
+				currentTokensGroup.push(token);				
+			}
+
+			if (i === maxIdx) {
+				groups.push(currentTokensGroup);
+			}
+		}
+
+		return groups;
+	};
+
+	var TOKEN_TYPES_VALUES = {
+		// nth-child, etc, always go last
+		"CHILD": 100,
+		"ID": 90,
+		"CLASS": 80,
+		"TAG": 70,
+		"ATTR": 70,
+		"PSEUDO": 60
+	};
+
+	var POSITIONAL_PSEUDOS = [
+		"nth", "first", "last", "eq", "even", "odd", "lt", "gt", "not"
+	];
+
+	/** 
+	 * A function that defines the sort order.
+	 * Returns a value lesser than 0 if "left" is less than "right".
+	 */
+	var compareFunction = function(left, right) {
+		var leftValue = TOKEN_TYPES_VALUES[left.type];
+		var rightValue = TOKEN_TYPES_VALUES[right.type];
+		return leftValue - rightValue;
+	};
+
+	/**
+	 * Checks if the specified tokens group is sortable.
+	 * We do not re-sort tokens in case of any positional or child pseudos in the group
+	 */
+	var isSortable = function(tokens) {
+
+		var iTokens = tokens.length;
+		while (iTokens--) {
+			var token = tokens[iTokens];
+			if (token.type === "PSEUDO" && POSITIONAL_PSEUDOS.indexOf(token.matches[0]) !== -1) {
+				return false;
+			}
+			if (token.type === "CHILD") {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	/**
+	 * Sorts the tokens in order to mitigate the issues caused by the left-to-right matching.
+	 * The idea is change the tokens order so that Sizzle was matching fast selectors first (id, class),
+	 * and slow selectors after that (and here I mean our slow custom pseudo classes).
+	 * 
+	 * @param {Array} tokens An array of tokens to sort
+	 * @returns {Array} A new re-sorted array
+	 */
+	var sortTokens = function(tokens) {
+
+		if (!tokens || tokens.length === 1) {
+			return tokens;
+		}
+
+		var sortedTokens = [];
+		var groups = splitCompoundSelector(tokens);
+		for (var i = 0; i < groups.length; i++) {
+			var group = groups[i];
+			if (group instanceof Array) {
+				if (isSortable(group)) {
+					group.sort(compareFunction);
+				}
+				sortedTokens = sortedTokens.concat(group);
+			} else {
+				sortedTokens.push(group);
+			}
+		}
+
+		return sortedTokens;
+	};
+
+	/**
+	 * Sorts every tokens array inside of the specified "groups" array.
+	 * See "sortTokens" methods for more information on how tokens are sorted.
+	 * 
+	 * @param {Array} groups An array of tokens arrays.
+	 * @returns {Array} A new array that consists of the same tokens arrays after sorting
+	 */
+	var sortTokenGroups = function(groups) {
+		var sortedGroups = [];
+		var len = groups.length;
+		var i = 0;
+		for (; i < len; i++) {
+			sortedGroups.push(sortTokens(groups[i]));
+		}
+		return sortedGroups;
+	};
+
+	// Expose
+	return sortTokenGroups;
+})();
+
+/**
+ * [AdGuard Patch]:
+ * Removes trailing spaces from the tokens list
+ * 
+ * @param {*} tokens An array of Sizzle tokens to post-process
+ */
+function removeTrailingSpaces(tokens) {
+	var iTokens = tokens.length;
+	while (iTokens--) {
+		var token = tokens[iTokens];
+		if (token.type === " ") {
+			tokens.length = iTokens;
+		} else {
+			break;
+		}
+	}
+}
+
+/**
+ * [AdGuard Patch]:
+ * An object with the information about selectors and their token representation
+ * @typedef {{selectorText: string, groups: Array}} SelectorData
+ * @property {string} selectorText A CSS selector text
+ * @property {Array} groups An array of token groups corresponding to that selector
+ */
+
+/**
+ * [AdGuard Patch]:
+ * This method processes parsed token groups, divides them into a number of selectors
+ * and makes sure that each selector's tokens are cached properly in Sizzle.
+ * 
+ * @param {*} groups Token groups (see {@link Sizzle.tokenize})
+ * @returns {Array.<SelectorData>} An array of selectors data we got from the groups
+ */
+function tokenGroupsToSelectors(groups) {
+
+	// Remove trailing spaces which we can encounter in tolerant mode
+	// We're doing it in tolerant mode only as this is the only case when
+	// encountering trailing spaces is expected
+	removeTrailingSpaces(groups[groups.length - 1]);
+
+	// We need sorted tokens to make cache work properly
+	var sortedGroups = sortTokenGroups(groups);
+	
+	var selectors = [];
+	for (var i = 0; i < groups.length; i++) {
+		var tokenGroups = groups[i];
+		var selectorText = toSelector(tokenGroups);
+		
+		selectors.push({
+			// Sizzle expects an array of token groups when compiling a selector
+			groups: [ tokenGroups ],
+			selectorText: selectorText
+		});
+
+		// Now make sure that selector tokens are cached
+		var tokensCacheItem = {
+			groups: tokenGroups,
+			sortedGroups: [ sortedGroups[i] ]
+		};
+		tokenCache(selectorText, tokensCacheItem);
+	}
+
+	return selectors;
+}
+
+/**
+ * [AdGuard Patch]:
+ * Add an additional argument for Sizzle.tokenize which indicates that it
+ * should not throw on invalid tokens, and instead should return tokens
+ * that it has produced so far.
+ * 
+ * One more additional argument that allow to choose if you want to receive sorted or unsorted tokens
+ * The problem is that the re-sorted selectors are valid for Sizzle, but not for the browser.
+ * options.returnUnsorted -- return unsorted tokens if true.
+ * options.cacheOnly -- return cached result only. Required for unit-tests.
+ * 
+ * @param {*} options Optional configuration object with two additional flags 
+ * (options.tolerant, options.returnUnsorted, options.cacheOnly) -- see patches #5 and #6 notes
+ */
+tokenize = Sizzle.tokenize = function( selector, parseOnly, options) {
 	var matched, match, tokens, type,
 		soFar, groups, preFilters,
 		cached = tokenCache[ selector + " " ];
 
-	if ( cached ) {
-		return parseOnly ? 0 : cached.slice( 0 );
+	var tolerant = options && options.tolerant;
+	var returnUnsorted = options && options.returnUnsorted;
+	var cacheOnly = options && options.cacheOnly;
+
+	if (cached) {
+		if (parseOnly) {
+			return 0;
+		} else {
+			return (returnUnsorted ? cached.groups : cached.sortedGroups).slice(0);
+		}
+	}
+
+	if (cacheOnly) {
+		return null;
 	}
 
 	soFar = selector;
@@ -1687,12 +1917,41 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 	// Return the length of the invalid excess
 	// if we're just parsing
 	// Otherwise, throw an error or return tokens
-	return parseOnly ?
-		soFar.length :
-		soFar ?
-			Sizzle.error( selector ) :
-			// Cache the tokens
-			tokenCache( selector, groups ).slice( 0 );
+	var invalidLen = soFar.length;
+	if (parseOnly) {
+		return invalidLen;
+	}
+
+	if (invalidLen !== 0 && !tolerant) { 
+		Sizzle.error( selector ); // Throws an error.
+	}
+
+	// We can get inside of this "if" in tolerant mode only
+	if (invalidLen !== 0) {
+		/** 
+		 * [AdGuard Patch]:
+		 * In tolerant mode we return a special object that constists of 
+		 * an array of parsed selectors (and their tokens) and a "nextIndex" field
+		 * that points to an index after which we're not able to parse selectors farther.
+		 */
+		var nextIndex = selector.length - invalidLen;
+		var selectors = tokenGroupsToSelectors(groups);
+		return {
+			selectors: selectors,
+			nextIndex: nextIndex
+		};
+	}
+
+	/** [AdGuard Patch]: Sorting tokens */
+	var sortedGroups = sortTokenGroups(groups);
+
+	/** [AdGuard Patch]: Change the way tokens are cached */
+	var tokensCacheItem = {
+		groups: groups,
+		sortedGroups: sortedGroups
+	};
+	tokensCacheItem = tokenCache(selector, tokensCacheItem);
+	return (returnUnsorted ? tokensCacheItem.groups : tokensCacheItem.sortedGroups).slice(0);
 };
 
 function toSelector( tokens ) {
@@ -2248,6 +2507,7 @@ if ( !assert(function( el ) {
 }
 
 // EXPOSE
+
 var _sizzle = window.Sizzle;
 
 Sizzle.noConflict = function() {
@@ -2266,6 +2526,9 @@ if ( typeof define === "function" && define.amd ) {
 } else {
 	window.Sizzle = Sizzle;
 }
+
+
 // EXPOSE
 
 })( window );
+
