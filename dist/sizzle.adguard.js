@@ -6,10 +6,12 @@
  * Released under the MIT license
  * https://js.foundation/
  *
- * Date: 2018-03-14
+ * Date: 2018-03-20
  */
 /**
- * Version of Sizzle patched by AdGuard in order to be used in https://github.com/AdguardTeam/ExtendedCss.
+ * Version of Sizzle patched by AdGuard in order to be used in the ExtendedCss module.
+ * https://github.com/AdguardTeam/sizzle-extcss
+ * 
  * Look for [AdGuard Patch] and ADGUARD_EXTCSS markers to find out what exactly was changed by us.
  * 
  * Global changes:
@@ -1873,8 +1875,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly, options) {
 		Sizzle.error( selector ); // Throws an error.
 	}
 
-	// We can get inside of this "if" in tolerant mode only
-	if (invalidLen !== 0) {
+	if (tolerant) {
 		/** 
 		 * [AdGuard Patch]:
 		 * In tolerant mode we return a special object that constists of 

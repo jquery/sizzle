@@ -6,7 +6,7 @@
  * Released under the MIT license
  * https://js.foundation/
  *
- * Date: 2018-03-14
+ * Date: 2018-03-20
  */
 (function( window ) {
 
@@ -1926,8 +1926,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly, options) {
 		Sizzle.error( selector ); // Throws an error.
 	}
 
-	// We can get inside of this "if" in tolerant mode only
-	if (invalidLen !== 0) {
+	if (tolerant) {
 		/** 
 		 * [AdGuard Patch]:
 		 * In tolerant mode we return a special object that constists of 
