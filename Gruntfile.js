@@ -52,8 +52,8 @@ module.exports = function( grunt ) {
 			"bs_ios-9.3", "bs_ios-10.3"
 		];
 		browsers.android = [
-			"bs_android-4.0", "bs_android-4.1", "bs_android-4.2",
-			"bs_android-4.3", "bs_android-4.4"
+			"bs_android-5.0", "bs_android-5.1", "bs_android-6.0", "bs_android-7.0",
+			"bs_android-7.1", "bs_android-8.0"
 		];
 
 		browsers.old = {
@@ -62,7 +62,7 @@ module.exports = function( grunt ) {
 			safari: [ "bs_safari-4.0", "bs_safari-5.0", "bs_safari-5.1" ],
 			ie: [ "bs_ie-7", "bs_ie-8" ],
 			opera: [ "bs_opera-11.6", "bs_opera-12.16" ],
-			android: [ "bs_android-2.3" ]
+			android: [ "bs_android-4.4" ]
 		};
 	}
 

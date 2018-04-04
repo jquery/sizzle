@@ -247,41 +247,53 @@ module.exports = {
 		os: "ios",
 		os_version: "10.3"
 	},
-
-	"bs_android-2.3": {
-		base: "BrowserStack",
-		device: "Motorola Droid Razr",
-		os: "android",
-		os_version: "2.3"
-	},
-	"bs_android-4.0": {
-		base: "BrowserStack",
-		device: "Motorola Razr",
-		os: "android",
-		os_version: "4.0"
-	},
-	"bs_android-4.1": {
-		base: "BrowserStack",
-		device: "Google Nexus 7",
-		os: "android",
-		os_version: "4.1"
-	},
-	"bs_android-4.2": {
-		base: "BrowserStack",
-		device: "LG Nexus 4",
-		os: "android",
-		os_version: "4.2"
-	},
-	"bs_android-4.3": {
-		base: "BrowserStack",
-		device: "Samsung Galaxy S4",
-		os: "android",
-		os_version: "4.3"
-	},
 	"bs_android-4.4": {
 		base: "BrowserStack",
-		device: "Samsung Galaxy S5",
+		device: "Google Nexus 5",
+		os_version: "4.4",
 		os: "android",
-		os_version: "4.4"
+		real_mobile: true
+	},
+	"bs_android-5.0": {
+		base: "BrowserStack",
+		device: "Samsung Galaxy S6",
+		os_version: "5.0",
+		os: "android",
+		real_mobile: true
+	},
+	"bs_android-5.1": {
+		base: "BrowserStack",
+		device: "Google Nexus 9",
+		os_version: "5.1",
+		os: "android",
+		real_mobile: true
+	},
+	"bs_android-6.0": {
+		base: "BrowserStack",
+		device: "Samsung Galaxy S7",
+		os_version: "6.0",
+		os: "android",
+		real_mobile: true
+	},
+	"bs_android-7.0": {
+		base: "BrowserStack",
+		device: "Samsung Galaxy S8",
+		os_version: "7.0",
+		os: "android",
+		real_mobile: true
+	},
+	"bs_android-7.1": {
+		base: "BrowserStack",
+		device: "Google Pixel",
+		os_version: "7.1",
+		os: "android",
+		real_mobile: true
+	},
+	"bs_android-8.0": {
+		base: "BrowserStack",
+		device: "Google Pixel",
+		os_version: "8.0",
+		os: "android",
+		real_mobile: true
 	}
 };
