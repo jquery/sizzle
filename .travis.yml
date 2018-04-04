@@ -9,3 +9,8 @@ env:
 before_script:
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
+before_install:
+    - wget https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip
+    - unzip BrowserStackLocal-linux-x64.zip
+    - ./BrowserStackLocal --key $BROWSER_STACK_ACCESS_KEY --local-identifier karma.$(date +%s) --force > /dev/null &
+    - sleep 15

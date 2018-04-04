@@ -271,10 +271,10 @@ module.exports = function( grunt ) {
 		"karma:ios",
 
 		"karma:oldIe", "karma:oldFirefox", "karma:oldChrome",
-		"karma:oldSafari", "karma:oldOpera"
+		"karma:oldSafari", "karma:oldOpera",
 
 		// See #314 :-(
-		// "karma:android", "karma:oldAndroid"
+		"karma:android", "karma:oldAndroid"
 	] : "karma:phantom" );
 
 	grunt.registerTask( "build", [ "lint", "compile", "uglify", "dist", "ensure_ascii" ] );

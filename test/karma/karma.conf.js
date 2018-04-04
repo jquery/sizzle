@@ -86,7 +86,8 @@ module.exports = function( config ) {
 		captureTimeout: 3e5,
 		browserNoActivityTimeout: 3e5,
 		browserDisconnectTimeout: 3e5,
-		browserDisconnectTolerance: 3
+		browserDisconnectTolerance: 3,
+		startTunnel: false
 	});
 
 	// Deal with Travis environment
