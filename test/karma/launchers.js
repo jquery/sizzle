@@ -211,42 +211,49 @@ module.exports = {
 		os_version: "High Sierra"
 	},
 
-	"bs_ios-5.1": {
-		base: "BrowserStack",
-		device: "iPhone 4S",
-		os: "ios",
-		os_version: "5.1"
-	},
-	"bs_ios-6.0": {
-		base: "BrowserStack",
-		device: "iPhone 5",
-		os: "ios",
-		os_version: "6.0"
-	},
-	"bs_ios-7.0": {
-		base: "BrowserStack",
-		device: "iPhone 5S",
-		os: "ios",
-		os_version: "7.0"
-	},
-	"bs_ios-8.3": {
-		base: "BrowserStack",
-		device: "iPhone 6",
-		os: "ios",
-		os_version: "8.3"
-	},
-	"bs_ios-9.3": {
-		base: "BrowserStack",
-		device: "iPhone 6S",
-		os: "ios",
-		os_version: "9.3"
-	},
-	"bs_ios-10.3": {
+	"bs_iphone_7-10.3": {
 		base: "BrowserStack",
 		device: "iPhone 7",
 		os: "ios",
-		os_version: "10.3"
+		os_version: "10.3",
+		real_mobile: true
 	},
+	"bs_iphone_7plus-10.3": {
+		base: "BrowserStack",
+		device: "iPhone 7 Plus",
+		os: "ios",
+		os_version: "10.3",
+		real_mobile: true
+	},
+	"bs_iphone_8-11.0": {
+		base: "BrowserStack",
+		device: "iPhone 8",
+		os: "ios",
+		os_version: "11.0",
+		real_mobile: true
+	},
+	"bs_iphone_8plus-11.0": {
+		base: "BrowserStack",
+		device: "iPhone 8 Plus",
+		os: "ios",
+		os_version: "11.0",
+		real_mobile: true
+	},
+	"bs_iphone_x-11.0": {
+		base: "BrowserStack",
+		device: "iPhone X",
+		os: "ios",
+		os_version: "11.0",
+		real_mobile: true
+	},
+	"bs_iphone_se-11.2": {
+		base: "BrowserStack",
+		device: "iPhone SE",
+		os: "ios",
+		os_version: "11.2",
+		real_mobile: true
+	},
+
 	"bs_android-4.4": {
 		base: "BrowserStack",
 		device: "Google Nexus 5",

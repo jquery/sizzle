@@ -48,8 +48,8 @@ module.exports = function( grunt ) {
 		];
 
 		browsers.ios = [
-			"bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0", "bs_ios-8.3",
-			"bs_ios-9.3", "bs_ios-10.3"
+			"bs_iphone_7-10.3", "bs_iphone_7plus-10.3", "bs_iphone_8-11.0", "bs_iphone_8plus-11.0",
+			"bs_iphone_x-11.0", "bs_iphone_se-11.2"
 		];
 		browsers.android = [
 			"bs_android-5.0", "bs_android-5.1", "bs_android-6.0", "bs_android-7.0",
