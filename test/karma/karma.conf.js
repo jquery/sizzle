@@ -73,6 +73,7 @@ module.exports = function( config ) {
 		colors: !isTravis,
 
 		port: 9876,
+		hostname: "bs-local.com",
 
 		// Possible values:
 		// config.LOG_DISABLE
