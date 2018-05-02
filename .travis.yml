@@ -12,5 +12,5 @@ before_script:
 before_install:
     - wget https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip
     - unzip BrowserStackLocal-linux-x64.zip
-    - ./BrowserStackLocal --key $BROWSER_STACK_ACCESS_KEY --local-identifier karma.$(date +%s) --force > /dev/null &
+    - ./BrowserStackLocal --key $BROWSER_STACK_ACCESS_KEY --local-identifier karma.$TRAVIS_BUILD_NUMBER --force > /dev/null &
     - sleep 15

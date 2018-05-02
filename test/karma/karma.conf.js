@@ -87,8 +87,7 @@ module.exports = function( config ) {
 		captureTimeout: 3e5,
 		browserNoActivityTimeout: 3e5,
 		browserDisconnectTimeout: 3e5,
-		browserDisconnectTolerance: 3,
-		startTunnel: false
+		browserDisconnectTolerance: 3
 	});
 
 	// Deal with Travis environment
@@ -97,6 +96,11 @@ module.exports = function( config ) {
 		// Browserstack launcher specifies "build" options as a default value
 		// of "TRAVIS_BUILD_NUMBER" variable, but this way a bit more verbose
 		config.browserStack.build = "travis #" + process.env.TRAVIS_BUILD_NUMBER;
+		config.browserStack.tunnelIdentifier = "karma." + process.env.TRAVIS_BUILD_NUMBER;
+
+		// BrowserStackLocal tunnel is started manually because of a
+		// corner-case in automated way causing tunnel to tear down early
+		config.browserStack.startTunnel = false;
 
 		// You can't get access to secure environment variables from pull requests
 		// so we don't have browserstack from them, but travis has headless Firefox so use that
