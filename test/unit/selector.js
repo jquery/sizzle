@@ -1011,7 +1011,7 @@ QUnit.test("pseudo - :not", function( assert ) {
 });
 
 QUnit.test("pseudo - position", function( assert ) {
-	assert.expect( 33 );
+	assert.expect( 34 );
 
 	t( "First element", "#qunit-fixture p:first", ["firstp"] );
 	t( "First element(case-insensitive)", "#qunit-fixture p:fiRst", ["firstp"] );
@@ -1024,6 +1024,7 @@ QUnit.test("pseudo - position", function( assert ) {
 	t( "Position Equals (negative)", "#qunit-fixture p:eq(-1)", ["first"] );
 	t( "Position Greater Than", "#qunit-fixture p:gt(0)", ["ap","sndp","en","sap","first"] );
 	t( "Position Less Than", "#qunit-fixture p:lt(3)", ["firstp","ap","sndp"] );
+	t( "Position Less Than Big Number", "#qunit-fixture p:lt(9007199254740991)", ["firstp","ap","sndp","en","sap","first"] );
 
 	t( "Check position filtering", "div#nothiddendiv:eq(0)", ["nothiddendiv"] );
 	t( "Check position filtering", "div#nothiddendiv:last", ["nothiddendiv"] );
