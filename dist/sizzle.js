@@ -6,7 +6,7 @@
  * Released under the MIT license
  * https://js.foundation/
  *
- * Date: 2017-09-01
+ * Date: 2018-10-20
  */
 (function( window ) {
 
@@ -331,7 +331,7 @@ function Sizzle( selector, context, results, seed ) {
 						);
 						return results;
 					} catch ( qsaError ) {
-						nonnativeSelectorCache( selector );
+						nonnativeSelectorCache( selector, true );
 					} finally {
 						if ( nid === expando ) {
 							context.removeAttribute( "id" );
@@ -997,7 +997,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 				return ret;
 			}
 		} catch (e) {
-			nonnativeSelectorCache( expr );
+			nonnativeSelectorCache( expr, true );
 		}
 	}
 
@@ -1596,7 +1596,11 @@ Expr = Sizzle.selectors = {
 		}),
 
 		"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-			var i = argument < 0 ? argument + length : argument;
+			var i = argument < 0 ?
+				argument + length :
+				argument > length ?
+					length :
+					argument;
 			for ( ; --i >= 0; ) {
 				matchIndexes.push( i );
 			}
