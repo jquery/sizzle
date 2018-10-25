@@ -132,6 +132,8 @@ var i,
 
 	rsibling = /[+~]/,
 
+	rcomplex = new RegExp(whitespace + "|>"),
+
 	// CSS escapes
 	// http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
 	runescape = new RegExp( "\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig" ),
@@ -304,20 +306,26 @@ function Sizzle( selector, context, results, seed ) {
 				// Exclude object elements
 				} else if ( context.nodeName.toLowerCase() !== "object" ) {
 
-					// Capture the context ID, setting it first if necessary
-					if ( (nid = context.getAttribute( "id" )) ) {
-						nid = nid.replace( rcssescape, fcssescape );
+					// The workaround is only necessary if the selector
+					// contains child or descendant combinators.
+					if ( !rcomplex.test( selector ) ) {
+						newSelector = selector;
 					} else {
-						context.setAttribute( "id", (nid = expando) );
-					}
+						// Capture the context ID, setting it first if necessary
+						if ( (nid = context.getAttribute( "id" )) ) {
+							nid = nid.replace( rcssescape, fcssescape );
+						} else {
+							context.setAttribute( "id", (nid = expando) );
+						}
 
-					// Prefix every selector in the list
-					groups = tokenize( selector );
-					i = groups.length;
-					while ( i-- ) {
-						groups[i] = "#" + nid + " " + toSelector( groups[i] );
+						// Prefix every selector in the list
+						groups = tokenize( selector );
+						i = groups.length;
+						while ( i-- ) {
+							groups[i] = "#" + nid + " " + toSelector( groups[i] );
+						}
+						newSelector = groups.join( "," );
 					}
-					newSelector = groups.join( "," );
 
 					// Expand context for sibling selectors
 					newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
