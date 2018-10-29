@@ -4,7 +4,10 @@ var grunt = require( "grunt" );
 
 module.exports = function( config ) {
 	var isTravis = process.env.TRAVIS,
-		dateString = grunt.config( "dateString" );
+		dateString = grunt.config( "dateString" ),
+		isBrowserStack = !!( process.env.BROWSER_STACK_USERNAME &&
+			process.env.BROWSER_STACK_ACCESS_KEY ),
+		hostName = isBrowserStack? "bs-local.com" : "localhost";
 
 	config.set({
 		browserStack: {
@@ -72,6 +75,7 @@ module.exports = function( config ) {
 
 		colors: !isTravis,
 
+		hostname: hostName,
 		port: 9876,
 
 		// Possible values:
@@ -98,8 +102,7 @@ module.exports = function( config ) {
 
 		// You can't get access to secure environment variables from pull requests
 		// so we don't have browserstack from them, but travis has headless Firefox so use that
-		if ( !(process.env.BROWSER_STACK_USERNAME && process.env.BROWSER_STACK_ACCESS_KEY) &&
-			process.env.TRAVIS_PULL_REQUEST ) {
+		if ( !isBrowserStack && process.env.TRAVIS_PULL_REQUEST ) {
 			config.browsers.push( "Firefox" );
 		}
 	}
