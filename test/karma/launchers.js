@@ -257,7 +257,8 @@ module.exports = {
 		base: "BrowserStack",
 		device: "iPhone 6S",
 		os: "ios",
-		os_version: "11.4"
+		os_version: "11.4",
+		real_mobile: true
 	},
 	"bs_ios-12.0": {
 		base: "BrowserStack",

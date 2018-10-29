@@ -72,6 +72,7 @@ module.exports = function( config ) {
 
 		colors: !isTravis,
 
+		hostname: "bs-local.com",
 		port: 9876,
 
 		// Possible values:
