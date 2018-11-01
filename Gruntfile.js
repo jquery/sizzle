@@ -51,8 +51,7 @@ module.exports = function( grunt ) {
 		browsers.ios = [
 			"bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0", "bs_ios-8.3", "bs_ios-9.3", "bs_ios-10.3",
 
-			// iOS 11.* & 12.0 launchers don't work so they have to be skipped for now.
-			// "bs_ios-11.4", "bs_ios-12.0",
+			 "bs_ios-11.4", "bs_ios-12.0",
 		];
 		browsers.android = [
 			"bs_android-4.0", "bs_android-4.1", "bs_android-4.2",
