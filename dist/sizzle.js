@@ -6,7 +6,7 @@
  * Released under the MIT license
  * https://js.foundation/
  *
- * Date: 2018-11-04
+ * Date: 2018-12-03
  */
 (function( window ) {
 
@@ -1460,7 +1460,7 @@ Expr = Sizzle.selectors = {
 		"contains": markFunction(function( text ) {
 			text = text.replace( runescape, funescape );
 			return function( elem ) {
-				return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
+				return ( elem.textContent || getText( elem ) ).indexOf( text ) > -1;
 			};
 		}),
 
