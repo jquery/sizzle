@@ -196,6 +196,67 @@ if ( jQuery( "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='1' w
 	});
 }
 
+QUnit.test("Sizzle.isXML", function( assert ) {
+	assert.expect( 10 );
+
+	var svgTree,
+		xmlTree = jQuery.parseXML( "<docElem><elem/></docElem>" ).documentElement,
+		htmlTree = jQuery( "<div>" +
+			"<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='1' width='1'>" +
+			"<desc></desc>" +
+			"</svg>" +
+			"</div>"
+		)[ 0 ],
+		supportsSVG = /svg/i.test( htmlTree.firstChild.namespaceURI );
+
+	// Support: IE<=8
+	// Omit the SVG DOCTYPE if it is not understood
+	try {
+		svgTree = jQuery.parseXML(
+			"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" " +
+				"\"http://www.w3.org/Gaphics/SVG/1.1/DTD/svg11.dtd\">" +
+			"<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><desc/></svg>"
+		).documentElement;
+	} catch ( ex ) {
+		svgTree = jQuery.parseXML(
+			"<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><desc/></svg>"
+		).documentElement;
+	}
+
+	assert.strictEqual( Sizzle.isXML( xmlTree ), true, "XML element" );
+	assert.strictEqual( Sizzle.isXML( xmlTree.firstChild ), true, "XML child element" );
+
+	assert.strictEqual( Sizzle.isXML( svgTree ), true, "SVG root element" );
+	assert.strictEqual( Sizzle.isXML( svgTree.firstChild ), true, "SVG child element" );
+
+	assert.strictEqual( Sizzle.isXML( htmlTree ), false, "disconnected div element" );
+	assert.strictEqual( Sizzle.isXML( htmlTree.firstChild ), supportsSVG,
+		"disconnected HTML-embedded SVG root element" );
+
+	// Support: IE 7 only
+	// The DOM under foreign elements can be incomplete
+	if ( htmlTree.firstChild.firstChild ) {
+		assert.strictEqual( Sizzle.isXML( htmlTree.firstChild.firstChild ), supportsSVG,
+			"disconnected HTML-embedded SVG child element" );
+	} else {
+		assert.ok( true, "Cannot test an incomplete DOM" );
+	}
+
+	document.getElementById( "qunit-fixture" ).appendChild( htmlTree );
+	assert.strictEqual( Sizzle.isXML( htmlTree ), false, "connected div element" );
+	assert.strictEqual( Sizzle.isXML( htmlTree.firstChild ), supportsSVG,
+		"connected HTML-embedded SVG root element" );
+
+	// Support: IE 7 only
+	// The DOM under foreign elements can be incomplete
+	if ( htmlTree.firstChild.firstChild ) {
+		assert.strictEqual( Sizzle.isXML( htmlTree.firstChild.firstChild ), supportsSVG,
+			"disconnected HTML-embedded SVG child element" );
+	} else {
+		assert.ok( true, "Cannot test an incomplete DOM" );
+	}
+});
+
 QUnit.test("Sizzle.uniqueSort", function( assert ) {
 	assert.expect( 14 );
 
