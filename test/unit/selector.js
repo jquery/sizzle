@@ -830,8 +830,33 @@ QUnit.test("pseudo - has", function( assert ) {
 	t( "Nested with overlapping candidates", "#qunit-fixture div:has(div:has(div:not([id])))", [ "moretests", "t2037" ] );
 });
 
+QUnit.test("pseudo - contains", function( assert ) {
+	assert.expect( 9 );
+
+	var gh335 = document.getElementById( "qunit-fixture" ).appendChild(
+			document.createElement( "mark" ) );
+	gh335.id = "gh-335";
+	gh335.appendChild( document.createTextNode( "raw line 1\nline 2" ) );
+
+	assert.ok( Sizzle("a:contains('')").length, "empty string" );
+	t( "unquoted argument", "a:contains(Google)", ["google","groups"] );
+	t( "unquoted argument with whitespace", "a:contains(Google Groups)", ["groups"] );
+	t( "quoted argument with whitespace and parentheses",
+		"a:contains('Google Groups (Link)')", ["groups"] );
+	t( "quoted argument with double quotes and parentheses",
+		"a:contains(\"(Link)\")", ["groups"] );
+	t( "unquoted argument with whitespace and paired parentheses",
+		"a:contains(Google Groups (Link))", ["groups"] );
+	t( "unquoted argument with paired parentheses", "a:contains((Link))", ["groups"] );
+	t( "quoted argument with CSS escapes",
+		"span:contains(\"\\\"'\\53F0 \\5317 Ta\\301 ibe\\30C i\")",
+		["utf8class1"] );
+
+	t( "collapsed whitespace", "mark:contains('line 1\\A line')", ["gh-335"] );
+});
+
 QUnit.test("pseudo - misc", function( assert ) {
-	assert.expect( 40 );
+	assert.expect( 32 );
 
 	var select, tmp, input;
 
@@ -844,18 +869,6 @@ QUnit.test("pseudo - misc", function( assert ) {
 
 	select = document.getElementById("select1");
 	assert.ok( Sizzle.matchesSelector( select, ":has(option)" ), "Has Option Matches" );
-
-	assert.ok( Sizzle("a:contains('')").length, "Empty string contains" );
-	t( "Text Contains", "a:contains(Google)", ["google","groups"] );
-	t( "Text Contains", "a:contains(Google Groups)", ["groups"] );
-
-	t( "Text Contains", "a:contains('Google Groups (Link)')", ["groups"] );
-	t( "Text Contains", "a:contains(\"(Link)\")", ["groups"] );
-	t( "Text Contains", "a:contains(Google Groups (Link))", ["groups"] );
-	t( "Text Contains", "a:contains((Link))", ["groups"] );
-
-	t( "Contains with CSS escapes", "span:contains(\"\\\"'\\53F0 \\5317 Ta\\301 ibe\\30C i\")",
-		["utf8class1"] );
 
 	tmp = document.createElement("div");
 	tmp.id = "tmp_input";
