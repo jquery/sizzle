@@ -22,17 +22,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "High Sierra"
 	},
-	"bs_firefox-61": {
+	"bs_firefox-63": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "61.0",
+		browser_version: "63.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
-	"bs_firefox-62": {
+	"bs_firefox-64": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "62.0",
+		browser_version: "64.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
@@ -51,13 +51,6 @@ module.exports = {
 		os: "OS X",
 		os_version: "Sierra"
 	},
-	"bs_chrome-69": {
-		base: "BrowserStack",
-		browser: "chrome",
-		browser_version: "69.0",
-		os: "OS X",
-		os_version: "Mojave"
-	},
 	"bs_chrome-70": {
 		base: "BrowserStack",
 		browser: "chrome",
@@ -65,18 +58,25 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mojave"
 	},
-
-	"bs_edge-16": {
+	"bs_chrome-71": {
 		base: "BrowserStack",
-		browser: "edge",
-		browser_version: "16.0",
-		os: "Windows",
-		os_version: "10"
+		browser: "chrome",
+		browser_version: "71.0",
+		os: "OS X",
+		os_version: "Mojave"
 	},
+
 	"bs_edge-17": {
 		base: "BrowserStack",
 		browser: "edge",
 		browser_version: "17.0",
+		os: "Windows",
+		os_version: "10"
+	},
+	"bs_edge-18": {
+		base: "BrowserStack",
+		browser: "edge",
+		browser_version: "18.0",
 		os: "Windows",
 		os_version: "10"
 	},
@@ -138,17 +138,17 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-55": {
-		base: "BrowserStack",
-		browser: "opera",
-		browser_version: "55.0",
-		os: "OS X",
-		os_version: "Mojave"
-	},
 	"bs_opera-56": {
 		base: "BrowserStack",
 		browser: "opera",
 		browser_version: "56.0",
+		os: "OS X",
+		os_version: "Mojave"
+	},
+	"bs_opera-57": {
+		base: "BrowserStack",
+		browser: "opera",
+		browser_version: "57.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
@@ -260,11 +260,11 @@ module.exports = {
 		os_version: "11.4",
 		real_mobile: true
 	},
-	"bs_ios-12.0": {
+	"bs_ios-12.1": {
 		base: "BrowserStack",
 		device: "iPhone XS",
 		os: "ios",
-		os_version: "12.0",
+		os_version: "12.1",
 		real_mobile: true
 	},
 
