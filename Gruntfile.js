@@ -151,6 +151,7 @@ module.exports = function( grunt ) {
 				// See https://github.com/sindresorhus/grunt-eslint/issues/119
 				quiet: true,
 				configFile: ".eslintrc",
+				fix: true
 			},
 			// We have to explicitly declare "src" property otherwise "newer"
 			// task wouldn't work properly :/
