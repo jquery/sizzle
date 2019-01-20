@@ -136,40 +136,39 @@ module.exports = function( grunt ) {
 					"requirejs-text/text.js": "requirejs-text/text.js",
 				}
 			}
+		// },
+		// jshint: {
+		// 	options: {
+		// 		jshintrc: true
+		// 	},
+		// 	all: {
+		// 		src: [ files.source, files.grunt, files.karma, files.speed, files.tests ]
+		// 	}
+		// },
 		},
-		jshint: {
+		eslint: {
 			options: {
-				jshintrc: true
+				// See https://github.com/sindresorhus/grunt-eslint/issues/119
+				quiet: true,
+				configFile: ".eslintrc",
 			},
-			all: {
-				src: [ files.source, files.grunt, files.karma, files.speed, files.tests ]
-			}
-		},
-		jscs: {
+			// We have to explicitly declare "src" property otherwise "newer"
+			// task wouldn't work properly :/
 			src: {
-				options: {
-					requireDotNotation: null
-				},
-				src: [ files.source ]
+				src: files.source // requireDotNotation: null
+			},
+			dev: {
+				src: [ "src/**/*.js", "Gruntfile.js", "test/**/*.js", "build/**/*.js" ]
 			},
 			grunt: {
-				options: {
-					requireCamelCaseOrUpperCaseIdentifiers: null
-				},
-				src: [ files.grunt ]
+				src: files.grunt // requireCamelCaseOrUpperCaseIdentifiers: null
 			},
-			speed: [ files.speed ],
+			speed: files.speed, // maximumLineLength: null
 			tests: {
-				options: {
-					maximumLineLength: null
-				},
 				src: [ files.tests ]
 			},
 			karma: {
-				options: {
-					requireCamelCaseOrUpperCaseIdentifiers: null
-				},
-				src: [ files.karma ]
+				src: [ files.karma ] // requireCamelCaseOrUpperCaseIdentifiers: null
 			}
 		},
 		jsonlint: {
@@ -264,7 +263,7 @@ module.exports = function( grunt ) {
 	// Load dev dependencies
 	require( "load-grunt-tasks" )( grunt );
 
-	grunt.registerTask( "lint", [ "jsonlint", "jshint", "jscs" ] );
+	grunt.registerTask( "lint", [ "jsonlint", "eslint" ] );
 	grunt.registerTask( "start", [ "karma:watch:start", "watch" ] );
 
 	// Execute tests all browsers in sequential way,

@@ -35,15 +35,15 @@
   "devDependencies": {
     "benchmark": "2.1.4",
     "commitplease": "2.7.10",
+    "eslint-config-jquery": "1.0.1",
     "grunt": "0.4.5",
     "grunt-cli": "0.1.13",
     "grunt-compare-size": "0.4.2",
-    "grunt-contrib-jshint": "1.1.0",
     "grunt-contrib-qunit": "2.0.0",
     "grunt-contrib-uglify": "3.0.1",
     "grunt-contrib-watch": "1.0.0",
+    "grunt-eslint": "21.0.0",
     "grunt-git-authors": "3.2.0",
-    "grunt-jscs": "0.6.2",
     "grunt-jsonlint": "1.1.0",
     "grunt-karma": "2.0.0",
     "grunt-npmcopy": "0.1.0",
@@ -64,6 +64,7 @@
     "requirejs-text": "2.0.15"
   },
   "scripts": {
+    "lint": "grunt eslint",
     "build": "npm install && grunt",
     "start": "grunt start",
     "test": "grunt test"
