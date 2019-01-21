@@ -1233,13 +1233,15 @@
 
 			"PSEUDO": function( match ) {
 				var excess,
-					unquoted = !match[ 6 ] && match[ 2 ];
+					unquoted = !match[ 6 ] && match[ 2 ],
+					unqotedLength = unquoted.length;
 
 				if ( matchExpr.CHILD.test( match[ 0 ] ) ) {
 					return null;
 				}
 
 				// Accept quoted arguments as-is
+
 				if ( match[ 3 ] ) {
 					match[ 2 ] = match[ 4 ] || match[ 5 ] || "";
 
@@ -1250,7 +1252,7 @@
 					( excess = tokenize( unquoted, true ) ) &&
 
 					// advance to the next closing parenthesis
-					( excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length ) ) {
+					( excess = unquoted.indexOf( ")", unqotedLength - excess ) - unqotedLength ) ) {
 
 					// excess is a negative index
 					match[ 0 ] = match[ 0 ].slice( 0, excess );
@@ -1279,9 +1281,12 @@
 				var pattern = classCache[ className + " " ];
 
 				return pattern ||
-					( pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" ) ) &&
-					classCache( className, function( elem ) {
-						return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== "undefined" && elem.getAttribute( "class" ) || "" );
+					( pattern = new RegExp( "(^|" + whitespace + ")" +
+						className + "(" + whitespace + "|$)" ) ) &&
+						classCache( className, function( elem ) {
+						return pattern.test( typeof elem.className === "string" && elem.className ||
+								typeof elem.getAttribute !== "undefined" &&
+								elem.getAttribute( "class" ) || "" );
 					} );
 			},
 
@@ -1297,7 +1302,6 @@
 					}
 
 					result += "";
-
 					return operator === "=" ? result === check :
 						operator === "!=" ? result !== check :
 							operator === "^=" ? check && result.indexOf( check ) === 0 :
@@ -1637,7 +1641,8 @@
 
 					// Support: IE<8
 					// New HTML5 attribute values (e.g., "search") appear with elem.type === "text"
-					( ( attr = elem.getAttribute( "type" ) ) == null || attr.toLowerCase() === "text" );
+					( ( attr = elem.getAttribute( "type" ) ) == null ||
+						attr.toLowerCase() === "text" );
 			},
 
 			// Position-in-collection
@@ -1828,7 +1833,8 @@
 
 							// Support: IE <9 only
 							// Defend against cloned attroperties (jQuery gh-1709)
-							uniqueCache = outerCache[ elem.uniqueID ] || ( outerCache[ elem.uniqueID ] = {} );
+							uniqueCache = outerCache[ elem.uniqueID ] ||
+											( outerCache[ elem.uniqueID ] = {} );
 
 							if ( skip && skip === elem.nodeName.toLowerCase() ) {
 								elem = elem[ dir ] || elem;
@@ -1912,7 +1918,8 @@
 				preexisting = results.length,
 
 				// Get initial elements from seed or context
-				elems = seed || multipleContexts( selector || "*", context.nodeType ? [ context ] : context, [] ),
+				elems = seed || multipleContexts( selector || "*",
+					context.nodeType ? [ context ] : context, [] ),
 
 				// Prefilter to get matcher input, preserving a map for seed-results synchronization
 				matcherIn = preFilter && ( seed || !selector ) ?
@@ -2040,7 +2047,7 @@
 						i > 1 && toSelector(
 
 						// If the preceding token was a descendant combinator, insert an implicit any-element `*`
-						tokens.slice( 0, i - 1 ).concat( { value: tokens[ i - 2 ].type === " " ? "*" : "" } )
+						tokens.slice( 0, i - 1 ).concat( { value: tokens[ i - 2 ].type === " " ? "*" : "" } ) // eslint-disable-line max-len
 						).replace( rtrim, "$1" ),
 						matcher,
 						i < j && matcherFromTokens( tokens.slice( i, j ) ),
@@ -2193,7 +2200,7 @@
 			}
 
 			// Cache the compiled function
-			cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) );
+			cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) ); // eslint-disable-line max-len
 
 			// Save selector and tokenization
 			cached.selector = selector;
@@ -2226,7 +2233,7 @@
 			if ( tokens.length > 2 && ( token = tokens[ 0 ] ).type === "ID" &&
 				context.nodeType === 9 && documentIsHTML && Expr.relative[ tokens[ 1 ].type ] ) {
 
-				context = ( Expr.find.ID( token.matches[ 0 ].replace( runescape, funescape ), context ) || [] )[ 0 ];
+				context = ( Expr.find.ID( token.matches[ 0 ].replace( runescape, funescape ), context ) || [] )[ 0 ]; // eslint-disable-line max-len
 				if ( !context ) {
 					return results;
 
@@ -2252,7 +2259,8 @@
 					// Search, expanding context for leading sibling combinators
 					if ( ( seed = find(
 						token.matches[ 0 ].replace( runescape, funescape ),
-						rsibling.test( tokens[ 0 ].type ) && testContext( context.parentNode ) || context
+						rsibling.test( tokens[ 0 ].type ) && testContext( context.parentNode ) ||
+						context
 					) ) ) {
 
 						// If seed is empty or no tokens remain, we can return early
