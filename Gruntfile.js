@@ -136,15 +136,6 @@ module.exports = function( grunt ) {
 					"requirejs-text/text.js": "requirejs-text/text.js",
 				}
 			}
-		// },
-		// jshint: {
-		// 	options: {
-		// 		jshintrc: true
-		// 	},
-		// 	all: {
-		// 		src: [ files.source, files.grunt, files.karma, files.speed, files.tests ]
-		// 	}
-		// },
 		},
 		eslint: {
 			options: {

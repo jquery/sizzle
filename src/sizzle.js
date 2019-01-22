@@ -1938,8 +1938,7 @@
 						[] :
 
 						// ...otherwise use results directly
-						results :
-					matcherIn;
+						results : matcherIn;
 
 			// Find primary matches
 			if ( matcher ) {
