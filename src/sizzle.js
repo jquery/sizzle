@@ -580,6 +580,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 	// Return early if doc is invalid or already selected
 	if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
+		if ( !document ) {
+			throw new Error( "Sizzle requires the document element" );
+		}
 		return document;
 	}
 
