@@ -205,10 +205,7 @@
 
 // Optimize for push.apply( _, NodeList )
 	try {
-		push.apply(
-			( arr = slice.call( preferredDoc.childNodes ) ),
-			preferredDoc.childNodes
-		);
+		push.apply( ( arr = slice.call( preferredDoc.childNodes ) ), preferredDoc.childNodes );
 
 		// Support: Android<4.0
 		// Detect silently failing push.apply
@@ -1421,7 +1418,8 @@
 
 											// Cache the index of each encountered element
 											if ( useCache ) {
-												outerCache = node[ expando ] || ( node[ expando ] = {} );
+												outerCache = node[ expando ] ||
+																( node[ expando ] = {} );
 
 												// Support: IE <9 only
 												// Defend against cloned attroperties (jQuery gh-1709)
@@ -1675,11 +1673,16 @@
 			} ),
 
 			"lt": createPositionalPseudo( function( matchIndexes, length, argument ) {
-				var i = argument < 0 ?
-					argument + length :
-					argument > length ?
-						length :
-						argument;
+				var i;
+
+				if ( argument < 0 ) {
+					i = argument + length;
+				} else if ( argument > 0 ) {
+					i = length;
+				} else {
+					i = argument;
+				}
+
 				for ( ; --i >= 0; ) {
 					matchIndexes.push( i );
 				}
