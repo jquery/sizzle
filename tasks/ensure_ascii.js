@@ -26,7 +26,7 @@ module.exports = function( grunt ) {
 					}
 					context = text.slice( lineStart + 1, lineEnd );
 					if ( context.length > MAX_CONTEXT ) {
-						if ( (firstIndex - lineStart) < MAX_CONTEXT ) {
+						if ( ( firstIndex - lineStart ) < MAX_CONTEXT ) {
 							context = context.slice( 0, MAX_CONTEXT );
 						} else {
 							context = context.substr(
@@ -35,7 +35,7 @@ module.exports = function( grunt ) {
 							);
 						}
 					}
-					first = "U+" + ("000" + offenses[ 0 ].charCodeAt( 0 ).toString( 16 ))
+					first = "U+" + ( "000" + offenses[ 0 ].charCodeAt( 0 ).toString( 16 ) )
 						.slice( -4 ).toUpperCase();
 					grunt.log.error( offenses.length + " non-ASCII character(s) in " + file );
 					grunt.log.error( "First (" + first + ") at index " + firstIndex + ": " +

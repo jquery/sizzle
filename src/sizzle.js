@@ -157,9 +157,7 @@
 			// NaN means non-codepoint
 			// Support: Firefox<24
 			// Workaround erroneous numeric interpretation of +"0x"
-			return high !== high || escapedWhitespace ?
-				escaped :
-				high < 0 ?
+			return high !== high || escapedWhitespace ? escaped : high < 0 ?
 
 					// BMP codepoint
 					String.fromCharCode( high + 0x10000 ) :
@@ -209,7 +207,7 @@
 
 		// Support: Android<4.0
 		// Detect silently failing push.apply
-		arr[ preferredDoc.childNodes.length ].nodeType;
+		arr[ preferredDoc.childNodes.length ].nodeType; // eslint-disable-line no-unused-expressions
 	} catch ( e ) {
 		push = {
 			apply: arr.length ?
@@ -1299,6 +1297,7 @@
 					}
 
 					result += "";
+					/* eslint-disable max-len */
 					return operator === "=" ? result === check :
 						operator === "!=" ? result !== check :
 							operator === "^=" ? check && result.indexOf( check ) === 0 :
@@ -1307,6 +1306,7 @@
 										operator === "~=" ? ( " " + result.replace( rwhitespace, " " ) + " " ).indexOf( check ) > -1 :
 											operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
 												false;
+					/* eslint-enable max-len */
 				};
 			},
 
@@ -1593,7 +1593,7 @@
 				// Accessing this property makes selected-by-default
 				// options in Safari work properly
 				if ( elem.parentNode ) {
-					elem.parentNode.selectedIndex;
+					elem.parentNode.selectedIndex; // eslint-disable-line no-unused-expressions
 				}
 
 				return elem.selected === true;
@@ -2049,7 +2049,9 @@
 						i > 1 && toSelector(
 
 						// If the preceding token was a descendant combinator, insert an implicit any-element `*`
-						tokens.slice( 0, i - 1 ).concat( { value: tokens[ i - 2 ].type === " " ? "*" : "" } ) // eslint-disable-line max-len
+						tokens.slice( 0, i - 1 ).concat(
+							{ value: tokens[ i - 2 ].type === " " ? "*" : "" }
+						)
 						).replace( rtrim, "$1" ),
 						matcher,
 						i < j && matcherFromTokens( tokens.slice( i, j ) ),
