@@ -7,12 +7,12 @@ module.exports = function( config ) {
 		dateString = grunt.config( "dateString" ),
 		isBrowserStack = !!( process.env.BROWSER_STACK_USERNAME &&
 			process.env.BROWSER_STACK_ACCESS_KEY ),
-		hostName = isBrowserStack? "bs-local.com" : "localhost";
+		hostName = isBrowserStack ? "bs-local.com" : "localhost";
 
-	config.set({
+	config.set( {
 		browserStack: {
 			project: "sizzle",
-			build: "local run" + (dateString ? ", " + dateString : ""),
+			build: "local run" + ( dateString ? ", " + dateString : "" ),
 			timeout: 600, // 10 min
 			// BrowserStack has a limit of 120 requests per minute. The default
 			// "request per second" strategy doesn't scale to so many browsers.
@@ -91,7 +91,7 @@ module.exports = function( config ) {
 		browserNoActivityTimeout: 3e5,
 		browserDisconnectTimeout: 3e5,
 		browserDisconnectTolerance: 3
-	});
+	} );
 
 	// Deal with Travis environment
 	if ( isTravis ) {
