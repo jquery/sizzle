@@ -3,7 +3,7 @@ node_modules
 *.min.js
 dist/**
 build/**
-tasks/**
+tasks/
 speed/**
 test/**
 Gruntfile.js
