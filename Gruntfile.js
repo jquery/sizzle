@@ -51,7 +51,7 @@ module.exports = function( grunt ) {
 		browsers.ios = [
 			"bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0", "bs_ios-8.3", "bs_ios-9.3", "bs_ios-10.3",
 
-			 "bs_ios-11.4", "bs_ios-12.1"
+			"bs_ios-11.4", "bs_ios-12.1"
 		];
 		browsers.android = [
 			"bs_android-4.0", "bs_android-4.1", "bs_android-4.2",
@@ -141,28 +141,23 @@ module.exports = function( grunt ) {
 			options: {
 
 				// See https://github.com/sindresorhus/grunt-eslint/issues/119
-				quiet: true,
-				configFile: ".eslintrc",
-				fix: true
+				quiet: true
 			},
-
-			// We have to explicitly declare "src" property otherwise "newer"
-			// task wouldn't work properly :/
 			src: {
-				src: files.source // requireDotNotation: null
+				src: files.source
 			},
 			dev: {
 				src: [ "src/**/*.js", "Gruntfile.js", "test/**/*.js", "build/**/*.js" ]
 			},
 			grunt: {
-				src: files.grunt // requireCamelCaseOrUpperCaseIdentifiers: null
+				src: files.grunt
 			},
-			speed: files.speed, // maximumLineLength: null
+			speed: files.speed,
 			tests: {
 				src: [ files.tests ]
 			},
 			karma: {
-				src: [ files.karma ] // requireCamelCaseOrUpperCaseIdentifiers: null
+				src: [ files.karma ]
 			}
 		},
 		jsonlint: {

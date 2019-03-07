@@ -1,7 +1,5 @@
 {
-  "extends": "../.eslintrc-browser.json",
-  "rules": {
-  },
+  "extends": "../.eslintrc.json",
   "globals": {
 	"console":  true,
 	"require": true,

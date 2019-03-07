@@ -9,7 +9,6 @@
  * Date: @DATE
  */
 ( function( window ) {
-	"use strict";
 
 	var i,
 		support,
@@ -70,7 +69,7 @@
 			return -1;
 		},
 
-		booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|" +
+		booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden" +
 			"ismap|loop|multiple|open|readonly|required|scoped",
 
 		// Regular expressions
@@ -157,19 +156,15 @@
 			// NaN means non-codepoint
 			// Support: Firefox<24
 			// Workaround erroneous numeric interpretation of +"0x"
-			var isValidHigh = high !== high || escapedWhitespace;
-
-			function getHighValue() {
-				return high < 0 ?
+			return high !== high || escapedWhitespace ?
+				escaped :
+				high < 0 ?
 
 					// BMP codepoint
 					String.fromCharCode( high + 0x10000 ) :
 
 					// Supplemental Plane codepoint (surrogate pair)
 					String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
-			}
-
-			return isValidHigh ? escaped : getHighValue();
 		},
 
 		// CSS string/identifier serialization
@@ -209,14 +204,17 @@
 
 // Optimize for push.apply( _, NodeList )
 	try {
-		push.apply( ( arr = slice.call( preferredDoc.childNodes ) ), preferredDoc.childNodes );
+		push.apply(
+			( arr = slice.call( preferredDoc.childNodes ) ),
+			preferredDoc.childNodes
+		);
 
 		// Support: Android<4.0
 		// Detect silently failing push.apply
-		arr[ preferredDoc.childNodes.length ].nodeType; // eslint-disable-line no-unused-expressions
+		// eslint-disable-next-line no-unused-expressions
+		arr[ preferredDoc.childNodes.length ].nodeType;
 	} catch ( e ) {
-		push = {
-			apply: arr.length ?
+		push = { apply: arr.length ?
 
 				// Leverage slice if possible
 				function( target, els ) {
@@ -230,8 +228,7 @@
 						i = 0;
 
 					// Can't trust NodeList.length
-					while ( ( target[ j++ ] = els[ i++ ] ) ) {
-					}
+					while ( ( target[ j++ ] = els[ i++ ] ) ) {}
 					target.length = j - 1;
 				}
 		};
@@ -376,8 +373,8 @@
 	/**
 	 * Create key-value caches of limited size
 	 * @returns {function(string, object)} Returns the Object data after storing it on itself with
-	 *    property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
-	 *    deleting the oldest entry
+	 *	property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
+	 *	deleting the oldest entry
 	 */
 	function createCache() {
 		var keys = [];
@@ -392,7 +389,6 @@
 			}
 			return ( cache[ key + " " ] = value );
 		}
-
 		return cache;
 	}
 
@@ -562,7 +558,7 @@
 
 				// Match elements found at the specified indexes
 				while ( i-- ) {
-					if ( seed[( j = matchIndexes[ i ] )] ) {
+					if ( seed[ ( j = matchIndexes[ i ] ) ] ) {
 						seed[ j ] = !( matches[ j ] = seed[ j ] );
 					}
 				}
@@ -632,7 +628,7 @@
 		}
 
 		/* Attributes
-	---------------------------------------------------------------------- */
+		---------------------------------------------------------------------- */
 
 		// Support: IE<8
 		// Verify that getAttribute really returns attributes and not properties
@@ -643,7 +639,7 @@
 		} );
 
 		/* getElement(s)By*
-	---------------------------------------------------------------------- */
+		---------------------------------------------------------------------- */
 
 		// Check if getElementsByTagName("*") returns only elements
 		support.getElementsByTagName = assert( function( el ) {
@@ -678,7 +674,7 @@
 				}
 			};
 		} else {
-			Expr.filter.ID = function( id ) {
+			Expr.filter.ID =  function( id ) {
 				var attrId = id.replace( runescape, funescape );
 				return function( elem ) {
 					var node = typeof elem.getAttributeNode !== "undefined" &&
@@ -759,7 +755,7 @@
 		};
 
 		/* QSA/matchesSelector
-	---------------------------------------------------------------------- */
+		---------------------------------------------------------------------- */
 
 		// QSA and matchesSelector support
 
@@ -880,7 +876,7 @@
 		rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join( "|" ) );
 
 		/* Contains
-	---------------------------------------------------------------------- */
+		---------------------------------------------------------------------- */
 		hasCompare = rnative.test( docElem.compareDocumentPosition );
 
 		// Element contains another
@@ -908,7 +904,7 @@
 			};
 
 		/* Sorting
-	---------------------------------------------------------------------- */
+		---------------------------------------------------------------------- */
 
 		// Document order sorting
 		sortOrder = hasCompare ?
@@ -938,11 +934,13 @@
 					( !support.sortDetached && b.compareDocumentPosition( a ) === compare ) ) {
 
 					// Choose the first element that is related to our preferred document
-					if ( a === document || a.ownerDocument === preferredDoc &&
+					if ( a === document ||
+						a.ownerDocument === preferredDoc &&
 						contains( preferredDoc, a ) ) {
 						return -1;
 					}
-					if ( b === document || b.ownerDocument === preferredDoc &&
+					if ( b === document ||
+						b.ownerDocument === preferredDoc &&
 						contains( preferredDoc, b ) ) {
 						return 1;
 					}
@@ -1028,7 +1026,7 @@
 		if ( support.matchesSelector && documentIsHTML &&
 			!nonnativeSelectorCache[ expr + " " ] &&
 			( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
-			( !rbuggyQSA || !rbuggyQSA.test( expr ) ) ) {
+			( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
 
 			try {
 				var ret = matches.call( elem, expr );
@@ -1200,15 +1198,15 @@
 			"CHILD": function( match ) {
 
 				/* matches from matchExpr["CHILD"]
-				1 type (only|nth|...)
-				2 what (child|of-type)
-				3 argument (even|odd|\d*|\d*n([+-]\d+)?|...)
-				4 xn-component of xn+y argument ([+-]?\d*n|)
-				5 sign of xn-component
-				6 x of xn-component
-				7 sign of y-component
-				8 y of y-component
-			*/
+					1 type (only|nth|...)
+					2 what (child|of-type)
+					3 argument (even|odd|\d*|\d*n([+-]\d+)?|...)
+					4 xn-component of xn+y argument ([+-]?\d*n|)
+					5 sign of xn-component
+					6 x of xn-component
+					7 sign of y-component
+					8 y of y-component
+				*/
 				match[ 1 ] = match[ 1 ].toLowerCase();
 
 				if ( match[ 1 ].slice( 0, 3 ) === "nth" ) {
@@ -1220,8 +1218,9 @@
 
 					// numeric x and y parameters for Expr.filter.CHILD
 					// remember that false/true cast respectively to 0/1
-					match[ 4 ] = +( match[ 4 ] ? match[ 5 ] + ( match[ 6 ] || 1 ) : 2 *
-						( match[ 3 ] === "even" || match[ 3 ] === "odd" ) );
+					match[ 4 ] = +( match[ 4 ] ?
+						match[ 5 ] + ( match[ 6 ] || 1 ) :
+						2 * ( match[ 3 ] === "even" || match[ 3 ] === "odd" ) );
 					match[ 5 ] = +( ( match[ 7 ] + match[ 8 ] ) || match[ 3 ] === "odd" );
 
 					// other types prohibit arguments
@@ -1234,15 +1233,13 @@
 
 			"PSEUDO": function( match ) {
 				var excess,
-					unquoted = !match[ 6 ] && match[ 2 ],
-					unqotedLength = unquoted.length;
+					unquoted = !match[ 6 ] && match[ 2 ];
 
 				if ( matchExpr.CHILD.test( match[ 0 ] ) ) {
 					return null;
 				}
 
 				// Accept quoted arguments as-is
-
 				if ( match[ 3 ] ) {
 					match[ 2 ] = match[ 4 ] || match[ 5 ] || "";
 
@@ -1253,7 +1250,8 @@
 					( excess = tokenize( unquoted, true ) ) &&
 
 					// advance to the next closing parenthesis
-					( excess = unquoted.indexOf( ")", unqotedLength - excess ) - unqotedLength ) ) {
+					( excess = unquoted.indexOf( ")",
+						unquoted.length - excess ) - unquoted.length ) ) {
 
 					// excess is a negative index
 					match[ 0 ] = match[ 0 ].slice( 0, excess );
@@ -1282,12 +1280,15 @@
 				var pattern = classCache[ className + " " ];
 
 				return pattern ||
-					( pattern = new RegExp( "(^|" + whitespace + ")" +
-						className + "(" + whitespace + "|$)" ) ) &&
-					classCache( className, function( elem ) {
-						return pattern.test( typeof elem.className === "string" && elem.className ||
-							typeof elem.getAttribute !== "undefined" &&
-							elem.getAttribute( "class" ) || "" );
+					( pattern = new RegExp( "(^|" + whitespace +
+						")" + className + "(" + whitespace + "|$)" ) ) && classCache(
+							className, function( elem ) {
+								return pattern.test(
+									typeof elem.className === "string" &&
+									elem.className || typeof elem.getAttribute !== "undefined" &&
+									elem.getAttribute( "class" ) ||
+									""
+								);
 					} );
 			},
 
@@ -1303,7 +1304,9 @@
 					}
 
 					result += "";
+
 					/* eslint-disable max-len*/
+
 					return operator === "=" ? result === check :
 						operator === "!=" ? result !== check :
 							operator === "^=" ? check && result.indexOf( check ) === 0 :
@@ -1313,6 +1316,7 @@
 											operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
 												false;
 					/* eslint-enable max-len*/
+
 				};
 			},
 
@@ -1577,8 +1581,9 @@
 			},
 
 			"focus": function( elem ) {
-				return elem === document.activeElement && ( !document.hasFocus ||
-					document.hasFocus() ) && !!( elem.type || elem.href || ~elem.tabIndex );
+				return elem === document.activeElement &&
+					( !document.hasFocus || document.hasFocus() ) &&
+					!!( elem.type || elem.href || ~elem.tabIndex );
 			},
 
 			// Boolean properties
@@ -1590,8 +1595,9 @@
 				// In CSS3, :checked should return both checked and selected elements
 				// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 				var nodeName = elem.nodeName.toLowerCase();
-				return ( nodeName === "input" && !!elem.checked ) ||
-					( nodeName === "option" && !!elem.selected );
+				return ( nodeName === "input" &&
+					!!elem.checked ) || ( nodeName === "option" &&
+					!!elem.selected );
 			},
 
 			"selected": function( elem ) {
@@ -1599,7 +1605,8 @@
 				// Accessing this property makes selected-by-default
 				// options in Safari work properly
 				if ( elem.parentNode ) {
-					elem.parentNode.selectedIndex; // eslint-disable-line no-unused-expressions
+					// eslint-disable-next-line no-unused-expressions
+					elem.parentNode.selectedIndex;
 				}
 
 				return elem.selected === true;
@@ -1679,16 +1686,11 @@
 			} ),
 
 			"lt": createPositionalPseudo( function( matchIndexes, length, argument ) {
-				var i;
-
-				if ( argument < 0 ) {
-					i = argument + length;
-				} else if ( argument > 0 ) {
-					i = length;
-				} else {
-					i = argument;
-				}
-
+				var i = argument < 0 ?
+					argument + length :
+					argument > length ?
+						length :
+						argument;
 				for ( ; --i >= 0; ) {
 					matchIndexes.push( i );
 				}
@@ -1716,9 +1718,7 @@
 	}
 
 // Easy API for creating new setFilters
-	function setFilters() {
-	}
-
+	function setFilters() {}
 	setFilters.prototype = Expr.filters = Expr.pseudos;
 	Expr.setFilters = new setFilters();
 
@@ -1927,8 +1927,11 @@
 				preexisting = results.length,
 
 				// Get initial elements from seed or context
-				elems = seed || multipleContexts( selector || "*",
-					context.nodeType ? [ context ] : context, [] ),
+				elems = seed || multipleContexts(
+					selector || "*",
+					context.nodeType ? [ context ] : context,
+					[]
+				),
 
 				// Prefilter to get matcher input, preserving a map for seed-results synchronization
 				matcherIn = preFilter && ( seed || !selector ) ?
@@ -1944,7 +1947,8 @@
 						[] :
 
 						// ...otherwise use results directly
-						results : matcherIn;
+						results :
+					matcherIn;
 
 			// Find primary matches
 			if ( matcher ) {
@@ -2055,7 +2059,9 @@
 						i > 1 && toSelector(
 
 						// If the preceding token was a descendant combinator, insert an implicit any-element `*`
-						tokens.slice( 0, i - 1 ).concat( { value: tokens[ i - 2 ].type === " " ? "*" : "" } ) // eslint-disable-line max-len
+						tokens
+							.slice( 0, i - 1 )
+							.concat( { value: tokens[ i - 2 ].type === " " ? "*" : "" } )
 						).replace( rtrim, "$1" ),
 						matcher,
 						i < j && matcherFromTokens( tokens.slice( i, j ) ),
@@ -2208,7 +2214,10 @@
 			}
 
 			// Cache the compiled function
-			cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) ); // eslint-disable-line max-len
+			cached = compilerCache(
+				selector,
+				matcherFromGroupMatchers( elementMatchers, setMatchers )
+			);
 
 			// Save selector and tokenization
 			cached.selector = selector;
@@ -2241,7 +2250,8 @@
 			if ( tokens.length > 2 && ( token = tokens[ 0 ] ).type === "ID" &&
 				context.nodeType === 9 && documentIsHTML && Expr.relative[ tokens[ 1 ].type ] ) {
 
-				context = ( Expr.find.ID( token.matches[ 0 ].replace( runescape, funescape ), context ) || [] )[ 0 ]; // eslint-disable-line max-len
+				context = ( Expr.find.ID( token.matches[ 0 ]
+					.replace( runescape, funescape ), context ) || [] )[ 0 ];
 				if ( !context ) {
 					return results;
 
@@ -2259,7 +2269,7 @@
 				token = tokens[ i ];
 
 				// Abort if we hit a combinator
-				if ( Expr.relative[( type = token.type )] ) {
+				if ( Expr.relative[ ( type = token.type ) ] ) {
 					break;
 				}
 				if ( ( find = Expr.find[ type ] ) ) {
@@ -2267,8 +2277,8 @@
 					// Search, expanding context for leading sibling combinators
 					if ( ( seed = find(
 						token.matches[ 0 ].replace( runescape, funescape ),
-						rsibling.test( tokens[ 0 ].type ) && testContext( context.parentNode ) ||
-						context
+						rsibling.test( tokens[ 0 ].type ) &&
+						testContext( context.parentNode ) || context
 					) ) ) {
 
 						// If seed is empty or no tokens remain, we can return early
