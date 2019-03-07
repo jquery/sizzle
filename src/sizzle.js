@@ -9,7 +9,7 @@
  * Date: @DATE
  */
 ( function( window ) {
-
+	"use strict";
 	var i,
 		support,
 		Expr,
@@ -1305,7 +1305,7 @@
 
 					result += "";
 
-					/* eslint-disable max-len*/
+					/* eslint-disable max-len */
 
 					return operator === "=" ? result === check :
 						operator === "!=" ? result !== check :
@@ -1315,7 +1315,7 @@
 										operator === "~=" ? ( " " + result.replace( rwhitespace, " " ) + " " ).indexOf( check ) > -1 :
 											operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
 												false;
-					/* eslint-enable max-len*/
+					/* eslint-enable max-len */
 
 				};
 			},
