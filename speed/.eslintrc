@@ -1,0 +1,11 @@
+{
+  "extends": "../.eslintrc-browser.json",
+  "rules": {
+  },
+  "globals": {
+	"console":  true,
+	"require": true,
+	"setTimeout": true,
+	"location": true
+  }
+}

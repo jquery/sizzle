@@ -8,10 +8,10 @@ module.exports = function( grunt ) {
 		if ( browsers ) {
 			options.browsers = browsers.split( "," );
 
-			grunt.task.run([ "lint", "karma:all" ]);
+			grunt.task.run( [ "lint", "karma:all" ] );
 
 		} else {
-			grunt.task.run([ "lint", "tests" ]);
+			grunt.task.run( [ "lint", "tests" ] );
 		}
-	});
+	} );
 };

@@ -45,13 +45,13 @@ module.exports = function( grunt ) {
 
 			// Real Safari 6.1 and 7.0 are not available
 			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.1", "bs_safari-10.1",
-			"bs_safari-11.1", "bs_safari-12.0",
+			"bs_safari-11.1", "bs_safari-12.0"
 		];
 
 		browsers.ios = [
 			"bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0", "bs_ios-8.3", "bs_ios-9.3", "bs_ios-10.3",
 
-			 "bs_ios-11.4", "bs_ios-12.1",
+			 "bs_ios-11.4", "bs_ios-12.1"
 		];
 		browsers.android = [
 			"bs_android-4.0", "bs_android-4.1", "bs_android-4.2",
@@ -69,7 +69,7 @@ module.exports = function( grunt ) {
 	}
 
 	// Project configuration
-	grunt.initConfig({
+	grunt.initConfig( {
 		pkg: grunt.file.readJSON( "package.json" ),
 		dateString: new Date().toISOString().replace( /\..*Z/, "" ),
 		compile: {
@@ -133,17 +133,19 @@ module.exports = function( grunt ) {
 
 					"requirejs/require.js": "requirejs/require.js",
 					"requirejs-domready/domReady.js": "requirejs-domready/domReady.js",
-					"requirejs-text/text.js": "requirejs-text/text.js",
+					"requirejs-text/text.js": "requirejs-text/text.js"
 				}
 			}
 		},
 		eslint: {
 			options: {
+
 				// See https://github.com/sindresorhus/grunt-eslint/issues/119
 				quiet: true,
 				configFile: ".eslintrc",
 				fix: true
 			},
+
 			// We have to explicitly declare "src" property otherwise "newer"
 			// task wouldn't work properly :/
 			src: {
@@ -247,7 +249,7 @@ module.exports = function( grunt ) {
 			],
 			tasks: [ "build", "karma:watch:run" ]
 		}
-	});
+	} );
 
 	// Integrate Sizzle specific tasks
 	grunt.loadTasks( "tasks" );

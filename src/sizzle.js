@@ -71,7 +71,7 @@
 		},
 
 		booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|" +
-					"ismap|loop|multiple|open|readonly|required|scoped",
+			"ismap|loop|multiple|open|readonly|required|scoped",
 
 		// Regular expressions
 
@@ -108,11 +108,11 @@
 		// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
 		rwhitespace = new RegExp( whitespace + "+", "g" ),
 		rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" +
-				whitespace + "+$", "g" ),
+			whitespace + "+$", "g" ),
 
 		rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
 		rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace +
-						"*" ),
+			"*" ),
 		rdescend = new RegExp( whitespace + "|>" ),
 
 		rpseudo = new RegExp( pseudos ),
@@ -125,7 +125,7 @@
 			"ATTR": new RegExp( "^" + attributes ),
 			"PSEUDO": new RegExp( "^" + pseudos ),
 			"CHILD": new RegExp( "^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" +
-					whitespace + "*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" +
+				whitespace + "*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" +
 				whitespace + "*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
 			"bool": new RegExp( "^(?:" + booleans + ")$", "i" ),
 
@@ -150,22 +150,26 @@
 		// CSS escapes
 		// http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
 		runescape = new RegExp( "\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace +
-					")|.)", "ig" ),
+			")|.)", "ig" ),
 		funescape = function( _, escaped, escapedWhitespace ) {
 			var high = "0x" + escaped - 0x10000;
 
 			// NaN means non-codepoint
 			// Support: Firefox<24
 			// Workaround erroneous numeric interpretation of +"0x"
-			return high !== high || escapedWhitespace ?
-				escaped :
-				high < 0 ?
+			var isValidHigh = high !== high || escapedWhitespace;
+
+			function getHighValue() {
+				return high < 0 ?
 
 					// BMP codepoint
 					String.fromCharCode( high + 0x10000 ) :
 
 					// Supplemental Plane codepoint (surrogate pair)
 					String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
+			}
+
+			return isValidHigh ? escaped : getHighValue();
 		},
 
 		// CSS string/identifier serialization
@@ -181,7 +185,7 @@
 
 				// Control characters and (dependent upon position) numbers get escaped as code points
 				return ch.slice( 0, -1 ) + "\\" +
-						ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
+					ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
 			}
 
 			// Other potentially-special ASCII characters get backslash-escaped
@@ -209,7 +213,7 @@
 
 		// Support: Android<4.0
 		// Detect silently failing push.apply
-		arr[ preferredDoc.childNodes.length ].nodeType;
+		arr[ preferredDoc.childNodes.length ].nodeType; // eslint-disable-line no-unused-expressions
 	} catch ( e ) {
 		push = {
 			apply: arr.length ?
@@ -1184,7 +1188,7 @@
 
 				// Move the given value to match[3] whether quoted or unquoted
 				match[ 3 ] = ( match[ 3 ] || match[ 4 ] ||
-				match[ 5 ] || "" ).replace( runescape, funescape );
+					match[ 5 ] || "" ).replace( runescape, funescape );
 
 				if ( match[ 2 ] === "~=" ) {
 					match[ 3 ] = " " + match[ 3 ] + " ";
@@ -1217,7 +1221,7 @@
 					// numeric x and y parameters for Expr.filter.CHILD
 					// remember that false/true cast respectively to 0/1
 					match[ 4 ] = +( match[ 4 ] ? match[ 5 ] + ( match[ 6 ] || 1 ) : 2 *
-					( match[ 3 ] === "even" || match[ 3 ] === "odd" ) );
+						( match[ 3 ] === "even" || match[ 3 ] === "odd" ) );
 					match[ 5 ] = +( ( match[ 7 ] + match[ 8 ] ) || match[ 3 ] === "odd" );
 
 					// other types prohibit arguments
@@ -1280,10 +1284,10 @@
 				return pattern ||
 					( pattern = new RegExp( "(^|" + whitespace + ")" +
 						className + "(" + whitespace + "|$)" ) ) &&
-						classCache( className, function( elem ) {
+					classCache( className, function( elem ) {
 						return pattern.test( typeof elem.className === "string" && elem.className ||
-								typeof elem.getAttribute !== "undefined" &&
-								elem.getAttribute( "class" ) || "" );
+							typeof elem.getAttribute !== "undefined" &&
+							elem.getAttribute( "class" ) || "" );
 					} );
 			},
 
@@ -1299,6 +1303,7 @@
 					}
 
 					result += "";
+					/* eslint-disable max-len*/
 					return operator === "=" ? result === check :
 						operator === "!=" ? result !== check :
 							operator === "^=" ? check && result.indexOf( check ) === 0 :
@@ -1307,6 +1312,7 @@
 										operator === "~=" ? ( " " + result.replace( rwhitespace, " " ) + " " ).indexOf( check ) > -1 :
 											operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
 												false;
+					/* eslint-enable max-len*/
 				};
 			},
 
@@ -1419,7 +1425,7 @@
 											// Cache the index of each encountered element
 											if ( useCache ) {
 												outerCache = node[ expando ] ||
-																( node[ expando ] = {} );
+													( node[ expando ] = {} );
 
 												// Support: IE <9 only
 												// Defend against cloned attroperties (jQuery gh-1709)
@@ -1572,7 +1578,7 @@
 
 			"focus": function( elem ) {
 				return elem === document.activeElement && ( !document.hasFocus ||
-						document.hasFocus() ) && !!( elem.type || elem.href || ~elem.tabIndex );
+					document.hasFocus() ) && !!( elem.type || elem.href || ~elem.tabIndex );
 			},
 
 			// Boolean properties
@@ -1585,7 +1591,7 @@
 				// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 				var nodeName = elem.nodeName.toLowerCase();
 				return ( nodeName === "input" && !!elem.checked ) ||
-						( nodeName === "option" && !!elem.selected );
+					( nodeName === "option" && !!elem.selected );
 			},
 
 			"selected": function( elem ) {
@@ -1593,7 +1599,7 @@
 				// Accessing this property makes selected-by-default
 				// options in Safari work properly
 				if ( elem.parentNode ) {
-					elem.parentNode.selectedIndex;
+					elem.parentNode.selectedIndex; // eslint-disable-line no-unused-expressions
 				}
 
 				return elem.selected === true;
@@ -1837,7 +1843,7 @@
 							// Support: IE <9 only
 							// Defend against cloned attroperties (jQuery gh-1709)
 							uniqueCache = outerCache[ elem.uniqueID ] ||
-											( outerCache[ elem.uniqueID ] = {} );
+								( outerCache[ elem.uniqueID ] = {} );
 
 							if ( skip && skip === elem.nodeName.toLowerCase() ) {
 								elem = elem[ dir ] || elem;

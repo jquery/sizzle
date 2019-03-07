@@ -1,3 +1,6 @@
 {
-  "extends": ".eslintrc-browser.json"
+  "extends": ".eslintrc-browser.json",
+  "rules": {
+	"no-nested-ternary": 1
+  }
 }
