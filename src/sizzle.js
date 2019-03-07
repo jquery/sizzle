@@ -9,7 +9,7 @@
  * Date: @DATE
  */
 ( function( window ) {
-
+	"use strict";
 	var i,
 		support,
 		Expr,
