@@ -2264,7 +2264,7 @@
 			}
 
 			// Fetch a seed set for right-to-left matching
-			i = matchExpr.needsContext.test( selector ) ? 0 : tokens.length;
+			i = matchExpr["needsContext"].test( selector ) ? 0 : tokens.length;
 			while ( i-- ) {
 				token = tokens[ i ];
 
