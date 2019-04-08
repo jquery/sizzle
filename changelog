@@ -1,0 +1,27 @@
+* 2.3.4 ([a04b7c5](https://github.com/jquery/sizzle/commit/a04b7c5db3b1d3c5a17265127d50e9ea9c5be5f0))
+* Build: Restore ASCII-only output ([5dfff27](https://github.com/jquery/sizzle/commit/5dfff27be7b3f398e2bad246e83cfa3582c119a7))
+* Core: Avoid unnecessary pre-qSA DOM manipulation ([#430](https://github.com/jquery/sizzle/issues/430), [71fe25c](https://github.com/jquery/sizzle/commit/71fe25c4c9a10d8827b845d398ca8fb7da163749))
+* Core: Stop changing matchesSelector input ([#408](https://github.com/jquery/sizzle/issues/408), [#406](https://github.com/jquery/sizzle/issues/406), [8bda6c9](https://github.com/jquery/sizzle/commit/8bda6c95617777ea596bf54636b27548af69d086))
+* Misc: Update isXML to recognize HTML-embedded elements ([#378](https://github.com/jquery/sizzle/issues/378), [26a1f3f](https://github.com/jquery/sizzle/commit/26a1f3f6f156cb687d0d7adc7bf79f0e5454811a))
+* Release: Add jquery-release script ([686f08d](https://github.com/jquery/sizzle/commit/686f08dc3493e2e1ed3d97e4e3f80f158b1c94c8))
+* Selector: Fix nonnativeSelectorCache ([#418](https://github.com/jquery/sizzle/issues/418), [3116795](https://github.com/jquery/sizzle/commit/3116795bba9a0c3d624e0718006b25aa5568d4cb))
+* Selector: Prevent seeded invocations from cutting off the qSA path ([#393](https://github.com/jquery/sizzle/issues/393), [eabce51](https://github.com/jquery/sizzle/commit/eabce51ea7360c4507da2eeaec2633378de4ec8d))
+* Selector: Stop using innerText in :contains ([#335](https://github.com/jquery/sizzle/issues/335), [67e9691](https://github.com/jquery/sizzle/commit/67e9691e8689b824387affb9da06dc663da63598))
+* Selector: Only fieldset ancestors can :disable form elements ([abde99f](https://github.com/jquery/sizzle/commit/abde99f6dc2ed3d489a6d7a52f3df9774be16a32))
+* Selector: Optimize ":lt(bigNumber)" ([1c0c330](https://github.com/jquery/sizzle/commit/1c0c33066f053e62ac268658f65e7d912f3bdb0d))
+
+
+
+--- Issue List ---
+#430	querySelectorAll workaround is not always needed
+#418	Selector: fix nonnativeSelectorCache
+#408	Selectors with escaped = characters gaining extra single-quotes through filter().
+#406	Edge 15 fails the matchesSelector "attribute-equals non-value" test
+#393	Performance impact: sizzle don't use querySelectorAll for specific selector after using $('...').filter('selector')
+#378	Sizzle.isXML misidentifies embedded SVG
+#377	Travis has been broken for a long time
+#362	Error when testing on oldIE
+#335	pseudo contains uses innerText
+#333	ID selectors provide no filtering benefit at all in oldIE
+#314	Browserstack and android devices
+#305	Mobile devices are often not getting captured on Travis
