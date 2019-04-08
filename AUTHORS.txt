@@ -1,4 +1,5 @@
-[4mRunning "authors" task[24m
+Authors ordered by first contribution
+
 John Resig <jeresig@gmail.com>
 Cheah Chu Yeow <chuyeow@gmail.com>
 Andrew Chalkley <andrew@chalkley.org>
