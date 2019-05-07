@@ -58,3 +58,8 @@ Tom von Clef <thomas.vonclef@gmail.com>
 Josh Soref <apache@soref.com>
 Saptak Sengupta <saptak013@gmail.com>
 Jon Dufresne <jon.dufresne@gmail.com>
+Andrey Meshkov <ay.meshkov@gmail.com>
+Sébastien Règne <regseb@users.noreply.github.com>
+Andrey Meshkov <am@adguard.com>
+Siddharth Dungarwal <sd5869@gmail.com>
+wartmanm <3869625+wartmanm@users.noreply.github.com>

@@ -21,5 +21,6 @@
     "CSS",
     "selector",
     "jquery"
-  ]
+  ],
+  "version": "2.3.4"
 }
