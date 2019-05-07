@@ -1,8 +1,7 @@
-"use strict";
-
 var exec = require( "child_process" ).exec;
 
 module.exports = function( grunt ) {
+	"use strict";
 	grunt.registerTask( "version", "Commit a new version", function( version ) {
 		if ( !/\d\.\d+\.\d+(?:-pre)?/.test( version ) ) {
 			grunt.fatal( "Version must follow semver release format: " + version );

@@ -1,8 +1,8 @@
-"use strict";
 
 var fs = require( "fs" );
 
 module.exports = function( grunt ) {
+	"use strict";
 	grunt.registerMultiTask(
 		"ensure_ascii",
 		"Verify that files contain no non-ASCII characters.",

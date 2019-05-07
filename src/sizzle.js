@@ -770,6 +770,7 @@
 		rbuggyQSA = [];
 
 		if ( ( support.qsa = rnative.test( document.querySelectorAll ) ) ) {
+
 			// Build QSA regex
 			// Regex strategy adopted from Diego Perini
 			assert( function( el ) {
@@ -859,6 +860,7 @@
 			docElem.msMatchesSelector ) ) ) ) {
 
 			assert( function( el ) {
+
 				// Check to see if it's possible to do matchesSelector
 				// on a disconnected node (IE 9)
 				support.disconnectedMatch = matches.call( el, "*" );
@@ -1208,6 +1210,7 @@
 				match[ 1 ] = match[ 1 ].toLowerCase();
 
 				if ( match[ 1 ].slice( 0, 3 ) === "nth" ) {
+
 					// nth-* requires argument
 					if ( !match[ 3 ] ) {
 						Sizzle.error( match[ 0 ] );
