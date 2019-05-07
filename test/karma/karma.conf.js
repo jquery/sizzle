@@ -7,7 +7,7 @@ module.exports = function( config ) {
 		dateString = grunt.config( "dateString" ),
 		isBrowserStack = !!( process.env.BROWSER_STACK_USERNAME &&
 			process.env.BROWSER_STACK_ACCESS_KEY ),
-		hostName = isBrowserStack? "bs-local.com" : "localhost";
+		hostName = isBrowserStack ? "bs-local.com" : "localhost";
 
 	config.set({
 		browserStack: {

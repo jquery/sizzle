@@ -147,7 +147,7 @@ module.exports = function( grunt ) {
 				src: files.source
 			},
 			dev: {
-				src: [ "src/**/*.js", "Gruntfile.js", "test/**/*.js", "build/**/*.js" ]
+				src: [ files.source, files.grunt, files.karma, files.speed, files.tests ]
 			},
 			grunt: {
 				src: files.grunt

@@ -3,6 +3,3 @@ node_modules
 *.min.js
 dist/**
 build/**
-tasks/**
-test/**
-Gruntfile.js

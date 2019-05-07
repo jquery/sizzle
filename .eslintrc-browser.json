@@ -17,7 +17,9 @@
   // they're available as globals. This makes it possible to use
   // jQuery with tools like jsdom which provide a custom window
   // implementation.
-  "env": {},
+  "env": {
+    "node": true
+  },
 
   "globals": {
 	"window": true,
