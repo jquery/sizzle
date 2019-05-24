@@ -2,7 +2,6 @@
 var fs = require( "fs" );
 
 module.exports = function( grunt ) {
-	"use strict";
 	grunt.registerTask( "dist", "Process files for distribution", function() {
 		var files = grunt.file.expand( { filter: "isFile" }, "dist/*" );
 

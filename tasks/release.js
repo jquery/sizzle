@@ -1,7 +1,6 @@
 var exec = require( "child_process" ).exec;
 
 module.exports = function( grunt ) {
-	"use strict";
 	var rpreversion = /(\d\.\d+\.\d+)-pre/;
 
 	grunt.registerTask( "release",

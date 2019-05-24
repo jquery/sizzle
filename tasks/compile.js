@@ -1,6 +1,5 @@
 
 module.exports = function( grunt ) {
-	"use strict";
 	grunt.registerMultiTask(
 		"compile",
 		"Compile sizzle.js to the dist directory. Embed date/version.",

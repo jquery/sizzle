@@ -4,6 +4,7 @@
 	"console":  true,
 	"require": true,
 	"setTimeout": true,
-	"location": true
+	"location": true,
+	"window": true
   }
 }

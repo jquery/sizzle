@@ -1,5 +1,5 @@
 {
-  "extends": ".eslintrc-browser.json",
+  "extends": ".eslintrc-node.json",
   "rules": {
 	"no-nested-ternary": 1
   }
