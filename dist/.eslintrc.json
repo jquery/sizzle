@@ -3,7 +3,8 @@
 
 	"extends": "../.eslintrc-browser.json",
 	"rules": {
-		  // That is okay for the built version
-		  "no-multiple-empty-lines": "off"
+		// That is okay for the built version
+		"no-multiple-empty-lines": "off",
+		"no-nested-ternary": "off"
 	}
 }
