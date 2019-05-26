@@ -24,7 +24,6 @@
   },
 
   "rules": {
-	"strict": ["error", "function"],
 	"dot-notation": "off"
   }
 }

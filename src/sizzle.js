@@ -8,7 +8,7 @@
  *
  * Date: @DATE
  */
-( function( window ) { // eslint-disable-line strict
+( function( window ) {
 var i,
 	support,
 	Expr,
