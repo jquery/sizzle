@@ -29,6 +29,7 @@
   },
 
   "rules": {
-	"strict": ["error", "function"]
+	"strict": ["error", "function"],
+	"dot-notation": "off"
   }
 }

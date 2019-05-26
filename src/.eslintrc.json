@@ -1,8 +1,8 @@
 {
-  "root": true,
+	"root": true,
 
-  "extends": "../.eslintrc-browser.json",
-  "rules": {
-	"no-nested-ternary": 1
-  }
+	"extends": "../.eslintrc-browser.json",
+	"rules": {
+	  	"no-nested-ternary": 1
+	}
 }

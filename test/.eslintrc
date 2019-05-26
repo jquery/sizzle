@@ -36,5 +36,5 @@
 		// Not really too many - waiting for autofix features for these rules
 		"lines-around-comment": "off",
 		"dot-notation": "off"
-	},
+	}
 }

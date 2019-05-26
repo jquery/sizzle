@@ -8,8 +8,7 @@
  *
  * Date: @DATE
  */
-( function( window ) {
-"use strict";
+( function( window ) { // eslint-disable-line strict
 var i,
 	support,
 	Expr,
@@ -661,20 +660,20 @@ if ( doc === document || doc.nodeType !== 9 ) {
 
 	// ID filter and find
 	if ( support.getById ) {
-		Expr.filter.ID = function( id ) {
+		Expr.filter[ "ID" ] = function( id ) {
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
 				return elem.getAttribute( "id" ) === attrId;
 			};
 		};
-		Expr.find.ID = function( id, context ) {
+		Expr.find[ "ID" ] = function( id, context ) {
 			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
 				var elem = context.getElementById( id );
 				return elem ? [ elem ] : [];
 			}
 		};
 	} else {
-		Expr.filter.ID =  function( id ) {
+		Expr.filter[ "ID" ] =  function( id ) {
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
 				var node = typeof elem.getAttributeNode !== "undefined" &&
@@ -685,7 +684,7 @@ if ( doc === document || doc.nodeType !== 9 ) {
 
 		// Support: IE 6 - 7 only
 		// getElementById is not reliable as a find shortcut
-		Expr.find.ID = function( id, context ) {
+		Expr.find[ "ID" ] = function( id, context ) {
 			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
 				var node, i, elems,
 					elem = context.getElementById( id );
@@ -715,7 +714,7 @@ if ( doc === document || doc.nodeType !== 9 ) {
 	}
 
 	// Tag
-	Expr.find.TAG = support.getElementsByTagName ?
+	Expr.find[ "TAG" ] = support.getElementsByTagName ?
 		function( tag, context ) {
 			if ( typeof context.getElementsByTagName !== "undefined" ) {
 				return context.getElementsByTagName( tag );
@@ -748,7 +747,7 @@ if ( doc === document || doc.nodeType !== 9 ) {
 		};
 
 	// Class
-	Expr.find.CLASS = support.getElementsByClassName && function( className, context ) {
+	Expr.find[ "CLASS" ] = support.getElementsByClassName && function( className, context ) {
 		if ( typeof context.getElementsByClassName !== "undefined" && documentIsHTML ) {
 			return context.getElementsByClassName( className );
 		}
@@ -1250,8 +1249,7 @@ Expr = Sizzle.selectors = {
 				( excess = tokenize( unquoted, true ) ) &&
 
 				// advance to the next closing parenthesis
-				( excess = unquoted.indexOf( ")",
-					unquoted.length - excess ) - unquoted.length ) ) {
+				( excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length ) ) {
 
 				// excess is a negative index
 				match[ 0 ] = match[ 0 ].slice( 0, excess );
@@ -1284,10 +1282,9 @@ Expr = Sizzle.selectors = {
 					")" + className + "(" + whitespace + "|$)" ) ) && classCache(
 						className, function( elem ) {
 							return pattern.test(
-								typeof elem.className === "string" &&
-								elem.className || typeof elem.getAttribute !== "undefined" &&
-								elem.getAttribute( "class" ) ||
-								""
+								typeof elem.className === "string" && elem.className ||
+								typeof elem.getAttribute !== "undefined" &&
+								elem.getAttribute( "class" ) || ""
 							);
 				} );
 		},
@@ -1309,12 +1306,12 @@ Expr = Sizzle.selectors = {
 
 				return operator === "=" ? result === check :
 					operator === "!=" ? result !== check :
-						operator === "^=" ? check && result.indexOf( check ) === 0 :
-							operator === "*=" ? check && result.indexOf( check ) > -1 :
-								operator === "$=" ? check && result.slice( -check.length ) === check :
-									operator === "~=" ? ( " " + result.replace( rwhitespace, " " ) + " " ).indexOf( check ) > -1 :
-										operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
-											false;
+					operator === "^=" ? check && result.indexOf( check ) === 0 :
+					operator === "*=" ? check && result.indexOf( check ) > -1 :
+					operator === "$=" ? check && result.slice( -check.length ) === check :
+					operator === "~=" ? ( " " + result.replace( rwhitespace, " " ) + " " ).indexOf( check ) > -1 :
+					operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
+					false;
 				/* eslint-enable max-len */
 
 			};
@@ -1595,9 +1592,8 @@ Expr = Sizzle.selectors = {
 			// In CSS3, :checked should return both checked and selected elements
 			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 			var nodeName = elem.nodeName.toLowerCase();
-			return ( nodeName === "input" &&
-				!!elem.checked ) || ( nodeName === "option" &&
-				!!elem.selected );
+			return ( nodeName === "input" && !!elem.checked ) ||
+				( nodeName === "option" && !!elem.selected );
 		},
 
 		"selected": function( elem ) {
@@ -2278,8 +2274,8 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 				// Search, expanding context for leading sibling combinators
 				if ( ( seed = find(
 					token.matches[ 0 ].replace( runescape, funescape ),
-					rsibling.test( tokens[ 0 ].type ) &&
-					testContext( context.parentNode ) || context
+					rsibling.test( tokens[ 0 ].type ) && testContext( context.parentNode ) ||
+					context
 				) ) ) {
 
 					// If seed is empty or no tokens remain, we can return early

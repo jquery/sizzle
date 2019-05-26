@@ -143,8 +143,9 @@ module.exports = function( grunt ) {
 				// See https://github.com/sindresorhus/grunt-eslint/issues/119
 				quiet: true
 			},
-			src: {
-				src: files.source
+
+			dist: {
+				src: "dist/sizzle.js"
 			},
 			dev: {
 				src: [ files.source, files.grunt, files.karma, files.speed, files.tests ]
@@ -252,7 +253,7 @@ module.exports = function( grunt ) {
 	// Load dev dependencies
 	require( "load-grunt-tasks" )( grunt );
 
-	grunt.registerTask( "lint", [ "jsonlint", "eslint:dev", "eslint:src" ] );
+	grunt.registerTask( "lint", [ "jsonlint", "eslint:dev", "eslint:dist" ] );
 	grunt.registerTask( "start", [ "karma:watch:start", "watch" ] );
 
 	// Execute tests all browsers in sequential way,
@@ -275,7 +276,7 @@ module.exports = function( grunt ) {
 		"build",
 		"tests",
 		"compare_size",
-		"eslint:src"
+		"eslint:dist"
 	] );
 
 	grunt.registerTask( "bower", "bowercopy" );

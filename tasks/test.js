@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = function( grunt ) {
 	grunt.registerTask( "test", "Run lint and tests for the specific browsers", function() {
 		var browsers = grunt.option( "browsers" ),

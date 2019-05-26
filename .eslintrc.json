@@ -1,6 +1,6 @@
 {
-  "extends": ".eslintrc-node.json",
-  "rules": {
-	"no-nested-ternary": 1
-  }
+  	"extends": ".eslintrc-node.json",
+  	"rules": {
+		"no-nested-ternary": 1
+  	}
 }
