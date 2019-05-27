@@ -531,9 +531,9 @@ function createDisabledPseudo( disabled ) {
 
 			return elem.disabled === disabled;
 
-			// Try to winnow out elements that can't be disabled before trusting the disabled property.
-			// Some victims get caught in our net (label, legend, menu, track), but it shouldn't
-			// even exist on them, let alone have a boolean value.
+		// Try to winnow out elements that can't be disabled before trusting the disabled property.
+		// Some victims get caught in our net (label, legend, menu, track), but it shouldn't
+		// even exist on them, let alone have a boolean value.
 		} else if ( "label" in elem ) {
 			return elem.disabled === disabled;
 		}
@@ -620,7 +620,7 @@ if ( doc === document || doc.nodeType !== 9 ) {
 		if ( subWindow.addEventListener ) {
 			subWindow.addEventListener( "unload", unloadHandler, false );
 
-			// Support: IE 9 - 10 only
+		// Support: IE 9 - 10 only
 		} else if ( subWindow.attachEvent ) {
 			subWindow.attachEvent( "onunload", unloadHandler );
 		}
@@ -719,7 +719,7 @@ if ( doc === document || doc.nodeType !== 9 ) {
 			if ( typeof context.getElementsByTagName !== "undefined" ) {
 				return context.getElementsByTagName( tag );
 
-				// DocumentFragment nodes don't have gEBTN
+			// DocumentFragment nodes don't have gEBTN
 			} else if ( support.qsa ) {
 				return context.querySelectorAll( tag );
 			}
@@ -977,7 +977,7 @@ if ( doc === document || doc.nodeType !== 9 ) {
 									( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
 									0;
 
-				// If the nodes are siblings, we can do a quick check
+			// If the nodes are siblings, we can do a quick check
 			} else if ( aup === bup ) {
 				return siblingCheck( a, b );
 			}
@@ -1994,7 +1994,7 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 				}
 			}
 
-			// Add elements to results, through postFinder if defined
+		// Add elements to results, through postFinder if defined
 		} else {
 			matcherOut = condense(
 				matcherOut === results ?
@@ -2305,29 +2305,29 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 	return results;
 };
 
-// One-time assignments
+	// One-time assignments
 
-// Sort stability
+	// Sort stability
 	support.sortStable = expando.split( "" ).sort( sortOrder ).join( "" ) === expando;
 
-// Support: Chrome 14-35+
-// Always assume duplicates if they aren't passed to the comparison function
+	// Support: Chrome 14-35+
+	// Always assume duplicates if they aren't passed to the comparison function
 	support.detectDuplicates = !!hasDuplicate;
 
-// Initialize against the default document
+	// Initialize against the default document
 	setDocument();
 
-// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
-// Detached nodes confoundingly follow *each other*
+	// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
+	// Detached nodes confoundingly follow *each other*
 	support.sortDetached = assert( function( el ) {
 
 		// Should return 1, but returns 4 (following)
 		return el.compareDocumentPosition( document.createElement( "fieldset" ) ) & 1;
 	} );
 
-// Support: IE<8
-// Prevent attribute/property "interpolation"
-// https://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
+	// Support: IE<8
+	// Prevent attribute/property "interpolation"
+	// https://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
 	if ( !assert( function( el ) {
 		el.innerHTML = "<a href='#'></a>";
 		return el.firstChild.getAttribute( "href" ) === "#";
@@ -2339,8 +2339,8 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 		} );
 	}
 
-// Support: IE<9
-// Use defaultValue in place of getAttribute("value")
+	// Support: IE<9
+	// Use defaultValue in place of getAttribute("value")
 	if ( !support.attributes || !assert( function( el ) {
 		el.innerHTML = "<input/>";
 		el.firstChild.setAttribute( "value", "" );
@@ -2353,8 +2353,8 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 		} );
 	}
 
-// Support: IE<9
-// Use getAttributeNode to fetch booleans when getAttribute lies
+	// Support: IE<9
+	// Use getAttributeNode to fetch booleans when getAttribute lies
 	if ( !assert( function( el ) {
 		return el.getAttribute( "disabled" ) == null;
 	} ) ) {
@@ -2369,7 +2369,7 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 		} );
 	}
 
-// EXPOSE
+	// EXPOSE
 	var _sizzle = window.Sizzle;
 
 	Sizzle.noConflict = function() {
@@ -2385,7 +2385,7 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 			return Sizzle;
 		} );
 
-// Sizzle requires that there be a global window in Common-JS like environments
+	// Sizzle requires that there be a global window in Common-JS like environments
 	} else if ( typeof module !== "undefined" && module.exports ) {
 		module.exports = Sizzle;
 	} else {
