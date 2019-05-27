@@ -3,6 +3,6 @@
 
 	"extends": "../.eslintrc-browser.json",
 	"rules": {
-	  	"no-nested-ternary": 1
+		"no-nested-ternary": "off"
 	}
 }

@@ -1284,7 +1284,8 @@ Expr = Sizzle.selectors = {
 							return pattern.test(
 								typeof elem.className === "string" && elem.className ||
 								typeof elem.getAttribute !== "undefined" &&
-								elem.getAttribute( "class" ) || ""
+									elem.getAttribute( "class" ) ||
+								""
 							);
 				} );
 		},
@@ -2275,7 +2276,7 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 				if ( ( seed = find(
 					token.matches[ 0 ].replace( runescape, funescape ),
 					rsibling.test( tokens[ 0 ].type ) && testContext( context.parentNode ) ||
-					context
+						context
 				) ) ) {
 
 					// If seed is empty or no tokens remain, we can return early
