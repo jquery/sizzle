@@ -1,0 +1,42 @@
+{
+	"root": true,
+
+	"extends": "../.eslintrc-browser.json",
+
+	"env": {
+
+		// In source the browser env is not enabled but unit tests rely on them
+		// too much and we don't run them in non-browser environments anyway.
+		"browser": true,
+		"node": true
+	},
+
+	"globals": {
+		"Sizzle": true,
+		"require": false,
+		"QUnit": true,
+		"q": true,
+		"t": true,
+		"setup": true,
+		"testIframeWithCallback": true,
+		"createWithFriesXML": true
+	},
+
+	"rules": {
+		// See https://github.com/eslint/eslint/issues/2342
+		"no-unused-vars": "off",
+
+		// Too many errors
+		"max-len": "off",
+		"brace-style": "off",
+		"key-spacing": "off",
+		"camelcase": "off",
+		"strict": "off",
+
+		// Not really too many - waiting for autofix features for these rules
+		"lines-around-comment": "off",
+
+		// Turned off for compatibility with Google Closure Compiler's advanced mode
+		"dot-notation": "off"
+	}
+}

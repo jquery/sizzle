@@ -1,0 +1,7 @@
+external
+node_modules
+*.min.js
+# Ignore everything in dist folder except for eslint config
+dist/**
+!dist/sizzle.js
+build/**

@@ -1,11 +1,13 @@
-(function() {
+/* eslint no-multi-str: "off" */
+
+( function() {
 
 	// Config parameter to force basic code paths
-	QUnit.config.urlConfig.push({
+	QUnit.config.urlConfig.push( {
 		id: "basic",
 		label: "Bypass optimizations",
 		tooltip: "Force use of the most basic code by disabling native querySelectorAll; contains; compareDocumentPosition"
-	});
+	} );
 	if ( QUnit.urlParams.basic ) {
 		document.querySelectorAll = null;
 		document.documentElement.contains = null;
@@ -14,7 +16,7 @@
 		// But support should be false as its not native
 		document.getElementsByClassName = function() { return [ 0, 1 ]; };
 	}
-})();
+} )();
 
 /**
  * Returns an array of elements with the given IDs
@@ -26,7 +28,7 @@ function q() {
 		i = 0;
 
 	for ( ; i < arguments.length; i++ ) {
-		r.push( document.getElementById( arguments[i] ) );
+		r.push( document.getElementById( arguments[ i ] ) );
 	}
 	return r;
 }
@@ -40,16 +42,16 @@ function q() {
  * @result returns true if "//[a]" return two elements with the IDs 'foo' and 'baar'
  */
 function t( a, b, c ) {
-	var f = Sizzle(b),
+	var f = Sizzle( b ),
 		s = "",
 		i = 0;
 
 	for ( ; i < f.length; i++ ) {
-		s += ( s && "," ) + '"' + f[ i ].id + '"';
+		s += ( s && "," ) + "\"" + f[ i ].id + "\"";
 	}
 
 	// TODO refactor to parameterize assert (or remove entirely)
-	QUnit.config.current.assert.deepEqual(f, q.apply( q, c ), a + " (" + b + ")");
+	QUnit.config.current.assert.deepEqual( f, q.apply( q, c ), a + " (" + b + ")" );
 
 }
 
@@ -64,26 +66,26 @@ function t( a, b, c ) {
  */
 function url( value ) {
 	return ( window.__karma__ ? "base/test/" : "" ) + value +
-		(/\?/.test(value) ? "&" : "?") + new Date().getTime() + "" + parseInt(Math.random()*100000);
+		( /\?/.test( value ) ? "&" : "?" ) + new Date().getTime() + "" + parseInt( Math.random() * 100000 );
 }
 
 var createWithFriesXML = function() {
-	var string = '<?xml version="1.0" encoding="UTF-8"?> \
-	<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" \
-		xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> \
+	var string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+	<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" \
+		xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" \
+		xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"> \
 		<soap:Body> \
-			<jsconf xmlns="http://www.example.com/ns1"> \
-				<response xmlns:ab="http://www.example.com/ns2"> \
+			<jsconf xmlns=\"http://www.example.com/ns1\"> \
+				<response xmlns:ab=\"http://www.example.com/ns2\"> \
 					<meta> \
-						<component id="seite1" class="component"> \
-							<properties xmlns:cd="http://www.example.com/ns3"> \
-								<property name="prop1"> \
+						<component id=\"seite1\" class=\"component\"> \
+							<properties xmlns:cd=\"http://www.example.com/ns3\"> \
+								<property name=\"prop1\"> \
 									<thing /> \
 									<value>1</value> \
 								</property> \
-								<property name="prop2"> \
-									<thing att="something" /> \
+								<property name=\"prop2\"> \
+									<thing att=\"something\" /> \
 								</property> \
 								<foo_bar>foo</foo_bar> \
 							</properties> \
@@ -92,7 +94,7 @@ var createWithFriesXML = function() {
 				</response> \
 			</jsconf> \
 		</soap:Body> \
-	</soap:Envelope>';
+	</soap:Envelope>";
 
 	return jQuery.parseXML( string );
 };
@@ -104,7 +106,7 @@ function testIframeWithCallback( title, fileName, func ) {
 
 		window.iframeCallback = function() {
 			var args = arguments;
-			setTimeout(function() {
+			setTimeout( function() {
 				window.iframeCallback = undefined;
 				func.apply( assert, args );
 				func = function() {};
@@ -112,10 +114,10 @@ function testIframeWithCallback( title, fileName, func ) {
 				done();
 			}, 0 );
 		};
-		iframe = jQuery( "<div/>" ).css({ position: "absolute", width: "500px", left: "-600px" })
+		iframe = jQuery( "<div/>" ).css( { position: "absolute", width: "500px", left: "-600px" } )
 			.append( jQuery( "<iframe/>" ).attr( "src", url( "data/" + fileName ) ) )
 			.appendTo( "#qunit-fixture" );
-	});
+	} );
 };
 
 window.iframeCallback = undefined;

@@ -20,7 +20,7 @@ module.exports = function( grunt ) {
 		files = {
 			source: "src/sizzle.js",
 			speed: "speed/speed.js",
-			tests: "test/unit/*.js",
+			tests: "test/{data,unit}/*.js",
 			karma: "test/karma/*.js",
 			grunt: [ "Gruntfile.js", "tasks/*" ]
 		};
@@ -45,13 +45,13 @@ module.exports = function( grunt ) {
 
 			// Real Safari 6.1 and 7.0 are not available
 			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.1", "bs_safari-10.1",
-			"bs_safari-11.1", "bs_safari-12.0",
+			"bs_safari-11.1", "bs_safari-12.0"
 		];
 
 		browsers.ios = [
 			"bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0", "bs_ios-8.3", "bs_ios-9.3", "bs_ios-10.3",
 
-			 "bs_ios-11.4", "bs_ios-12.1",
+			"bs_ios-11.4", "bs_ios-12.1"
 		];
 		browsers.android = [
 			"bs_android-4.0", "bs_android-4.1", "bs_android-4.2",
@@ -69,7 +69,7 @@ module.exports = function( grunt ) {
 	}
 
 	// Project configuration
-	grunt.initConfig({
+	grunt.initConfig( {
 		pkg: grunt.file.readJSON( "package.json" ),
 		dateString: new Date().toISOString().replace( /\..*Z/, "" ),
 		compile: {
@@ -133,42 +133,33 @@ module.exports = function( grunt ) {
 
 					"requirejs/require.js": "requirejs/require.js",
 					"requirejs-domready/domReady.js": "requirejs-domready/domReady.js",
-					"requirejs-text/text.js": "requirejs-text/text.js",
+					"requirejs-text/text.js": "requirejs-text/text.js"
 				}
 			}
 		},
-		jshint: {
+		eslint: {
 			options: {
-				jshintrc: true
+
+				// See https://github.com/sindresorhus/grunt-eslint/issues/119
+				quiet: true
 			},
-			all: {
+
+			dist: {
+				src: "dist/sizzle.js"
+			},
+			dev: {
 				src: [ files.source, files.grunt, files.karma, files.speed, files.tests ]
-			}
-		},
-		jscs: {
-			src: {
-				options: {
-					requireDotNotation: null
-				},
-				src: [ files.source ]
 			},
 			grunt: {
-				options: {
-					requireCamelCaseOrUpperCaseIdentifiers: null
-				},
-				src: [ files.grunt ]
+				src: files.grunt
 			},
-			speed: [ files.speed ],
+			speed: {
+				src: [ files.speed ]
+			},
 			tests: {
-				options: {
-					maximumLineLength: null
-				},
 				src: [ files.tests ]
 			},
 			karma: {
-				options: {
-					requireCamelCaseOrUpperCaseIdentifiers: null
-				},
 				src: [ files.karma ]
 			}
 		},
@@ -256,7 +247,7 @@ module.exports = function( grunt ) {
 			],
 			tasks: [ "build", "karma:watch:run" ]
 		}
-	});
+	} );
 
 	// Integrate Sizzle specific tasks
 	grunt.loadTasks( "tasks" );
@@ -264,7 +255,7 @@ module.exports = function( grunt ) {
 	// Load dev dependencies
 	require( "load-grunt-tasks" )( grunt );
 
-	grunt.registerTask( "lint", [ "jsonlint", "jshint", "jscs" ] );
+	grunt.registerTask( "lint", [ "jsonlint", "eslint:dev", "eslint:dist" ] );
 	grunt.registerTask( "start", [ "karma:watch:start", "watch" ] );
 
 	// Execute tests all browsers in sequential way,
@@ -282,7 +273,13 @@ module.exports = function( grunt ) {
 	] : "karma:phantom" );
 
 	grunt.registerTask( "build", [ "lint", "compile", "uglify", "dist", "ensure_ascii" ] );
-	grunt.registerTask( "default", [ "build", "tests", "compare_size" ] );
+	grunt.registerTask( "default", [
+		"eslint:dev",
+		"build",
+		"tests",
+		"compare_size",
+		"eslint:dist"
+	] );
 
 	grunt.registerTask( "bower", "bowercopy" );
 };

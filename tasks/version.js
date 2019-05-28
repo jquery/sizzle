@@ -14,11 +14,11 @@ module.exports = function( grunt ) {
 			rversion = /("version":\s*")[^"]+/;
 
 		// Update version in specified files
-		files.forEach(function( filename ) {
+		files.forEach( function( filename ) {
 			var text = grunt.file.read( filename );
 			text = text.replace( rversion, "$1" + version );
 			grunt.file.write( filename, text );
-		});
+		} );
 
 		// Add files to git index
 		exec( "git add -A", function( err ) {
@@ -26,14 +26,15 @@ module.exports = function( grunt ) {
 				grunt.fatal( err );
 				return;
 			}
+
 			// Commit next pre version
 			grunt.config( "pkg.version", version );
-			grunt.task.run([
+			grunt.task.run( [
 				"build",
 				"tests",
 				"commit:'Release\\: Update version to " + version + "'"
-			]);
+			] );
 			done();
-		});
-	});
+		} );
+	} );
 };
