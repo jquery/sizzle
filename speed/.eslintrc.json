@@ -3,8 +3,6 @@
 	"globals": {
 		"console":  true,
 		"require": true,
-		"setTimeout": true,
-		"location": true,
 		"window": true
 	}
 }

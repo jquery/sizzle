@@ -39,7 +39,7 @@ function( Benchmark, document, selectors ) {
 		urlParams = ( function() {
 			var parts, value,
 				params = {},
-				search = location.search.substring( 1 ).split( "&" ),
+				search = window.location.search.substring( 1 ).split( "&" ),
 				i = 0,
 				len = search.length;
 
@@ -387,7 +387,7 @@ function( Benchmark, document, selectors ) {
 		index = callbacks.push( function() {
 			var self = this,
 				args = arguments;
-			setTimeout( function() {
+			window.setTimeout( function() {
 				test.apply( self, args );
 			}, 0 );
 		} ) - 1;

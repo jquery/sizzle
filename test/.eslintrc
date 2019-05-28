@@ -35,6 +35,8 @@
 
 		// Not really too many - waiting for autofix features for these rules
 		"lines-around-comment": "off",
+
+		// Turned off for compatibility with Google Closure Compiler's advanced mode
 		"dot-notation": "off"
 	}
 }

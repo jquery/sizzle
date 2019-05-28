@@ -64,7 +64,6 @@
     "requirejs-text": "2.0.15"
   },
   "scripts": {
-    "lint": "grunt eslint",
     "build": "npm install && grunt",
     "start": "grunt start",
     "test": "grunt test"

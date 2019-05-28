@@ -215,21 +215,21 @@ try {
 } catch ( e ) {
 	push = { apply: arr.length ?
 
-			// Leverage slice if possible
-			function( target, els ) {
-				pushNative.apply( target, slice.call( els ) );
-			} :
+		// Leverage slice if possible
+		function( target, els ) {
+			pushNative.apply( target, slice.call( els ) );
+		} :
 
-			// Support: IE<9
-			// Otherwise append directly
-			function( target, els ) {
-				var j = target.length,
-					i = 0;
+		// Support: IE<9
+		// Otherwise append directly
+		function( target, els ) {
+			var j = target.length,
+				i = 0;
 
-				// Can't trust NodeList.length
-				while ( ( target[ j++ ] = els[ i++ ] ) ) {}
-				target.length = j - 1;
-			}
+			// Can't trust NodeList.length
+			while ( ( target[ j++ ] = els[ i++ ] ) ) {}
+			target.length = j - 1;
+		}
 	};
 }
 
@@ -1704,7 +1704,7 @@ Expr = Sizzle.selectors = {
 	}
 };
 
-Expr.pseudos.nth = Expr.pseudos.eq;
+Expr.pseudos[ "nth" ] = Expr.pseudos[ "eq" ];
 
 // Add button/input type pseudos
 for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {

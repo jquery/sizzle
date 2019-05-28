@@ -6,7 +6,7 @@
 		// That is okay for the built version
 		"no-multiple-empty-lines": "off",
 
-		// Sizzle is not compatible with jQuery code style
+		// Too many violations.
 		"no-nested-ternary": "off"
 	}
 }
