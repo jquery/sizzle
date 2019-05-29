@@ -35,7 +35,7 @@
   "devDependencies": {
     "benchmark": "2.1.4",
     "commitplease": "2.7.10",
-    "eslint-config-jquery": "1.0.1",
+    "eslint-config-jquery": "2.0.0",
     "grunt": "0.4.5",
     "grunt-cli": "0.1.13",
     "grunt-compare-size": "0.4.2",

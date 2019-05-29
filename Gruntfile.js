@@ -272,9 +272,16 @@ module.exports = function( grunt ) {
 		// "karma:android", "karma:oldAndroid"
 	] : "karma:phantom" );
 
-	grunt.registerTask( "build", [ "lint", "compile", "uglify", "dist", "ensure_ascii" ] );
-	grunt.registerTask( "default", [
+	grunt.registerTask( "build", [
+		"jsonlint",
 		"eslint:dev",
+		"compile",
+		"uglify",
+		"dist",
+		"eslint:dist",
+		"ensure_ascii"
+	] );
+	grunt.registerTask( "default", [
 		"build",
 		"tests",
 		"compare_size",
