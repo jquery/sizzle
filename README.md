@@ -44,6 +44,7 @@ Testing
 ----------------------------
 
 - Run `npm install`, it's also preferable (but not necessarily) to globally install `grunt-cli` package – `npm install -g grunt-cli`
+- Open `test/index.html` in the browser. Or run `npm test`/`grunt test` on the command line, if environment variables `LAMBDATEST_USERNAME` and `LAMBDATEST_ACCESS_KEY` are set up, it will attempt to use [LambdaTest](https://www.lambdatest.com/) service (you will need to install java on your machine so browserstack could connect to your local server), otherwise [PhantomJS](http://phantomjs.org/) will be used. Or you could use another cross browser testing service 
 - Open `test/index.html` in the browser. Or run `npm test`/`grunt test` on the command line, if environment variables `BROWSER_STACK_USERNAME` and `BROWSER_STACK_ACCESS_KEY` are set up, it will attempt to use [Browserstack](https://www.browserstack.com/) service (you will need to install java on your machine so browserstack could connect to your local server), otherwise [PhantomJS](http://phantomjs.org/) will be used.
 - The actual unit tests are in the `test/unit` directory.
 
