@@ -135,7 +135,7 @@ QUnit.test( "XML Document Selectors", function( assert ) {
 } );
 
 QUnit.test( "broken", function( assert ) {
-	assert.expect( 29 );
+	assert.expect( 30 );
 
 	var attrbad,
 		broken = function( name, selector ) {
@@ -160,6 +160,7 @@ QUnit.test( "broken", function( assert ) {
 	broken( "Broken Selector", "," );
 	broken( "Broken Selector", ",a" );
 	broken( "Broken Selector", "a," );
+	broken( "Identifer with bad escape", "foo\\\fbaz" );
 	// Hangs on IE 9 if regular expression is inefficient
 	broken( "Broken Selector", "[id=012345678901234567890123456789" );
 	broken( "Doesn't exist", ":visble" );
@@ -571,7 +572,7 @@ QUnit.test( "attributes - hyphen-prefix matches", function( assert ) {
 } );
 
 QUnit.test( "attributes - special characters", function( assert ) {
-	assert.expect( 13 );
+	assert.expect( 15 );
 
 	var attrbad,
 		div = document.createElement( "div" );
@@ -588,6 +589,7 @@ QUnit.test( "attributes - special characters", function( assert ) {
 		"<input type='hidden' id='attrbad_space' name='foo bar'/>" +
 		"<input type='hidden' id='attrbad_dot' value='2' name='foo.baz'/>" +
 		"<input type='hidden' id='attrbad_brackets' value='2' name='foo[baz]'/>" +
+		"<input type='hidden' id='attrbad_leading_digits' name='agent' value='007'/>" +
 		"<input type='hidden' id='attrbad_injection' data-attr='foo_baz&#39;]'/>" +
 		"<input type='hidden' id='attrbad_quote' data-attr='&#39;'/>" +
 		"<input type='hidden' id='attrbad_backslash' data-attr='&#92;'/>" +
@@ -608,6 +610,12 @@ QUnit.test( "attributes - special characters", function( assert ) {
 	assert.deepEqual( Sizzle( "input[data-attr='foo_baz\\']']", null, null, attrbad ),
 		q( "attrbad_injection" ),
 		"string containing quote and right bracket" );
+	assert.deepEqual( Sizzle( "input[value=\\30 \\30\\37 ]", null, null, attrbad ),
+		q( "attrbad_leading_digits" ),
+		"identifier containing escaped leading digits with whitespace termination" );
+	assert.deepEqual( Sizzle( "input[value=\\00003007]", null, null, attrbad ),
+		q( "attrbad_leading_digits" ),
+		"identifier containing escaped leading digits without whitespace termination" );
 
 	assert.deepEqual( Sizzle( "input[data-attr='\\'']", null, null, attrbad ),
 		q( "attrbad_quote" ),
