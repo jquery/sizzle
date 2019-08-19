@@ -14,10 +14,10 @@ module.exports = function( grunt ) {
 		const tasks = isBrowserStack ? [
 			"karma:phantom", "karma:desktop",
 
-			"karma:ios",
-
 			"karma:oldIe", "karma:oldFirefox", "karma:oldChrome",
-			"karma:oldSafari", "karma:oldOpera"
+			"karma:oldSafari", "karma:oldOpera",
+
+			"karma:ios"
 
 			// See #314 :-(
 			// "karma:android", "karma:oldAndroid"
