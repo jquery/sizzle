@@ -103,7 +103,7 @@ module.exports = function( config ) {
 		// You can't get access to secure environment variables from pull requests
 		// so we don't have browserstack from them, but travis has headless Firefox so use that
 		if ( !isBrowserStack && process.env.TRAVIS_PULL_REQUEST ) {
-			config.browsers.push( "Firefox" );
+			config.browsers.push( "FirefoxHeadless" );
 		}
 	}
 };
