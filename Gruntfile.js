@@ -32,16 +32,16 @@ module.exports = function( grunt ) {
 
 		browsers.desktop = [
 			"bs_chrome-45", // shares V8 with Node.js 4 LTS
-			"bs_chrome-70", "bs_chrome-71",
+			"bs_chrome-75", "bs_chrome-76",
 
 			"bs_firefox-52", "bs_firefox-60", // Firefox ESR
-			"bs_firefox-63", "bs_firefox-64",
+			"bs_firefox-67", "bs_firefox-68",
 
 			"bs_edge-17", "bs_edge-18",
 
 			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 
-			"bs_opera-56", "bs_opera-57",
+			"bs_opera-60", "bs_opera-62",
 
 			// Real Safari 6.1 and 7.0 are not available
 			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.1", "bs_safari-10.1",
