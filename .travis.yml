@@ -1,11 +1,8 @@
 sudo: false
 language: node_js
 node_js:
-- '8'
+- '12'
 env:
   global:
   - secure: UzENy1srzIScquAja5376P0dj4X6DJsskYrQjUtRpi6tvCtpx80DiFjFAY6JKUMw/BHuugABkBmP0q5o3kMbp2y6mZO0qg+CBUZ8MX/UipNv0/xWbP7ckayLXU7RvICTObfJ0bGwF5uxxoCUBJjoKFZ0YZH94Orq8XQgC8wbNMk=
   - secure: EfY8wLmtbx+VH+sE0E3jRUP6hp78WjjumuWfhfB9R7+bRMhaj9kSVo+ReKQ5GExnJlm5DtU84fmDujO9gIDDgmZZ2/83PRJ5URSEXRCiyS8A82e4cw0Jz1NuU/nzUdv+gGwhdcYlKO3oTf39tPAvuxXWIwNcKddg9/NGAAZdUXI=
-before_script:
-- export DISPLAY=:99.0
-- sh -e /etc/init.d/xvfb start
