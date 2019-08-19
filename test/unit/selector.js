@@ -1367,6 +1367,46 @@ QUnit.test( "context", function( assert ) {
 	);
 } );
 
+( function() {
+    var scopeSupport;
+	try {
+		document.querySelectorAll( ":scope" );
+		scopeSupport = true;
+	} catch ( e ) {
+		scopeSupport = false;
+	}
+
+	// Support: IE 6 - 11+, Edge 12 - 18+, Chrome <=25 only, Safari <=6 only, Firefox <=13 only, Opera <=12 only
+	// Older browsers don't support the :scope pseudo-class so they may trigger MutationObservers.
+	// The test is skipped there.
+	QUnit[ scopeSupport && window.MutationObserver ? "test" : "skip" ](
+		"selectors maintaining context don't trigger mutation observers", function( assert ) {
+		assert.expect( 1 );
+
+		var timeout,
+			done = assert.async(),
+			elem = document.createElement( "div" );
+
+		elem.innerHTML = "<div></div>";
+
+		var observer = new MutationObserver(  function() {
+			clearTimeout( timeout );
+			observer.disconnect();
+			assert.ok( false, "Mutation observer fired during selection" );
+			done();
+		} );
+		observer.observe( elem, { attributes: true } );
+
+		Sizzle( "div div", elem );
+
+		timeout = setTimeout( function() {
+			observer.disconnect();
+			assert.ok( true, "Mutation observer didn't fire during selection" );
+			done();
+		} );
+	} );
+} )();
+
 QUnit.test( "caching", function( assert ) {
 	assert.expect( 3 );
 
