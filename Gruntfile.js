@@ -258,19 +258,9 @@ module.exports = function( grunt ) {
 	grunt.registerTask( "lint", [ "jsonlint", "eslint:dev", "eslint:dist" ] );
 	grunt.registerTask( "start", [ "karma:watch:start", "watch" ] );
 
-	// Execute tests all browsers in sequential way,
-	// so slow connections would not affect other runs
-	grunt.registerTask( "tests", isBrowserStack ? [
-		"karma:phantom", "karma:desktop",
-
-		"karma:ios",
-
-		"karma:oldIe", "karma:oldFirefox", "karma:oldChrome",
-		"karma:oldSafari", "karma:oldOpera"
-
-		// See #314 :-(
-		// "karma:android", "karma:oldAndroid"
-	] : "karma:phantom" );
+	grunt.registerTask( "tests", [
+		`karma-tests:${ isBrowserStack ? "browserstack" : "" }`
+	] );
 
 	grunt.registerTask( "build", [
 		"jsonlint",
