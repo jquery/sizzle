@@ -160,7 +160,7 @@ QUnit.test( "broken", function( assert ) {
 	broken( "Broken Selector", "," );
 	broken( "Broken Selector", ",a" );
 	broken( "Broken Selector", "a," );
-	broken( "Identifer with bad escape", "foo\\\fbaz" );
+	broken( "Identifier with bad escape", "foo\\\fbaz" );
 	// Hangs on IE 9 if regular expression is inefficient
 	broken( "Broken Selector", "[id=012345678901234567890123456789" );
 	broken( "Doesn't exist", ":visble" );
@@ -188,8 +188,8 @@ QUnit.test( "broken", function( assert ) {
 	attrbad = jQuery( "<input type='hidden' value='2' name='foo.baz' id='attrbad1'/><input type='hidden' value='2' name='foo[baz]' id='attrbad2'/>" ).appendTo( "#qunit-fixture" );
 
 	broken( "Attribute equals non-value", "input[name=]" );
-	broken( "Attribute equals unquoted non-identifer", "input[name=foo.baz]" );
-	broken( "Attribute equals unquoted non-identifer", "input[name=foo[baz]]" );
+	broken( "Attribute equals unquoted non-identifier", "input[name=foo.baz]" );
+	broken( "Attribute equals unquoted non-identifier", "input[name=foo[baz]]" );
 	broken( "Attribute equals bad string", "input[name=''double-quoted'']" );
 	broken( "Attribute equals bad string", "input[name='apostrophe'd']" );
 } );
