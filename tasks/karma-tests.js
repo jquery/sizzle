@@ -21,7 +21,7 @@ module.exports = function( grunt ) {
 
 			// See #314 :-(
 			// "karma:android", "karma:oldAndroid"
-		] : "karma:phantom";
+		] : [ "karma:phantom" ];
 
 		for ( let task of tasks ) {
 			const command = `grunt ${ task }`;
