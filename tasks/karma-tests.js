@@ -9,43 +9,44 @@ module.exports = function( grunt ) {
 	// sets to somehow still be waited on during subsequent runs, failing the build.
 	grunt.registerTask( "karma-tests", "Run unit tests sequentially",
 		async function( isBrowserStack ) {
-		const done = this.async();
+			const done = this.async();
 
-		const tasks = isBrowserStack ? [
-			"karma:phantom", "karma:desktop",
+			const tasks = isBrowserStack ? [
+				"karma:phantom", "karma:desktop",
 
-			"karma:oldIe", "karma:oldFirefox", "karma:oldChrome",
-			"karma:oldSafari", "karma:oldOpera",
+				"karma:oldIe", "karma:oldFirefox", "karma:oldChrome",
+				"karma:oldSafari", "karma:oldOpera",
 
-			"karma:ios"
+				"karma:ios"
 
-			// See #314 :-(
-			// "karma:android", "karma:oldAndroid"
-		] : [ "karma:phantom" ];
+				// See #314 :-(
+				// "karma:android", "karma:oldAndroid"
+			] : [ "karma:phantom" ];
 
-		for ( let task of tasks ) {
-			const command = `grunt ${ task }`;
-			grunt.log.writeln( `Running task ${ task } in a subprocess...` );
+			for ( let task of tasks ) {
+				const command = `grunt ${ task }`;
+				grunt.log.writeln( `Running task ${ task } in a subprocess...` );
 
-			await new Promise( ( resolve, reject ) => {
-				const ret = spawn( command, {
-					shell: true,
-					stdio: "inherit"
+				await new Promise( ( resolve, reject ) => {
+					const ret = spawn( command, {
+						shell: true,
+						stdio: "inherit"
+					} );
+
+					ret.on( "close", ( code ) => {
+						if ( code === 0 ) {
+							resolve();
+						} else {
+							const message = `Error code ${ code } during command: ${ command }`;
+							console.error( message );
+							reject( new Error( message ) );
+							done( false );
+						}
+					} );
 				} );
+			}
 
-				ret.on( "close", ( code ) => {
-					if ( code === 0 ) {
-						resolve();
-					} else {
-						const message = `Error code ${ code } during command: ${ command }`;
-						console.error( message );
-						reject( new Error( message ) );
-						done( false );
-					}
-				} );
-			} );
+			done();
 		}
-
-		done();
-	} );
+	);
 };
