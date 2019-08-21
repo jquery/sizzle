@@ -17,7 +17,7 @@ module.exports = function( grunt ) {
 				"karma:oldIe", "karma:oldFirefox", "karma:oldChrome",
 				"karma:oldSafari", "karma:oldOpera",
 
-				"karma:ios"
+				"karma:ios", "karma:oldIos"
 
 				// See #314 :-(
 				// "karma:android", "karma:oldAndroid"
