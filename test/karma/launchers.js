@@ -22,17 +22,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "High Sierra"
 	},
-	"bs_firefox-63": {
+	"bs_firefox-67": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "63.0",
+		browser_version: "67.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
-	"bs_firefox-64": {
+	"bs_firefox-68": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "64.0",
+		browser_version: "68.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
@@ -51,17 +51,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "Sierra"
 	},
-	"bs_chrome-70": {
+	"bs_chrome-75": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "70.0",
+		browser_version: "75.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
-	"bs_chrome-71": {
+	"bs_chrome-76": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "71.0",
+		browser_version: "76.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
@@ -138,17 +138,17 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-56": {
+	"bs_opera-60": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "56.0",
+		browser_version: "60.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
-	"bs_opera-57": {
+	"bs_opera-62": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "57.0",
+		browser_version: "62.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
@@ -251,7 +251,8 @@ module.exports = {
 		base: "BrowserStack",
 		device: "iPhone 7",
 		os: "ios",
-		os_version: "10.3"
+		os_version: "10.3",
+		real_mobile: true
 	},
 	"bs_ios-11.4": {
 		base: "BrowserStack",
