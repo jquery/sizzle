@@ -49,9 +49,7 @@ module.exports = function( grunt ) {
 		];
 
 		browsers.ios = [
-			"bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0", "bs_ios-8.3", "bs_ios-9.3", "bs_ios-10.3",
-
-			"bs_ios-11.4", "bs_ios-12.1"
+			"bs_ios-9.3", "bs_ios-10.3", "bs_ios-11.4", "bs_ios-12.1"
 		];
 		browsers.android = [
 			"bs_android-4.0", "bs_android-4.1", "bs_android-4.2",
@@ -64,6 +62,7 @@ module.exports = function( grunt ) {
 			safari: [ "bs_safari-4.0", "bs_safari-5.0", "bs_safari-5.1" ],
 			ie: [ "bs_ie-7", "bs_ie-8" ],
 			opera: [ "bs_opera-11.6", "bs_opera-12.16" ],
+			ios: [ "bs_ios-5.1", "bs_ios-6.0", "bs_ios-7.0", "bs_ios-8.3" ],
 			android: [ "bs_android-2.3" ]
 		};
 	}
@@ -216,11 +215,12 @@ module.exports = function( grunt ) {
 			oldAndroid: {
 				browsers: browsers.old.android
 			},
+			oldIos: {
+				browsers: browsers.old.ios
+			},
 			all: {
 				browsers: browsers.phantom.concat(
 					browsers.desktop,
-					browsers.ios,
-					browsers.android,
 
 					browsers.old.firefox,
 					browsers.old.chrome,
@@ -228,6 +228,10 @@ module.exports = function( grunt ) {
 					browsers.old.ie,
 					browsers.old.opera,
 
+					browsers.ios,
+					browsers.android,
+
+					browsers.old.ios,
 					browsers.old.android
 				)
 			}
