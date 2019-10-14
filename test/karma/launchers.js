@@ -22,17 +22,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "High Sierra"
 	},
-	"bs_firefox-67": {
-		base: "BrowserStack",
-		browser: "firefox",
-		browser_version: "67.0",
-		os: "OS X",
-		os_version: "Mojave"
-	},
 	"bs_firefox-68": {
 		base: "BrowserStack",
 		browser: "firefox",
 		browser_version: "68.0",
+		os: "OS X",
+		os_version: "Mojave"
+	},
+	"bs_firefox-69": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "69.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
@@ -51,13 +51,6 @@ module.exports = {
 		os: "OS X",
 		os_version: "Sierra"
 	},
-	"bs_chrome-75": {
-		base: "BrowserStack",
-		browser: "chrome",
-		browser_version: "75.0",
-		os: "OS X",
-		os_version: "Mojave"
-	},
 	"bs_chrome-76": {
 		base: "BrowserStack",
 		browser: "chrome",
@@ -65,7 +58,28 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mojave"
 	},
+	"bs_chrome-77": {
+		base: "BrowserStack",
+		browser: "chrome",
+		browser_version: "77.0",
+		os: "OS X",
+		os_version: "Mojave"
+	},
 
+	"bs_edge-15": {
+		base: "BrowserStack",
+		browser: "edge",
+		browser_version: "15.0",
+		os: "Windows",
+		os_version: "10"
+	},
+	"bs_edge-16": {
+		base: "BrowserStack",
+		browser: "edge",
+		browser_version: "16.0",
+		os: "Windows",
+		os_version: "10"
+	},
 	"bs_edge-17": {
 		base: "BrowserStack",
 		browser: "edge",
@@ -138,17 +152,17 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-60": {
+	"bs_opera-63": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "60.0",
+		browser_version: "63.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
-	"bs_opera-62": {
+	"bs_opera-64": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "62.0",
+		browser_version: "64.0",
 		os: "OS X",
 		os_version: "Mojave"
 	},
@@ -209,10 +223,10 @@ module.exports = {
 		os: "OS X",
 		os_version: "High Sierra"
 	},
-	"bs_safari-12.0": {
+	"bs_safari-12.1": {
 		base: "BrowserStack",
 		browser: "safari",
-		browser_version: "12.0",
+		browser_version: "12.1",
 		os: "OS X",
 		os_version: "Mojave"
 	},
@@ -261,11 +275,11 @@ module.exports = {
 		os_version: "11.4",
 		real_mobile: true
 	},
-	"bs_ios-12.1": {
+	"bs_ios-12.2": {
 		base: "BrowserStack",
 		device: "iPhone XS",
 		os: "ios",
-		os_version: "12.1",
+		os_version: "12.2",
 		real_mobile: true
 	},
 
