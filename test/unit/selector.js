@@ -135,7 +135,7 @@ QUnit.test( "XML Document Selectors", function( assert ) {
 } );
 
 QUnit.test( "broken", function( assert ) {
-	assert.expect( 30 );
+	assert.expect( 31 );
 
 	var attrbad,
 		broken = function( name, selector ) {
@@ -160,6 +160,7 @@ QUnit.test( "broken", function( assert ) {
 	broken( "Broken Selector", "," );
 	broken( "Broken Selector", ",a" );
 	broken( "Broken Selector", "a," );
+	broken( "Post-comma invalid selector", "*,:x" );
 	broken( "Identifier with bad escape", "foo\\\fbaz" );
 	// Hangs on IE 9 if regular expression is inefficient
 	broken( "Broken Selector", "[id=012345678901234567890123456789" );
