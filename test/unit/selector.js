@@ -652,7 +652,7 @@ QUnit.test( "attributes - special characters", function( assert ) {
 } );
 
 QUnit.test( "attributes - other", function( assert ) {
-	assert.expect( 7 );
+	assert.expect( 11 );
 
 	var div = document.getElementById( "foo" );
 
@@ -680,6 +680,16 @@ QUnit.test( "attributes - other", function( assert ) {
 	t( "attribute name is Gecko Object.prototype property \"watch\"",
 		"[watch='bar']",
 		[ "foo" ] );
+	t( "empty name", "[name='']", [ "name-empty" ] );
+	t( "prefixed empty name", "#empty-name-parent [name='']", [ "name-empty" ] );
+
+	var emptyNameContainer = Sizzle( ".empty-name-container" )[ 0 ];
+	assert.deepEqual( Sizzle( "[name='']", emptyNameContainer ),
+		q( "name-empty" ),
+		"empty name with context" );
+	assert.deepEqual( Sizzle( "#empty-name-parent [name='']", emptyNameContainer ),
+		q( "name-empty" ),
+		"prefixed empty name with context" );
 } );
 
 QUnit.test( "pseudo - (parent|empty)", function( assert ) {
@@ -1059,7 +1069,7 @@ QUnit.test( "pseudo - position", function( assert ) {
 
 	t( "Check element position", "#qunit-fixture div div:eq(0)", [ "nothiddendivchild" ] );
 	t( "Check element position", "#select1 option:eq(3)", [ "option1d" ] );
-	t( "Check element position", "#qunit-fixture div div:eq(10)", [ "names-group" ] );
+	t( "Check element position", "#qunit-fixture div div:eq(10)", [ "no-clone-exception" ] );
 	t( "Check element position", "#qunit-fixture div div:first", [ "nothiddendivchild" ] );
 	t( "Check element position", "#qunit-fixture div > div:first", [ "nothiddendivchild" ] );
 	t( "Check element position", "#qunit-fixture div:first a:first", [ "yahoo" ] );
