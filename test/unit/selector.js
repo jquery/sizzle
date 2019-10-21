@@ -1551,16 +1551,12 @@ QUnit.test( "select() with pre-compiled function", function( assert ) {
 	} );
 } );
 
-QUnit.test( "Sizzle supports shadow DOM nodes as root", function( assert ) {
-	if ( !document.documentElement.createShadowRoot ) {
-		assert.ok( true, "Shadow DOM not supported in this browser" );
-		return;
-	}
-
+QUnit[ document.body.attachShadow && document.body.getRootNode ? "test" : "skip" ](
+	"Sizzle supports shadow DOM nodes as root", function( assert ) {
 	assert.expect( 2 );
 
-	var div = jQuery( "<div/>" ).appendTo( "#qunit-fixture" )[ 0 ],
-		shadowRoot = div.createShadowRoot();
+	var shadowHost = jQuery( "<div/>" ).appendTo( "#qunit-fixture" )[ 0 ],
+		shadowRoot = shadowHost.attachShadow( { mode: "open" } );
 
 	shadowRoot.innerHTML = "<div class='vagabond'><p></p></div>";
 	assert.equal( Sizzle( ".vagabond", shadowRoot ).length, 1,
