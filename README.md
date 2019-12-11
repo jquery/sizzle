@@ -41,6 +41,7 @@ Then open `http://localhost:8000/speed/?qsa` to run the performance tests.
     :even, :odd, :lt, :gt, :nth, :radio, :checkbox, :file,
     :password, :image, :submit, :reset
     ```
+4. Added es6 module export
 
 # Sizzle
 

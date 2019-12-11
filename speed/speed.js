@@ -1,3 +1,4 @@
+// jscs:disable
 /*
  * Performance test suite using benchmark.js
  */
