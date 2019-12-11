@@ -12,22 +12,23 @@
 /**
  * Version of Sizzle patched by AdGuard in order to be used in the ExtendedCss module.
  * https://github.com/AdguardTeam/sizzle-extcss
- * 
+ *
  * Look for [AdGuard Patch] and ADGUARD_EXTCSS markers to find out what exactly was changed by us.
- * 
+ *
  * Global changes:
  * 1. Added additional parameters to the "Sizzle.tokenize" method so that it can be used for stylesheets parsing and validation.
  * 2. Added tokens re-sorting mechanism forcing slow pseudos to be matched last  (see sortTokenGroups).
  * 3. Fix the nonnativeSelectorCache caching -- there was no value corresponding to a key.
  * 4. Added Sizzle.compile call to the `:has` pseudo definition.
- * 
+ *
  * Changes that are applied to the ADGUARD_EXTCSS build only:
  * 1. Do not expose Sizzle to the global scope. Initialize it lazily via initializeSizzle().
  * 2. Removed :contains pseudo declaration -- its syntax is changed and declared outside of Sizzle.
- * 3. Removed declarations for the following non-standard pseudo classes: 
+ * 3. Removed declarations for the following non-standard pseudo classes:
  * :parent, :header, :input, :button, :text, :first, :last, :eq,
  * :even, :odd, :lt, :gt, :nth, :radio, :checkbox, :file,
  * :password, :image, :submit, :reset
+ * 4. Added es6 module export
  */
 var Sizzle;
 
@@ -41,7 +42,7 @@ var initializeSizzle = function() { // jshint ignore:line
 
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-Sizzle = 
+Sizzle =
 // @endif
 (function( window ) {
 
@@ -1488,7 +1489,7 @@ Expr = Sizzle.selectors = {
 		"has": markFunction(function( selector ) {
 			if (typeof selector === "string") {
 				Sizzle.compile(selector);
-			}			
+			}
 			return function( elem ) {
 				return Sizzle( selector, elem ).length > 0;
 			};
@@ -1692,7 +1693,7 @@ var sortTokenGroups = (function() {
 
 	/**
 	 * Splits compound selector into a list of simple selectors
-	 * 
+	 *
 	 * @param {*} tokens Tokens to split into groups
 	 * @returns an array consisting of token groups (arrays) and relation tokens.
 	 */
@@ -1710,7 +1711,7 @@ var sortTokenGroups = (function() {
 				groups.push(token);
 				currentTokensGroup = [];
 			} else {
-				currentTokensGroup.push(token);				
+				currentTokensGroup.push(token);
 			}
 
 			if (i === maxIdx) {
@@ -1735,7 +1736,7 @@ var sortTokenGroups = (function() {
 		"nth", "first", "last", "eq", "even", "odd", "lt", "gt", "not"
 	];
 
-	/** 
+	/**
 	 * A function that defines the sort order.
 	 * Returns a value lesser than 0 if "left" is less than "right".
 	 */
@@ -1768,7 +1769,7 @@ var sortTokenGroups = (function() {
 	 * Sorts the tokens in order to mitigate the issues caused by the left-to-right matching.
 	 * The idea is change the tokens order so that Sizzle was matching fast selectors first (id, class),
 	 * and slow selectors after that (and here I mean our slow custom pseudo classes).
-	 * 
+	 *
 	 * @param {Array} tokens An array of tokens to sort
 	 * @returns {Array} A new re-sorted array
 	 */
@@ -1798,7 +1799,7 @@ var sortTokenGroups = (function() {
 	/**
 	 * Sorts every tokens array inside of the specified "groups" array.
 	 * See "sortTokens" methods for more information on how tokens are sorted.
-	 * 
+	 *
 	 * @param {Array} groups An array of tokens arrays.
 	 * @returns {Array} A new array that consists of the same tokens arrays after sorting
 	 */
@@ -1819,7 +1820,7 @@ var sortTokenGroups = (function() {
 /**
  * [AdGuard Patch]:
  * Removes trailing spaces from the tokens list
- * 
+ *
  * @param {*} tokens An array of Sizzle tokens to post-process
  */
 function removeTrailingSpaces(tokens) {
@@ -1846,7 +1847,7 @@ function removeTrailingSpaces(tokens) {
  * [AdGuard Patch]:
  * This method processes parsed token groups, divides them into a number of selectors
  * and makes sure that each selector's tokens are cached properly in Sizzle.
- * 
+ *
  * @param {*} groups Token groups (see {@link Sizzle.tokenize})
  * @returns {Array.<SelectorData>} An array of selectors data we got from the groups
  */
@@ -1859,12 +1860,12 @@ function tokenGroupsToSelectors(groups) {
 
 	// We need sorted tokens to make cache work properly
 	var sortedGroups = sortTokenGroups(groups);
-	
+
 	var selectors = [];
 	for (var i = 0; i < groups.length; i++) {
 		var tokenGroups = groups[i];
 		var selectorText = toSelector(tokenGroups);
-		
+
 		selectors.push({
 			// Sizzle expects an array of token groups when compiling a selector
 			groups: [ tokenGroups ],
@@ -1887,13 +1888,13 @@ function tokenGroupsToSelectors(groups) {
  * Add an additional argument for Sizzle.tokenize which indicates that it
  * should not throw on invalid tokens, and instead should return tokens
  * that it has produced so far.
- * 
+ *
  * One more additional argument that allow to choose if you want to receive sorted or unsorted tokens
  * The problem is that the re-sorted selectors are valid for Sizzle, but not for the browser.
  * options.returnUnsorted -- return unsorted tokens if true.
  * options.cacheOnly -- return cached result only. Required for unit-tests.
- * 
- * @param {*} options Optional configuration object with two additional flags 
+ *
+ * @param {*} options Optional configuration object with two additional flags
  * (options.tolerant, options.returnUnsorted, options.cacheOnly) -- see patches #5 and #6 notes
  */
 tokenize = Sizzle.tokenize = function( selector, parseOnly, options) {
@@ -1972,14 +1973,14 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly, options) {
 		return invalidLen;
 	}
 
-	if (invalidLen !== 0 && !tolerant) { 
+	if (invalidLen !== 0 && !tolerant) {
 		Sizzle.error( selector ); // Throws an error.
 	}
 
 	if (tolerant) {
-		/** 
+		/**
 		 * [AdGuard Patch]:
-		 * In tolerant mode we return a special object that constists of 
+		 * In tolerant mode we return a special object that constists of
 		 * an array of parsed selectors (and their tokens) and a "nextIndex" field
 		 * that points to an index after which we're not able to parse selectors farther.
 		 */
@@ -2560,7 +2561,7 @@ if ( !assert(function( el ) {
 // @if ADGUARD_EXTCSS=true
 // Do not expose Sizzle to the global scope in the case of AdGuard ExtendedCss build
 // @endif
-// @if ADGUARD_EXTCSS=false 
+// @if ADGUARD_EXTCSS=false
 var _sizzle = window.Sizzle;
 
 Sizzle.noConflict = function() {
@@ -2593,5 +2594,14 @@ if ( typeof define === "function" && define.amd ) {
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 }
+
+return Sizzle;
 };
+
+/* jshint ignore:start */
+// jscs:disable
+export default initializeSizzle;
+// jscs:enable
+/* jshint ignore:end */
+
 // @endif
