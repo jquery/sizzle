@@ -63,3 +63,5 @@ Sébastien Règne <regseb@users.noreply.github.com>
 Andrey Meshkov <am@adguard.com>
 Siddharth Dungarwal <sd5869@gmail.com>
 wartmanm <3869625+wartmanm@users.noreply.github.com>
+Hoang <dangkyokhoang@gmail.com>
+JuanMa Ruiz <ruizjuanma@gmail.com>
