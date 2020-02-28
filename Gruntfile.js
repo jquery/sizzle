@@ -277,7 +277,6 @@ module.exports = function( grunt ) {
 	] );
 	grunt.registerTask( "default", [
 		"build",
-		"tests",
 		"compare_size",
 		"eslint:dist"
 	] );

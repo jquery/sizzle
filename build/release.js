@@ -13,7 +13,7 @@ module.exports = function( Release ) {
 		issueTracker: "github",
 
 		generateArtifacts: function( done ) {
-			Release.exec( "grunt build", "Grunt command failed" );
+			Release.exec( "grunt", "Grunt command failed" );
 			done( files );
 		}
 	} );
