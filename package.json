@@ -1,7 +1,7 @@
 {
   "title": "Sizzle",
   "name": "sizzle",
-  "version": "2.3.5-pre",
+  "version": "2.3.5",
   "description": "A pure-JavaScript, bottom-up CSS selector engine designed to be easily dropped in to a host library.",
   "keywords": [
     "sizzle",
