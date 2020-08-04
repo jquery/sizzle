@@ -783,9 +783,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// setting a boolean content attribute,
 			// since its presence should be enough
 			// https://bugs.jquery.com/ticket/12359
-			docElem.appendChild( el ).innerHTML = "<a id='" + expando + "'></a>" +
+			docElem.appendChild( el ).innerHTML = AGPolicy.createHTML("<a id='" + expando + "'></a>" +
 				"<select id='" + expando + "-\r\\' msallowcapture=''>" +
-				"<option selected=''></option></select>";
+				"<option selected=''></option></select>");
 
 			// Support: IE8, Opera 11-12.16
 			// Nothing should be selected when empty strings follow ^= or $= or *=
@@ -822,8 +822,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 		});
 
 		assert(function( el ) {
-			el.innerHTML = "<a href='' disabled='disabled'></a>" +
-				"<select disabled='disabled'><option/></select>";
+			el.innerHTML = AGPolicy.createHTML("<a href='' disabled='disabled'></a>" +
+				"<select disabled='disabled'><option/></select>");
 
 			// Support: Windows 8 Native Apps
 			// The type and name attributes are restricted during .innerHTML assignment
@@ -1818,6 +1818,30 @@ var sortTokenGroups = (function() {
 })();
 
 /**
+ * Creates custom policy to use TrustedTypes CSP policy
+ * https://w3c.github.io/webappsec-trusted-types/dist/spec/
+ */
+var AGPolicy = (function createPolicy() {
+	var defaultPolicy = {
+		createHTML: function (input) {
+			return input;
+		},
+		createScript: function (input) {
+			return input;
+		},
+		createScriptURL: function (input) {
+			return input;
+		}
+	};
+
+	if (window.trustedTypes && window.trustedTypes.createPolicy) {
+		return window.trustedTypes.createPolicy("AGPolicy", defaultPolicy);
+	}
+
+	return defaultPolicy;
+})();
+
+/**
  * [AdGuard Patch]:
  * Removes trailing spaces from the tokens list
  *
@@ -2516,7 +2540,7 @@ support.sortDetached = assert(function( el ) {
 // Prevent attribute/property "interpolation"
 // https://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
 if ( !assert(function( el ) {
-	el.innerHTML = "<a href='#'></a>";
+	el.innerHTML = AGPolicy.createHTML("<a href='#'></a>");
 	return el.firstChild.getAttribute("href") === "#" ;
 }) ) {
 	addHandle( "type|href|height|width", function( elem, name, isXML ) {
@@ -2529,7 +2553,7 @@ if ( !assert(function( el ) {
 // Support: IE<9
 // Use defaultValue in place of getAttribute("value")
 if ( !support.attributes || !assert(function( el ) {
-	el.innerHTML = "<input/>";
+	el.innerHTML = AGPolicy.createHTML("<input/>");
 	el.firstChild.setAttribute( "value", "" );
 	return el.firstChild.getAttribute( "value" ) === "";
 }) ) {
