@@ -197,7 +197,7 @@ if ( jQuery( "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='1' w
 }
 
 QUnit.test( "Sizzle.isXML", function( assert ) {
-	assert.expect( 10 );
+	assert.expect( 15 );
 
 	var svgTree,
 		xmlTree = jQuery.parseXML( "<docElem><elem/></docElem>" ).documentElement,
@@ -255,6 +255,12 @@ QUnit.test( "Sizzle.isXML", function( assert ) {
 	} else {
 		assert.ok( true, "Cannot test an incomplete DOM" );
 	}
+
+	assert.strictEqual( jQuery.isXMLDoc( undefined ), false, "undefined" );
+	assert.strictEqual( jQuery.isXMLDoc( null ), false, "null" );
+	assert.strictEqual( jQuery.isXMLDoc( false ), false, "false" );
+	assert.strictEqual( jQuery.isXMLDoc( 0 ), false, "0" );
+	assert.strictEqual( jQuery.isXMLDoc( "" ), false, "\"\"" );
 } );
 
 QUnit.test( "Sizzle.uniqueSort", function( assert ) {
