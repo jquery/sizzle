@@ -8,13 +8,6 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mavericks"
 	},
-	"bs_firefox-52": {
-		base: "BrowserStack",
-		browser: "firefox",
-		browser_version: "52.0",
-		os: "OS X",
-		os_version: "Sierra"
-	},
 	"bs_firefox-60": {
 		base: "BrowserStack",
 		browser: "firefox",
@@ -29,12 +22,26 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mojave"
 	},
-	"bs_firefox-69": {
+	"bs_firefox-78": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "69.0",
+		browser_version: "78.0",
 		os: "OS X",
-		os_version: "Mojave"
+		os_version: "Catalina"
+	},
+	"bs_firefox-82": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "82.0",
+		os: "OS X",
+		os_version: "Catalina"
+	},
+	"bs_firefox-83": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "83.0",
+		os: "OS X",
+		os_version: "Catalina"
 	},
 
 	"bs_chrome-16": {
@@ -51,19 +58,19 @@ module.exports = {
 		os: "OS X",
 		os_version: "Sierra"
 	},
-	"bs_chrome-76": {
+	"bs_chrome-86": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "76.0",
+		browser_version: "86.0",
 		os: "OS X",
-		os_version: "Mojave"
+		os_version: "Catalina"
 	},
-	"bs_chrome-77": {
+	"bs_chrome-87": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "77.0",
+		browser_version: "87.0",
 		os: "OS X",
-		os_version: "Mojave"
+		os_version: "Catalina"
 	},
 
 	"bs_edge-15": {
@@ -152,19 +159,19 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-63": {
+	"bs_opera-71": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "63.0",
+		browser_version: "71.0",
 		os: "OS X",
-		os_version: "Mojave"
+		os_version: "Catalina"
 	},
-	"bs_opera-64": {
+	"bs_opera-72": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "64.0",
+		browser_version: "72.0",
 		os: "OS X",
-		os_version: "Mojave"
+		os_version: "Catalina"
 	},
 
 	"bs_safari-4.0": {
@@ -230,6 +237,13 @@ module.exports = {
 		os: "OS X",
 		os_version: "Mojave"
 	},
+	"bs_safari-13.1": {
+		base: "BrowserStack",
+		browser: "safari",
+		browser_version: "13.1",
+		os: "OS X",
+		os_version: "Catalina"
+	},
 
 	"bs_ios-5.1": {
 		base: "BrowserStack",
@@ -261,25 +275,39 @@ module.exports = {
 		os: "ios",
 		os_version: "9.3"
 	},
-	"bs_ios-10.3": {
+	"bs_ios-10": {
 		base: "BrowserStack",
 		device: "iPhone 7",
 		os: "ios",
-		os_version: "10.3",
+		os_version: "10",
 		real_mobile: true
 	},
-	"bs_ios-11.4": {
+	"bs_ios-11": {
 		base: "BrowserStack",
 		device: "iPhone 6S",
 		os: "ios",
-		os_version: "11.4",
+		os_version: "11",
 		real_mobile: true
 	},
-	"bs_ios-12.2": {
+	"bs_ios-12": {
 		base: "BrowserStack",
 		device: "iPhone XS",
 		os: "ios",
-		os_version: "12.2",
+		os_version: "12",
+		real_mobile: true
+	},
+	"bs_ios-13": {
+		base: "BrowserStack",
+		device: "iPhone 11 Pro",
+		os: "ios",
+		os_version: "13",
+		real_mobile: true
+	},
+	"bs_ios-14": {
+		base: "BrowserStack",
+		device: "iPhone 12",
+		os: "ios",
+		os_version: "14",
 		real_mobile: true
 	},
 
