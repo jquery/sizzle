@@ -13,7 +13,7 @@
   "homepage": "https://sizzlejs.com",
   "author": {
     "name": "JS Foundation and other contributors",
-    "url": "https://github.com/jquery/sizzle/blob/2.3.4/AUTHORS.txt"
+    "url": "https://github.com/jquery/sizzle/blob/main/AUTHORS.txt"
   },
   "repository": {
     "type": "git",
