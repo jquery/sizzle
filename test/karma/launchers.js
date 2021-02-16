@@ -27,21 +27,21 @@ module.exports = {
 		browser: "firefox",
 		browser_version: "78.0",
 		os: "OS X",
-		os_version: "Catalina"
+		os_version: "Big Sur"
 	},
-	"bs_firefox-82": {
+	"bs_firefox-84": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "82.0",
+		browser_version: "84.0",
 		os: "OS X",
-		os_version: "Catalina"
+		os_version: "Big Sur"
 	},
-	"bs_firefox-83": {
+	"bs_firefox-85": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "83.0",
+		browser_version: "85.0",
 		os: "OS X",
-		os_version: "Catalina"
+		os_version: "Big Sur"
 	},
 
 	"bs_chrome-16": {
@@ -58,19 +58,19 @@ module.exports = {
 		os: "OS X",
 		os_version: "Sierra"
 	},
-	"bs_chrome-86": {
-		base: "BrowserStack",
-		browser: "chrome",
-		browser_version: "86.0",
-		os: "OS X",
-		os_version: "Catalina"
-	},
 	"bs_chrome-87": {
 		base: "BrowserStack",
 		browser: "chrome",
 		browser_version: "87.0",
 		os: "OS X",
-		os_version: "Catalina"
+		os_version: "Big Sur"
+	},
+	"bs_chrome-88": {
+		base: "BrowserStack",
+		browser: "chrome",
+		browser_version: "88.0",
+		os: "OS X",
+		os_version: "Big Sur"
 	},
 
 	"bs_edge-15": {
@@ -98,6 +98,20 @@ module.exports = {
 		base: "BrowserStack",
 		browser: "edge",
 		browser_version: "18.0",
+		os: "Windows",
+		os_version: "10"
+	},
+	"bs_edge-87": {
+		base: "BrowserStack",
+		browser: "edge",
+		browser_version: "87",
+		os: "Windows",
+		os_version: "10"
+	},
+	"bs_edge-88": {
+		base: "BrowserStack",
+		browser: "edge",
+		browser_version: "88",
 		os: "Windows",
 		os_version: "10"
 	},
@@ -159,19 +173,19 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-71": {
+	"bs_opera-73": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "71.0",
+		browser_version: "73.0",
 		os: "OS X",
-		os_version: "Catalina"
+		os_version: "Big Sur"
 	},
-	"bs_opera-72": {
+	"bs_opera-74": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "72.0",
+		browser_version: "74.0",
 		os: "OS X",
-		os_version: "Catalina"
+		os_version: "Big Sur"
 	},
 
 	"bs_safari-4.0": {
@@ -243,6 +257,13 @@ module.exports = {
 		browser_version: "13.1",
 		os: "OS X",
 		os_version: "Catalina"
+	},
+	"bs_safari-14": {
+		base: "BrowserStack",
+		browser: "safari",
+		browser_version: "14",
+		os: "OS X",
+		os_version: "Big Sur"
 	},
 
 	"bs_ios-5.1": {
