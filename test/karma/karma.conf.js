@@ -3,7 +3,7 @@
 var grunt = require( "grunt" );
 
 module.exports = function( config ) {
-	var isTravis = process.env.TRAVIS,
+	var isCi = process.env.GITHUB_ACTION,
 		dateString = grunt.config( "dateString" ),
 		isBrowserStack = !!( process.env.BROWSER_STACK_USERNAME &&
 			process.env.BROWSER_STACK_ACCESS_KEY ),
@@ -70,10 +70,10 @@ module.exports = function( config ) {
 		// Add BrowserStack launchers
 		customLaunchers: require( "./launchers" ),
 
-		// Make travis output less verbose
-		reporters: isTravis ? "dots" : "progress",
+		// Make GitHub Actions output less verbose
+		reporters: isCi ? "dots" : "progress",
 
-		colors: !isTravis,
+		colors: !isCi,
 
 		hostname: hostName,
 		port: 9876,
@@ -93,16 +93,16 @@ module.exports = function( config ) {
 		browserDisconnectTolerance: 3
 	} );
 
-	// Deal with Travis environment
-	if ( isTravis ) {
-
-		// Browserstack launcher specifies "build" options as a default value
-		// of "TRAVIS_BUILD_NUMBER" variable, but this way a bit more verbose
-		config.browserStack.build = "travis #" + process.env.TRAVIS_BUILD_NUMBER;
+	// Deal with the GitHub Actions environment
+	if ( isCi ) {
+		config.browserStack.build = "GitHub #" + process.env.GITHUB_RUN_NUMBER;
 
 		// You can't get access to secure environment variables from pull requests
-		// so we don't have browserstack from them, but travis has headless Firefox so use that
-		if ( !isBrowserStack && process.env.TRAVIS_PULL_REQUEST ) {
+		// so we don't have browserstack from them, but GitHub Actions have headless
+		// Firefox so use that.
+		// The `GITHUB_BASE_REF` env variable is only available on PRs, see:
+		// https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
+		if ( !isBrowserStack && process.env.GITHUB_BASE_REF ) {
 			config.browsers.push( "FirefoxHeadless" );
 		}
 	}
