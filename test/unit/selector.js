@@ -578,7 +578,7 @@ QUnit.test( "attributes - special characters", function( assert ) {
 	var attrbad,
 		div = document.createElement( "div" );
 
-	// #3279
+	// #3729
 	div.innerHTML = "<div id='foo' xml:test='something'></div>";
 	assert.deepEqual( Sizzle( "[xml\\:test]", div ),
 		[ div.firstChild ],
