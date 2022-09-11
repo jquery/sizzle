@@ -338,7 +338,7 @@ QUnit.test( "Sizzle.uniqueSort", function( assert ) {
 	jQuery.each( tests, function( label, test ) {
 		var length = test.length || test.input.length;
 		assert.deepEqual(
-			Sizzle.uniqueSort( test.input ).slice( 0, length ),
+			Sizzle.uniqueSort( test.input.slice( 0 ) ).slice( 0, length ),
 			test.expected,
 			label + " (array)"
 		);
