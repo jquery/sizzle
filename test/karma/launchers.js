@@ -29,19 +29,33 @@ module.exports = {
 		os: "OS X",
 		os_version: "Big Sur"
 	},
-	"bs_firefox-84": {
+	"bs_firefox-91": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "84.0",
+		browser_version: "91.0",
 		os: "OS X",
 		os_version: "Big Sur"
 	},
-	"bs_firefox-85": {
+	"bs_firefox-102": {
 		base: "BrowserStack",
 		browser: "firefox",
-		browser_version: "85.0",
+		browser_version: "102.0",
 		os: "OS X",
-		os_version: "Big Sur"
+		os_version: "Monterey"
+	},
+	"bs_firefox-103": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "103.0",
+		os: "OS X",
+		os_version: "Monterey"
+	},
+	"bs_firefox-104": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "104.0",
+		os: "OS X",
+		os_version: "Monterey"
 	},
 
 	"bs_chrome-16": {
@@ -58,19 +72,33 @@ module.exports = {
 		os: "OS X",
 		os_version: "Sierra"
 	},
-	"bs_chrome-87": {
+	"bs_chrome-68": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "87.0",
+		browser_version: "68.0",
+		os: "OS X",
+		os_version: "High Sierra"
+	},
+	"bs_chrome-84": {
+		base: "BrowserStack",
+		browser: "chrome",
+		browser_version: "84.0",
 		os: "OS X",
 		os_version: "Big Sur"
 	},
-	"bs_chrome-88": {
+	"bs_chrome-104": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "88.0",
+		browser_version: "104.0",
 		os: "OS X",
-		os_version: "Big Sur"
+		os_version: "Monterey"
+	},
+	"bs_chrome-105": {
+		base: "BrowserStack",
+		browser: "chrome",
+		browser_version: "105.0",
+		os: "OS X",
+		os_version: "Monterey"
 	},
 
 	"bs_edge-15": {
@@ -101,19 +129,19 @@ module.exports = {
 		os: "Windows",
 		os_version: "10"
 	},
-	"bs_edge-87": {
+	"bs_edge-104": {
 		base: "BrowserStack",
 		browser: "edge",
-		browser_version: "87",
+		browser_version: "104",
 		os: "Windows",
 		os_version: "10"
 	},
-	"bs_edge-88": {
+	"bs_edge-105": {
 		base: "BrowserStack",
 		browser: "edge",
-		browser_version: "88",
+		browser_version: "105",
 		os: "Windows",
-		os_version: "10"
+		os_version: "11"
 	},
 
 	"bs_ie-6": {
@@ -173,19 +201,19 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-73": {
+	"bs_opera-89": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "73.0",
+		browser_version: "89.0",
 		os: "OS X",
-		os_version: "Big Sur"
+		os_version: "Monterey"
 	},
-	"bs_opera-74": {
+	"bs_opera-90": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "74.0",
+		browser_version: "90.0",
 		os: "OS X",
-		os_version: "Big Sur"
+		os_version: "Monterey"
 	},
 
 	"bs_safari-4.0": {
@@ -265,6 +293,13 @@ module.exports = {
 		os: "OS X",
 		os_version: "Big Sur"
 	},
+	"bs_safari-15": {
+		base: "BrowserStack",
+		browser: "safari",
+		browser_version: "15",
+		os: "OS X",
+		os_version: "Monterey"
+	},
 
 	"bs_ios-5.1": {
 		base: "BrowserStack",
@@ -329,6 +364,13 @@ module.exports = {
 		device: "iPhone 12",
 		os: "ios",
 		os_version: "14",
+		real_mobile: true
+	},
+	"bs_ios-15": {
+		base: "BrowserStack",
+		device: "iPhone 13",
+		os: "ios",
+		os_version: "15",
 		real_mobile: true
 	},
 
