@@ -842,11 +842,19 @@ QUnit.test( "pseudo - nth-last-of-type", function( assert ) {
 } );
 
 QUnit.test( "pseudo - has", function( assert ) {
-	assert.expect( 3 );
+	assert.expect( 4 );
 
 	t( "Basic test", "p:has(a)", [ "firstp", "ap", "en", "sap" ] );
 	t( "Basic test (irrelevant whitespace)", "p:has( a )", [ "firstp", "ap", "en", "sap" ] );
 	t( "Nested with overlapping candidates", "#qunit-fixture div:has(div:has(div:not([id])))", [ "moretests", "t2037" ] );
+
+	// Support: Safari 15.4+, Chrome 107+?
+	// `qSA` in Safari throws for `:has()` with only unsupported arguments
+	// but if you add a supported arg to the list, it will run and just potentially
+	// return no results. Make sure this is accounted for.
+	t( "Nested with list arguments",
+		"#qunit-fixture div:has(faketag, div:has(faketag, div:not([id])))",
+		[ "moretests", "t2037" ] );
 } );
 
 QUnit.test( "pseudo - contains", function( assert ) {
