@@ -256,11 +256,11 @@ QUnit.test( "Sizzle.isXML", function( assert ) {
 		assert.ok( true, "Cannot test an incomplete DOM" );
 	}
 
-	assert.strictEqual( jQuery.isXMLDoc( undefined ), false, "undefined" );
-	assert.strictEqual( jQuery.isXMLDoc( null ), false, "null" );
-	assert.strictEqual( jQuery.isXMLDoc( false ), false, "false" );
-	assert.strictEqual( jQuery.isXMLDoc( 0 ), false, "0" );
-	assert.strictEqual( jQuery.isXMLDoc( "" ), false, "\"\"" );
+	assert.strictEqual( Sizzle.isXML( undefined ), false, "undefined" );
+	assert.strictEqual( Sizzle.isXML( null ), false, "null" );
+	assert.strictEqual( Sizzle.isXML( false ), false, "false" );
+	assert.strictEqual( Sizzle.isXML( 0 ), false, "0" );
+	assert.strictEqual( Sizzle.isXML( "" ), false, "\"\"" );
 } );
 
 QUnit.test( "Sizzle.uniqueSort", function( assert ) {
