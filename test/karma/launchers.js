@@ -373,6 +373,13 @@ module.exports = {
 		os_version: "15",
 		real_mobile: true
 	},
+	"bs_ios-16": {
+		base: "BrowserStack",
+		device: "iPhone 14",
+		os: "ios",
+		os_version: "16",
+		real_mobile: true
+	},
 
 	"bs_android-2.3": {
 		base: "BrowserStack",
