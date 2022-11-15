@@ -176,6 +176,25 @@ QUnit.test( "Sizzle.contains", function( assert ) {
 	assert.ok( !Sizzle.contains( document, detached ), "document container (negative)" );
 } );
 
+// Support: IE 6 - 11+, Edge <13 only, Firefox <23 only, Chrome <27 only
+// Run this test only in browsers supporting `HTMLTemplateElement`.
+QUnit[
+	typeof HTMLTemplateElement === "function" ?
+		"test" :
+		"skip"
+]( "jQuery.contains within <template/> doesn't throw (gh-5147)", function( assert ) {
+	assert.expect( 1 );
+
+	var template = jQuery( "<template><div><div class='a'></div></div></template>" ),
+		a = template[ 0 ].content.querySelector( ".a" );
+
+	template.appendTo( "#qunit-fixture" );
+
+	Sizzle.contains( a.ownerDocument, a );
+
+	assert.ok( true, "Didn't throw" );
+} );
+
 if ( jQuery( "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='1' width='1'><g/></svg>"
 	)[ 0 ].firstChild ) {
 
