@@ -34,18 +34,18 @@ module.exports = function( grunt ) {
 			"bs_chrome-45", // shares V8 with Node.js v4 LTS
 			"bs_chrome-68", // shares V8 with Node.js v10.24.1 LTS
 			"bs_chrome-84", // shares V8 with Node.js v14.20.0 LTS
-			"bs_chrome-104", "bs_chrome-105",
+			"bs_chrome-106", "bs_chrome-107",
 
 			// Firefox ESR + last 2 Firefox versions
 			"bs_firefox-60", "bs_firefox-68", "bs_firefox-78", "bs_firefox-91", "bs_firefox-102",
-			"bs_firefox-103", "bs_firefox-104",
+			"bs_firefox-105", "bs_firefox-106",
 
 			"bs_edge-15", "bs_edge-16", "bs_edge-17", "bs_edge-18",
-			"bs_edge-104", "bs_edge-105",
+			"bs_edge-106", "bs_edge-107",
 
 			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 
-			"bs_opera-89", "bs_opera-90",
+			"bs_opera-91", "bs_opera-92",
 
 			// Real Safari 6.1 and 7.0 are not available
 			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.1", "bs_safari-10.1",
