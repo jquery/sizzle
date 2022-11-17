@@ -182,7 +182,7 @@ QUnit[
 	typeof HTMLTemplateElement === "function" ?
 		"test" :
 		"skip"
-]( "jQuery.contains within <template/> doesn't throw (gh-5147)", function( assert ) {
+]( "Sizzle.contains within <template/> doesn't throw (gh-5147)", function( assert ) {
 	assert.expect( 1 );
 
 	var template = jQuery( "<template><div><div class='a'></div></div></template>" ),
