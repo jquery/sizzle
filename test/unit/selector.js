@@ -371,6 +371,37 @@ QUnit.test( "multiple", function( assert ) {
 		[ "h2", "firstp", "ap", "sndp", "en", "sap", "first" ] );
 } );
 
+( function() {
+	var supportsValidPseudo;
+	try {
+		supportsValidPseudo = document.querySelectorAll( "input:valid" ) &&
+
+			// Support: Firefox 3.6 only
+			// Firefox 3.6 doesn't support the `:valid` pseudo-class, but it also
+			// doesn't throw when a `qSA` call includes it.
+			!/firefox\/3\.6/i.test( navigator.userAgent );
+	} catch ( e ) {
+		supportsValidPseudo = false;
+	}
+
+	if ( supportsValidPseudo ) {
+		QUnit.test( "multiple, only supported natively (jquery/jquery#5177)", function( assert ) {
+			assert.expect( 4 );
+
+			jQuery( "#qunit-fixture" ).prepend( "<h2 id='h2'/>" );
+
+			t( "Comma Support", "#qunit-fixture #search:valid, #qunit-fixture p",
+				[ "firstp", "ap", "sndp", "en", "sap", "first", "search" ] );
+			t( "Comma Support", "#qunit-fixture #search:valid , #qunit-fixture p",
+				[ "firstp", "ap", "sndp", "en", "sap", "first", "search" ] );
+			t( "Comma Support", "#qunit-fixture #search:valid,#qunit-fixture p",
+				[ "firstp", "ap", "sndp", "en", "sap", "first", "search" ] );
+			t( "Comma Support", "#qunit-fixture #search:valid\t,\r#qunit-fixture p\n",
+				[ "firstp", "ap", "sndp", "en", "sap", "first", "search" ] );
+		} );
+	}
+} )();
+
 QUnit.test( "child and adjacent", function( assert ) {
 	assert.expect( 43 );
 
