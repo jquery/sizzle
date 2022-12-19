@@ -43,17 +43,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "Monterey"
 	},
-	"bs_firefox-106": {
-		base: "BrowserStack",
-		browser: "firefox",
-		browser_version: "106.0",
-		os: "OS X",
-		os_version: "Monterey"
-	},
 	"bs_firefox-107": {
 		base: "BrowserStack",
 		browser: "firefox",
 		browser_version: "107.0",
+		os: "OS X",
+		os_version: "Monterey"
+	},
+	"bs_firefox-108": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "108.0",
 		os: "OS X",
 		os_version: "Ventura"
 	},
@@ -201,17 +201,17 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-91": {
-		base: "BrowserStack",
-		browser: "opera",
-		browser_version: "91.0",
-		os: "OS X",
-		os_version: "Monterey"
-	},
 	"bs_opera-92": {
 		base: "BrowserStack",
 		browser: "opera",
 		browser_version: "92.0",
+		os: "OS X",
+		os_version: "Monterey"
+	},
+	"bs_opera-93": {
+		base: "BrowserStack",
+		browser: "opera",
+		browser_version: "93.0",
 		os: "OS X",
 		os_version: "Ventura"
 	},

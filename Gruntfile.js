@@ -38,14 +38,14 @@ module.exports = function( grunt ) {
 
 			// Firefox ESR + last 2 Firefox versions
 			"bs_firefox-60", "bs_firefox-68", "bs_firefox-78", "bs_firefox-91", "bs_firefox-102",
-			"bs_firefox-106", "bs_firefox-107",
+			"bs_firefox-107", "bs_firefox-108",
 
 			"bs_edge-15", "bs_edge-16", "bs_edge-17", "bs_edge-18",
 			"bs_edge-107", "bs_edge-108",
 
 			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 
-			"bs_opera-91", "bs_opera-92",
+			"bs_opera-92", "bs_opera-93",
 
 			// Real Safari 6.1 and 7.0 are not available
 			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.1", "bs_safari-10.1",
