@@ -43,17 +43,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "Monterey"
 	},
-	"bs_firefox-107": {
-		base: "BrowserStack",
-		browser: "firefox",
-		browser_version: "107.0",
-		os: "OS X",
-		os_version: "Monterey"
-	},
 	"bs_firefox-108": {
 		base: "BrowserStack",
 		browser: "firefox",
 		browser_version: "108.0",
+		os: "OS X",
+		os_version: "Monterey"
+	},
+	"bs_firefox-109": {
+		base: "BrowserStack",
+		browser: "firefox",
+		browser_version: "109.0",
 		os: "OS X",
 		os_version: "Ventura"
 	},
@@ -86,17 +86,17 @@ module.exports = {
 		os: "OS X",
 		os_version: "Big Sur"
 	},
-	"bs_chrome-107": {
+	"bs_chrome-109": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "107.0",
+		browser_version: "109.0",
 		os: "OS X",
 		os_version: "Monterey"
 	},
-	"bs_chrome-108": {
+	"bs_chrome-110": {
 		base: "BrowserStack",
 		browser: "chrome",
-		browser_version: "108.0",
+		browser_version: "110.0",
 		os: "OS X",
 		os_version: "Ventura"
 	},
@@ -129,17 +129,17 @@ module.exports = {
 		os: "Windows",
 		os_version: "10"
 	},
-	"bs_edge-107": {
-		base: "BrowserStack",
-		browser: "edge",
-		browser_version: "107",
-		os: "Windows",
-		os_version: "10"
-	},
 	"bs_edge-108": {
 		base: "BrowserStack",
 		browser: "edge",
 		browser_version: "108",
+		os: "Windows",
+		os_version: "10"
+	},
+	"bs_edge-109": {
+		base: "BrowserStack",
+		browser: "edge",
+		browser_version: "109",
 		os: "Windows",
 		os_version: "11"
 	},
@@ -201,17 +201,17 @@ module.exports = {
 		os: "Windows",
 		os_version: "7"
 	},
-	"bs_opera-92": {
+	"bs_opera-94": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "92.0",
+		browser_version: "94.0",
 		os: "OS X",
 		os_version: "Monterey"
 	},
-	"bs_opera-93": {
+	"bs_opera-95": {
 		base: "BrowserStack",
 		browser: "opera",
-		browser_version: "93.0",
+		browser_version: "95.0",
 		os: "OS X",
 		os_version: "Ventura"
 	},
