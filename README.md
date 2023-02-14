@@ -35,7 +35,7 @@ How to build Sizzle
 Clone a copy of the main Sizzle git repo by running:
 
 ```bash
-git clone git://github.com/jquery/sizzle.git
+git clone git@github.com:jquery/sizzle.git
 ```
 
 In the `sizzle/dist` folder you will find build version of sizzle along with the minified copy and associated map file.
