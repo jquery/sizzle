@@ -28,7 +28,7 @@ module.exports = function( grunt ) {
 	// if Browserstack is set up, assume we can use it
 	if ( isBrowserStack ) {
 
-		// See https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#browsers
+		// See https://github.com/jquery-archive/sizzle/wiki/Sizzle-Documentation#browsers
 
 		browsers.desktop = [
 			"bs_chrome-45", // shares V8 with Node.js v4 LTS
