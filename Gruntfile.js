@@ -34,18 +34,20 @@ module.exports = function( grunt ) {
 			"bs_chrome-45", // shares V8 with Node.js v4 LTS
 			"bs_chrome-68", // shares V8 with Node.js v10.24.1 LTS
 			"bs_chrome-84", // shares V8 with Node.js v14.20.0 LTS
-			"bs_chrome-109", "bs_chrome-110",
+			"bs_chrome-115", "bs_chrome-116",
 
 			// Firefox ESR + last 2 Firefox versions
-			"bs_firefox-60", "bs_firefox-68", "bs_firefox-78", "bs_firefox-91", "bs_firefox-102",
-			"bs_firefox-108", "bs_firefox-109",
+			"bs_firefox-60", "bs_firefox-68", "bs_firefox-78", "bs_firefox-91",
+			"bs_firefox-102", "bs_firefox-115",
+			"bs_firefox-116", "bs_firefox-117",
 
+			// EdgeHTML-based Edge Legacy + last 2 Edge versions
 			"bs_edge-15", "bs_edge-16", "bs_edge-17", "bs_edge-18",
-			"bs_edge-108", "bs_edge-109",
+			"bs_edge-115", "bs_edge-116",
 
 			"bs_ie-9", "bs_ie-10", "bs_ie-11",
 
-			"bs_opera-94", "bs_opera-95",
+			"bs_opera-101", "bs_opera-102",
 
 			// Real Safari 6.1 and 7.0 are not available
 			"bs_safari-6.0", "bs_safari-8.0", "bs_safari-9.1", "bs_safari-10.1",
@@ -63,7 +65,13 @@ module.exports = function( grunt ) {
 		];
 
 		browsers.old = {
-			firefox: [ "bs_firefox-3.6" ],
+
+			// Firefox 3.6 + older Firefox ESR
+			firefox: [
+				"bs_firefox-3.6", "bs_firefox-10", "bs_firefox-17", "bs_firefox-24",
+				"bs_firefox-31", "bs_firefox-38", "bs_firefox-45", "bs_firefox-52"
+			],
+
 			chrome: [ "bs_chrome-16" ],
 			safari: [ "bs_safari-4.0", "bs_safari-5.0", "bs_safari-5.1" ],
 			ie: [ "bs_ie-7", "bs_ie-8" ],
