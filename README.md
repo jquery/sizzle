@@ -1,5 +1,11 @@
 # Sizzle
 
+--------------------
+
+**NOTE: Sizzle is no longer maintained. jQuery versions `3.7.0` or newer no longer depend on Sizzle. Issues with the jQuery selector engine should be reported directly to jQuery at https://github.com/jquery/jquery/issues.**
+
+--------------------
+
 __A pure-JavaScript CSS selector engine designed to be easily dropped in to a host library.__
 
 - [More information](https://sizzlejs.com/)
