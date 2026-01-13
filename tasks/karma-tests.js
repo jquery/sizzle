@@ -12,12 +12,15 @@ module.exports = function( grunt ) {
 			const done = this.async();
 
 			const tasks = isBrowserStack ? [
-				"karma:phantom", "karma:desktop",
+				"karma:phantom", "karma:desktop", "karma:desktop2",
 
 				"karma:oldIe", "karma:oldFirefox", "karma:oldChrome",
 				"karma:oldSafari", "karma:oldOpera",
 
-				"karma:ios", "karma:oldIos"
+				"karma:ios"
+
+				// BrowserStack no longer shares old iOS simulators
+				// "karma:oldIos",
 
 				// See #314 :-(
 				// "karma:android", "karma:oldAndroid"
