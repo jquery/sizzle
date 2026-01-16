@@ -1,10 +1,16 @@
 # Sizzle
 
+--------------------
+
+**NOTE: Sizzle is no longer maintained. jQuery versions `3.7.0` or newer no longer depend on Sizzle. Issues with the jQuery selector engine should be reported directly to jQuery at https://github.com/jquery/jquery/issues.**
+
+--------------------
+
 __A pure-JavaScript CSS selector engine designed to be easily dropped in to a host library.__
 
 - [More information](https://sizzlejs.com/)
-- [Documentation](https://github.com/jquery/sizzle/wiki/)
-- [Browser support](https://github.com/jquery/sizzle/wiki/#wiki-browsers)
+- [Documentation](https://github.com/jquery-archive/sizzle/wiki/)
+- [Browser support](https://github.com/jquery-archive/sizzle/wiki/#wiki-browsers)
 
 Contribution Guides
 ---------------------------
@@ -35,7 +41,7 @@ How to build Sizzle
 Clone a copy of the main Sizzle git repo by running:
 
 ```bash
-git clone git@github.com:jquery/sizzle.git
+git clone git@github.com:jquery-archive/sizzle.git
 ```
 
 In the `sizzle/dist` folder you will find build version of sizzle along with the minified copy and associated map file.
