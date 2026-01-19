@@ -199,7 +199,23 @@ var i,
 			return elem.disabled === true && elem.nodeName.toLowerCase() === "fieldset";
 		},
 		{ dir: "parentNode", next: "legend" }
-	);
+	),
+
+	// Trusted Types support
+	trustedTypesPolicy,
+	createHTML = function( html ) {
+		if ( trustedTypesPolicy === undefined ) {
+			trustedTypesPolicy = {
+				createHTML: function( html ) {
+					return html;
+				}
+			};
+			if ( typeof window.trustedTypes !== "undefined" && window.trustedTypes.createPolicy ) {
+				trustedTypesPolicy = window.trustedTypes.createPolicy( "jquery/sizzle" );
+			}
+		}
+		return trustedTypesPolicy.createHTML( html );
+	};
 
 // Optimize for push.apply( _, NodeList )
 try {
@@ -824,9 +840,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// setting a boolean content attribute,
 			// since its presence should be enough
 			// https://bugs.jquery.com/ticket/12359
-			docElem.appendChild( el ).innerHTML = "<a id='" + expando + "'></a>" +
+			docElem.appendChild( el ).innerHTML = createHTML( "<a id='" + expando + "'></a>" +
 				"<select id='" + expando + "-\r\\' msallowcapture=''>" +
-				"<option selected=''></option></select>";
+				"<option selected=''></option></select>" );
 
 			// Support: IE8, Opera 11-12.16
 			// Nothing should be selected when empty strings follow ^= or $= or *=
@@ -881,8 +897,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 		} );
 
 		assert( function( el ) {
-			el.innerHTML = "<a href='' disabled='disabled'></a>" +
-				"<select disabled='disabled'><option/></select>";
+			el.innerHTML = createHTML( "<a href='' disabled='disabled'></a>" +
+				"<select disabled='disabled'><option/></select>" );
 
 			// Support: Windows 8 Native Apps
 			// The type and name attributes are restricted during .innerHTML assignment
@@ -2446,7 +2462,7 @@ support.sortDetached = assert( function( el ) {
 // Prevent attribute/property "interpolation"
 // https://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
 if ( !assert( function( el ) {
-	el.innerHTML = "<a href='#'></a>";
+	el.innerHTML = createHTML( "<a href='#'></a>" );
 	return el.firstChild.getAttribute( "href" ) === "#";
 } ) ) {
 	addHandle( "type|href|height|width", function( elem, name, isXML ) {
@@ -2459,7 +2475,7 @@ if ( !assert( function( el ) {
 // Support: IE<9
 // Use defaultValue in place of getAttribute("value")
 if ( !support.attributes || !assert( function( el ) {
-	el.innerHTML = "<input/>";
+	el.innerHTML = createHTML( "<input/>" );
 	el.firstChild.setAttribute( "value", "" );
 	return el.firstChild.getAttribute( "value" ) === "";
 } ) ) {
